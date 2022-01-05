@@ -1,0 +1,14 @@
+{
+  "id": "0fe0a17a-b187-4823-b443-4adf72367912",
+  "access_level": "Admin",
+  "created_at": "2021-07-08T19:59:47.448748Z",
+  "user": {
+    "id": 15,
+    "email": "beer@mail.com",
+    "name": " "
+  },
+  "wallet": {
+    "id": "9997ec76-1bcb-4826-a78f-60c5f31fe08c",
+    "name": "Beer"
+  }
+}

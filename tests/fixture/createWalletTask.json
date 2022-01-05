@@ -1,0 +1,24 @@
+{
+  "created_at": "2021-05-25T14:09:27.649Z",
+  "updated_at": "2021-05-25T14:09:27.848Z",
+  "id": "8e3ed05e-b8a5-4eea-9a96-ff475c37ad30",
+  "started_at": "",
+  "completed_at": "2021-05-25T14:09:39.781Z",
+  "status": "COMPLETED",
+  "type": 10,
+  "params": {
+    "id": "9438d1ff-a796-4561-908f-79cd16369b8d",
+    "user_multisig_info": "MultisigV12M5eyihPjFfGx8JzMGcxmH1iknLRHRyRx7VbwUrTySbBiSfBajJ6RWEGMnsNFENKbmhdatnT4Sgz5WCSUSBbkUCjaYte4AwYJmR7ZyHHYV1PiaUTaQaedP2F8TGizCaiTsRBBYradNkUT69XZth28kQ3SsSfeVx3BunvcdN7UyqJrphk",
+    "backup_multisig_info": "MultisigV1C4Q7tzVncjV2FehrcrdubT7fjE9MMogpiATYPaYKZNQSMZreYp1E625dFEuifD8JTaXTMZfDBojrhiN7A8vpWAaEZC98yoByLpk8RCc7gYdCjWGRyVnSPgNZSLHwsiz3XGUQEAhebfwa1VB9NMyv6JEUhW8Jx8ajgw8583Um9LUHPGkP"
+  },
+  "result": {
+    "server_multisig_info": "MultisigV122dJZwVxh5yagDQrayhaZZa3wDFau1dNFDoGmUsVRBcn76G5wND59diTKuEWDq6riuUTc2nDXANeb8ggqWqhnUFnYMv11YqvAi9YedJD1Jpyt8cqFZtpLHeXohP2kbVyhgZA1Hodx15MpygjE5VsYuLZU61sJ6XycQFF8GC5tNXWDpZ4",
+    "server_multisig_xinfo": {
+      "state": {
+        "address": "51sLpF8fWaK111111111111111111111111111111111149ptrTopAM4ijycngodwsSiBuZLKALG6NSeXAdL9sTz3asbxrN",
+        "multisig_hex": "MultisigxV1JxrXZ2yQvdsZBp2UXRrzTNHnYFtDTh1Tq27KL1GKwWNXjH2mGmfZKYgeYWLzWGzSZMg4CbAcfvQK9JXAXxQMAp71Vvz4F6YPc2ANTK2RHmmfKAZWdrWoQHcmR7tg5A9Fu9vEgebSdkzgdop7WtcmcSjHHtN9jLDkFtG51auZnuuSZLHpGub7V17VbWeAipUPrLg7uSKTQuaBbH1ZBNv8jYwNmmKF"
+      }
+    }
+  },
+  "wallet_id": "9438d1ff-a796-4561-908f-79cd16369b8d"
+}

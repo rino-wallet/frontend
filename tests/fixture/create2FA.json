@@ -1,0 +1,4 @@
+{
+  "secret_key": "TWJEA2P4AIPCOEO3",
+  "provisioning_uri": "otpauth://totp/The%20Wallet:big%boss.com?secret=TWJEA2P4AIPCOEO3&issuer=The%20Wallet"
+}

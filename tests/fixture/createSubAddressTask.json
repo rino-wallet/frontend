@@ -1,0 +1,28 @@
+{
+  "created_at": "2021-08-19T15:35:43.478Z",
+  "updated_at": "2021-08-19T15:35:43.491Z",
+  "id": "4ea9a4fc-d014-47c0-8b0b-2b74168d2d47",
+  "started_at": "",
+  "completed_at": "2021-08-19T15:35:43.559Z",
+  "status": "COMPLETED",
+  "type": "CREATE_SUBADDRESS",
+  "params": null,
+  "result": {
+    "address": "7AaxW7YbwLV6REviXdq3zmCvgTag45sq67enLqAzJg6Y5NEe2Y8dWnrgEgjR253oPVEXUHbRxXjkcSvSfQ431NfV1MJDvm3",
+    "index": 6,
+    "wallet": {
+      "created_at": "2021-08-11T11:07:21.207Z",
+      "updated_at": "2021-08-19T15:35:41.763Z",
+      "id": "f4ee81ed-277e-4712-b64a-062fe8540854",
+      "balance": "58743180000",
+      "unlocked_balance": "58743180000",
+      "creation_height": 897312,
+      "height": 902922,
+      "last_interaction_at": "2021-08-19T15:35:41.773Z",
+      "last_sync_at": "2021-08-19T15:35:25.479Z",
+      "address": "5B2A6d5W3vaFRkFPYPhRKVK5bMSDKGZWefLnF98RtKYQGazP1uBocGNifr62ZbfDhNX7N3EZ2hBENZYMpEForVYgRR2JLd9",
+      "status": "FINALIZED"
+    }
+  },
+  "wallet_id": "f4ee81ed-277e-4712-b64a-062fe8540854"
+}
