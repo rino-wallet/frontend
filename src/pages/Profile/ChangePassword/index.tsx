@@ -1,9 +1,8 @@
 import React from "react";
-import { useThunkActionCreator, useSelector } from "../../../hooks";
-import { ChangePasswordPayload } from "../../../types";
+import { useThunkActionCreator } from "../../../hooks";
 import {
   changePassword as changePasswordThunk,
-  selectors as sessionSelectors,
+  getCurrentUser as getCurrentUserThunk
 } from "../../../store/sessionSlice";
 import ChangePassword from "./ChangePassword";
 
@@ -12,12 +11,12 @@ interface Props {
 }
 
 const ChangePasswordContainer: React.FC<Props> = ({ goBackCallback }) => {
-  const user = useSelector(sessionSelectors.getUser);
-  const changePassword = useThunkActionCreator<void, ChangePasswordPayload>(changePasswordThunk);
+  const changePassword = useThunkActionCreator(changePasswordThunk);
+  const getCurrentUser = useThunkActionCreator(getCurrentUserThunk);
   return (
     <ChangePassword
+      updateUser={getCurrentUser}
       onSubmit={changePassword}
-      encPrivateKey={user.encPrivateKey}
       goBackCallback={goBackCallback}
     />
   );

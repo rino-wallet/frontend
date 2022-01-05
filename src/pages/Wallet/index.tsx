@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Switch, Route, generatePath } from "react-router-dom";
+import { Route, Routes, generatePath, useParams } from "react-router-dom";
 import { useSelector, useDispatch, useThunkActionCreator } from "../../hooks";
 import {
   FetchWalletDetailsResponse,
@@ -18,7 +18,7 @@ import {
 import { selectors as sessionSelectors } from "../../store/sessionSlice";
 import routes from "../../router/routes";
 import { accessLevels } from "../../constants";
-import { navigate } from "../../store/actions";
+import { changeLocation } from "../../store/actions";
 import TransactionDetails from "./TransactionDetails";
 import Transactions from "./Transactions";
 // import Users from "./Users";
@@ -44,7 +44,9 @@ function isUserOwner(user: User, wallet: Wallet): boolean {
   return !!m;
 }
 
-const WalletPageContainer: React.FC<Props> = ({ match: { params: { id  } } }) => {
+const WalletPageContainer: React.FC<Props> = () => {
+  const { id } = useParams();
+  const walletId = id  as string;
   const wallet = useSelector(selectors.getWallet);
   const user = useSelector(sessionSelectors.getUser);
   const fetchWalletDetails = useThunkActionCreator<FetchWalletDetailsResponse, FetchWalletDetailsPayload>(fetchWalletDetailsThunk);
@@ -52,49 +54,42 @@ const WalletPageContainer: React.FC<Props> = ({ match: { params: { id  } } }) =>
   const dispatch = useDispatch();
   useEffect(() => {
     return (): void => {
-      dispatch(navigate());
+      dispatch(changeLocation());
     }
   }, []);
   useEffect(() => {
+    const intervalID = setInterval(() => {
+      fetchWalletDetails({ id: walletId });
+    }, 30000);
     (async (): Promise<void> => {
-      await fetchWalletDetails({ id });
-      fetchWalletSubaddress({ walletId: id });
+      await fetchWalletDetails({ id: walletId });
+      fetchWalletSubaddress({ walletId });
     })();
+    return (): void => {
+      clearInterval(intervalID);
+    }
   }, []);
   const canShare = isUserOwner(user, wallet);
   return (
-    <Switch>
-      <Route exact path={`${generatePath(routes.wallet, { id })}/transactions`}>
-        <Transactions walletId={id} />
-      </Route>
-      <Route path={`${generatePath(routes.wallet, { id })}/transactions/:transactionId`}>
-        <TransactionDetails walletId={id} />
-      </Route>
-      <Route exact path={`${generatePath(routes.wallet, { id })}/send`}>
-        <SendPayment walletId={id} />
-      </Route>
-      <Route exact path={`${generatePath(routes.wallet, { id })}/settings`}>
-        <Settings walletId={id} />
-      </Route>
-      <Route exact path={`${generatePath(routes.wallet, { id })}/receive`}>
-        <ReceivePayment walletId={id} />
-      </Route>
+    <Routes>
+      <Route path="transactions" element={<Transactions walletId={walletId} />} />
+      <Route path="transactions/:transactionId" element={<TransactionDetails walletId={walletId} />} />
+      <Route path="send" element={<SendPayment walletId={walletId} />} />
+      <Route path="settings" element={<Settings walletId={walletId} />} />
+      <Route path="receive" element={<ReceivePayment walletId={walletId} />} />
+      {/* This code was commented out because wallet sahring functionality is temporarily disabled */}
       {/*<Route exact path={`${generatePath(routes.wallet, { id })}/users`}>*/}
       {/*  <Users canShare={canShare} walletId={id} />*/}
       {/*</Route>*/}
       {
         canShare && (
-          <>
-            <Route path={`${generatePath(routes.wallet, { id })}/users/add`}>
-              <AddWalletMember walletId={id} />
-            </Route>
-          </>
+          <Route
+            path={`${generatePath(routes.wallet, { id: walletId })}/users/add`}
+            element={<AddWalletMember walletId={walletId} />}
+          />
         )
       }
-      <Route exact path={`${generatePath(routes.wallet, { id })}/receive`}>
-        <div>receive</div>
-      </Route>
-    </Switch>
+    </Routes>
   )
 }
 

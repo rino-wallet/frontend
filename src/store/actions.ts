@@ -1,5 +1,5 @@
 import { createAction } from "@reduxjs/toolkit";
 
-export const navigate = createAction("navigate");
+export const changeLocation = createAction("changeLocation");
 
 export const fullReset = createAction("fullReset");

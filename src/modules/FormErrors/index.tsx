@@ -15,7 +15,7 @@ export const FormErrors: React.FC<Props> = ({ errors, fields = [] }) => {
     "2fa",
   ].includes(key));
   return (
-    <div className={classNames("text-error")}>
+    <div className={classNames("theme-text-error")}>
       {
         entries.map(([key, error]) => <p id={`error-messsage-${key}`} key={`${key}-${error}`}>{error as string}</p>)
       }

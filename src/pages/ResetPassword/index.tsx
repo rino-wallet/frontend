@@ -1,22 +1,20 @@
 import React from "react";
+import { Route, Routes } from "react-router-dom";
 import ResetPasswordRequest from "./ResetPasswordRequest";
 import ResetPasswordConfirm from "./ResetPasswordConfirm";
-import { Switch, Route } from "react-router-dom";
-import routes from "../../router/routes";
 
 const ResetPasswordPageContainer: React.FC = () => {
   return (
-    <Switch>
+    <Routes>
       <Route
-        exact
-        path={routes.resetPasswordRequest}
-        component={ResetPasswordRequest}
+        path="reset"
+        element={<ResetPasswordRequest />}
       />
       <Route
-        path={routes.resetPasswordConfirm}
-        component={ResetPasswordConfirm}
+        path="/reset/confirm/:userId/:token"
+        element={<ResetPasswordConfirm />}
       />
-    </Switch>
+    </Routes>
   )
 }
 

@@ -3,45 +3,101 @@
 @tailwind utilities;
 
 @layer components {
-  /* This code should be removed once we emplement new design */
-  .input{
-    @apply py-2 px-3 rounded-lg border-2 border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent;
-  }
-  .btn {
-    @apply w-auto bg-gray-500 hover:bg-gray-700 rounded-lg shadow-xl font-medium text-white px-4 py-2 disabled:opacity-50;
-  }
-  .btn-primary {
-    @apply bg-purple-500 hover:bg-purple-700;
-  }
-  .btn-small {
-    @apply px-2 py-1 disabled:opacity-50;
-  }
-  /* end */
-
   .form-field {
-    @apply mb-4;
+    @apply mb-6;
   }
-  .text-error {
-    @apply text-red-400;
+  /* Text colors */
+  .theme-text {
+    @apply text-default;
   }
-  .text-success {
-    @apply text-green-500;
+  .theme-text-primary {
+    @apply text-primary;
   }
-  .text-secondary {
-    @apply text-gray-400;
+  .theme-text-secondary {
+    @apply text-secondary;
   }
-  .text-primary {
-    @apply text-custom-purple-300;
+  .theme-text-error {
+    @apply text-error;
   }
-  .link {
-    @apply text-custom-purple-300;
+  .theme-text-red {
+    @apply text-red-600;
   }
+  .theme-text-success {
+    @apply text-success;
+  }
+  .theme-text-disabled {
+    @apply text-disabled;
+  }
+  .theme-link {
+    @apply text-primary;
+  }
+  /* Border colors */
+  .theme-border {
+    @apply border-default;
+  },
+  .theme-control-border {
+    @apply border-control-normal hover:border-control-hover focus:border-control-focused disabled:border-control-disabled;
+  }
+  .theme-border-error {
+    @apply border-control-error;
+  },
+  .theme-border-success {
+    @apply border-control-success;
+  },
+  /* Gradients */
+  .theme-control-primary-gradient {
+    @apply bg-primary-gradient-normal hover:bg-primary-gradient-hover focus:bg-primary-gradient-focused disabled:bg-white;
+  }
+  .theme-control-primary-gradient-light {
+    @apply bg-primary-gradient-light-normal hover:bg-primary-gradient-light-hover focus:bg-primary-gradient-light-focused disabled:bg-white;
+  }
+  /* Background */
+  .theme-bg-panel {
+    @apply bg-white;
+  }
+  .theme-bg-panel-second {
+    @apply bg-gray-50;
+  }
+  .theme-bg-control-disabled {
+    @apply bg-control-disabled;
+  }
+  .theme-bg-overlay {
+    background-color: rgba(246, 246, 249, 0.7);
+  }
+}
+
+.white-text-shadow {
+  text-shadow: 0 0 2px #ffffff, 0 0 5px #ffffff, 0 0 15px #ffffff;
+}
+
+.font-catamaran {
+  font-family: 'Catamaran', sans-serif;
+}
+
+.font-lato {
+  font-family: 'Catamaran', sans-serif;
+}
+
+.font-lato {
+  font-family: 'Lato', sans-serif;
 }
 
 body {
   font-family: 'Lato', sans-serif;
+  background-color:rgba(226, 226, 241, 0.4);
+  background-image: url(./background.jpg);
+  background-position: top center;
+  background-repeat: repeat-x;
 }
 
-.control-gradient {
-  background: linear-gradient(270deg, rgba(230, 73, 255, 0.7) 0%, rgba(186, 72, 255, 0.7) 100%);
+@media (max-width: 1280px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 12px;
+  }
 }

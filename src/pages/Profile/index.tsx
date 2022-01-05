@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "../../hooks";
-import { navigate } from "../../store/actions";
+import { changeLocation } from "../../store/actions";
 import { selectors as sessionSelectors } from "../../store/sessionSlice";
 import Profile from "./Profile";
 
@@ -9,7 +9,7 @@ const ProfilePageContainer: React.FC = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     return (): void => {
-      dispatch(navigate());
+      dispatch(changeLocation());
     }
   }, [])
   return user ? (

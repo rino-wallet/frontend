@@ -1,28 +1,46 @@
 import {createSlice, PayloadAction, createAsyncThunk} from "@reduxjs/toolkit";
 import {
-  SignUpPayload,
+  SignUpThunkPayload,
   SignUpResponse,
   SignInPayload,
   SignInResponse,
-  SetUpKeyPairPayload,
+  SetUpKeyPairThunkPayload,
   SetUpKeyPairResponse,
   UserResponse,
   User,
-  ChangePasswordPayload,
+  ChangePasswordThunkPayload,
   UpdateUserPayload,
   RootState,
+  EncryptedPrivateKeysData,
+  ResetPasswordConfirmThunkPayload,
 } from "../types";
 import sessionApi from "../api/session";
 import { saveToken } from "./sessionUItils";
-import { createLoadingSelector, generateExtraReducer } from "../utils";
+import { createLoadingSelector, deriveUserKeys, generateExtraReducer, reencrypPrivateKey } from "../utils";
 import modals from "../modules/2FAModals";
 import { fullReset } from "./actions";
 
-export const signUp = createAsyncThunk<SignUpResponse, SignUpPayload>(
+function createPrivateKeyJson(data: EncryptedPrivateKeysData): string {
+  return JSON.stringify({
+    version: 1,
+    method: "symmetric",
+    enc_content: Buffer.from(data.encryptedMessage).toString("base64"),
+    nonce: Buffer.from(data.nonce).toString("base64"),
+  });
+}
+
+export const signUp = createAsyncThunk<SignUpResponse, SignUpThunkPayload>(
   "session/signUp",
-  async (data: SignUpPayload, { rejectWithValue }) => {
+  async (data: SignUpThunkPayload, { rejectWithValue }) => {
     try {
-      const response = await sessionApi.signUp(data);
+      const { authKey, clean } = await deriveUserKeys(data.password, data.username);
+      const password = Buffer.from(authKey).toString("hex");
+      clean();
+      const response = await sessionApi.signUp({
+        ...data,
+        password: password,
+        password_confirmation: password,
+      });
       return response;
     } catch(err) {
       return rejectWithValue(err?.data)
@@ -54,6 +72,12 @@ export const signOut = createAsyncThunk<void, void>(
   async (_, { rejectWithValue, dispatch }) => {
     try {
       const response = await sessionApi.signOut();
+      try {
+        localStorage.clear(); // this is workaround for mocha which does not have window object
+        // TODO: add a separate module to work with local storage, we can use "store" library
+      } catch {
+        console.error("localStorage is not available")
+      }
       dispatch(fullReset());
       return response;  
     } catch(err) {
@@ -62,11 +86,17 @@ export const signOut = createAsyncThunk<void, void>(
   },
 );
 
-export const setupKeyPair = createAsyncThunk<SetUpKeyPairResponse, SetUpKeyPairPayload>(
+export const setupKeyPair = createAsyncThunk<SetUpKeyPairResponse, SetUpKeyPairThunkPayload>(
   "session/setupKeyPair",
   async (payload, { rejectWithValue, dispatch }) => {
     try {
-      const response = await sessionApi.setupKeyPair(payload);
+      const response = await sessionApi.setupKeyPair({
+        enc_private_key: createPrivateKeyJson(payload.encPrivateKeysDataSet.ek),
+        enc_private_key_backup: createPrivateKeyJson(payload.encPrivateKeysDataSet.rk),
+        encryption_public_key: Buffer.from(payload.encryptionPublicKey).toString("base64"),
+        signing_public_key: Buffer.from(payload.signingPublicKey).toString("base64"),
+        signature: Buffer.from(payload.signature).toString("base64"),
+      });
       dispatch(getCurrentUser());
       return response;  
     } catch(err) {
@@ -87,19 +117,69 @@ export const getCurrentUser = createAsyncThunk<UserResponse, void>(
   },
 );
 
-export const changePassword = createAsyncThunk<void, ChangePasswordPayload>(
+
+export const resetPasswordConfirm = createAsyncThunk<void, ResetPasswordConfirmThunkPayload>(
+  "session/resetPasswordConfirm",
+  async (payload, { rejectWithValue }) => {
+    try {
+      const { encPrivateKeyBackup, username } = await sessionApi.fetchBackupPrivateKey({
+        uid: payload.uid,
+        token: payload.token,
+      });
+      const encPrivateKeyBackupJson = JSON.parse(encPrivateKeyBackup);
+      const { authKey, encPrivateKeysDataSet, signature, clean } = await reencrypPrivateKey(
+        Buffer.from(encPrivateKeyBackupJson.enc_content, "base64"),
+        Buffer.from(encPrivateKeyBackupJson.nonce, "base64"),
+        Buffer.from(payload.recovery_key, "hex"),
+        payload.new_password,
+        username,
+      );
+      const response = await sessionApi.resetPasswordConfirm({
+        uid: payload.uid,
+        token: payload.token,
+        new_password: Buffer.from(authKey).toString("hex"),
+        re_new_password: Buffer.from(authKey).toString("hex"),
+        signature: Buffer.from(signature).toString("base64"),
+        enc_private_key: createPrivateKeyJson(encPrivateKeysDataSet.ek),
+      });
+      clean();
+      return response;  
+    } catch(err) {
+      return rejectWithValue(err?.data || err);
+    }
+  },
+);
+
+export const changePassword = createAsyncThunk<void, ChangePasswordThunkPayload>(
   "session/changePassword",
   async (data, { rejectWithValue, getState }) => {
     try {
       let code = "";
-      const { is2FaEnabled } = (getState() as any).session.user;
+      const { is2FaEnabled, username, encPrivateKey } = (getState() as any).session.user;
+      const { authKey: authKeyOld, encryptionKey: encryptionKeyOld, clean: cleanOld } = await deriveUserKeys(data.current_password, username);
+      const { authKey: authKeyNew, encPrivateKeysDataSet, signature, clean: cleanNew } = await reencrypPrivateKey(
+        Buffer.from(encPrivateKey.enc_content, "base64"),
+        Buffer.from(encPrivateKey.nonce, "base64"),
+        encryptionKeyOld,
+        data.new_password,
+        username,
+      );
+      const requestBody = {
+        new_password: Buffer.from(authKeyNew).toString("hex"),
+        re_new_password: Buffer.from(authKeyNew).toString("hex"),
+        current_password: Buffer.from(authKeyOld).toString("hex"),
+        enc_private_key: createPrivateKeyJson(encPrivateKeysDataSet.ek),
+        signature: Buffer.from(signature).toString("base64"),
+      }
+      cleanOld();
+      cleanNew();
       if (is2FaEnabled) {
         code = await modals.enter2FACode();
       }
-      const response = await sessionApi.changePassword(data, code ? { headers: { "X-RINO-2FA": code } } : undefined);
+      const response = await sessionApi.changePassword(requestBody, code ? { headers: { "X-RINO-2FA": code } } : undefined);
       return response;  
     } catch(err) {
-      return rejectWithValue(err?.data)
+      return rejectWithValue(err?.data || err)
     }
   },
 );
@@ -120,6 +200,7 @@ interface State {
   token: string;
   password: string;
   user: User | null;
+  preventNavigation: boolean;
   thunksInProgress: string[];
 }
 
@@ -127,6 +208,7 @@ export const initialState: State = {
   token: "",
   password: "",
   user: null,
+  preventNavigation: false,
   thunksInProgress: [],
 };
 
@@ -153,7 +235,11 @@ export const sessionSlice = createSlice({
       state.password = initialState.password;
       state.user = initialState.user;
       state.thunksInProgress = initialState.thunksInProgress;
+      state.preventNavigation = initialState.preventNavigation;
     },
+    setPreventNavigation(state, action: PayloadAction<boolean>): void {
+      state.preventNavigation = action.payload;
+    }
   },
   extraReducers: {
     ...generateExtraReducer(signUp),
@@ -175,6 +261,7 @@ export const sessionSlice = createSlice({
 export const selectors = {
   getToken: (state: RootState): string => state[SLICE_NAME].token,
   getPassword: (state: RootState): string => state[SLICE_NAME].password,
+  getPreventNavigation: (state: RootState): boolean => state[SLICE_NAME].preventNavigation,
   getUser: (state: RootState): User => state[SLICE_NAME].user,
   // thunk statuses
   pendingSignUp: createLoadingSelector(SLICE_NAME, signUp.pending.toString()),
@@ -182,17 +269,19 @@ export const selectors = {
   pendingSignOut: createLoadingSelector(SLICE_NAME, signOut.pending.toString()),
   pendingSetupKeyPair: createLoadingSelector(SLICE_NAME, setupKeyPair.pending.toString()),
   pendingGetCurrentUser: createLoadingSelector(SLICE_NAME, getCurrentUser.pending.toString()),
+  pendingResetPasswordConfirm: createLoadingSelector(SLICE_NAME, resetPasswordConfirm.pending.toString()),
   pendingChangePassword: createLoadingSelector(SLICE_NAME, changePassword.pending.toString()),
   pendingUpdateUser: createLoadingSelector(SLICE_NAME, updateUser.pending.toString()),
 }
 
 function updateResponse (data: UserResponse): User {
+  const parsedKeypairJson = data.keypair ? JSON.parse(data.keypair.encPrivateKey) : {};
   return {
     ...data,
-    publicKey: data.keypair?.publicKey || "",
-    encPrivateKey: data.keypair?.encPrivateKey || "",
-    fingerprint: data.keypair?.fingerprint || "",
+    encPrivateKey: parsedKeypairJson,
+    encryptionPublicKey: data.keypair?.encryptionPublicKey || "",
+    signingPublicKey: data.keypair?.signingPublicKey || "",
   }
 }
 
-export const {setToken, switch2fa, setPassword, reset} = sessionSlice.actions;
+export const {setToken, switch2fa, setPassword, setPreventNavigation, reset} = sessionSlice.actions;

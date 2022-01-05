@@ -38,12 +38,12 @@ describe("SessionSlice", () => {
     expect(selectors.getPassword(state)).to.equal(initialState.password);
   });
   it("signUp asyncThunk returns data", async() => {
-    const actionResponse = await store.dispatch(signUp({ email: "new@email.com", password: "password", password_confirmation: "password" }));
+    const actionResponse = await store.dispatch(signUp({ username: "pony", email: "new@test.com", password: "password", password_confirmation: "password" }));
     const response = unwrapResult(actionResponse)
     expect(response).to.deep.equal(signUpResponse);
   });
   it("signIn asyncThunk changes token", async() => {
-    unwrapResult(await store.dispatch(signIn({ email: "new@email.com", password: "password" })));
+    unwrapResult(await store.dispatch(signIn({ username: "pony", password: "password" })));
     expect(store.getState().session.token).to.equal(signInResponse.token);
   });
   it("signIn asyncThunk changes token (with 2fa)", async() => {
@@ -54,9 +54,9 @@ describe("SessionSlice", () => {
     // mock the module for entering 2fa code
     const enterCodeStub = sinon.stub(modals, "enter2FACode").resolves(123456);
     // dispatch login action
-    unwrapResult(await store.dispatch(signIn({ email: "new@email.com", password: "password" })));
+    unwrapResult(await store.dispatch(signIn({ email: "new@test.com", password: "password" })));
     // make sure that 2fa header is added to request
-    expect(sessionApi.signIn.withArgs({ email: "new@email.com", password: "password" }, { headers: { "X-RINO-2FA": 123456 } }).callCount).to.equal(1);
+    expect(sessionApi.signIn.withArgs({ email: "new@test.com", password: "password" }, { headers: { "X-RINO-2FA": 123456 } }).callCount).to.equal(1);
     expect(store.getState().session.token).to.equal(signInResponse.token);
     enterCodeStub.restore();
     signInStub.restore();
@@ -75,15 +75,12 @@ describe("SessionSlice", () => {
     expect(store.getState().session.user.email).to.equal(getCurrentUserResponse.email);
   });
   it("changePassword thunk calls api request with provided request body", async() => {
-    const reqBody = {
-      new_password: "password",
-      re_new_password: "password",
-      current_password: "current password",
-      enc_private_key: "private key",
-      signature: "signature",
+    const thunkPayload = {
+      new_password: "1234567890ss",
+      current_password: "1234567890aa",
     };
-    unwrapResult(await store.dispatch(changePassword(reqBody)));
-    expect(sessionApiStub.changePassword.withArgs(reqBody).callCount).to.equal(1);
+    unwrapResult(await store.dispatch(changePassword(thunkPayload)));
+    expect(sessionApiStub.changePassword.calledOnce).to.equal(true);
   });
   it("switch2fa should change is2FaEnabled property of the current user", async() => {
     unwrapResult(await store.dispatch(getCurrentUser()));
@@ -98,13 +95,24 @@ describe("SessionSlice", () => {
     expect(sessionApiStub.updateUser.withArgs(reqBody).callCount).to.equal(1);
   });
   it("setupKeyPair thunk calls api request with provided request body", async() => {
-    const reqBody = {
-      enc_private_key: "enc_private_key",
-      enc_private_key_backup: "enc_private_key_backup",
-      public_key: "public_key", 
+    const thunkPayload = {
+      authKey: "authKey",
+      recoveryKey: "recoveryKey",
+      encryptionPublicKey: "encryptionPublicKey",
+      signingPublicKey: "signingPublicKey", 
+      encPrivateKeysDataSet: {
+        ek: {
+          encryptedMessage: new Uint8Array(),
+          nonce: new Uint8Array(),
+        },
+        rk: {
+          encryptedMessage: new Uint8Array(),
+          nonce: new Uint8Array(),
+        }
+      }, 
       signature: "signature",
     }
-    unwrapResult(await store.dispatch(setupKeyPair(reqBody)));
-    expect(sessionApi.setupKeyPair.withArgs(reqBody).callCount).to.equal(1);
+    unwrapResult(await store.dispatch(setupKeyPair(thunkPayload)));
+    expect(sessionApiStub.setupKeyPair.calledOnce).to.equal(true);
   });
 });

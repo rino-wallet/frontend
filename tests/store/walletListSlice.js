@@ -26,14 +26,14 @@ describe("WalletListSlice", () => {
   it("fetchWallets should get wallet list and update entities array", async() => {
     unwrapResult(unwrapResult(await store.dispatch(fetchWallets({ page: 1 }, ))));
     expect(walletApi.fetchWallets.withArgs({ limit: ITEMS_PER_PAGE, offset: 0 }).callCount).to.equal(1);
-    expect(store.getState().walletList.entities.length).to.equal(ITEMS_PER_PAGE);
+    expect(store.getState().walletList.entities.length).to.equal(fetchWalletsResponse.results.length);
     expect(store.getState().walletList.count).to.equal(fetchWalletsResponse.count);
     expect(store.getState().walletList.hasPreviousPage).to.equal(!!fetchWalletsResponse.previous);
     expect(store.getState().walletList.hasNextPage).to.equal(!!fetchWalletsResponse.next);
   });
   it("reset should set the initial state", async() => {
     unwrapResult(unwrapResult(await store.dispatch(fetchWallets({ page: 1 }))));
-    expect(store.getState().walletList.entities.length).to.equal(ITEMS_PER_PAGE);
+    expect(store.getState().walletList.entities.length).to.equal(fetchWalletsResponse.results.length);
     store.dispatch(reset());
     expect(store.getState().walletList.entities.length).to.equal(0);
   });

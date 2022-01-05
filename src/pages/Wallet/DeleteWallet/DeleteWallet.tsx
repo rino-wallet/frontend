@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Modal, FormErrors } from "../../../modules/index";
 import { Button } from "../../../components";
 import { piconeroToMonero } from "../../../utils";
@@ -15,12 +15,12 @@ interface Props {
 }
 
 const DeleteWallet: React.FC<Props> = ({ deleteWallet, goBackCallback, balance, loading }) => {
-  const { push } = useHistory();
+  const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   async function onClickDelete(): Promise<void> {
     try {
       await deleteWallet();
-      push(routes.wallets);
+      navigate(routes.wallets);
     } catch(err) {
       if (err) {
         setErrors(err);
@@ -29,10 +29,14 @@ const DeleteWallet: React.FC<Props> = ({ deleteWallet, goBackCallback, balance, 
   }
   return (
     <Modal
-      title="Delete Wallet"
-      goBackCallback={goBackCallback}
+      title={(
+        <div className="theme-text-red">
+          Delete Wallet
+        </div>
+      )}
+      onClose={goBackCallback}
     >
-      <div>
+      <Modal.Body>
         <h2 className="text-xl mb-5">Are you sure?</h2>
         {
           (balance && balance !== "0") ? (
@@ -53,20 +57,21 @@ const DeleteWallet: React.FC<Props> = ({ deleteWallet, goBackCallback, balance, 
         <div className="mt-4">
           <FormErrors errors={errors} />
         </div>
-        <div className="flex justify-between space-x-3 mt-10">
-          <Button name="cancel-btn" onClick={goBackCallback} block>Cancel</Button>
+      </Modal.Body>
+      <Modal.Actions>
+        <div className="flex justify-end space-x-3">
+          <Button name="delete-wallet-cancel-btn" onClick={goBackCallback}>Cancel</Button>
           <Button
-            name="submit-btn"
-            variant={Button.variant.RED}
+            name="delete-wallet-submit-btn"
+            variant={Button.variant.PRIMARY}
             disabled={loading}
-            block
             onClick={onClickDelete}
             loading={loading}
           >
             Delete Wallet
           </Button>
         </div>
-      </div>
+      </Modal.Actions>
     </Modal>
   )
 };

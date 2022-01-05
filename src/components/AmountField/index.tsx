@@ -1,5 +1,4 @@
 import React from "react";
-import { UI_SIZE } from "../../constants";
 import { Input } from "../Input";
 
 const RE_NUMBER = /^[+-]?((\.\d+)|(\d+(\.\d+)?))$/;
@@ -7,7 +6,6 @@ const RE_INCOMPLETE_NUMBER = /^([+-]|\.0*|[+-]\.0*|[+-]?\d+\.)?$/;
 
 
 interface Props {
-  size?: UI_SIZE;
   value?: string;
   name?: string;
   placeholder?: string;

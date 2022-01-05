@@ -1,26 +1,27 @@
 import React, { useEffect } from "react";
-import { useThunkActionCreator, useDispatch } from "../../hooks";
-import { SignInResponse, SignInPayload } from "../../types";
-import { signIn as signInAction, setPassword as setPasswordAction } from "../../store/sessionSlice";
+import { Navigate } from "react-router-dom";
+import { useThunkActionCreator, useSelector, useDispatch } from "../../hooks";
+import { SignInResponse, SignInPayload, UserResponse } from "../../types";
+import { signIn as signInAction, setPassword as setPasswordAction, getCurrentUser as getCurrentUserAction } from "../../store/sessionSlice";
 import Login from "./Login";
-import { navigate } from "../../store/actions";
+import { changeLocation } from "../../store/actions";
+import routes from "../../router/routes";
 
-interface Props {
-  history: {
-    push: (path: string) => void;
-  };
-}
 
-const LoginPageContainer: React.FC<Props> = ({ history: { push } }) => {
+const LoginPageContainer: React.FC = () => {
   const dispatch = useDispatch();
+  const token = useSelector(state => state.session.token);
   const signIn = useThunkActionCreator<SignInResponse, SignInPayload>(signInAction);
+  const getCurrentUser = useThunkActionCreator<UserResponse, void>(getCurrentUserAction);
   const setPassword = (password: string): void => { dispatch(setPasswordAction(password)); };
   useEffect(() => {
     return (): void => {
-      dispatch(navigate());
+      dispatch(changeLocation());
     }
   }, [])
-  return <Login login={signIn} setPassword={setPassword} push={push} />
+  return token
+  ? <Navigate to={routes.wallets} />
+  : <Login login={signIn} setPassword={setPassword} getCurrentUser={getCurrentUser} />
 }
 
 export default LoginPageContainer;

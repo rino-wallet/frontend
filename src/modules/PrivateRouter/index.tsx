@@ -1,8 +1,8 @@
 import React from "react";
 import { Helmet } from "react-helmet";
-import { Route, Redirect, Switch } from "react-router-dom";
+import { Route, Navigate, Routes } from "react-router-dom";
 import ROUTER_CONFIG from "../../router";
-import { PrivateLayoutContainer as PrivateLayout, PublicLayoutContainer as PublicLayout } from "../Layout";
+import { LayoutContainer as Layout } from "../Layout";
 import ROUTES from "../../router/routes";
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 }
 
 const PrivateRouter = ({ isAuthenticated }: Props): React.ReactElement => (
-  <Switch>
+  <Routes>
     {ROUTER_CONFIG.map((route) => {
       const {
         metaTitle,
@@ -19,45 +19,45 @@ const PrivateRouter = ({ isAuthenticated }: Props): React.ReactElement => (
         metaOgImage,
         isPrivate,
         component: Comp,
-        exact,
         key,
       } = route;
-      const loginRedirect = (p: any): React.ReactElement =>
-        isAuthenticated ? (
-          <PrivateLayout>
-            <Comp {...p} />
-          </PrivateLayout>
+      const loginRedirect = (): React.ReactElement => {
+        return isAuthenticated ? (
+          <Comp />
         ) : (
-          <Redirect to={{ pathname: ROUTES.login }} />
+          <Navigate to={{ pathname: ROUTES.login }} />
         );
+      }
+      const renderPage: React.FC = () => {
+        return (
+          <>
+            <Helmet>
+              <title>{metaTitle}</title>
+              <meta property="og:title" content={metaTitle} />
+              <meta name="description" content={metaDescription} />
+              <meta property="og:description" content={metaDescription} />
+              <meta name="keywords" content={metaKeywords} />
+              <meta property="og:image" content={metaOgImage} />
+            </Helmet>
+            <Layout page={key}>
+              {
+                isPrivate
+                ? loginRedirect()
+                : <Comp />
+              }
+            </Layout>
+          </>
+        )
+      }
       return (
         <Route
-          exact={exact}
           key={key}
           path={route.path}
-          render={(p): React.ReactElement => (
-            <>
-              <Helmet>
-                <title>{metaTitle}</title>
-                <meta property="og:title" content={metaTitle} />
-                <meta name="description" content={metaDescription} />
-                <meta property="og:description" content={metaDescription} />
-                <meta name="keywords" content={metaKeywords} />
-                <meta property="og:image" content={metaOgImage} />
-              </Helmet>
-              {isPrivate ? (
-                loginRedirect(p)
-              ) : (
-                <PublicLayout>
-                  <Comp {...p} />
-                </PublicLayout>
-              )}
-            </>
-          )}
+          element={renderPage({})}
         />
       );
     })}
-  </Switch>
+  </Routes>
 );
 
 export default PrivateRouter;

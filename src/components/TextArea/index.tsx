@@ -26,15 +26,15 @@ export const TextArea: React.FC<Props> = (props) => {
         placeholder={placeholder}
         name={name}
         className={classNames(
-          "inline-flex text-sm p-2 rounded border-solid border placeholder-gray-300 text-gray-900 disabled:opacity-50",
+          "font-lato inline-flex px-6 py-3.75 text-lg rounded rounded-medium placeholder-gray-400 border-solid border theme-text",
           {
-            "border-gray-200": !error,
-            "border-red-300": !!error,
-          },
+            "theme-control-border": !error,
+            "theme-border-red": !!error,
+          }
         )}
       />
       {
-        error && <div id={`${name}-error`} className="text-error text-xs">{error}</div>
+        error && <div id={`${name}-error`} className="theme-text-error text-base mt-1">{error}</div>
       }
     </div>
   );

@@ -42,8 +42,8 @@ const Users: React.FC<Props> = ({ wallet, removeWalletAccess, walletId, loading,
         <table className="table-auto text-left w-full">
           <thead>
             <tr>
-              <th className="uppercase font-normal text-secondary text-xs py-1">e-mail</th>
-              <th className="uppercase font-normal text-secondary text-xs px-1 py-1">role</th>
+              <th className="uppercase font-normal theme-text-secondary text-xs py-1">email</th>
+              <th className="uppercase font-normal theme-text-secondary text-xs px-1 py-1">role</th>
             </tr>
           </thead>
           <tbody>

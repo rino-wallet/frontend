@@ -3,26 +3,28 @@ import { Modal } from "../../../modules/index";
 import { Button } from "../../../components";
 
 interface Props {
-  goBackCallback: () => void;
+  onClose: () => void;
   email: string;
 }
 
-const ChangeEmailInstructions: React.FC<Props> = ({ goBackCallback, email }) => {
+const ChangeEmailInstructions: React.FC<Props> = ({ onClose, email }) => {
   return (
-    <Modal title="Change Email" goBackCallback={goBackCallback}>
-      <div className="break-all">
-        <p>We have sent a confirmation email to <span className="font-bold">{email}</span>.</p>
-        <p>Please check your inbox and follow instructions in the message we have sent you.</p>
-        <div className="mt-10 px-10">
-          <Button
-            onClick={goBackCallback}
-            name="submit-btn"
-            block
-          >
-            OK
-          </Button>
+    <Modal title="Change email" onClose={onClose}>
+      <Modal.Body>
+        <div className="break-all">
+          <p>We have sent a confirmation email to <span className="font-bold">{email}</span>.</p>
+          <p>Please check your inbox and follow instructions in the message we have sent you.</p>
         </div>
-      </div>
+      </Modal.Body>
+      <Modal.Actions>
+        <Button
+          onClick={onClose}
+          name="submit-btn"
+          block
+        >
+          OK
+          </Button>
+      </Modal.Actions>
     </Modal>
   );
 };

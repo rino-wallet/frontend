@@ -1,21 +1,21 @@
 {
   "count": 15,
   "next": "http://wallet-dev-nginx.dev-auto.wallet.io/api/v1/wallets/f4ee81ed-277e-4712-b64a-062fe8540854/subaddresses/?limit=3&offset=3",
-  "previous": null,
+  "previous": "http://wallet-dev-nginx.dev-auto.wallet.io/api/v1/wallets/f4ee81ed-277e-4712-b64a-062fe8540854/subaddresses/?limit=3",
   "results": [
     {
       "address": "7351AYA59tVFNeSjqy5qGghkWJEAo26on9gk32LUsSByKeFEJ2J2nXpK91TKJJ7J3kJo4GVDbdNN6CNpf61NU3ds3N4WhPB",
-      "index": 15,
+      "index": 14,
       "created_at": "2021-08-19T13:14:51.563Z"
     },
     {
       "address": "76hqEyuH36zSHj3iru3K5GGM3xp7hDbeJKEPakuY7DUUbfkryj6aLPJF45kHP3dCxYPpzpZznEJHnF5VoHdTUgiEBB8TbdH",
-      "index": 14,
+      "index": 13,
       "created_at": "2021-08-19T13:13:23.087Z"
     },
     {
       "address": "73XBUqPDnFtayxcaUJtKzqVDirFhfSbHnGp7jYTkB2Xc83BvfhFxGx9cZoKqvB43a9EFTowjN9dLhcPat5bqNxvJ5Z9x44m",
-      "index": 13,
+      "index": 12,
       "created_at": "2021-08-19T13:13:08.842Z"
     }
   ]

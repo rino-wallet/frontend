@@ -1,7 +1,7 @@
 import { unwrapResult } from "@reduxjs/toolkit";
 import camelcaseKeys from "camelcase-keys";
 import { expect } from "chai";
-import { store } from "../../src/store";
+import { store } from "../../src/store/index.ts";
 import { initialState, reset, changeEmailRequest, getEmailChangingInfo, confirmEmailChanging, selectors } from "../../src/store/changeEmailSlice";
 import { sessionApiStub } from "../fixture/apiStubs";
 import emailChangeInfoResponse from "../fixture/emailChangeInfo.json";
@@ -22,7 +22,7 @@ describe("changeEmailSlice.spec", () => {
   });
   it("changeEmailRequest thunk calls api request with provided request body", async() => {
     const reqBody = {
-      new_email: "big@boss.com",
+      new_email: "test@test.com",
       current_password: "password",
     };
     unwrapResult(await store.dispatch(changeEmailRequest(reqBody)));

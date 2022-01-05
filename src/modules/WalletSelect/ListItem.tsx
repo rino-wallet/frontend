@@ -17,7 +17,7 @@ export const ListItem: React.FC<Props> = ({
   return (
     <button type="button" onClick={onClickHandler} className="flex justify-between w-full px-3 py-2 items-center">
       <div className="whitespace-nowrap overflow-hidden overflow-ellipsis">{wallet.name}</div>
-      <div className="text-secondary text-xs whitespace-nowrap">{piconeroToMonero(wallet.balance)} XMR</div>
+      <div className="theme-text-secondary text-xs whitespace-nowrap">{piconeroToMonero(wallet.balance)} XMR</div>
     </button>
   )
 }

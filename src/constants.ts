@@ -1,29 +1,8 @@
-export const defaultWalletPassword = "password";
-
 export const asyncActionStatuses = {
   loading: "loading",
   succeeded: "succeeded",
   failed: "failed",
   idle: "idle",
-};
-
-// eslint-disable-next-line
-export enum UI_SIZE {
-  BIG,
-  MEDIUM,
-  SMALL,
-}
-
-export const UI_SIZE_MAP: Record<UI_SIZE, string> = {
-  [UI_SIZE.BIG]: "py-2.25 text-sm",
-  [UI_SIZE.MEDIUM]: "py-1.25 text-sm",
-  [UI_SIZE.SMALL]: "py-1 text-xs",
-};
-
-export const UI_ROUNDED_SIZE_MAPS: Record<UI_SIZE, string> = {
-  [UI_SIZE.BIG]: "w-10 h-10",
-  [UI_SIZE.MEDIUM]: "w-8 h-8",
-  [UI_SIZE.SMALL]: "w-6 h-6",
 };
 
 export const accessLevels = {
@@ -51,3 +30,21 @@ export const transactionPriorities = {
   "Elevated": "ELEVATED",
   "Priority": "PRIORITY",
 };
+
+
+export const createNewWalletSteps = {
+  wallet1: "Step 1/6: Creating user and backup keys locally in your browser",
+  wallet2: "Step 2/6: Generating multisig info for your keys locally in your browser",
+  wallet3: "Step 3/6: Creating the RINO key on the server",
+  wallet4: "Step 4/6: Generating multisig info for the RINO key on the server",
+  wallet5: "Step 5/6: Exchanging all multisig info between browser and server",
+  wallet6: "Step 6/6: Finalizing your new wallet",
+}
+
+export const createTransactionSteps = {
+  transaction1: "Step 1/5: Client-side decryption of user key",
+  transaction2: "Step 2/5: Requesting unsigned transaction from RINO",
+  transaction3: "Step 3/5: Client-side check of transaction",
+  transaction4: "Step 4/5: Requesting second signature from RINO",
+  transaction5: "Step 5/5: Submitting transaction to the Monero network",
+}

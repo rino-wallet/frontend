@@ -3,7 +3,7 @@ import { FetchWalletsResponse, Wallet, FetchWalletListThunkPayload, RootState } 
 import walletsApi from "../api/wallets";
 import { createLoadingSelector, generateExtraReducer, generateListReqParams } from "../utils";
 
-export const ITEMS_PER_PAGE = 5;
+export const ITEMS_PER_PAGE = 3;
 
 export const fetchWallets = createAsyncThunk<FetchWalletsResponse, FetchWalletListThunkPayload>(
   "walletList/fetchWallets",

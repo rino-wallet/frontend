@@ -3,34 +3,40 @@ import classNames from "classnames";
 
 type Tab = {
   value: number;
-  text: string;
+  text: ReactNode;
 };
 
 type Props = {
   tabs: Tab[];
   activeTab?: number;
-  onChange: (tab: number) => void;
+  onChange?: (tab: number) => void;
   children?: ReactNode;
 };
 
 export const Tabs: React.FC<Props> = (props) => {
   const { tabs, activeTab, children, onChange } = props;
   return (
-    <div>
-      <div className="flex border-b border-gray-100">
+    <div className="w-full">
+      <div className="flex border-b theme-border">
         {
           tabs.map((tab) => (
             <button
               type="button"
               name={`tab-${tab.value}`}
               key={tab.value}
-              onClick={(): void => onChange(tab.value)}
+              onClick={(): void => {
+                if (typeof onChange === "function") {
+                  onChange(tab.value);
+                }
+              }}
               className={classNames(
-                "flex items-center justify-center flex-1 uppercase text-sm px-3 py-5 cursor-pointer",
+                "flex items-center justify-center flex-1 uppercase text-lg px-3 py-5 border-b-4 border-transparent font-catamaran",
                 {
-                  "bg-custom-purple-100": tab.value === activeTab,
-                  "text-gray-500": tab.value !== activeTab,
+                  "border-orange-800": tab.value === activeTab,
+                  "theme-text-secondary": tab.value !== activeTab,
                   "text-black": tab.value === activeTab,
+                  "cursor-default": typeof onChange !== "function",
+                  "cursor-pointer": typeof onChange === "function",
               })}
             >
               {tab.text}

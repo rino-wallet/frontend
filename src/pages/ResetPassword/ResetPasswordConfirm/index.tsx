@@ -1,20 +1,21 @@
 import React, { useEffect } from "react";
 import ResetPasswordConfirm from "./ResetPasswordConfirm";
-import sessionApi from "../../../api/session";
-import { FetchBackupPrivateKeyPayload, FetchBackupPrivateKeyResponse } from "../../../types";
-import { useDispatch } from "react-redux";
-import { navigate } from "../../../store/actions";
+import { changeLocation } from "../../../store/actions";
+import { useThunkActionCreator, useDispatch } from "../../../hooks";
+import {
+  resetPasswordConfirm as resetPasswordConfirmThunk
+} from "../../../store/sessionSlice";
 
 const ResetPasswordConfirmContainer: React.FC = () => {
   const dispatch = useDispatch();
+  const resetPasswordConfirm = useThunkActionCreator(resetPasswordConfirmThunk);
   useEffect(() => {
     return (): void => {
-      dispatch(navigate());
+      dispatch(changeLocation());
     }
   }, [])
   return <ResetPasswordConfirm
-    fetchBackupPrivateKey={(data: FetchBackupPrivateKeyPayload): Promise<FetchBackupPrivateKeyResponse> => sessionApi.fetchBackupPrivateKey(data)}
-    onSubmit={(data): Promise<void> => sessionApi.resetPasswordConfirm(data)}
+    onSubmit={resetPasswordConfirm}
   />
 }
 

@@ -1,8 +1,13 @@
 import QRCode from "qrcode";
 
-export default async function createQRCodeImage(string: string): Promise<string> {
+interface Options {
+  width?: number;
+  errorCorrectionLevel?: string,
+}
+
+export default async function createQRCodeImage(string: string, options?: Options): Promise<string> {
   try {
-    return await QRCode.toDataURL(string, { errorCorrectionLevel: "L" })
+    return await QRCode.toDataURL(string, { errorCorrectionLevel: "M", ...(options ? options : {}) })
   } catch (err) {
     console.error(err);
     return "";

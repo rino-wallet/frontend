@@ -1,4 +1,5 @@
-const colors = require('tailwindcss/colors');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const colors = require("tailwindcss/colors");
 
 module.exports = {
   purge: ["./src/**/*.{js,jsx,ts,tsx}", "./public/index.html"],
@@ -8,9 +9,9 @@ module.exports = {
       transparent: "transparent",
       black: "#000",
       white: "#fff",
+      text: "#413F54",
       red: colors.red,
       blue: colors.blue,
-      orange: colors.orange,
       violet: colors.violet,
       pink: colors.pink,
       green: colors.green,
@@ -19,25 +20,21 @@ module.exports = {
       purple: colors.purple,
       teal: colors.teal,
       gray: {
-        50: "#fafafa",
-        100: "#f5f5f5",
-        200: "#E6E6E6",
-        300: "#a7acb4", // placeholder color
-        400: "#767f8a", // label color
-        500: "#71717a",
-        600: "#52525b",
-        700: "#3f3f46",
-        800: "#27272a",
-        900: "#3C4248", // text color
+        ...colors.gray,
+        50: "#F6F6FF",
       },
-      custom: {
-        "pink-100": "#FEFAFF", // wallet background
-        "pink-200": "#F9E0FF", // wallet border
-        "pink-300": "#f394ff", // gradient 2d color
-        "purple-100": "#EFEDFA", // tabs
-        "purple-300": "#a855f7", // gradient 1st color
-        "purple-200": "#d893ff", // primary, link
-      }
+      orange: {
+        50: "rgba(255, 129, 67, 0.05)",
+        100: "rgba(255, 129, 67, 0.1)",
+        200: "rgba(255, 129, 67, 0.2)",
+        300: "rgba(255, 129, 67, 0.3)",
+        400: "rgba(255, 129, 67, 0.4)",
+        500: "rgba(255, 129, 67, 0.5)",
+        600: "rgba(255, 129, 67, 0.6)",
+        700: "rgba(255, 129, 67, 0.7)",
+        800: "rgba(255, 129, 67, 0.8)",
+        900: "rgba(255, 129, 67, 1)",
+      },
     },
     extend: {
       spacing: {
@@ -53,17 +50,60 @@ module.exports = {
       },
       fontSize: {
         "xxs": "0.625rem",
-        "2xl": "1.625rem",
+      },
+      boxShadow: {
+        modal: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+      },
+      borderColor: {
+        "default": "rgba(192, 192, 216, 0.4)",
+        "control-normal": "#DADADD",
+        "control-hover": "#9898BF",
+        "control-focused": "#9898BF",
+        "control-disabled": "#DADAEE",
+        "control-error": "#F17070",
+        "control-success": "#88CA7F",
+      },
+      backgroundColor: {
+        "control-disabled": "rgba(227, 229, 254, 0.5)",
+      },
+      textColor: {
+        default: "#413F54",
+        primary: "#FF7A49",
+        secondary: "rgba(65, 63, 84, 0.6)",
+        error: "#FF5151",
+        success: "#88CA7F",
+        disabled: "#AEAEC5",
+      },
+      borderRadius: {
+        big: "1.5rem",
+        medium: "1rem",
+        small: "0.75rem",
+      },
+      backgroundImage: {
+        "primary-gradient-normal": "linear-gradient(270deg, rgba(255, 71, 71, 0.93) 0%, rgba(255, 128, 73, 0.93) 100%)",
+        "primary-gradient-hover": "linear-gradient(270deg, rgba(255, 71, 71, 0.78) 0%, rgba(255, 128, 73, 0.78) 100%)",
+        "primary-gradient-focused": "linear-gradient(270deg, rgba(255, 71, 71, 0.9) 0%, rgba(255, 128, 73, 0.9) 100%)",
+        "primary-gradient-light-normal": "linear-gradient(270deg, rgba(255, 145, 71, 0.97) 0%, rgba(255, 122, 73, 0.97) 100%)",
+        "primary-gradient-light-hover": "linear-gradient(270deg, rgba(255, 145, 71, 0.8) 0%, rgba(255, 122, 73, 0.8) 100%)",
+        "primary-gradient-light-focused": "linear-gradient(270deg, rgba(255, 145, 71, 0.9) 0%, rgba(255, 122, 73, 0.9) 100%)",
       }
     },
   },
   variants: {
     extend: {
       opacity: ["disabled"],
-      backgroundColor: ["checked"],
-      borderColor: ["checked"],
+      backgroundColor: ["checked", "hover", "focus", "disabled"],
+      backgroundImage: ["checked", "hover", "focus", "disabled"],
+      borderColor: ["checked", "hover", "focus", "disabled"],
       inset: ["checked"],
       zIndex: ["hover", "active"],
+      fontWeight: ["hover"],
+      cursor: ["hover"],
+    }
+  },
+  extend: {
+    animation: {
+      spin: "spin 0.3 infinite"
     }
   },
   plugins: [],

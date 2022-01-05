@@ -26,18 +26,29 @@ export const WalletSelect: React.FC<Props> = ({
   return (
     <div>
       <button name={name} type="button" className="w-full" onClick={(): void => setOpen(!open)}>
-        <WalletCard balance={activeWallet?.balance || ""} name={activeWallet?.name || ""} id={value} />
+        <WalletCard
+          balance={activeWallet?.balance || ""}
+          unlocked={activeWallet?.unlockedBalance || ""}
+          name={activeWallet?.name || ""} id={value}
+        />
       </button>
       {
         open && (
-          <div data-qa-selector="wallet-selector-list" className="bg-white rounded border-solid border border-gray-200">
+          <div
+            data-qa-selector="wallet-selector-list"
+            className="theme-bg-panel rounded border-solid border border-gray-200"
+          >
             {
-              options.length === 0 && <div className="text-secondary">No wallets</div>
+              options.length === 0 && <div className="theme-text-secondary">No wallets</div>
             }
             {
               options.map((wallet) => {
                 return (
-                  <ListItem key={wallet.id} wallet={wallet} onClick={onClickHandler} />
+                  <ListItem
+                    key={wallet.id}
+                    wallet={wallet}
+                    onClick={onClickHandler}
+                  />
                 )
               })
             }

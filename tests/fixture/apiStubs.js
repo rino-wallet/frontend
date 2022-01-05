@@ -17,7 +17,9 @@ import fetchTransactionsResponse from "./fetchTransactions.json";
 import emailChangeInfoResponse from "./emailChangeInfo.json";
 import shareWalletResponse from "./shareWallet.json";
 import transactionDetailsResponse from "./transactionDetails.json";
+import updateTransactionDetailsResponse from "./updateTransactionDetails.json";
 import fetchSubaddressesResponse from "./fetchSubaddresses.json";
+import createSubaddressResp from "./createSubaddress.json";
 
 const ccConfig = { deep: true };
 
@@ -37,8 +39,9 @@ before(() => {
   walletsApiStub.shareWallet = sinon.stub(walletsApi, "shareWallet").resolves(camelcaseKeys(shareWalletResponse, ccConfig));
   walletsApiStub.removeWalletAccess = sinon.stub(walletsApi, "removeWalletAccess").resolves(camelcaseKeys({}, ccConfig));
   walletsApiStub.fetchTransactionDetails = sinon.stub(walletsApi, "fetchTransactionDetails").resolves(camelcaseKeys(transactionDetailsResponse, ccConfig));
+  walletsApiStub.updateTransactionDetails = sinon.stub(walletsApi, "updateTransactionDetails").resolves(camelcaseKeys(updateTransactionDetailsResponse, ccConfig));
   walletsApiStub.fetchWalletSubaddresses = sinon.stub(walletsApi, "fetchWalletSubaddresses").resolves(camelcaseKeys(fetchSubaddressesResponse, ccConfig));
-  walletsApiStub.createSubaddress = sinon.stub(walletsApi, "createSubaddress").resolves(camelcaseKeys({ taskId: "create subaddress" }, ccConfig));
+  walletsApiStub.createSubaddress = sinon.stub(walletsApi, "createSubaddress").resolves(camelcaseKeys(createSubaddressResp, ccConfig));
   walletsApiStub.deleteWallet = sinon.stub(walletsApi, "deleteWallet").resolves(camelcaseKeys({}, ccConfig));
   publicKeysApiStub.fetchPublicKey = sinon.stub(publicKeysApi, "fetchPublicKey").resolves(camelcaseKeys(publicKeyResponse, ccConfig));
   sessionApiStub.signUp = sinon.stub(sessionApi, "signUp").resolves(camelcaseKeys(signUpResponse, ccConfig));

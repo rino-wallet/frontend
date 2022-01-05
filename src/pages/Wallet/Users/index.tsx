@@ -7,7 +7,6 @@ import {
 import { removeWalletAccess as removeWalletAccessThunk, selectors } from "../../../store/walletSlice";
 import Users from "./Users";
 import { WalletLayout } from "../WalletLayout";
-import { asyncActionStatuses } from "../../../constants";
 
 interface Props {
   walletId: string;

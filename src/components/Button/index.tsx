@@ -1,6 +1,5 @@
 import React, { ReactNode } from "react";
 import classNames from "classnames";
-import { UI_SIZE, UI_SIZE_MAP, UI_ROUNDED_SIZE_MAPS } from "../../constants";
 import { Spinner } from "../Spinner";
 
 // eslint-disable-next-line
@@ -8,53 +7,75 @@ enum Variant {
   GRAY,
   RED,
   GREEN,
+  PRIMARY,
+  PRIMARY_LIGHT,
+  DISABLED,
 }
 
 type Props = {
   variant?: Variant;
   size?: UI_SIZE;
-  rounded?: boolean;
+  icon?: boolean;
   children?: ReactNode;
   disabled?: boolean;
   type?: "button" | "submit";
   name?: string;
   block?: boolean;
   loading?: boolean;
+  className?: string;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
-const VARIANT_MAPS: Record<Variant, string> = {
-  [Variant.GRAY]: "bg-white border-gray-500 text-gray-900",
-  [Variant.RED]: "bg-white border-red-500 text-red-500",
-  [Variant.GREEN]: "bg-white border-green-500 text-green-500",
+// eslint-disable-next-line
+export enum UI_SIZE {
+  BIG,
+  MEDIUM,
+  SMALL,
+}
+
+export const ICON_SIZE_MAPS: Record<UI_SIZE, string> = {
+  [UI_SIZE.BIG]: "w-16 h-16 rounded-big",
+  [UI_SIZE.MEDIUM]: "w-14 h-14 rounded-medium",
+  [UI_SIZE.SMALL]: "w-8 h-8 rounded-small",
 };
 
 const SIZE_MAPS: Record<UI_SIZE, string> = {
-  [UI_SIZE.BIG]: `px-7 ${UI_SIZE_MAP[UI_SIZE.BIG]}`,
-  [UI_SIZE.MEDIUM]: `px-5 ${UI_SIZE_MAP[UI_SIZE.MEDIUM]}`,
-  [UI_SIZE.SMALL]: `px-3 ${UI_SIZE_MAP[UI_SIZE.SMALL]}`,
+  [UI_SIZE.BIG]: "px-10 py-4.25 text-lg rounded-big",
+  [UI_SIZE.MEDIUM]: "px-8 rounded-lg py-3.75 text-base rounded-medium",
+  [UI_SIZE.SMALL]: "py-1.25 px-5 text-sm rounded-small",
+};
+
+const VARIANT_MAPS: Record<Variant, string> = {
+  [Variant.GRAY]: "bg-white theme-text theme-control-border",
+  [Variant.RED]: "bg-white theme-text-error theme-border-error",
+  [Variant.GREEN]: "bg-white theme-text-success theme-border-success",
+  [Variant.PRIMARY]: "theme-control-primary-gradient text-white border-transparent",
+  [Variant.PRIMARY_LIGHT]: "theme-control-primary-gradient-light text-white border-transparent",
+  [Variant.DISABLED]: "bg-white text-disabled border-disabled",
 };
 
 export const Button: React.FC<Props> & { variant: typeof Variant; size: typeof UI_SIZE; } = (props) => {
   const {
     children,
     variant = Variant.GRAY,
-    size = UI_SIZE.BIG,
+    size = UI_SIZE.MEDIUM,
     disabled = false,
     type = "button",
     name = "",
-    rounded = false,
+    icon = false,
     block = false,
     loading = false,
+    className = "",
     onClick,
   } = props;
   return (
     <button
       onClick={onClick}
       className={classNames(
-        "relative inline-flex items-center justify-center rounded-full font-medium whitespace-no-wrap border-solid border disabled:opacity-50",
-        VARIANT_MAPS[variant],
-        rounded ? UI_ROUNDED_SIZE_MAPS[size] : SIZE_MAPS[size],
+        "relative inline-flex items-center justify-center font-bold uppercase font-medium whitespace-no-wrap border border-solid",
+        className,
+        VARIANT_MAPS[disabled ? Variant.DISABLED : variant],
+        icon ? ICON_SIZE_MAPS[size] : SIZE_MAPS[size],
         {
           "cursor-default": disabled,
           "w-full": block,

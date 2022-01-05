@@ -1,5 +1,6 @@
 import {unwrapResult, AsyncThunk} from "@reduxjs/toolkit";
-import { useDispatch } from "./useDispatch";
+import { UseThunkActionCreator } from "../types";
+ import { useDispatch } from "./useDispatch";
 
 /**
  * React hook useThunkActionCreator simplifies the process of dispatching of a thunk.
@@ -8,13 +9,17 @@ import { useDispatch } from "./useDispatch";
  * @returns {function} actionExecutor - this function can be called inside a react component in order to dispatch the action.
  * This function accepts a single argument, which will be passed as action payload to the thunk
  */
-export const useThunkActionCreator = <Response, Payload>(asyncThunkAction: AsyncThunk<Response, Payload, Record<string, unknown>>): (data: Payload) => Promise<Response> => {
+export const useThunkActionCreator = <Response, Payload>(asyncThunkAction: AsyncThunk<Response, Payload, Record<string, unknown>>): (data: Payload) => UseThunkActionCreator<Response> => {
   const dispatch = useDispatch();
-  return (data: Payload): Promise<Response> => new Promise((reolve, reject) => {
-    dispatch(asyncThunkAction(data))
-    .then(unwrapResult)
-    .then((response: Response) => reolve(response))
-    .catch((error: any) => reject(error))
-  })
+  return (data: Payload): UseThunkActionCreator<Response> => {
+    const dispatchResult = dispatch(asyncThunkAction(data));
+    const promise: any = new Promise((reolve, reject) => {
+      dispatchResult.then(unwrapResult)
+      .then((response: Response) => reolve(response))
+      .catch((error: any) => reject(error))
+    });
+    promise.abort = dispatchResult.abort;
+    return promise;
+  }
 }
 

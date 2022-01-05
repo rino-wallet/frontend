@@ -1,24 +1,31 @@
 import React from "react";
 import { Placeholder } from "../../../components";
+import TransactionItemLayout from "./TransactionItemLayout"
 
 const TransactionItemPlaceholder: React.FC = () => {
   return (
-    <div className="px-5 py-2 mb-1">
-      <div className="flex justify-between items-center mb-2">
-        <div className="w-3/5">
+    <TransactionItemLayout
+      amount={(
+        <div className="w-1/2 inline-block">
           <Placeholder />
         </div>
-      </div>
-      <div className="flex justify-between items-center">
-        <div className="w-3/5">
+      )}
+      action={(
+        <div className="w-1/2 inline-block">
           <Placeholder />
         </div>
-        <div className="w-1/5" />
-        <div className="w-1/5">
+      )}
+      timestamp={(
+        <div className="w-full inline-block">
           <Placeholder />
         </div>
-      </div>
-    </div>
+      )}
+      status={(
+        <div className="w-1/2 inline-block">
+          <Placeholder />
+        </div>
+      )}
+    />
   )
 }
 

@@ -29,7 +29,13 @@ export class Api extends Axios {
       (error): Promise<AxiosError> => {
         if (error.code === "ECONNABORTED" || !error.response) {
           return new Promise((resolve, reject) => {
-            const response = { data: { message: "Network error" } };
+            const response = { data: { message: "Network error", status: "network_error" } };
+            reject(response);
+          });
+        }
+        if (error && error.response && error.response.status === 403) {
+          return new Promise((resolve, reject) => {
+            const response = { data: { message: "Error in processing your request.", status: "permission_error" } };
             reject(response);
           });
         }

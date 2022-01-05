@@ -8,14 +8,23 @@ import {
   ApiError,
 } from "../types";
 import sessionApi from "../api/session";
+import modals from "../modules/2FAModals";
 
 import { createLoadingSelector, generateExtraReducer } from "../utils";
 
 export const changeEmailRequest = createAsyncThunk<void, ChangeEmailRequestPayload>(
   "changeEmail/changeEmailRequest",
-  async (data, { rejectWithValue }) => {
+  async (data, { rejectWithValue, getState }) => {
     try {
-      const response = await sessionApi.changeEmailRequest(data);
+      let code = "";
+      const user = (getState() as any).session.user;
+      if (user?.is2FaEnabled) {
+        code = await modals.enter2FACode();
+      }
+      const response = await sessionApi.changeEmailRequest(
+        data,
+        code ? { headers: { "X-RINO-2FA": code } } : undefined,
+      );
       return response;
     } catch(err) {
       return rejectWithValue(err?.data)

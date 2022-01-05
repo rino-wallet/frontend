@@ -1,5 +1,5 @@
-import monerojs from "@enterprisewallet/monero-javascript";
-import { WalletConfig, WalletRaw, LocalWalletData, ExchangeMultisigKeysResult } from "../types";
+import monerojs from "@rino-wallet/monero-javascript";
+import {ExchangeMultisigKeysResult, LocalWalletData, TransactionConfig, WalletConfig, WalletRaw} from "../types";
 import parseWalletData from "./parseWalletData";
 
 type Multisig = string;
@@ -92,12 +92,29 @@ class Wallet {
     return await this.wallet.importMultisigHex(multisigHexes);
   };
   /**
-   * Reconstruct the transaction
+   * Reconstruct and validate the transaction
    */
-  public reconstructTransaction = async (txHex: string): Promise<string> => {
-    const txs = await this.wallet.reconstructTx(txHex);
-    const txsHex = txs[0].getTxSet().getMultisigTxHex();
-    return txsHex;
+  public reconstructAndValidateTransaction = async (txHex: string, config: TransactionConfig): Promise<string> => {
+    try {
+      const txs = await this.wallet.reconstructValidateTx(txHex, config);
+      const txsHex = txs[0].getTxSet().getMultisigTxHex();
+      return txsHex;
+    } catch(error) {
+      throw({data: {message: "Cannot create a transaction."}})
+    }
+
+  };
+  /**
+   * Load multisig Transaction
+   * used to get fee calculated in the backend.
+   */
+  public loadMultisigTx = async (txHex: string): Promise<{ state: TransactionConfig }> => {
+    try {
+      return await this.wallet.loadMultisigTx(txHex);
+    } catch(error) {
+      throw({data: {message: "Cannot load a transaction."}})
+    }
+
   };
 }
 

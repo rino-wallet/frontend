@@ -1,9 +1,16 @@
 import {createSlice, createAsyncThunk} from "@reduxjs/toolkit";
-import { FetchWalletTransactionsResponse, Transaction, FetchWalletTransactionsThunkPayload, RootState } from "../types";
+import {
+  FetchWalletTransactionsResponse,
+  Transaction,
+  FetchWalletTransactionsThunkPayload,
+  RootState,
+  UpdateTransactionDetailsPayload,
+  UpdateTransactionDetailsResponse,
+} from "../types";
 import walletsApi from "../api/wallets";
 import { createLoadingSelector, generateExtraReducer, generateListReqParams } from "../utils";
 
-const ITEMS_PER_PAGE = 5;
+export const ITEMS_PER_PAGE = 5;
 
 export const fetchWalletTransactions = createAsyncThunk<FetchWalletTransactionsResponse, FetchWalletTransactionsThunkPayload>(
   "transactionList/fetchTransactions",
@@ -12,6 +19,20 @@ export const fetchWalletTransactions = createAsyncThunk<FetchWalletTransactionsR
       return await walletsApi.fetchWalletTransactions(walletId, generateListReqParams(page, ITEMS_PER_PAGE));
     } catch(err) {
       return rejectWithValue(err.response.data)
+    }
+  },
+);
+
+
+export const updateTransactionDetails = createAsyncThunk<UpdateTransactionDetailsResponse, UpdateTransactionDetailsPayload>(
+  "transactionList/updateTransactionDetails",
+  async (data, { rejectWithValue, dispatch }) => {
+    try {
+      const response = await walletsApi.updateTransactionDetails(data);
+      dispatch(updateTransactionInList(response));
+      return response;
+    } catch(err) {
+      return rejectWithValue(err?.data)
     }
   },
 );
@@ -40,6 +61,14 @@ export const transactionListSlice = createSlice({
   name: SLICE_NAME,
   initialState,
   reducers: {
+    updateTransactionInList(state, action): void {
+      state.entities = state.entities.map((transaction) => {
+        if (action.payload.id === transaction.id) {
+          return action.payload;
+        }
+        return transaction;
+      });
+    },
     reset(state): void {
       state.count = initialState.count;
       state.pages = initialState.pages;
@@ -73,8 +102,10 @@ export const selectors = {
   getTransactions: (state: RootState): Transaction[] => state[SLICE_NAME].entities,
   // thunk statuses
   pendingFetchWalletTransactions: createLoadingSelector(SLICE_NAME, fetchWalletTransactions.pending.toString()),
+  pendingUpdateTransactionDetails: createLoadingSelector(SLICE_NAME, updateTransactionDetails.pending.toString()),
 }
 
 export const {
   reset,
+  updateTransactionInList,
 } = transactionListSlice.actions;
