@@ -11,10 +11,10 @@ require("./store/walletListSlice.js");
 require("./store/subaddressListSlice.js");
 require("./store/transactionDetailsSlice.js");
 
-// // Wallet tests
+// Wallet tests
 require("./wallet/walletService.js");
 
-// // Utils tests
+// Utils tests
 require("./utils/keypairs.js");
 require("./utils/piconeroToMonero.js");
 require("./utils/pollTask.js");

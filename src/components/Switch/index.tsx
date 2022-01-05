@@ -27,10 +27,10 @@ export const Switch: React.FC<Props> = (props) => {
         />
         <label
           htmlFor={id}
-          className={`block overflow-hidden h-4.5 rounded-full cursor-pointer duration-200 ease-in ${checked ? "control-gradient" : "bg-gray-200"}`}
+          className={`block overflow-hidden h-4.5 rounded-full cursor-pointer duration-200 ease-in ${checked ? "theme-control-primary-gradient-light" : "bg-gray-200"}`}
         />
       </div>
-      <span className="text-gray-700 dark:text-white font-normal">
+      <span className="theme-text font-normal">
         {children}
       </span>
     </label>

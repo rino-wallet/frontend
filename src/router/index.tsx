@@ -1,6 +1,5 @@
 import React, { ReactElement } from "react";
 import Loadable from "react-loadable";
-import { RouteComponentProps } from "react-router-dom";
 import { Loading } from "../components";
 import ROUTES from "./routes";
 
@@ -52,11 +51,43 @@ const GenerateKeyPair = Loadable({
   loader: () => import("../pages/GenerateKeyPair" /* webpackChunkName: "GenerateKeyPair" */),
   loading: Loading,
 });
+const Security = Loadable({
+  loader: () => import("../pages/Security" /* webpackChunkName: "Security" */),
+  loading: Loading,
+});
+const Acknowledgments = Loadable({
+  loader: () => import("../pages/Acknowledgments" /* webpackChunkName: "Acknowledgments" */),
+  loading: Loading,
+});
+const SecurityPGPKey = Loadable({
+  loader: () => import("../pages/SecurityPGPKey" /* webpackChunkName: "SecurityPGPKey" */),
+  loading: Loading,
+});
 
-const defaultTitle = "Wallet";
-const defaultDescription = "Pay the world with monero.";
-const defaultMetaKeywords = "monero bitcoin xmr btc usdc euro";
-const defaultMetaOgImage = "%PUBLIC_URL%/logo_with_text.jpg";
+const FAQ = Loadable({
+  loader: () => import("../pages/FAQ" /* webpackChunkName: "FAQ" */),
+  loading: Loading,
+});
+
+const TermsOfService = Loadable({
+  loader: () => import("../pages/TermsOfService" /* webpackChunkName: "TermsOfService" */),
+  loading: Loading,
+});
+
+const PrivacyPolicy = Loadable({
+  loader: () => import("../pages/PrivacyPolicy" /* webpackChunkName: "PrivacyPolicy" */),
+  loading: Loading,
+});
+
+const CookiePolicy = Loadable({
+  loader: () => import("../pages/CookiePolicy" /* webpackChunkName: "CookiePolicy" */),
+  loading: Loading,
+});
+
+const defaultTitle = "RINO - Enterprise-Grade Monero Wallet";
+const defaultDescription = "RINO is a new type of Monero wallet. We are a non-custodial, enterprise-grade, multisig wallet.";
+const defaultMetaKeywords = "RINO, Monero, Wallet, Enterprise-Grade, Multisig, Convenient, Secure, Non-custodial";
+const defaultMetaOgImage = "https://rino.io/meta-image.png";
 const env = process.env.REACT_APP_ENV;
 
 type RouteType = {
@@ -65,9 +96,8 @@ type RouteType = {
   metaDescription: string;
   metaKeywords: string;
   metaOgImage: string;
-  component: React.FC<RouteComponentProps<any>>;
+  component: React.FC;
   isPrivate?: boolean;
-  exact: boolean;
   key: string;
 }
 
@@ -79,7 +109,6 @@ const ROUTER_CONFIG: RouteType[] = [
     metaKeywords: defaultMetaKeywords,
     metaOgImage: defaultMetaOgImage,
     component: (props: any): ReactElement => <ConfirmEmail {...props} />,
-    exact: true,
     key: "emailConfirm",
   },
   {
@@ -89,8 +118,7 @@ const ROUTER_CONFIG: RouteType[] = [
     metaKeywords: defaultMetaKeywords,
     metaOgImage: defaultMetaOgImage,
     component: (props: any): ReactElement => <Home {...props} />,
-    exact: true,
-    key: "home",
+    key: "landing",
   },
   {
     path: ROUTES.login,
@@ -99,7 +127,6 @@ const ROUTER_CONFIG: RouteType[] = [
     metaKeywords: defaultMetaKeywords,
     metaOgImage: defaultMetaOgImage,
     component: (props: any): ReactElement => <Login {...props} />,
-    exact: true,
     key: "login",
   },
   {
@@ -109,28 +136,16 @@ const ROUTER_CONFIG: RouteType[] = [
     metaKeywords: defaultMetaKeywords,
     metaOgImage: defaultMetaOgImage,
     component: (props: any): ReactElement => <Register {...props} />,
-    exact: true,
     key: "register",
   },
   {
-    path: ROUTES.resetPasswordRequest,
+    path: ROUTES.resetPassword,
     metaTitle: defaultTitle,
     metaDescription: defaultDescription,
     metaKeywords: defaultMetaKeywords,
     metaOgImage: defaultMetaOgImage,
     component: (props: any): ReactElement => <ResetPassword {...props} />,
-    exact: true,
-    key: "resetPasswordRequest",
-  },
-  {
-    path: ROUTES.resetPasswordConfirm,
-    metaTitle: defaultTitle,
-    metaDescription: defaultDescription,
-    metaKeywords: defaultMetaKeywords,
-    metaOgImage: defaultMetaOgImage,
-    component: (props: any): ReactElement => <ResetPassword {...props} />,
-    exact: true,
-    key: "resetPasswordConfirm",
+    key: "resetPassword",
   },
   {
     path: ROUTES.keypair,
@@ -139,7 +154,6 @@ const ROUTER_CONFIG: RouteType[] = [
     metaKeywords: defaultMetaKeywords,
     metaOgImage: defaultMetaOgImage,
     component: (props: any): ReactElement => <GenerateKeyPair {...props} />,
-    exact: true,
     isPrivate: true,
     key: "keypair",
   },
@@ -150,7 +164,6 @@ const ROUTER_CONFIG: RouteType[] = [
     metaKeywords: defaultMetaKeywords,
     metaOgImage: defaultMetaOgImage,
     component: (props: any): ReactElement => <Profile {...props} />,
-    exact: true,
     isPrivate: true,
     key: "profile",
   },
@@ -161,7 +174,6 @@ const ROUTER_CONFIG: RouteType[] = [
     metaKeywords: defaultMetaKeywords,
     metaOgImage: defaultMetaOgImage,
     component: (props: any): ReactElement => <Wallets {...props} />,
-    exact: true,
     isPrivate: true,
     key: "wallets",
   },
@@ -172,7 +184,6 @@ const ROUTER_CONFIG: RouteType[] = [
     metaKeywords: defaultMetaKeywords,
     metaOgImage: defaultMetaOgImage,
     component: (props: any): ReactElement => <NewWallet {...props} />,
-    exact: false,
     isPrivate: true,
     key: "new wallet",
   },
@@ -183,7 +194,6 @@ const ROUTER_CONFIG: RouteType[] = [
     metaKeywords: defaultMetaKeywords,
     metaOgImage: defaultMetaOgImage,
     component: (props: any): ReactElement => <Wallet {...props} />,
-    exact: false,
     isPrivate: true,
     key: "wallet details",
   },
@@ -194,9 +204,78 @@ const ROUTER_CONFIG: RouteType[] = [
     metaKeywords: defaultMetaKeywords,
     metaOgImage: defaultMetaOgImage,
     component: (props: any): ReactElement => <ChangeEmailConfirm {...props} />,
-    exact: true,
     isPrivate: true,
     key: "change email confirmation",
+  },
+  {
+    path: ROUTES.security,
+    metaTitle: defaultTitle,
+    metaDescription: defaultDescription,
+    metaKeywords: defaultMetaKeywords,
+    metaOgImage: defaultMetaOgImage,
+    component: (props: any): ReactElement => <Security {...props} />,
+    isPrivate: false,
+    key: "security",
+  },
+  {
+    path: ROUTES.acknowledgments,
+    metaTitle: defaultTitle,
+    metaDescription: defaultDescription,
+    metaKeywords: defaultMetaKeywords,
+    metaOgImage: defaultMetaOgImage,
+    component: (props: any): ReactElement => <Acknowledgments {...props} />,
+    isPrivate: false,
+    key: "acknowledgments",
+  },
+  {
+    path: ROUTES.security_pgp_key,
+    metaTitle: defaultTitle,
+    metaDescription: defaultDescription,
+    metaKeywords: defaultMetaKeywords,
+    metaOgImage: defaultMetaOgImage,
+    component: (props: any): ReactElement => <SecurityPGPKey {...props} />,
+    isPrivate: false,
+    key: "security_pgp_key",
+  },
+  {
+    path: ROUTES.faq,
+    metaTitle: defaultTitle,
+    metaDescription: defaultDescription,
+    metaKeywords: defaultMetaKeywords,
+    metaOgImage: defaultMetaOgImage,
+    component: (props: any): ReactElement => <FAQ {...props} />,
+    isPrivate: false,
+    key: "faq",
+  },
+  {
+    path: ROUTES.terms_of_service,
+    metaTitle: defaultTitle,
+    metaDescription: defaultDescription,
+    metaKeywords: defaultMetaKeywords,
+    metaOgImage: defaultMetaOgImage,
+    component: (props: any): ReactElement => <TermsOfService {...props} />,
+    isPrivate: false,
+    key: "terms_of_service",
+  },
+  {
+    path: ROUTES.privacy_policy,
+    metaTitle: defaultTitle,
+    metaDescription: defaultDescription,
+    metaKeywords: defaultMetaKeywords,
+    metaOgImage: defaultMetaOgImage,
+    component: (props: any): ReactElement => <PrivacyPolicy {...props} />,
+    isPrivate: false,
+    key: "privacy_policy",
+  },
+  {
+    path: ROUTES.cookie_policy,
+    metaTitle: defaultTitle,
+    metaDescription: defaultDescription,
+    metaKeywords: defaultMetaKeywords,
+    metaOgImage: defaultMetaOgImage,
+    component: (props: any): ReactElement => <CookiePolicy {...props} />,
+    isPrivate: false,
+    key: "cookie_policy",
   },
 ];
 
@@ -209,7 +288,6 @@ if (env === "develop") {
     metaKeywords: defaultMetaKeywords,
     metaOgImage: defaultMetaOgImage,
     component: (props: any): ReactElement => <Components {...props} />,
-    exact: true,
     key: "components",
   });
 }

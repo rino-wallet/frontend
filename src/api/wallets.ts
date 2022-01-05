@@ -27,8 +27,14 @@ import {
   DeleteWalletResponse,
   DeleteWalletPayload,
   ListRequestParams,
-  CreateSubaddressResponse,
   FetchSubaddressResponse,
+  SyncMultisigPayload,
+  SyncMultisigResponse,
+  UpdateTransactionDetailsResponse,
+  UpdateTransactionDetailsPayload,
+  PersistWalletPayload,
+  Subaddress,
+  SubaddressResponse,
 } from "../types";
 
 export class WalletsApi extends Api {
@@ -57,8 +63,8 @@ export class WalletsApi extends Api {
       .then(this.success);
   }
 
-  public updateWalletDetails(data: UpdateWalletDetailsPayload): Promise<UpdateWalletDetailsResponse> {
-    return this.patch<UpdateWalletDetailsResponse, UpdateWalletDetailsPayload>(`/wallets/${data.id}/`, data)
+  public updateWalletDetails(data: UpdateWalletDetailsPayload, config?: { headers: { "X-RINO-2FA": string } }): Promise<UpdateWalletDetailsResponse> {
+    return this.patch<UpdateWalletDetailsResponse, UpdateWalletDetailsPayload>(`/wallets/${data.id}/`, data, config)
       .then(this.success);
   }
 
@@ -72,6 +78,16 @@ export class WalletsApi extends Api {
       .then(this.success);
   }
 
+  public syncMultisig(data: SyncMultisigPayload): Promise<SyncMultisigResponse> {
+    return this.post<SyncMultisigResponse, SyncMultisigPayload>(`/wallets/${data.id}/sync_multisig/`, data )
+      .then(this.success);
+  }
+
+  public persistWallet(data: PersistWalletPayload): Promise<null> {
+    return this.post<null, PersistWalletPayload>(`/wallets/${data.id}/persist/`)
+      .then(this.success);
+  }
+
   public fetchWalletTransactions(walletId: string, params: ListRequestParams): Promise<FetchWalletTransactionsResponse> {
     return this.get<FetchWalletTransactionsResponse>(`/wallets/${walletId}/transactions/`, { params })
       .then(this.success);
@@ -79,6 +95,11 @@ export class WalletsApi extends Api {
 
   public fetchTransactionDetails(data: FetchTransactionDetailsPayload): Promise<FetchTransactionDetailsResponse> {
     return this.get<FetchTransactionDetailsResponse>(`/wallets/${data.walletId}/transactions/${data.transactionId}/`)
+      .then(this.success);
+  }
+
+  public updateTransactionDetails(data: UpdateTransactionDetailsPayload): Promise<UpdateTransactionDetailsResponse> {
+    return this.patch<UpdateTransactionDetailsResponse, UpdateTransactionDetailsPayload>(`/wallets/${data.walletId}/transactions/${data.transactionId}/`, data)
       .then(this.success);
   }
 
@@ -102,8 +123,8 @@ export class WalletsApi extends Api {
       .then(this.success);
   }
 
-  public createSubaddress(id: string): Promise<CreateSubaddressResponse> {
-    return this.post<CreateSubaddressResponse, void>(`/wallets/${id}/subaddresses/`)
+  public createSubaddress(id: string): Promise<SubaddressResponse> {
+    return this.post<Subaddress, void>(`/wallets/${id}/subaddresses/`)
       .then(this.success);
   }
 

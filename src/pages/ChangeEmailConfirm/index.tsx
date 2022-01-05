@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector, useThunkActionCreator } from "../../hooks";
 import {
   confirmEmailChanging as confirmEmailChangingThunk,
@@ -7,14 +7,14 @@ import {
 import { getCurrentUser as getCurrentUserAction } from "../../store/sessionSlice";
 import { selectors } from "../../store/changeEmailSlice";
 import { ChangeEmailConfirmPayload, UserResponse } from "../../types";
-import { navigate } from "../../store/actions";
+import { changeLocation } from "../../store/actions";
 import { SuccessModal } from "../../modules/index";
 import { Spinner } from "../../components";
 import routes from "../../router/routes";
 
 const ChangeEmailConfirmPageContainer: React.FC = () => {
-  const { push } = useHistory();
-  const { token }: { token: string } = useParams();
+  const navigate = useNavigate();
+  const { token } = useParams();
   const succeeded = useSelector(selectors.getSucceeded);
   const loading = useSelector(selectors.pendingConfirmEmailChanging);
   const error = useSelector(selectors.getError);
@@ -23,11 +23,11 @@ const ChangeEmailConfirmPageContainer: React.FC = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     return (): void => {
-      dispatch(navigate());
+      dispatch(changeLocation());
     }
   }, [])
   useEffect(() => {
-    confirmEmailChanging(({ token }))
+    confirmEmailChanging(({ token: token as string }))
     .finally(() => {
       getCurrentUser();
     });
@@ -40,14 +40,14 @@ const ChangeEmailConfirmPageContainer: React.FC = () => {
       succeeded && (
         <SuccessModal
           title="Email Address Updated"
-          message="We successfully updated your email address."
-          goBackCallback={(): void => push(routes.profile)}
+          message="We have successfully updated your email address."
+          goBackCallback={(): void => navigate(routes.profile)}
         />
       )
     }
     {
       error && (
-        <div className="text-error">    
+        <div className="theme-text-error">    
           {Object.values(error)}
         </div>
       )

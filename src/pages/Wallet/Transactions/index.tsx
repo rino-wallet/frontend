@@ -4,7 +4,7 @@ import {
   FetchWalletTransactionsResponse,
   FetchWalletTransactionsThunkPayload,
 } from "../../../types";
-import { fetchWalletTransactions as fetchWalletTransactionsThunk, selectors as transactionListSelectors } from "../../../store/transactionListSlice";
+import { fetchWalletTransactions as fetchWalletTransactionsThunk, selectors as transactionListSelectors, ITEMS_PER_PAGE } from "../../../store/transactionListSlice";
 import { selectors as walletSelectors } from "../../../store/walletSlice";
 import Transactions from "./Transactions";
 import { WalletLayout } from "../WalletLayout";
@@ -22,6 +22,7 @@ const WalletPageContainer: React.FC<Props> = ({ walletId }) => {
   return (
     <WalletLayout tab="transactions" id={walletId} wallet={wallet}>
       <Transactions
+        itemsPerPage={ITEMS_PER_PAGE}
         walletId={walletId}
         transactions={transactions}
         loading={loading}

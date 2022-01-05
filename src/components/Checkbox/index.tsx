@@ -12,20 +12,20 @@ type Props = {
 export const Checkbox: React.FC<Props> = (props) => {
   const { checked = false, onChange, children, name = "" } = props;
   return (
-    <label className="inline-flex items-center space-x-3 text-sm cursor-pointer">
+    <label className="inline-flex items-center space-x-3 cursor-pointer">
       <input
         name={name}
         checked={checked}
         onChange={onChange}
         type="checkbox"
         className={classNames(
-          "form-tick appearance-none bg-white bg-check h-6 w-6 border border-gray-200 rounded-sm cursor-pointer checked:border-transparent",
+          "form-tick appearance-none bg-white bg-check h-8 w-8 border border-solid theme-control-border rounded cursor-pointer checked:border-transparent flex-shrink-0",
           {
-            "checked": checked,
+            "checked theme-control-primary-gradient-light": checked,
           }
         )}
       />
-      <span className="text-gray-700 dark:text-white font-normal">
+      <span className="font-normal">
         {children}
       </span>
     </label>

@@ -8,24 +8,26 @@ export default async function parseWalletData(wallet: WalletRaw): Promise<LocalW
   } catch (e) {
     console.error("Multisig call failed");
   }
-  // TODO: optimise promises to work in parallel
+
   const daemonHeight = null;
-  const syncHeight = await wallet.getHeight() || null;
-  const address = await wallet.getAddress(0, 0);
-  const balance = await wallet.getBalance(0, 0);
-  const mnemonic = await wallet.getMnemonic();
-  const viewKey = await wallet.getPrivateViewKey();
-  const keys = await wallet.getData();
+
+  const [syncHeight, address, balance, keys, multisigSeed] = await Promise.all([
+    wallet.getHeight(),
+    wallet.getAddress(0, 0),
+    wallet.getBalance(0, 0),
+    wallet.getData(),
+    isMultisig ? wallet.getMultisigSeed("") : Promise.resolve("")
+  ]);
+
   return {
     offlineMode: true,
     daemonHeight,
     syncHeight,
     isMultisig,
     address,
-    mnemonic,
-    viewKey,
     balance: balance.toString(),
     keyHex: Buffer.from(keys[0]).toString("hex"),
     base64Key: Buffer.from(keys[0]).toString("base64"),
+    multisigSeed,
   };
 }

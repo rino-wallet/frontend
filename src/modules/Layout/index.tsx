@@ -1,21 +1,18 @@
 import React from "react";
-import { useThunkActionCreator } from "../../hooks";
-import { PublicLayout, PrivateLayout } from "./Layout";
+import { useThunkActionCreator, useSelector } from "../../hooks";
+import { Layout } from "./Layout";
 import { signOut as signOutAction } from "../../store/sessionSlice";
 
-export const PublicLayoutContainer: React.FC = ({ children }) => {
-  return (
-    <PublicLayout>
-      {children}
-    </PublicLayout>  
-  )
+interface Props {
+  page?: string;
 }
 
-export const PrivateLayoutContainer: React.FC = ({ children }) => {
+export const LayoutContainer: React.FC<Props> = ({ children, page }) => {
   const signOut = useThunkActionCreator<void, void>(signOutAction);
+  const token = useSelector(state => state.session.token);
   return (
-    <PrivateLayout signOut={signOut}>
+    <Layout signOut={signOut} isAuthenticated={token} page={page}>
       {children}
-    </PrivateLayout>  
+    </Layout>
   )
 }

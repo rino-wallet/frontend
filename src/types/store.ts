@@ -1,5 +1,7 @@
 
 import {store} from "../store";
+import {UserKeyPairInfo, KeyPairJsonWrapper} from "./shared";
+import {SignUpPayload} from "./api";
 
 export type RootState = ReturnType<typeof store.getState>;
 
@@ -27,6 +29,16 @@ export type Wallet = {
   balance: string;
   unlockedBalance: string;
   status: string;
+  requires2Fa: boolean;
+}
+
+export type PendingTransaction = {
+  address: string;
+  amount: string;
+  fee?: number;
+  txsHex?: string;
+  memo?: string;
+  priority?: string;
 }
 
 export type LocalWalletData = {
@@ -35,11 +47,10 @@ export type LocalWalletData = {
   syncHeight: number | null;
   isMultisig: boolean;
   address: string;
-  mnemonic: string;
-  viewKey: string;
   keyHex: string;
   base64Key: string;
   balance: string;
+  multisigSeed: string,
 };
 
 export type User = {
@@ -49,9 +60,9 @@ export type User = {
   isKeypairSet: boolean;
   name: string;
   username: string;
-  publicKey: string;
-  encPrivateKey: string;
-  fingerprint: string;
+  encryptionPublicKey: string;
+  signingPublicKey: string;
+  encPrivateKey: KeyPairJsonWrapper;
 }
 
 export interface TransactionDestination {
@@ -97,6 +108,25 @@ export interface FetchWalletListThunkPayload {
   page: number;
 }
 
+export type SetUpKeyPairThunkPayload = UserKeyPairInfo;
+
+
+export interface ChangePasswordThunkPayload {
+  new_password: string;
+  current_password: string;
+}
+
+export type SignUpThunkPayload = SignUpPayload;
+
+export interface ResetPasswordConfirmThunkPayload {
+  uid: string;
+  token: string;
+  new_password: string;
+  recovery_key: string;
+}
+
 export interface Subaddress {
   address: string;
+  index: number;
+  isUsed: boolean;
 }

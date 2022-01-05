@@ -1,5 +1,5 @@
 {
-  "extension": ["ts", "tsx", "js"],
+  "extension": ["ts", "js"],
   "spec": ["tests/index.js"],
   "require": ["esm", "ignore-styles", "./tests/config/compiler.js"],
   "timeout": 1200000

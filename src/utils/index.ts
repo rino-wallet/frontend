@@ -4,12 +4,13 @@ import getRandString from "./getRandString";
 import createQRCodeImage from "./createQRCodeImage";
 import piconeroToMonero from "./piconeroToMonero";
 import moneroToPiconero from "./moneroToPiconero";
-import { generateUserKeyPairInfo, deriveUserKeys, reencrypPrivateKey } from "./keypairs";
-import verifyPassword from "./verifyPassword";
 import {passwordValidationSchema} from "./passwordValidationSchema";
 import getEncryptedKeys from "./getEncryptedKeys";
 import { getWalletColor } from "./getWalletColor";
 import { generateListReqParams } from "./generateListReqParams";
+import { PdfDocument } from "./createPdf";
+import { getNetworkType } from "./getNetworkType";
+import { generateUserKeyPairInfo, deriveUserKeys, reencrypPrivateKey, decryptKeys } from "./keypairs";
 
 export {
   generateExtraReducer,
@@ -18,13 +19,15 @@ export {
   generateUserKeyPairInfo,
   deriveUserKeys,
   reencrypPrivateKey,
+  decryptKeys,
   getRandString,
   createQRCodeImage,
-  verifyPassword,
   piconeroToMonero,
   moneroToPiconero,
   passwordValidationSchema,
   getEncryptedKeys,
   getWalletColor,
   generateListReqParams,
+  PdfDocument,
+  getNetworkType,
 }

@@ -1,5 +1,4 @@
 .form-tick:checked {
-  background: linear-gradient(270deg, rgba(230, 73, 255, 0.7) 0%, rgba(186, 72, 255, 0.7) 100%);
   position: relative;
 }
 

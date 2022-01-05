@@ -1,15 +1,33 @@
-import {createSlice, createAsyncThunk} from "@reduxjs/toolkit";
-import { FetchTransactionDetailsResponse, FetchTransactionDetailsPayload, Transaction, RootState } from "../types";
+import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import {
+  FetchTransactionDetailsPayload,
+  FetchTransactionDetailsResponse,
+  RootState,
+  Transaction,
+  UpdateTransactionDetailsPayload,
+  UpdateTransactionDetailsResponse
+} from "../types";
 import walletsApi from "../api/wallets";
-import { createLoadingSelector, generateExtraReducer } from "../utils";
+import {createLoadingSelector, generateExtraReducer} from "../utils";
 
 
 export const fetchTransactionDetails = createAsyncThunk<FetchTransactionDetailsResponse, FetchTransactionDetailsPayload>(
   "transactionDetails/fetchTransactionDetails",
   async (data, { rejectWithValue }) => {
     try {
-      const transaction = await walletsApi.fetchTransactionDetails(data);
-      return transaction;
+      return await walletsApi.fetchTransactionDetails(data);
+    } catch(err) {
+      return rejectWithValue(err?.data)
+    }
+  },
+);
+
+
+export const updateTransactionDetails = createAsyncThunk<UpdateTransactionDetailsResponse, UpdateTransactionDetailsPayload>(
+  "wallet/updateTransactionDetails",
+  async (data, { rejectWithValue }) => {
+    try {
+      return await walletsApi.updateTransactionDetails(data);
     } catch(err) {
       return rejectWithValue(err?.data)
     }
@@ -42,6 +60,13 @@ export const transactionDetailsSlice = createSlice({
       fetchTransactionDetails,
       (data) => ({ data }),
     ),
+    ...generateExtraReducer(
+      updateTransactionDetails,
+      (data, stateData) => {
+        return ({ data: {...stateData.data, memo: data.memo} })
+      },
+    ),
+
   }
 });
 
@@ -49,6 +74,7 @@ export const selectors = {
   getTransaction: (state: RootState): Transaction => state[SLICE_NAME].data,
   // thunk statuses
   pendingFetchTransactionDetails: createLoadingSelector(SLICE_NAME, fetchTransactionDetails.pending.toString()),
+  pendingUpdateTransactionDetails: createLoadingSelector(SLICE_NAME, updateTransactionDetails.pending.toString()),
 }
 
 export const {

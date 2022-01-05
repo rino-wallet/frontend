@@ -1,61 +1,78 @@
 import React from "react";
+import classNames from "classnames";
 import { piconeroToMonero, getWalletColor } from "../../utils";
-import { Placeholder } from "../../components";
+import { Placeholder, FormatNumber } from "../../components";
 
 const WalletPlaceholder: React.FC = () => (
   <div className="flex-1 min-w-0 text-left">
-    <div>
+    <div className="w-1/4 mb-3 mt-3">
       <Placeholder />
     </div>
-    <div className="mt-3">
+    <div className="mb-3 w-3/4">
       <Placeholder />
     </div>
   </div>
 )
 interface Props {
-  balance: string;
-  name: string;
+  balance?: string;
   unlocked?: string;
-  showArrow?: boolean;
-  id: string;
+  name?: string;
+  id?: string;
+  inList?: boolean;
+  loading?: boolean;
+  card?: boolean;
 }
 
 export const WalletCard: React.FC<Props> = ({
-  balance,
-  unlocked,
-  name,
-  showArrow,
-  id,
+  balance = "",
+  unlocked = "",
+  name = "",
+  id = "",
+  loading = false,
 }) => {
-  const gradient = getWalletColor(id);
+  const gradient = id ? getWalletColor(id) : { main: "", light: "" };
   return (
-    <div className="bg-custom-pink-100 border border-custom-pink-200 rounded flex items-stretch h-20 cursor-pointer">
-      <div className={`w-10 flex-shrink-0 ${gradient}`} />
-      <div className="flex flex-1 min-w-0 p-4 items-center">
+    <div className={classNames("theme-bg-panel theme-border border rounded-3xl rounded-tl-none h-28 flex items-stretch", gradient.light)}>
+      <div className={classNames("-my-px -mx-px flex-shrink-0 rounded-3xl rounded-tl-none w-10 md:w-16", gradient.main)} />
+      <div className="flex flex-1 min-w-0 px-5 py-5 items-stretch md:px-10">
         {
-          !name ? <WalletPlaceholder /> : (
-            <div className="flex-1 min-w-0 text-left">
-              <div className="text-xs uppercase text-secondary whitespace-nowrap overflow-hidden overflow-ellipsis h-4">{name}</div>
-              <div className="text-xl uppercase h-7">
-                {piconeroToMonero(balance)} XMR
+          loading ? <WalletPlaceholder /> : (
+            <div className="flex flex-col justify-center flex-1 min-w-0 text-left">
+              <div className="leading-none text-xl uppercase theme-text-secondary whitespace-nowrap overflow-hidden overflow-ellipsis mb-2" data-qa-selector="wallet-name">
+                {name}
               </div>
-              {
-                !!unlocked && (
-                  <div className="text-xs uppercase text-gray-300 whitespace-nowrap overflow-hidden overflow-ellipsis h-4">
-                    Unlocked: {unlocked} XMR
+              <div className="flex items-end space-x-2">
+                <div>
+                  <div className="text-xl whitespace-nowrap md:text-2xl">
+                    <span data-qa-selector="wallet-balance"><FormatNumber value={piconeroToMonero(balance)} /></span> XMR
                   </div>
-                )
-              }
+                </div>
+                {unlocked !== balance ? (<div className="min-w-0" title="Unlocked">
+                  <div
+                    className="text-base whitespace-nowrap overflow-ellipsis overflow-hidden theme-text-secondary md:text-2xl">
+                    (
+                      <span data-qa-selector="wallet-unlocked-balance">
+                        <FormatNumber value={piconeroToMonero(unlocked)} />
+                      </span>
+                      {" "}
+                      <span>unlocked,</span>
+                      {" "}
+                      <span data-qa-selector="wallet-locked-balance">
+                        <FormatNumber value={piconeroToMonero(parseInt(balance) - parseInt(unlocked))} />
+                      </span>
+                      {" "}
+                      <span>locked</span>
+                    )
+                  </div>
+                </div>) : null
+                }
+              </div>
             </div>
           )
         }
-        {
-          showArrow && (
-            <div className="w-6 text-4xl font-semibold text-red-300 opacity-40">
-              &#x3e;
-            </div>
-          )
-        }
+        <div className="flex flex-col justify-center w-6 text-4xl font-semibold text-gray-200">
+          &#x3e;
+        </div>
       </div>
     </div>
   )

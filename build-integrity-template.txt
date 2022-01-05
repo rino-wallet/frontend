@@ -5,7 +5,6 @@ To verify:
 
 1. Clone its repo: "git clone __integrity_project_url__"
 2. Checkout the matching commit: "git checkout __integrity_project_commit__"
-3. Build the project: "docker build --build-arg GITLAB_API_ACCESS_TOKEN=<your-gitlab-token> --build-arg ENVIRON=__integrity_env__ -f build-integrity.Dockerfile ."
+3. Build the project: "DOCKER_BUILDKIT=0 docker build --build-arg ENVIRON=__integrity_env__ -f build-integrity.Dockerfile --no-cache ."
 4. It should output an Integrity Hash that matches the one included in this file.
 
-Where <your-gitlab-token> should be a Gitlab Auth Token with API Access

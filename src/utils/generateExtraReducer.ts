@@ -9,7 +9,7 @@ import {PayloadAction, AsyncThunk} from "@reduxjs/toolkit";
    */
 export function generateExtraReducer<ThunkReturned, ThunkArg, TransformedResponse>(
   thunk: AsyncThunk<ThunkReturned, ThunkArg, Record<string, unknown>>,
-  transformResponse?: (data: ThunkReturned) => TransformedResponse,
+  transformResponse?: (data: ThunkReturned, stateData?: any) => TransformedResponse,
 ): any {
   const actionType = thunk.pending.toString();
   return {
@@ -20,7 +20,7 @@ export function generateExtraReducer<ThunkReturned, ThunkArg, TransformedRespons
     },
     [thunk.fulfilled.toString()]: (state: any, action: PayloadAction<ThunkReturned>): void => {
       if (typeof transformResponse === "function") {
-        const response = transformResponse(action.payload);
+        const response = transformResponse(action.payload, state);
         Object.entries(response).forEach(([key, value]) => {
           state[key] = value;
         });

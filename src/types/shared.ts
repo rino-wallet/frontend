@@ -19,8 +19,6 @@ export type WalletRaw = {
   getMultisigInfo: () => Promise<{ isMultisig: () => boolean; }>;
   isMultisig: () => boolean;
   getAddress: (a: number, b: number) => Promise<string>;
-  getMnemonic: () => Promise<string>;
-  getPrivateViewKey: () => Promise<string>;
   prepareMultisig: () => Promise<string>;
   makeMultisig: (peerMultisigHexes: string[], numberOfParticipants: number,  walletPassword: string) => Promise<{ getMultisigHex: () => string}>;
   exchangeMultisigKeys: (multisigHexes: string[], walletPassword: string) => Promise<ExchangeMultisigKeysResult>;
@@ -30,7 +28,9 @@ export type WalletRaw = {
   getMultisigHex: () => Promise<string>;
   importMultisigHex: (multisigHexes: string[]) => Promise<number>;
   getOutputs: (query: Record<string, number | string>) => Promise<number[]>;
-  reconstructTx: (txHex: string) => Promise<WalletTx[]>;
+  reconstructValidateTx: (txHex: string, config: TransactionConfig) => Promise<WalletTx[]>;
+  loadMultisigTx: (txHex: string) => Promise<{ state: TransactionConfig }>;
+  getMultisigSeed: (passphrase: string) => Promise<string>;
 }
 
 export type ExchangeMultisigKeysResult = {
@@ -43,7 +43,6 @@ export type WalletConfig = {
   path?: string;
   password: string;
   networkType: "mainnet" | "testnet" | "stagenet";
-  mnemonic?: string;
   seedOffset?: string;
   primaryAddress?: string;
   privateViewKey?: string;
@@ -60,16 +59,30 @@ export type WalletConfig = {
   cacheData?: Uint8Array,
 }
 
+export type TransactionConfig = {
+  address?: string,
+  amount?: string,
+  fee?: number
+}
 export interface NewWalletPDFData {
-  userWalletKeyHex: string;
-  userWalletKeyB64: string;
-  userWalletAddress: string;
-  backupWalletKeyHex: string;
-  backupWalletKeyB64: string;
-  backupWalletAddress: string;
+  userWalletSeed: string;
+  backupWalletSeed: string;
   walletName: string;
   password: string;
+  address: string;
+  username: string;
+  checkString: string;
+  date: string;
 }
+
+export interface PdfDocumentConfig {
+  title: string;
+  filename: string;
+  totalPages?: number;
+  downloadFile?: boolean;
+}
+
+export type UseThunkActionCreator<Response> = Promise<Response> & { abort: () => void };
 
 export type AsyncActionStatuses = typeof asyncActionStatusesList[number];
 
@@ -80,3 +93,41 @@ export type ApiErrorRaw = Record<string, string | string[]>
 export type ApiError = Record<string, string>
 
 export interface DerivedKeys { authKey: string; encryptionKey: string }
+
+export interface WindowSize {
+  width: number | undefined;
+  height: number | undefined;
+}
+
+export interface KeyPairJsonWrapper {
+  version: string;
+  method: "symmetric";
+  encContent: string;
+  nonce: string;
+}
+
+export interface Keypair {
+  privateKey: Uint8Array;
+  publicKey: Uint8Array;
+  keyType: string;
+}
+
+export interface EncryptedPrivateKeysData {
+  encryptedMessage: Uint8Array;
+  nonce: Uint8Array;
+}
+
+export interface EncryptedPrivateKeysDataSet {
+  ek: EncryptedPrivateKeysData;
+  rk: EncryptedPrivateKeysData;
+}
+
+export interface UserKeyPairInfo {
+  authKey: Uint8Array;
+  recoveryKey: Uint8Array;
+  encryptionPublicKey: Uint8Array;
+  signingPublicKey: Uint8Array;
+  encPrivateKeysDataSet: EncryptedPrivateKeysDataSet;
+  signature: Uint8Array;
+  clean: () => void;
+}

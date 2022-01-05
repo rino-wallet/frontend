@@ -1,54 +1,48 @@
-import monerojs from "@enterprisewallet/monero-javascript";
-import * as openpgp from "openpgp";
+import monerojs from "@rino-wallet/monero-javascript";
+import _sodium from "libsodium-wrappers";
 import { LocalWalletData, ExchangeMultisigKeysResult } from "../types";
 import Wallet from "./Wallet";
-import { defaultWalletPassword } from "../constants";
-import { deriveUserKeys, decryptKey } from "../utils/keypairs";
 
 export type Multisig = string;
 
-/**
- * Decrypt message with private pgp key
- */
-export async function decryptMessageWithPrivateKey(armoredMessage: string, privateKey: string): Promise<Uint8Array> {
-  const encryptedMessage = await openpgp.readMessage({
-    armoredMessage,
-  });
-  const { data: decrypted } = await openpgp.decrypt({
-    message: encryptedMessage,
-    privateKeys: await openpgp.readKey({ armoredKey: privateKey }),
-    format: "binary",
-  });
-  return decrypted;
+const networkType = process.env.REACT_APP_ENV === "production" ? monerojs.MoneroNetworkType.MAINNET : monerojs.MoneroNetworkType.STAGENET;
+
+export async function generateWalletPassword(): Promise<Uint8Array> {
+  await _sodium.ready;
+  const sodium = _sodium;
+  return sodium.randombytes_buf(16);
 }
 
 /**
- * Encrypt wallet keys with the public pgp key
+ * Encrypt wallet keys with the public key
  */
-export async function encryptWalletKeys(publicKey: string, walletKeys: Uint8Array): Promise<string> {
-  const message = await openpgp.createMessage({ binary: walletKeys  });
-  const _publicKey = await openpgp.readKey({ armoredKey: publicKey });
-  const encrypted = await openpgp.encrypt({
-      message: message,
-      publicKeys: [_publicKey], 
-  });
-  return encrypted;
+export async function encryptWalletKeys(publicKey: Uint8Array, walletKeys: Uint8Array, walletPassword: Uint8Array): Promise<Uint8Array> {
+  await _sodium.ready;
+  const sodium = _sodium;
+  const message = new Uint8Array(walletPassword.length + walletKeys.length);
+  message.set(walletPassword);
+  message.set(walletKeys, walletPassword.length)
+  return sodium.crypto_box_seal(message, publicKey);
 }
 
 /**
- * Decrypt wallet keys with user password
+ * Decrypt wallet keys with user's encryption keys
  */
 export async function decryptWalletKeys(
-  encryptedWalletKeys: string,
-  encPrivateKey: string,
-  password: string,
-): Promise<Uint8Array> {
+  encryptedWalletKeys: Uint8Array,
+  publicKey: Uint8Array,
+  privateKey: Uint8Array,
+): Promise<{ walletKeys: Uint8Array; walletPassword: Uint8Array }> {
   try {
-    const { encryptionKey } = await deriveUserKeys(password);
-    const privateKey = await decryptKey(encPrivateKey, encryptionKey);
-    return await decryptMessageWithPrivateKey(encryptedWalletKeys, privateKey);
+    await _sodium.ready;
+    const sodium = _sodium;
+    const decryptedMessage = sodium.crypto_box_seal_open(encryptedWalletKeys, publicKey, privateKey);
+    return {
+      walletKeys: decryptedMessage.slice(16),
+      walletPassword: decryptedMessage.slice(0, 16),
+    };
   } catch(error) {
-    throw({ password: "Incorrect password" })
+    throw({ password: "Wallet keys decryption failed." });
   }
 }
 
@@ -56,16 +50,20 @@ export async function decryptWalletKeys(
 export default class WalletService {
   userWallet: InstanceType<typeof Wallet> | null;
   backupWallet: InstanceType<typeof Wallet> | null;
+  walletPassword: Uint8Array;
   constructor() {
     this.userWallet = null;
     this.backupWallet = null;
+    this.walletPassword = new Uint8Array();
   }
   /**
   * Create user and backup wallets
   */
   createWallets = async (): Promise<{ userWallet: LocalWalletData, backupWallet: LocalWalletData }> => {
-    this.userWallet = await Wallet.init({ password: defaultWalletPassword, networkType: monerojs.MoneroNetworkType.STAGENET });
-    this.backupWallet = await Wallet.init({ password: defaultWalletPassword, networkType: monerojs.MoneroNetworkType.STAGENET });
+    const walletPassword = await generateWalletPassword();
+    this.walletPassword = walletPassword;
+    this.userWallet = await Wallet.init({ password: Buffer.from(walletPassword).toString("hex"), networkType: networkType });
+    this.backupWallet = await Wallet.init({ password: Buffer.from(walletPassword).toString("hex"), networkType: networkType });
     const userWallet = await this.userWallet.getWalletJSON();
     const backupWallet = await this.backupWallet.getWalletJSON();
     return {
@@ -120,27 +118,28 @@ export default class WalletService {
     };
   }
   /**
-   * Encrypt wallet keys with the public pgp key
+   * Encrypt wallet keys and wallet password with the public key
    */
-  encryptWalletKeys = async (publicKey: string): Promise<string> => {
+  encryptWalletKeys = async (publicKey: Uint8Array): Promise<Uint8Array> => {
     const walletData = await this.userWallet?.getData();
     if (!walletData) {
-      return "";
+      return new Uint8Array();
     }
     const keys = walletData[0];
-    return encryptWalletKeys(publicKey, keys);
+    return await encryptWalletKeys(publicKey, keys, this.walletPassword);
   }
   /**
    * Open walllet in browser using wallet keys
    */
-  openWallet = async (decryptedKeys: Uint8Array): Promise<LocalWalletData> => {
+  openWallet = async (decryptedKeys: Uint8Array, walletPassword: Uint8Array): Promise<LocalWalletData> => {
     this.userWallet = await Wallet.init({
-      password: defaultWalletPassword,
-      networkType: monerojs.MoneroNetworkType.STAGENET,
+      password: Buffer.from(walletPassword).toString("hex"),
+      networkType: networkType,
       keysData: decryptedKeys,
       cacheData: new Uint8Array(),
       path: "",
     }, true);
+    this.walletPassword = walletPassword;
     const userWallet = await this.userWallet.getWalletJSON();
     return userWallet;
   }

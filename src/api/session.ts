@@ -117,10 +117,11 @@ export class SessionApi extends Api {
     ).then(this.success);
   }
 
-  public changeEmailRequest(data: ChangeEmailRequestPayload): Promise<void> {
+  public changeEmailRequest(data: ChangeEmailRequestPayload, config?: { headers: { "X-RINO-2FA": string } }): Promise<void> {
     return this.post<void, ChangeEmailRequestPayload>(
       "/accounts/email-changes/",
       data,
+      config,
     ).then(this.success);
   }
 

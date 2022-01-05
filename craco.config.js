@@ -1,9 +1,13 @@
 const HashOutput = require('webpack-plugin-hash-output');
 const TerserPlugin = require('terser-webpack-plugin');
 const webpack = require('webpack');
+const SriPlugin = require('webpack-subresource-integrity');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 
 // craco.config.js
+// Note: the inherited base config of create-react-app is here:
+// https://github.com/facebook/create-react-app/blob/main/packages/react-scripts/config/webpack.config.js
 module.exports = {
   style: {
     postcss: {
@@ -16,9 +20,21 @@ module.exports = {
   webpack: {
     optimization: [],
     configure: (webpackConfig, { env, paths }) => {
-      let plugins = webpackConfig.plugins;
+      // Remove pre-existing MiniCssExtractPlugin, as plugin order is important
+      // We re-add it later...
+      let plugins = webpackConfig.plugins.filter((elem) => !(elem instanceof MiniCssExtractPlugin));
 
       plugins = [
+        new MiniCssExtractPlugin({
+          // We can't use [chunkhash] here
+          // see https://github.com/scinos/webpack-plugin-hash-output/issues/29
+          filename: 'static/css/[name].[contenthash].chunk.css',
+          chunkFilename: 'static/css/[name].[contenthash].chunk.css',
+        }),
+        // SriPlugin might be better disabled in local development mode
+        //Note: SRIPlugin operates in an earlier phase than HashOutput and so sequence
+        // here is not relevant
+        new SriPlugin({ hashFuncNames: ["sha256"], enabled: env !== "development"}),
         // LAST: HashOutput replaces the default chunk-hashing plugins, because the default ones
         // don't really "see" the final compilation artifacts. It will be responsible for
         // creating the hashes that will take part of the chunk names. See its npm entry
@@ -38,8 +54,9 @@ module.exports = {
       // env == development when running 'yarn start'. For some reason we can't use chunkhash in this case
       const chunksPattern = env == 'production' ? '[name].[chunkhash].js' : '[name].[hash].js';
       // HashOutput will inject into these [chunkhash] templates
+      // note: SriPlugin uses 'crossOriginLoading''
       let output = Object.assign(webpackConfig.output,
-        { filename: chunksPattern, chunkFilename: chunksPattern }
+        { filename: chunksPattern, chunkFilename: chunksPattern, crossOriginLoading: "anonymous" }
       );
 
       // We remove the default TerserPlugin instance, and replace it with one with custom configuration.

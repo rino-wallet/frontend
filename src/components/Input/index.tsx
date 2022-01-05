@@ -1,11 +1,9 @@
 import React from "react";
 import classNames from "classnames";
-import { UI_SIZE, UI_SIZE_MAP } from "../../constants";
 
 type InputType = "email" | "text" | "password";
 
 type Props = {
-  size?: UI_SIZE;
   type: InputType,
   value?: string;
   name?: string;
@@ -16,17 +14,11 @@ type Props = {
   disabled?: boolean;
   className?: string;
   maxLength?: number;
+  ref?: any;
 };
 
-const SIZE_MAPS: Record<UI_SIZE, string> = {
-  [UI_SIZE.BIG]: `px-3 ${UI_SIZE_MAP[UI_SIZE.BIG]}`,
-  [UI_SIZE.MEDIUM]: `px-3 ${UI_SIZE_MAP[UI_SIZE.MEDIUM]}`,
-  [UI_SIZE.SMALL]: `px-3 ${UI_SIZE_MAP[UI_SIZE.SMALL]}`,
-};
-
-export const Input: React.FC<Props> & { size: typeof UI_SIZE; } = (props) => {
+export const Input = React.forwardRef<HTMLInputElement, Props>((props, ref) => {
   const {
-    size = UI_SIZE.BIG,
     type,
     value = "",
     name = "",
@@ -41,6 +33,7 @@ export const Input: React.FC<Props> & { size: typeof UI_SIZE; } = (props) => {
   return (
     <div>
       <input
+        ref={ref}
         type={type}
         value={value}
         name={name}
@@ -50,20 +43,17 @@ export const Input: React.FC<Props> & { size: typeof UI_SIZE; } = (props) => {
         maxLength={maxLength}
         className={classNames(
           className,
-          "w-full inline-flex rounded border-solid border placeholder-gray-300 text-gray-900 disabled:opacity-50",
-          SIZE_MAPS[size],
+          "w-full font-lato inline-flex rounded border-solid border placeholder-gray-400 theme-text px-6 py-3.25 rounded-medium",
           {
-            "border-gray-200": !error,
-            "border-red-300": !!error,
+            "theme-control-border": !error,
+            "theme-border-error": !!error,
           }
         )}
         disabled={disabled}
       />
       {
-        error && <div id={`${name}-error`} className="text-error text-xs mt-1">{error}</div>
+        error && <div id={`${name}-error`} className="theme-text-error text-base mt-1">{error}</div>
       }
     </div>
   );
-}
-
-Input.size = UI_SIZE;
+})

@@ -1,55 +1,115 @@
-import React from "react";
-import QRCode from "qrcode.react";
-import { generatePath } from "react-router-dom";
-import { PageTemplate } from "../../../modules/index";
-import { Button, CopyIcon } from "../../../components";
-import { useCopy } from "../../../hooks";
+import React, { useEffect, useState } from "react";
+import { createQRCodeImage } from "../../../utils";
+import { generatePath, useNavigate } from "react-router-dom";
+import { CopyArea, Pagination } from "../../../modules/index";
+import { Button, Label } from "../../../components";
+import { CreateSubaddressThunkPayload, Subaddress, Wallet, FetchSubaddressesThunkPayload, FetchSubaddressResponse } from "../../../types";
 import routes from "../../../router/routes";
-import Subaddresses from "./Subaddresses";
+import { SubaddressItem } from "./SubaddressItem";
+import { WalletPageTemplate } from "../WalletPageTemplate";
 
 interface Props {
-  address: string;
   walletId: string;
+  wallet: Wallet;
+  listLoading: boolean;
+  subaddressCreating: boolean;
+  subaddresses: Subaddress[];
+  pages: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+  fetchSubaddresses: (payload: FetchSubaddressesThunkPayload) => Promise<FetchSubaddressResponse>;
+  createSubaddress: (payload: CreateSubaddressThunkPayload) => Promise<Subaddress>;
+  walletSubAddress: string;
 }
 
 const ReceivePayment: React.FC<Props> = ({
-  address,
+  wallet,
   walletId,
+  listLoading,
+  subaddressCreating,
+  subaddresses,
+  pages,
+  hasPreviousPage,
+  hasNextPage,
+  createSubaddress,
+  fetchSubaddresses,
+  walletSubAddress,
 }) => {
-  const {successFlag, copyToClipboard} = useCopy();
+  const [page, setPage] = useState<number>(1);
+  const navigate = useNavigate();
+  const [image, setImage] = useState("");
+  useEffect(() => {
+    if (walletSubAddress) {
+      createQRCodeImage(walletSubAddress, { errorCorrectionLevel: "H", width: 265 })
+        .then((b64String) => {
+          setImage(b64String);
+        }, () => { setImage(""); });
+    }
+  }, [walletSubAddress])
+  useEffect(() => {
+    fetchSubaddresses({ walletId, page });
+  }, [page]);
   return (
-    <PageTemplate title="Receive" backButtonRoute={`${generatePath(routes.wallet, { id: walletId })}/transactions`}>
+    <WalletPageTemplate
+      title="Receive"
+      goBackCallback={(): void => { navigate(`${generatePath(routes.wallet, { id: walletId })}/transactions`); }}
+      id={walletId}
+      wallet={wallet}
+    >
       <div>
-        <div className="flex justify-center mb-6" data-qa-selector="address-qr-code">
-          <QRCode
-            id="qr-code"
-            value={address}
-            size={202}
-            level="H"
-            includeMargin
-          />
-        </div>
-        <div className="rounded border-solid border border-gray-200 p-3 text-sm bg-gray-50 mb-4 h-16">
-          <div className="flex items-center space-x-3">
-            <div className="min-w-0 break-words" data-qa-selector="receive-address">{address}</div>
-            <div className="flex-shrink-0">
-              <Button
-                name="copy-address-btn"
-                size={Button.size.SMALL}
-                variant={successFlag ? Button.variant.GREEN : Button.variant.GRAY}
-                onClick={(): void => { copyToClipboard(address); }}
-                rounded
-              >
-                <CopyIcon size={12} />
-              </Button>
-            </div>
+        <div className="mb-8 items-start md:flex">
+          <div className="flex justify-center mb-6 order-2" data-qa-selector="address-qr-code">
+            {
+              image && <img src={image} alt={walletSubAddress} />
+            }
+          </div>
+          <div className="min-w-0 order-1 w-full md:mr-6">
+            <Label label="Current address">
+              <CopyArea text={walletSubAddress} qaSelector="receive-address" />
+            </Label>
+            <Button
+              className="mt-6"
+              name="create-new-address-btn"
+              onClick={(): void => {
+                createSubaddress({ walletId })
+                  .then(() => {
+                    fetchSubaddresses({ walletId, page });
+                  })
+              }}
+              disabled={subaddressCreating}
+              loading={subaddressCreating}
+              block
+            >
+              Generate New Address
+            </Button>
           </div>
         </div>
         <div>
-          <Subaddresses walletId={walletId} />
+          <h2 className="font-catamaran uppercase text-2xl font-bold mb-8">Previous addresses</h2>
+          <ul>
+            {
+              subaddresses.map((subaddress) => (
+                <li key={subaddress.address} className="mb-3">
+                  <SubaddressItem subaddress={subaddress} />
+                </li>
+              ))
+            }
+          </ul>
+          {
+            pages > 1 && (
+              <Pagination
+                loading={listLoading}
+                page={page}
+                pageCount={pages}
+                hasNextPage={hasNextPage}
+                hasPreviousPage={hasPreviousPage}
+                onChange={setPage}
+              />
+            )
+          }
         </div>
       </div>
-    </PageTemplate>
+    </WalletPageTemplate>
   )
 }
 

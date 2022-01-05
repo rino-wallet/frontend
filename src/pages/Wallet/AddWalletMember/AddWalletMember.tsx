@@ -1,8 +1,7 @@
-
 import { useFormik } from "formik";
 import React from "react";
 import * as yup from "yup";
-import { generatePath, useHistory } from "react-router-dom";
+import { generatePath, useNavigate } from "react-router-dom";
 import { ShareWalletPayload, Wallet } from "../../../types";
 import { accessLevels } from "../../../constants";
 import { FormErrors, PageTemplate } from "../../../modules/index";
@@ -16,11 +15,11 @@ const validationSchema = yup.object().shape({
 
 interface Props {
   wallet: Wallet;
-  shareWallet: (data: { wallet: Wallet, password: string; body: ShareWalletPayload }) => Promise<string>;
+  shareWallet: (data: { wallet: Wallet, loginPassword: string; body: ShareWalletPayload }) => Promise<string>;
 }
 
 const AddWalletMember: React.FC<Props> = ({ wallet, shareWallet }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const {
     isValid,
     dirty,
@@ -44,14 +43,14 @@ const AddWalletMember: React.FC<Props> = ({ wallet, shareWallet }) => {
       try {
         await shareWallet({
           wallet,
-          password: formValues.password,
+          loginPassword: formValues.password,
           body: {
             email: formValues.email,
             access_level: parseInt(formValues.access_level),
             encrypted_keys:  "",
           },
         });
-        history.goBack();
+        navigate(-1);
         resetForm();
       } catch (err) {
         setErrors(err);
@@ -62,14 +61,14 @@ const AddWalletMember: React.FC<Props> = ({ wallet, shareWallet }) => {
     <PageTemplate title="Add user" backButtonRoute={`${generatePath(routes.wallet, { id: wallet.id })}/users`}>
       <form onSubmit={handleSubmit}>
         <div className="form-field">
-          <Label label="E-mail">
+          <Label label="Email">
             <Input
               type="email"
               name="email"
               value={values.email}
               onChange={handleChange}
               onBlur={handleBlur}
-              placeholder="Email"
+              placeholder="email"
               error={touched.email && errors.email || ""}
             />
           </Label>
@@ -79,7 +78,6 @@ const AddWalletMember: React.FC<Props> = ({ wallet, shareWallet }) => {
             <Select
               name="access_level"
               value={values.access_level}
-              size={Button.size.BIG}
               onChange={handleChange}
               onBlur={handleBlur}
               error={touched.access_level && errors.access_level || ""}

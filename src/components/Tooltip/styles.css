@@ -1,0 +1,8 @@
+.tooltip__content {
+  display: none;
+  min-width: 11rem;
+}
+
+.tooltip:hover .tooltip__content {
+  display: block;
+}

@@ -21,8 +21,8 @@ COPY . .
 ENV NODE_PATH=/home/1000/node_modules
 
 # Set up auth to our internal registry. Yarn will use this npm config.
-RUN npm config set "@enterprisewallet:registry=https://gitlab.cryptosphere-systems.com/api/v4/projects/618/packages/npm/" \
-    && npm config set -- "//gitlab.cryptosphere-systems.com/api/v4/projects/618/packages/npm/:_authToken" "${GITLAB_API_ACCESS_TOKEN}"
+RUN npm config set "@rino-wallet:registry=https://gitlab.cryptosphere-systems.com/api/v4/projects/621/packages/npm/" \
+    && npm config set -- "//gitlab.cryptosphere-systems.com/api/v4/projects/621/packages/npm/:_authToken" "${GITLAB_API_ACCESS_TOKEN}"
 
 # Perhaps there is a better way. But i was only able to run the project
 # using the line below

@@ -1,6 +1,7 @@
-import monerojs from "@enterprisewallet/monero-javascript";
+import monerojs from "@rino-wallet/monero-javascript";
 import { expect } from "chai";
-import WalletService from "../../src/wallet";
+import WalletService, { decryptWalletKeys, encryptWalletKeys, generateWalletPassword } from "../../src/wallet";
+import { generateUserKeyPair } from "../../src/utils/keypairs";
 import Wallet from "../../src/wallet/Wallet";
 
 const walletService = new WalletService();
@@ -39,5 +40,19 @@ describe("WalletService", function() {
   it("exchangeMultisigKeys. userWallet and backupWallet must have the same address after exchanging keys", async () => {
     const result = await walletService.exchangeMultisigKeys([...localWalletsXMultisig, serverWalletXMultisig]);
     expect(result.userResult.state.address).to.equal(result.backupResult.state.address);
+  });
+  it("encrypt wallet keys and decrypt them", async () => {
+    const walletData = await walletService.userWallet.getData();
+    const walletKeys = walletData[0]; 
+    const { encryption } = await generateUserKeyPair();
+    const password = await generateWalletPassword();
+    const encryptedWalletData = await encryptWalletKeys(encryption.publicKey, walletKeys, password);
+    const decryptedWalletData = await decryptWalletKeys(
+      encryptedWalletData,
+      encryption.publicKey,
+      encryption.privateKey,
+    );
+    expect(Buffer.from(decryptedWalletData.walletKeys).toString("hex"))
+    .to.equal(Buffer.from(walletKeys).toString("hex"));
   });
 });

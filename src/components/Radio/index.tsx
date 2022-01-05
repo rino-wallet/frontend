@@ -11,9 +11,9 @@ type Props = {
 export const Radio: React.FC<Props> = (props) => {
   const { value, checked, onChange, children } = props;
   return (
-    <label className="inline-flex items-center text-sm">
-      <input checked={checked} type="radio" value={value} className="h-4 w-4" onChange={onChange} />
-      <span className="ml-2 text-gray-900">
+    <label className="inline-flex items-center text-base">
+      <input checked={checked} type="radio" value={value} className="h-5 w-5" onChange={onChange} />
+      <span className="ml-2 theme-text">
         {children}
       </span>
     </label>

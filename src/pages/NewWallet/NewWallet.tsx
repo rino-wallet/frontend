@@ -1,63 +1,106 @@
-import React, { useState } from "react";
-import classNames from "classnames";
+import React, {useEffect, useState} from "react";
+import { format } from "date-fns";
 import { LocalWalletData, NewWalletPDFData } from "../../types";
-import { defaultWalletPassword } from "../../constants";
 import SecurityTab from "./SecurityTab";
 import WalletNameTab from "./WalletNameTab";
 import { PageTemplate } from "../../modules/index";
-import CreatingWallet from "./CreatingWallet";
+import { Tabs } from "../../components";
 import routes from "../../router/routes";
 
+function isSupported(): boolean {
+  const ua = navigator.userAgent;
+  if(/Android/i.test(ua) && /Chrome/i.test(ua)) {
+    return false;
+  }
+  return true;
+}
 interface Props {
-  createMultisigWallet: (data: { name: string }) => Promise<{ userWallet: LocalWalletData, backupWallet: LocalWalletData, walletId: string }>;
+  createMultisigWallet: (data: { name: string }) => Promise<{ userWallet: LocalWalletData; backupWallet: LocalWalletData; walletId: string; walletPassword: string }>;
+  persistWallet: (data: { id: string }) => Promise<void>;
   isKeypairSet: boolean;
   stage: string;
+  username: string;
   isWalletCreating: boolean;
+  setPreventNavigation: (value: boolean) => void;
 }
 
-const NewWalletContainer: React.FC<Props> = ({ createMultisigWallet, isKeypairSet, stage, isWalletCreating }) => {
+const NewWalletContainer: React.FC<Props> = ({ createMultisigWallet, username, persistWallet, isKeypairSet, stage, isWalletCreating, setPreventNavigation }) => {
+  const showWarning = !isSupported();
   const [pdfData, setPdfData] = useState<NewWalletPDFData | null>(null)
   const [walletId, setWalletId] = useState<string>("");
   const isWalletCreated = !!pdfData;
+  useEffect(() => {
+    return (): void => {
+      setPreventNavigation(false);
+    };
+  }, []);
   function createNewWallet(name: string): Promise<any> {
+    setPreventNavigation(true);
     return createMultisigWallet({ name })
       .then((actionResponse) => {
         setWalletId(actionResponse.walletId);
         setPdfData({
-          password: defaultWalletPassword,
+          username,
+          password: actionResponse.walletPassword,
+          address: actionResponse.userWallet.address,
           walletName: name,
-          userWalletKeyHex: actionResponse.userWallet.keyHex,
-          userWalletKeyB64: actionResponse.userWallet.base64Key,
-          userWalletAddress: actionResponse.userWallet.address,
-          backupWalletKeyHex: actionResponse.backupWallet.keyHex,
-          backupWalletKeyB64: actionResponse.backupWallet.base64Key,
-          backupWalletAddress: actionResponse.backupWallet.address,
+          userWalletSeed: actionResponse.userWallet.multisigSeed,
+          backupWalletSeed: actionResponse.backupWallet.multisigSeed,
+          checkString: Math.floor(100000 + Math.random() * 900000).toString(),
+          date: format(new Date(), "yyyy-MM-dd"),
         });
         return actionResponse;
       }, (err) => {
+        setPreventNavigation(false);
         throw(err);
       });
   }
   return (
-    <PageTemplate title="New Wallet" backButtonRoute={!isWalletCreated ? routes.wallets : ""}>
-      <div className="flex mb-5">
-        <div id="wallet-name-tab-title" className={classNames("flex-1 uppercase", { "text-secondary": isWalletCreated })}>1. Wallet Name</div>
-        <div id="security-tab-title" className={classNames("flex-1 uppercase", { "text-secondary": !isWalletCreated })}>2. Security</div>
-      </div>
-      <div>
+    <PageTemplate title={isWalletCreated ? `New Wallet: ${pdfData?.walletName}` : "New Wallet"} backButtonRoute={!isWalletCreated ? routes.wallets : ""}>
+      <div className="w-full">
         {
-          pdfData ? (
-            <SecurityTab pdfData={pdfData} walletId={walletId} />
-          ) : (
-            <WalletNameTab isKeypairSet={isKeypairSet} createNewWallet={createNewWallet} />
+          showWarning && (
+            <div className="border-2 theme-border-error theme-text-error theme-bg-panel rounded-xl p-5 mb-5 text-center">
+              Your browser is not supported, yet, but we are working on it.
+              We recommend using a desktop computer to create a wallet,
+              or switching to another browser on your device (Firefox has a higher chance of working).
+            </div>
           )
         }
+        <div className="flex mb-5 m-auto">
+          <Tabs
+            tabs={[
+              {
+                value: 0,
+                text: (
+                  <div className="text-center">
+                    <div className="text-2xl font-bold normal-case">1. Create Wallet</div>
+                  </div>
+                ),
+              },
+              {
+                value: 1,
+                text: (
+                  <div className="text-center">
+                    <div className="text-2xl font-bold normal-case">2. Download and Store Wallet Recovery Document</div>
+                  </div>
+                ),
+              },
+            ]}
+            activeTab={isWalletCreated ? 1 : 0}
+          >
+            <div className="w-full p-10 m-auto">
+              {
+                pdfData ? (
+                  <SecurityTab pdfData={pdfData} walletId={walletId} persistWallet={persistWallet} />
+                ) : (
+                  <WalletNameTab isKeypairSet={isKeypairSet} createNewWallet={createNewWallet} isWalletCreating={isWalletCreating} stage={stage} />
+                )
+              }
+            </div>
+          </Tabs> 
+        </div>
       </div>
-      {
-        isWalletCreating && (
-          <CreatingWallet stage={stage} />
-        )
-      }
     </PageTemplate>
   )
 }

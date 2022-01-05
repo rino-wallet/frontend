@@ -1,0 +1,6 @@
+Contact: security@rino.io
+Encryption: https://rino.io/security-pgp-key
+Acknowledgments: https://rino.io/acknowledgments
+Preferred-Languages: en
+Canonical: https://rino.io/.well-known/security.txt
+Policy: https://rino.io/security

@@ -11,6 +11,15 @@
 # production
 /build
 
+# temp
+/public/monero_wallet_full.js
+/public/monero_wallet_full.wasm
+/public/monero_wallet_keys.js
+/public/monero_wallet_keys.wasm
+/public/monero_web_worker.js
+/public/monero_web_worker.js.map
+securebrowse-hashes.txt
+
 # misc
 .DS_Store
 .env.local
@@ -24,3 +33,5 @@ yarn-error.log*
 
 .vscode
 .idea
+.venv
+.autoenv

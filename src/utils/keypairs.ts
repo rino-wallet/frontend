@@ -1,171 +1,263 @@
-import * as openpgp from "openpgp";
-import scrypt from "scrypt-js";
-import CryptoJS from "crypto-js";
-import { DerivedKeys } from "../types";
+import _sodium from "libsodium-wrappers";
+import { Keypair, EncryptedPrivateKeysDataSet, UserKeyPairInfo } from "../types";
 
 /**
- * Derivation of authentication and encryption keys from the user password.
+ * Derivation of authentication and encryption keys from the user password and username.
  * 
- * This function generates a 64 bytes/char key using the scrypt derivation function.
- * This means using the key-derivation algorithm (scrypt.) on a password that the user chooses.
- * This algorithm requires a password and salt. We'll us sha256(password) as salt
- * The first 32 chars, should be used for authentication purposes.
- * The last 32 chars, should be used for encryption purposes.
+ * This function generates a 64 bytes key using the crypto_pwhash derivation function.
+ * This means using the key-derivation algorithm on a password that the user chooses.
+ * This algorithm requires a password and salt. We'll use username as salt
+ * The first 32 bytes, should be used for authentication purposes.
+ * The last 32 bytes, should be used for encryption purposes.
  * This function shuld be called everytime when we ask for the user's password.
  */
-export async function deriveUserKeys(password: string): Promise<DerivedKeys> {
-  /*
-    N - The CPU/memory cost; increasing this increases the overall difficulty
-    r - The block size; increasing this increases the dependency on memory latency and bandwidth
-    p - The parallelization cost; increasing this increases the dependency on multi-processing
-    scrypt.scrypt( password , salt , N , r , p , dkLen [ , progressCallback ] ) => Promise
-  */
-  const N = 1024;
-  const r = 8;
-  const p = 1;
-  const dkLen = 32;
-
-  const passwordHash = CryptoJS.SHA256(password).toString();
-  const passwordNFC = new (Buffer as any).from(password.normalize("NFKC"));
-  const saltNFC = new (Buffer as any).from(passwordHash.normalize("NFKC"));
-  const derivedKey = await scrypt.scrypt(passwordNFC, saltNFC, N, r, p, dkLen);
-  const derivedKeyHash = Buffer.from(derivedKey).toString("hex");
-  const authKey = derivedKeyHash.slice(0, 32);
-  const encryptionKey = derivedKeyHash.slice(32);
-
+export async function deriveUserKeys(password: string, username: string): Promise<{ authKey: Uint8Array; encryptionKey: Uint8Array; clean: () => void; }> {
+  await _sodium.ready;
+  const sodium = _sodium;
+  const enc = new TextEncoder();
+  const usernameSalt = enc.encode(username);
+  const salt = new Uint8Array(sodium.crypto_pwhash_SALTBYTES);
+  salt.set(usernameSalt.subarray(0, sodium.crypto_pwhash_SALTBYTES));
+  const key = sodium?.crypto_pwhash(
+    64,
+    password,
+    salt,
+    sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+    sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE,
+    sodium.crypto_pwhash_ALG_DEFAULT,
+  );
+  const authKey = key.slice(0, 32);
+  const encryptionKey = key.slice(32);
+  sodium.memzero(usernameSalt);
+  sodium.memzero(salt);
   return {
     authKey,
     encryptionKey,
-  }
+    clean(): void {
+      sodium.memzero(authKey);
+      sodium.memzero(encryptionKey);
+      sodium.memzero(key);
+    }
+  };
 }
 
 /**
  * Generate a recovery key.
- * We use the same algorithm as in deriveUserKeys function,
- * but we use a long random string as password, and another one as salt.
+ * We use sodium.randombytes_buf function to generate 32 bytes key
  */
-export async function generateRecoveryKey(): Promise<string> {
-  const random1 = CryptoJS.lib.WordArray.random(128 / 8).toString();
-  const random2 = CryptoJS.lib.WordArray.random(128 / 8).toString();
-  const key = await scrypt.scrypt(Buffer.from(random1), Buffer.from(random2), 1024, 8, 1, 16);
-  return Buffer.from(key).toString("hex");
+export async function generateRecoveryKey(): Promise<{ recoveryKey: Uint8Array; clean: () => void; }> {
+  await _sodium.ready;
+  const sodium = _sodium;
+  const recoveryKey = sodium.randombytes_buf(32);
+  return {
+    recoveryKey,
+    clean(): void {
+      sodium.memzero(recoveryKey);
+    }
+  };
 }
 
 /**
- * Generate new PGP key pair
+ * Generate new key pair
  */
-export async function generateUserKeyPair(email: string): Promise<{privateKey: string; publicKey: string}> {
-  const { privateKeyArmored, publicKeyArmored } = await openpgp.generateKey({
-    type: "ecc",
-    curve: "curve25519",
-    userIDs: [{ email }],
-  });
-  return { privateKey: privateKeyArmored, publicKey: publicKeyArmored };
+export async function generateUserKeyPair(): Promise<{encryption: Keypair; sign: Keypair; clean: () => void;}> {
+  await _sodium.ready;
+  const sodium = _sodium;
+  const encryption = sodium.crypto_box_keypair();
+  const sign = sodium.crypto_sign_keypair();
+  return {
+    encryption,
+    sign,
+    clean(): void {
+      sodium.memzero(encryption.privateKey);
+      sodium.memzero(encryption.publicKey);
+      sodium.memzero(sign.privateKey);
+      sodium.memzero(sign.publicKey);
+    }
+  }
 }
 
 /**
- * Encrypt the private key using the encryption key.
- * Encrypt the private key using the recovery key.
+ * Encrypt the private keys using the encryption key.
+ * Encrypt the private keys using the recovery key.
+ * message = (2 bytes version) + encryptionPrivateKey + signingPrivateKey
  */
 export async function encryptPrivateKeys(
-  privateKey: string,
-  encryptionKey: string,
-  recoveryKey: string): Promise<{privateKeyEK: string; privateKeyRK: string}> {
-  const message = await openpgp.createMessage({ text: privateKey });
+  encryptionPrivateKey: Uint8Array,
+  signingPrivateKey: Uint8Array,
+  encryptionKey: Uint8Array,
+  recoveryKey?: Uint8Array,
+): Promise<EncryptedPrivateKeysDataSet> {
+  await _sodium.ready;
+  const sodium = _sodium;
+  const version = new Uint8Array([0, 1]);
+  const message = new Uint8Array(version.length + encryptionPrivateKey.length + signingPrivateKey.length);
+  message.set(version);
+  message.set(encryptionPrivateKey, version.length);
+  message.set(signingPrivateKey, version.length + encryptionPrivateKey.length);
+  const nonceEK = sodium.randombytes_buf(sodium.crypto_secretbox_NONCEBYTES);
+  const nonceRK = sodium.randombytes_buf(sodium.crypto_secretbox_NONCEBYTES);
+  const encryptedMessageEK = sodium.crypto_secretbox_easy(message, nonceEK, encryptionKey);
+  const encryptedMessageRK = recoveryKey ? sodium.crypto_secretbox_easy(message, nonceRK, recoveryKey) : new Uint8Array();
+  sodium.memzero(message);
   return {
-    privateKeyEK: encryptionKey ? await openpgp.encrypt({
-      message,
-      passwords: [encryptionKey],
-    }) : "",
-    privateKeyRK: recoveryKey ?  await openpgp.encrypt({
-      message,
-      passwords: [recoveryKey],
-    }) : "",
+    ek: { encryptedMessage: encryptedMessageEK, nonce: nonceEK },
+    rk: {
+      encryptedMessage: encryptedMessageRK,
+      nonce: recoveryKey ? nonceRK : new Uint8Array(),
+    },
   }
 }
 
 /**
- * Decrypt a key using the recovery key.
+ * Decrypt data using the encryption key.
  */
-export async function decryptKey(encryptedKey: string, recoveryKey: string): Promise<string> {
+export async function decryptKeys(
+  encryptedMessage: Uint8Array,
+  nonce: Uint8Array,
+  encryptionKey: Uint8Array,
+): Promise<{
+  version: number;
+  encryptionPrivateKey: Uint8Array;
+  signingPrivateKey: Uint8Array;
+  clean: () => void;
+}> {
   try {
-    const message = await openpgp.readMessage({
-      armoredMessage: encryptedKey,
-    });
-    const { data } = await openpgp.decrypt({
-        message,
-        passwords: [recoveryKey],
-        format: "utf8"
-    });
-    return data;
+    await _sodium.ready;
+    const sodium = _sodium;
+    const decryptedMessage = sodium.crypto_secretbox_open_easy(encryptedMessage, nonce, encryptionKey);
+    const version = decryptedMessage[1];
+    const encryptionPrivateKey = decryptedMessage.slice(2, 34);
+    const signingPrivateKey = decryptedMessage.slice(34);
+    return {
+      version,
+      encryptionPrivateKey,
+      signingPrivateKey,
+      clean(): void {
+        sodium.memzero(encryptionPrivateKey);
+        sodium.memzero(signingPrivateKey);
+      }
+    };
   } catch(error) {
-    throw({ decryptKey: "decryption failed." })
+    throw({ decryptKeys: "Decryption failed.", password: "Incorrect password." });
   }
 }
 
 /**
- * Concat public key, private privateKeyEncryptedByEncryptedKey and privateKeyEncryptedByRecoveryKey
+ * Convert encryptionPublicKey, signingPublicKey,  privateKeysEK, nonceEK,
+ * privateKeysRK, nonceRK to base64 and concatinate into one string.
  * Create a detached signature of that resulting string.
  */
 export async function signKeys(
-  privateKey: string,
-  publicKey: string,
-  privateKeyEK: string,
-  privateKeyRK: string): Promise<string> {
-  const cleartextMessage = await openpgp.createMessage({ text: `${publicKey}${privateKeyEK}${privateKeyRK}` });
-  const detachedSignature = await openpgp.sign({
-    message: cleartextMessage,
-    privateKeys: await openpgp.readKey({ armoredKey: privateKey }),
-    detached: true
-  });
-  return detachedSignature;
+  privateKey: Uint8Array,
+  encryptionPublicKey: Uint8Array,
+  signingPublicKey: Uint8Array,
+  privateKeysEK: Uint8Array,
+  nonceEK: Uint8Array,
+  privateKeysRK: Uint8Array,
+  nonceRK: Uint8Array,
+): Promise<Uint8Array> {
+  await _sodium.ready;
+  const sodium = _sodium;
+  const arrays = [
+    encryptionPublicKey,
+    signingPublicKey,
+    privateKeysEK,
+    nonceEK,
+    privateKeysRK,
+    nonceRK,
+  ];
+  const message = arrays.reduce((prev, cur) => prev + Buffer.from(cur).toString("base64"), "");
+  return sodium.crypto_sign_detached(message, privateKey);
 }
 
 /**
  * Generate user keypair information.
  */
-export async function generateUserKeyPairInfo(email: string, password: string, derivedKeys?: { authKey: string, encryptionKey: string }): Promise<{
-  authKey: string;
-  recoveryKey: string;
-  publicKey: string;
-  privateKeyEK: string;
-  privateKeyRK: string;
-  signature: string;
-}> {
-  const { authKey, encryptionKey } = derivedKeys ? derivedKeys : await deriveUserKeys(password);
-  const recoveryKey = await generateRecoveryKey();
-  const { privateKey, publicKey } = await generateUserKeyPair(email);
-  const {privateKeyEK, privateKeyRK } = await encryptPrivateKeys(privateKey, encryptionKey, recoveryKey);
-  const signature = await signKeys(privateKey, publicKey, privateKeyEK, privateKeyRK);
+export async function generateUserKeyPairInfo(
+  username: string,
+  password: string,
+  derivedKeys?: { authKey: Uint8Array, encryptionKey: Uint8Array, clean: () => void },
+): Promise<UserKeyPairInfo> {
+  const { authKey, encryptionKey, clean: cleanDerivedKeys } = derivedKeys ? derivedKeys : await deriveUserKeys(password, username);
+  const { recoveryKey, clean: cleanRecoveryKey } = await generateRecoveryKey();
+  const { clean: cleanUserKeyPair, ...keyPair } = await generateUserKeyPair();
+  const encPrivateKeysDataSet = await encryptPrivateKeys(
+    keyPair.encryption.privateKey,
+    keyPair.sign.privateKey,
+    encryptionKey,
+    recoveryKey,
+  );
+  const signature = await signKeys(
+    keyPair.sign.privateKey,
+    keyPair.encryption.publicKey,
+    keyPair.sign.publicKey,
+    encPrivateKeysDataSet.ek.encryptedMessage,
+    encPrivateKeysDataSet.ek.nonce,
+    encPrivateKeysDataSet.rk.encryptedMessage,
+    encPrivateKeysDataSet.rk.nonce,
+  );
   return {
     authKey,
     recoveryKey,
-    publicKey,
-    privateKeyEK,
-    privateKeyRK,
+    encryptionPublicKey: keyPair.encryption.publicKey,
+    signingPublicKey: keyPair.sign.publicKey,
+    encPrivateKeysDataSet,
     signature,
+    clean(): void {
+      cleanDerivedKeys();
+      cleanRecoveryKey();
+      cleanUserKeyPair();
+    }
   }
 }
 
 /**
  * This function is used when resetting the user's password.
- * 1. decrypts encrypted private pgp key with the recovery key
+ * 1. decrypts encrypted private key with the recovery key
  * 2. derivates authentication and encription keys from the new user password
- * 3. encrypts private pgp key using the new encription key
+ * 3. encrypts private keys using the new encription key
  * 4. creates signature
  */
-export async function reencrypPrivateKey(encryptedPrivateKey: string, recoveryKey: string, newPassword: string): Promise<{
-  authKey: string;
-  privateKeyEK: string;
-  signature: string;
-}> {
-  const { authKey, encryptionKey } = await deriveUserKeys(newPassword);
-  const privateKey = await decryptKey(encryptedPrivateKey, recoveryKey);
-  const { privateKeyEK } = await encryptPrivateKeys(privateKey, encryptionKey, ""); // do not encrypt with recovery key
-  const signature = await signKeys(privateKey, "", privateKeyEK, ""); // sign only encrypted private key
+export async function reencrypPrivateKey(
+  encPrivateKeys: Uint8Array,
+  nonce: Uint8Array,
+  recoveryKey: Uint8Array,
+  newPassword: string,
+  username: string,
+): Promise<UserKeyPairInfo> {
+  const { authKey, encryptionKey, clean: cleanDerivedKeys } = await deriveUserKeys(newPassword, username);
+  const { clean: cleanDecrypredKeys, ...decryptedData } = await decryptKeys(
+    encPrivateKeys,
+    nonce,
+    recoveryKey,
+  );
+  // do not encrypt with recovery key
+  const reEncPrivateKeysDataSet = await encryptPrivateKeys(
+    decryptedData.encryptionPrivateKey,
+    decryptedData.signingPrivateKey,
+    encryptionKey,
+  );
+  // sign only encrypted private key
+  const signature = await signKeys(
+    decryptedData.signingPrivateKey,
+    new Uint8Array(),
+    new Uint8Array(),
+    reEncPrivateKeysDataSet.ek.encryptedMessage,
+    reEncPrivateKeysDataSet.ek.nonce,
+    reEncPrivateKeysDataSet.rk.encryptedMessage,
+    reEncPrivateKeysDataSet.rk.nonce,
+  );
   return {
     authKey,
-    privateKeyEK,
+    recoveryKey,
+    encryptionPublicKey: new Uint8Array(), // empty array to correspond function response interface
+    signingPublicKey: new Uint8Array(), // empty array to correspond function response interface
+    encPrivateKeysDataSet: reEncPrivateKeysDataSet,
     signature,
+    clean(): void {
+      cleanDerivedKeys();
+      cleanDecrypredKeys();
+    }
   }
 }

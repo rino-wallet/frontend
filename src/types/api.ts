@@ -1,4 +1,4 @@
-import { string } from "yup/lib/locale";
+import { Subaddress } from "./store";
 
 interface ListResponse {
   count: number;
@@ -47,10 +47,11 @@ interface Transaction {
   fee?: string;
   confirmations: number;
   destinations: TransactionDestination[]
+  memo: string;
 }
 
 export interface SignInPayload {
-  email: string;
+  username: string;
   password: string;
 }
 
@@ -62,7 +63,9 @@ export interface SignInResponse {
 // Sign Up api interface
 export interface SignUpPayload {
   email: string;
+  username: string;
   password: string;
+  invite_code: string;
   password_confirmation: string;
 }
 
@@ -134,10 +137,11 @@ export interface UserResponse {
   isKeypairSet: boolean;
   name: string;
   username: string;
+  nonce: string;
   keypair: {
     encPrivateKey: string;
-    fingerprint: string;
-    publicKey: string;
+    encryptionPublicKey: string;
+    signingPublicKey: string;
   };
 }
 
@@ -145,7 +149,8 @@ export interface UserResponse {
 export interface SetUpKeyPairPayload {
   enc_private_key: string;
   enc_private_key_backup: string;
-  public_key: string;
+  encryption_public_key: string;
+  signing_public_key: string;
   signature: string;
 }
 
@@ -173,7 +178,9 @@ export type FetchWalletDetailsResponse = Wallet;
 // update wallet details api interface
 export interface UpdateWalletDetailsPayload {
   id: string;
-  name: string;
+  name?: string;
+  requires_2fa?: boolean;
+  code?: string;
 }
 
 export type UpdateWalletDetailsResponse = Wallet;
@@ -186,6 +193,8 @@ export interface FetchBackupPrivateKeyPayload {
 
 export interface FetchBackupPrivateKeyResponse {
   encPrivateKeyBackup: string;
+  username: string;
+  nonce: string;
 }
 
 // fetch public key api interface
@@ -240,6 +249,19 @@ export interface GetOutputsPayload {
 
 export interface GetOutputsResponse {
   taskId: string;
+}
+
+export interface SyncMultisigPayload {
+  id: string;
+  multisig_hex: string;
+}
+
+export interface SyncMultisigResponse {
+  taskId: string;
+}
+
+export interface PersistWalletPayload {
+  id: string;
 }
 
 // share wallet api interface
@@ -307,6 +329,22 @@ export interface FetchTransactionDetailsPayload {
 
 export type FetchTransactionDetailsResponse = Transaction;
 
+// update transaction details api interface
+export interface UpdateTransactionDetailsPayload {
+  walletId: string;
+  transactionId: string;
+  memo: string;
+}
+
+export interface UpdateTransactionDetailsResponse {
+  id: string;
+  amount: string;
+  timestamp: string;
+  direction: string;
+  fee?: string;
+  confirmations: number;
+  memo: string;
+}
 // delete wallet api interface
 
 export interface DeleteWalletPayload {
@@ -317,12 +355,7 @@ export type DeleteWalletResponse = void;
 
 // create subaddress api interface
 
-interface Subaddress {
-  address: string;
-}
-export interface CreateSubaddressResponse {
-  taskId: string;
-}
+export type SubaddressResponse = Subaddress;
 
 export interface FetchSubaddressResponse extends ListResponse {
   results: Subaddress[];

@@ -10,7 +10,7 @@ const ModalBody: React.FC = ({ children }) => {
 
 const ModalActions: React.FC = ({ children }) => {
   return (
-    <div className="p-3 mt-2 text-center space-x-4 md:block">
+    <div className="p-3 mt-2 text-center space-x-4">
       {children}
     </div>
   )

@@ -6,6 +6,7 @@ import { WalletSelect } from "./WalletSelect";
 import { SuccessModal, showSuccessModal } from "./SuccessModal";
 import { TransactionStatus } from "./TransactionStatus";
 import { Pagination } from "./Pagination";
+import { CopyArea } from "./CopyArea";
 
 export {
   PageTemplate,
@@ -17,4 +18,5 @@ export {
   showSuccessModal,
   TransactionStatus,
   Pagination,
+  CopyArea,
 };

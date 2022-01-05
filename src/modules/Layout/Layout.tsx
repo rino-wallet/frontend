@@ -1,32 +1,40 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
-import routes from "../../router/routes";
-
-export const PublicLayout: React.FC = ({ children }) => {
-  return (
-    <div className="container md:max-w-2xl min-h-screen flex flex-col bg-white m-auto text-sm">
-      <header className="flex justify-end border-b border-gray-100 py-2 px-3">
-        <NavLink id="nav-link-login" className="link mx-3 inline-block my-3" to={routes.login}>Login</NavLink>
-        <NavLink id="nav-link-register" className="link mx-3 inline-block my-3" to={routes.register}>Register</NavLink>
-      </header>
-      <main className="flex-1 container mx-auto p-5">{children}</main>
-    </div>
-  )
-}
+import { LayoutLanding } from "./LayoutLanding";
+import { LayoutStatic } from "./LayoutStatic";
+import { LayoutAuth } from "./LayoutAuth";
+import { LayoutDefault } from "./LayoutDefault";
+import { LayoutClear } from "./LayoutClear";
 
 interface Props {
-  signOut: () => Promise<void>
+  signOut: () => Promise<void>;
+  isAuthenticated: boolean;
+  page?: string;
 }
 
-export const PrivateLayout: React.FC<Props> = ({ children, signOut }) => {
-  return (
-    <div className="container md:max-w-2xl min-h-screen flex flex-col bg-white m-auto text-sm">
-      <header className="flex justify-end border-b border-gray-100 py-2 px-3">
-        <NavLink id="nav-link-wallets" className="link mx-3 inline-block my-3" to={routes.wallets}>Wallets</NavLink>
-        <NavLink id="nav-link-settings" className="link mx-3 inline-block my-3" to={routes.profile}>Settings</NavLink>
-        <button className="link mx-3 inline-block my-3" name="log-out" onClick={signOut}>Logout</button>
-      </header>
-      <main className="flex-1 container mx-auto p-5">{children}</main>
-    </div>
-  )
+export const Layout: React.FC<Props> = ({ children, signOut, isAuthenticated, page }) => {
+  switch (page) {
+    case "landing": {
+      return <LayoutLanding signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutLanding>
+    }
+    case "cookie_policy":
+    case "privacy_policy":
+    case "terms_of_service":
+    case "security":
+    case "security_pgp_key":
+    case "acknowledgments":
+    case "faq": {
+      return <LayoutStatic signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutStatic>
+    }
+    case "login":
+    case "register":
+    case "resetPassword": {
+      return <LayoutAuth signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutAuth>
+    }
+    case "keypair": {
+      return <LayoutClear>{children}</LayoutClear>
+    }
+    default: {
+      return <LayoutDefault signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutDefault>
+    }
+  }
 }

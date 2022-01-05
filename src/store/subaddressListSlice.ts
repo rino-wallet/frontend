@@ -1,7 +1,7 @@
 import {createSlice, createAsyncThunk} from "@reduxjs/toolkit";
 import { FetchSubaddressResponse, Subaddress, FetchSubaddressesThunkPayload, RootState } from "../types";
 import walletsApi from "../api/wallets";
-import { createLoadingSelector, generateExtraReducer, generateListReqParams } from "../utils";
+import { createLoadingSelector, generateExtraReducer } from "../utils";
 
 export const ITEMS_PER_PAGE = 3;
 
@@ -9,7 +9,11 @@ export const fetchSubaddresses = createAsyncThunk<FetchSubaddressResponse, Fetch
   "subaddressList/fetchSubaddresses",
   async ({ page, walletId }, { rejectWithValue }) => {
     try {
-      const subaddresses = await walletsApi.fetchWalletSubaddresses(walletId, generateListReqParams(page, ITEMS_PER_PAGE));
+      const listReqParams = {
+        offset: (page - 1) * ITEMS_PER_PAGE + 1,
+        limit: ITEMS_PER_PAGE,
+      }
+      const subaddresses = await walletsApi.fetchWalletSubaddresses(walletId, listReqParams);
       return subaddresses;
     } catch(err) {
       return rejectWithValue(err?.data)
@@ -54,12 +58,13 @@ export const subaddressListSlice = createSlice({
     ...generateExtraReducer(
       fetchSubaddresses,
       (data) => ({
+        // We avoid taking first subaddress into consideration, because it is not displayed in this list.
         entities: data.results,
-        count: data.count,
-        pages: Math.ceil(data.count / ITEMS_PER_PAGE),
-        hasPreviousPage: !!data.previous,
+        count: data.count - 1,
+        pages: Math.ceil((data.count - 1) / ITEMS_PER_PAGE),
+        hasPreviousPage: data.results.length && data.results[0].index !== data.count - 1 && !!data.previous,
         hasNextPage: !!data.next,
-      }),
+      })
     ),
   }
 });
