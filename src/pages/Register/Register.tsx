@@ -108,6 +108,7 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
                         error={touched.username ? errors.username : ""}
                       />
                     </Label>
+                    <div className="mt-1">You won’t be able to change it again, choose carefully 😉</div>
                   </div>
                   <div className="form-field">
                     <Label label="email">

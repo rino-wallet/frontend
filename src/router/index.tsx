@@ -84,6 +84,11 @@ const CookiePolicy = Loadable({
   loading: Loading,
 });
 
+const NotFound = Loadable({
+  loader: () => import("../pages/NotFound" /* webpackChunkName: "NotFound" */),
+  loading: Loading,
+});
+
 const defaultTitle = "RINO - Enterprise-Grade Monero Wallet";
 const defaultDescription = "RINO is a new type of Monero wallet. We are a non-custodial, enterprise-grade, multisig wallet.";
 const defaultMetaKeywords = "RINO, Monero, Wallet, Enterprise-Grade, Multisig, Convenient, Secure, Non-custodial";
@@ -276,6 +281,16 @@ const ROUTER_CONFIG: RouteType[] = [
     component: (props: any): ReactElement => <CookiePolicy {...props} />,
     isPrivate: false,
     key: "cookie_policy",
+  },
+  {
+    path: ROUTES.not_found,
+    metaTitle: defaultTitle,
+    metaDescription: defaultDescription,
+    metaKeywords: defaultMetaKeywords,
+    metaOgImage: defaultMetaOgImage,
+    component: (props: any): ReactElement => <NotFound {...props} />,
+    isPrivate: false,
+    key: "404",
   },
 ];
 

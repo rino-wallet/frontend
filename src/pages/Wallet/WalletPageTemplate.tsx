@@ -3,7 +3,7 @@ import { generatePath, Link } from "react-router-dom";
 import classNames from "classnames";
 import { piconeroToMonero, getWalletColor } from "../../utils";
 import routes from "../../router/routes";
-import { Button, Placeholder, FormatNumber, Tooltip } from "../../components"
+import { Button, Placeholder, FormatNumber, Tooltip, Icon } from "../../components"
 import {
   FetchWalletDetailsPayload,
   FetchWalletDetailsResponse,
@@ -12,7 +12,6 @@ import {
 } from "../../types";
 import { useIsMobile, useQuery, useThunkActionCreator, useSelector } from "../../hooks";
 import { ReactComponent as IconUp } from "./arrow-up.svg";
-import { ReactComponent as CircularArrows } from "./circular-arrows.svg";
 import { ReactComponent as IconDown } from "../../assets/arrow-down.svg";
 import { fetchWalletDetails as fetchWalletDetailsThunk } from "../../store/walletSlice";
 import { selectors } from "../../store/sessionSlice";
@@ -54,7 +53,7 @@ export const WalletPageTemplate: React.FC<Props> = ({
   const query = useQuery();
   const page = parseInt(query.get("page")) || 1;
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const gradient = id ? getWalletColor(id) : { main: "", light: "" };
+  const gradient = getWalletColor();
   const isMobile = useIsMobile();
   const userCanCreateTransaction = wallet?.requires2Fa ? user?.is2FaEnabled : true;
   const insufficientBalance = !parseFloat(wallet?.unlockedBalance || "0");
@@ -103,7 +102,8 @@ export const WalletPageTemplate: React.FC<Props> = ({
                 }
                 <Link to={`${generatePath(routes.wallet, { id })}/receive`}>
                   <Button size={Button.size.BIG} name="button-receive">
-                    <div className="flex space-x-3 items-center"><IconDown /> <span>Receive</span></div>
+                    <div className="flex space-x-3 items-center">
+                      <IconDown /> <span>Receive</span></div>
                   </Button>
                 </Link>   
               </div>
@@ -135,8 +135,10 @@ export const WalletPageTemplate: React.FC<Props> = ({
                 <div className="items-end justify-between flex">
                   <div className="items-end justify-between md:flex">
                     <div>
-                      <p className="uppercase text-base mb-2">Balance</p>
-                      <div className="whitespace-nowrap text-2xl mr-1">
+                    <div className="leading-none text-base uppercase whitespace-nowrap overflow-hidden overflow-ellipsis mb-4" data-qa-selector="wallet-name">
+                      Balance
+                    </div>
+                      <div className="whitespace-nowrap text-xl font-bold md:text-3xl mr-1">
                         <span data-qa-selector="wallet-balance">
                           <FormatNumber value={piconeroToMonero(wallet?.balance || 0)} />
                         </span> XMR
@@ -170,7 +172,9 @@ export const WalletPageTemplate: React.FC<Props> = ({
                       className="float-right"
                       icon
                     >
-                      <CircularArrows className={classNames({ "animate-spin": isRefreshing })}/>
+                      <div className={classNames({ "animate-spin": isRefreshing })}>
+                        <Icon name="refresh" />
+                      </div>
                   </Button>
                 </div>
                 {

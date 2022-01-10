@@ -18,4 +18,5 @@ export default {
   privacy_policy: "/privacy-policy",
   cookie_policy: "/cookie-policy",
   faq: "/faq",
+  not_found: "/404",
 };

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
-import { Link } from "react-router-dom";
+import { generatePath, Link } from "react-router-dom";
 import * as yup from "yup";
 import { ChangeEmailRequestPayload } from "../../../types";
 import { FormErrors, Modal } from "../../../modules/index";
@@ -94,7 +94,7 @@ const ChangeEmail: React.FC<Props> = ({ onSubmit, goBackCallback, username }) =>
               <Link
                 className="theme-link"
                 id="forgot-password"
-                to={routes.resetPassword}
+                to={generatePath(routes.resetPassword, {"*": "reset"})}
               >
                 I forgot my password
               </Link>

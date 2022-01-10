@@ -15,7 +15,7 @@ export const LayoutAuth: React.FC<Props> = ({ children, signOut, isAuthenticated
           <Header signOut={signOut} isAuthenticated={isAuthenticated} />
         </div>
         <main
-          className="flex flex-col container m-auto text-lg p-5 flex-1 leading-6 mb-10 md:max-w-lg mx-auto">
+          className="flex flex-col container m-auto text-lg p-5 flex-1 leading-6 mb-10 md:max-w-xl  mx-auto">
           {children}
         </main>
       </div>

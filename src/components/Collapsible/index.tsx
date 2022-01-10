@@ -1,6 +1,5 @@
 import React, {ReactNode, useEffect, useLayoutEffect, useRef, useState} from "react";
-import { ReactComponent as ArrowOpen } from "./arrow-open.svg";
-import { ReactComponent as ArrowClose } from "./arrow-close.svg";
+import { Icon } from "../Icon";
 
 type Props = {
   collapsedDefault?: boolean;
@@ -52,7 +51,7 @@ export const Collapsible: React.FC<Props> = ({
         onClick={toggleCollapse}
       >
         <div className="w-6 flex justify-center mt-1 mr-4">
-          {collapsed ? <ArrowClose /> : <ArrowOpen />}
+          {collapsed ? <Icon name="arrow_right" /> : <Icon name="checvron_up" />}
         </div>
         {title}
       </button>

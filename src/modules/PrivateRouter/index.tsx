@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet";
 import { Route, Navigate, Routes } from "react-router-dom";
 import ROUTER_CONFIG from "../../router";
 import { LayoutContainer as Layout } from "../Layout";
+import NotFound from "../../pages/NotFound";
 import ROUTES from "../../router/routes";
 
 interface Props {
@@ -57,6 +58,10 @@ const PrivateRouter = ({ isAuthenticated }: Props): React.ReactElement => (
         />
       );
     })}
+    <Route
+      path="*"
+      element={<Layout page="404"><NotFound /></Layout>}
+    />
   </Routes>
 );
 

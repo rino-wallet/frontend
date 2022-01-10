@@ -4,6 +4,7 @@ import { LayoutStatic } from "./LayoutStatic";
 import { LayoutAuth } from "./LayoutAuth";
 import { LayoutDefault } from "./LayoutDefault";
 import { LayoutClear } from "./LayoutClear";
+import { LayoutMessage } from "./LayoutMessage";
 
 interface Props {
   signOut: () => Promise<void>;
@@ -29,6 +30,9 @@ export const Layout: React.FC<Props> = ({ children, signOut, isAuthenticated, pa
     case "register":
     case "resetPassword": {
       return <LayoutAuth signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutAuth>
+    }
+    case "404": {
+      return <LayoutMessage>{children}</LayoutMessage>
     }
     case "keypair": {
       return <LayoutClear>{children}</LayoutClear>

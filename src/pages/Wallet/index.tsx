@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Route, Routes, generatePath, useParams } from "react-router-dom";
+import { Route, Routes, generatePath, useParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch, useThunkActionCreator } from "../../hooks";
 import {
   FetchWalletDetailsResponse,
@@ -46,6 +46,7 @@ function isUserOwner(user: User, wallet: Wallet): boolean {
 
 const WalletPageContainer: React.FC<Props> = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const walletId = id  as string;
   const wallet = useSelector(selectors.getWallet);
   const user = useSelector(sessionSelectors.getUser);
@@ -62,8 +63,11 @@ const WalletPageContainer: React.FC<Props> = () => {
       fetchWalletDetails({ id: walletId });
     }, 30000);
     (async (): Promise<void> => {
-      await fetchWalletDetails({ id: walletId });
-      fetchWalletSubaddress({ walletId });
+      await fetchWalletDetails({ id: walletId })
+        .catch(() => {
+          navigate(routes.not_found);
+        });
+      fetchWalletSubaddress({ walletId })
     })();
     return (): void => {
       clearInterval(intervalID);

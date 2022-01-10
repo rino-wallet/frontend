@@ -43,7 +43,7 @@ export const Input = React.forwardRef<HTMLInputElement, Props>((props, ref) => {
         maxLength={maxLength}
         className={classNames(
           className,
-          "w-full font-lato inline-flex rounded border-solid border placeholder-gray-400 theme-text px-6 py-3.25 rounded-medium",
+          "w-full font-lato inline-flex rounded border-solid border placeholder-gray-400 theme-text px-6 py-3.25 rounded-medium appearance-none",
           {
             "theme-control-border": !error,
             "theme-border-error": !!error,

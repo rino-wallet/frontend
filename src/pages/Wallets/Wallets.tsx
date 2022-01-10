@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { generatePath, Link } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
-import { Button, EmptyList } from "../../components";
+import { Button, EmptyList, Icon } from "../../components";
 import { PageTemplate, WalletCard, Pagination } from "../../modules/index";
 import { FetchWalletListThunkPayload, FetchWalletsResponse, Wallet } from "../../types";
 import routes from "../../router/routes";
@@ -36,6 +36,7 @@ const WalletsPage: React.FC<Props> = ({ wallets, loading, pages, hasPreviousPage
             type="button"
             icon
           >
+
             <div className="flex items-center"><span className="text-primary leading-1 text-xl">+</span><span></span></div>
           </Button>
           <Button
@@ -45,7 +46,10 @@ const WalletsPage: React.FC<Props> = ({ wallets, loading, pages, hasPreviousPage
             name="create-new-wallet"
             type="button"
           >
-            <div className="flex items-center space-x-3"><span className="text-primary leading-1 text-xl">+</span><span>Create wallet</span></div>
+            <div className="flex items-center space-x-3">
+              <span className="text-sm text-primary leading-none mr-3"><Icon name="plus" /></span>
+              Create wallet
+            </div>
           </Button>
         </Link>
       </div>
@@ -69,7 +73,6 @@ const WalletsPage: React.FC<Props> = ({ wallets, loading, pages, hasPreviousPage
           <li className="mb-4" key={`wallet-${wallet.id}`}>
             <Link id={`wallet-${wallet.id}`} to={`${generatePath(routes.wallet, { id: wallet.id })}/transactions`}>
               <WalletCard
-                id={wallet.id}
                 name={wallet.name}
                 balance={wallet.balance}
                 unlocked={wallet.unlockedBalance}

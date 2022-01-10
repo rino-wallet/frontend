@@ -26,7 +26,7 @@ export const TextArea: React.FC<Props> = (props) => {
         placeholder={placeholder}
         name={name}
         className={classNames(
-          "font-lato inline-flex px-6 py-3.75 text-lg rounded rounded-medium placeholder-gray-400 border-solid border theme-text",
+          "font-lato inline-flex px-6 py-3.75 text-lg rounded rounded-medium placeholder-gray-400 border-solid border appearance-none theme-text",
           {
             "theme-control-border": !error,
             "theme-border-red": !!error,

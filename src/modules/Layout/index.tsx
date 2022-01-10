@@ -2,6 +2,7 @@ import React from "react";
 import { useThunkActionCreator, useSelector } from "../../hooks";
 import { Layout } from "./Layout";
 import { signOut as signOutAction } from "../../store/sessionSlice";
+import "./styles.css";
 
 interface Props {
   page?: string;

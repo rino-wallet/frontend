@@ -3,11 +3,10 @@ import { format } from "date-fns";
 import classNames from "classnames";
 import { Transaction } from "../../../types";
 import { piconeroToMonero } from "../../../utils";
-import { Button, FormatNumber } from "../../../components";
+import { Button, FormatNumber, Icon } from "../../../components";
 import { TransactionStatus } from "../../../modules/index";
 import TransactionItemLayout from "./TransactionItemLayout"
 import TransactionDetails from "../TransactionDetails";
-import { ReactComponent as CaretIcon } from "./caret.svg";
 
 interface Props {
   transaction: Transaction;
@@ -34,7 +33,7 @@ const TransactionItem: React.FC<Props> = ({ transaction, walletId }) => {
         action={(
           <Button size={Button.size.SMALL} onClick={(): void => { setOpen((value) => !value); }} name="tx-details-btn">
             <span className={classNames("whitespace-nowrap relative", {"text-transparent": open})}>
-              Details {open && <div className="absolute inset-0 flex justify-center items-center"><CaretIcon /></div>}
+              Details {open && <div className="absolute inset-0 flex justify-center items-center text-black"><Icon name="checvron_up" /></div>}
             </span>
           </Button>
         )}

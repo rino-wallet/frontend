@@ -49,7 +49,7 @@ export async function createPDF(config: PdfDocumentConfig, data: NewWalletPDFDat
     self.addTitle2("Recovering the wallet", self.leftOffset, 35);
     self.addText("There are two ways to read the wallet seed: copy and paste the long piece of text, or scan the QR code. Both methods are equivalent and platform-agnostic", self.leftOffset, 43)
 
-    self.addText("1. Copy the wallet seed from this PDF. By either copying the long piece of text, or scanning the QR code. Make sure it doesn't contain whitespaces", self.leftOffset, 60);
+    self.addText("1. Copy the wallet seed from this PDF. By either copying the long piece of text, or scanning the QR code. Make sure it doesn't contain whitespaces or newlines.", self.leftOffset, 60);
     self.addText("2. Restore the multisig wallet from its seed. With command line wallet for example:", self.leftOffset, 70);
     self.addCommand(`./monero-wallet-cli ${networkType === "stagenet" ? "--stagenet" : ""} --restore-multisig-wallet`, self.leftOffset  + 5, 75);
     self.addText("3. You will be prompted for a seed offset passphase. There isn't one", self.leftOffset, 80);

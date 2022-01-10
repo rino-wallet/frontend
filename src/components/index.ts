@@ -24,6 +24,7 @@ import { Logo } from "./Logo";
 import { FormatNumber } from "./FormatNumber";
 import { Tooltip } from "./Tooltip";
 import { BeforeUnloadConfirm } from "./BeforeUnloadConfirm";
+import { Icon } from "./Icon";
 
 export {
   Loading,
@@ -52,4 +53,5 @@ export {
   FormatNumber,
   Tooltip,
   BeforeUnloadConfirm,
+  Icon,
 }

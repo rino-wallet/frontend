@@ -104,21 +104,25 @@ const HomePage: React.FC = () => {
           <div className="mt-8">
             <h1 className="text-5xl font-bold font-catamaran text-center mb-12 mt-24">Getting started</h1>
             <div className="md:grid grid-cols-2 gap-5">
-              <div className="flex items-center flex-row mb-4 md:mb-0">
-                <span className="text-7xl font-bold font-catamaran theme-text-primary mx-6">1</span>
-                <p>Register an account, confirm your email address, and log in.</p>
+              <div>
+                <div className="flex items-center flex-row mb-4">
+                  <span className="text-7xl font-bold font-catamaran theme-text-primary mx-6">1</span>
+                  <p>Register an account, confirm your email address, and log in.</p>
+                </div>
+                <div className="flex items-center flex-row mb-4">
+                  <span className="text-7xl font-bold font-catamaran theme-text-primary mx-6">2</span>
+                  <p>Create a wallet. Remember to store your wallet recovery document safely!</p>
+                </div>
               </div>
-              <div className="flex items-center flex-row mb-4 md:mb-0">
-                <span className="text-7xl font-bold font-catamaran theme-text-primary mx-6">3</span>
-                <p>Receive some money to your RINO wallet - just like a normal wallet!</p>
-              </div>
-              <div className="flex items-center flex-row mb-4 md:mb-0">
-                <span className="text-7xl font-bold font-catamaran theme-text-primary mx-6">2</span>
-                <p>Create a wallet. Remember to store your wallet recovery document safely!</p>
-              </div>
-              <div className="flex items-center flex-row mb-4 md:mb-0">
-                <span className="text-7xl font-bold font-catamaran theme-text-primary mx-6">4</span>
-                <p>Enable 2FA on your account for even better security.</p>
+              <div>
+                <div className="flex items-center flex-row mb-4">
+                  <span className="text-7xl font-bold font-catamaran theme-text-primary mx-6">3</span>
+                  <p>Receive some money to your RINO wallet - just like a normal wallet!</p>
+                </div>
+                <div className="flex items-center flex-row mb-4">
+                  <span className="text-7xl font-bold font-catamaran theme-text-primary mx-6">4</span>
+                  <p>Enable 2FA on your account for even better security.</p>
+                </div>
               </div>
             </div>
             <div className="mx-20 mt-12 mb-20 text-center">

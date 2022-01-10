@@ -1,4 +1,5 @@
 import React from "react";
+import "./styles.css";
 
 type Props = {
   value: string;
@@ -18,7 +19,7 @@ export const FormatNumber: React.FC<Props> = ({ value }) => {
     return (
       <div className="inline-block">
         <span>{intPart}.{bigDecimalPart}</span>
-        {smallDecimalPart && <small>{smallDecimalPart}</small>}
+        {smallDecimalPart && <small className="format-number-small">{smallDecimalPart}</small>}
       </div>
     );
   }

@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "../../components"
+import { Button, Icon } from "../../components"
 import { showPreventNavigationModal } from "../PreventNavigationModal";
 import { useSelector, useDispatch } from "../../hooks";
 import {
@@ -39,7 +39,7 @@ export const PageTemplate: React.FC<Props> = ({ title, backButtonRoute, children
                   }}
                   icon
                 >
-                  <div className="w-5 h-5 leading-5 text-2xl theme-text-secondary">&#x3c;</div>
+                  <div className="w-5 h-5 leading-5 text-2xl theme-text-secondary"><Icon name="checvron_left" className="text-sm" /></div>
                 </Button>
               </Link>
             </div>

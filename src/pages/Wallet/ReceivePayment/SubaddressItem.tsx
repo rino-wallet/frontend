@@ -1,8 +1,7 @@
 import React from "react";
-import { Button, Copy } from "../../../components";
+import { Button, Copy, Icon } from "../../../components";
 import { Subaddress } from "../../../types";
 import showQRCodeModal from "./QRCodeModal";
-import {ReactComponent as QRCodeScan} from "./qrcode-scan.svg";
 
 interface Props {
   subaddress: Subaddress;
@@ -18,7 +17,7 @@ export const SubaddressItem: React.FC<Props> = ({ subaddress }) => {
           showQRCodeModal({ address: subaddress.address });
         }}
       >
-        <QRCodeScan />
+        <Icon name="qrcode" />
       </Button>
       <div className="ml-6 break-all">
         <Copy value={subaddress.address}>

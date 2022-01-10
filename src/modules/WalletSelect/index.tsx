@@ -29,7 +29,7 @@ export const WalletSelect: React.FC<Props> = ({
         <WalletCard
           balance={activeWallet?.balance || ""}
           unlocked={activeWallet?.unlockedBalance || ""}
-          name={activeWallet?.name || ""} id={value}
+          name={activeWallet?.name || ""}
         />
       </button>
       {
