@@ -103,8 +103,8 @@ export class WalletsApi extends Api {
       .then(this.success);
   }
 
-  public shareWallet(id: string, data: ShareWalletPayload): Promise<ShareWalletResponse> {
-    return this.post<ShareWalletResponse, ShareWalletPayload>(`/wallets/${id}/members/`, data)
+  public shareWallet(id: string, data: ShareWalletPayload, config?: { headers: { "X-RINO-2FA": string } }): Promise<ShareWalletResponse> {
+    return this.post<ShareWalletResponse, ShareWalletPayload>(`/wallets/${id}/members/`, data, config)
       .then(this.success);
   }
 

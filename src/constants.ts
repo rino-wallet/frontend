@@ -48,3 +48,7 @@ export const createTransactionSteps = {
   transaction4: "Step 4/5: Requesting second signature from RINO",
   transaction5: "Step 5/5: Submitting transaction to the Monero network",
 }
+
+export const browserFeatures: { webassembly: "webassembly" } = {
+  webassembly: "webassembly",
+}

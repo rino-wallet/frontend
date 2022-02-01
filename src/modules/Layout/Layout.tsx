@@ -31,7 +31,8 @@ export const Layout: React.FC<Props> = ({ children, signOut, isAuthenticated, pa
     case "resetPassword": {
       return <LayoutAuth signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutAuth>
     }
-    case "404": {
+    case "404":
+    case "unsupported_browser": {
       return <LayoutMessage>{children}</LayoutMessage>
     }
     case "keypair": {

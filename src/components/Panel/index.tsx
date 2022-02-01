@@ -3,7 +3,7 @@ import React, { ReactNode } from "react";
 
 const PanelBody: React.FC = ({ children }) => {
   return (
-    <div className="m-10">
+    <div className="m-10 mt-8">
       {children}
     </div>
   )

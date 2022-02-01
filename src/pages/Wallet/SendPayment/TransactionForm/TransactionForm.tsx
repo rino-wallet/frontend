@@ -33,7 +33,7 @@ const generateValidationSchema = (balance: number): yup.AnyObjectSchema => yup.o
       ),
   password: yup.string().required("This field is required."),
   priority: yup.string(),
-  memo: yup.string(),
+  memo: yup.string().max(300, "Maximum memo length is 300 characters.")
 });
 
 interface Props {
@@ -96,6 +96,8 @@ const TransactionForm: React.FC<Props> = ({
           // the error should be ignored if user press on "Edit" button
           if (err && err?.name !== "AbortError") {
             setErrors(err);
+            setTransactionPrepared(false);
+            setActiveTab(0);
           }
         }
       }

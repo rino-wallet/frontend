@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Route, Routes, generatePath, useParams, useNavigate } from "react-router-dom";
+import { Route, Routes, useParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch, useThunkActionCreator } from "../../hooks";
 import {
   FetchWalletDetailsResponse,
@@ -21,8 +21,7 @@ import { accessLevels } from "../../constants";
 import { changeLocation } from "../../store/actions";
 import TransactionDetails from "./TransactionDetails";
 import Transactions from "./Transactions";
-// import Users from "./Users";
-import AddWalletMember from "./AddWalletMember";
+import Users from "./Users";
 import SendPayment from "./SendPayment";
 import ReceivePayment from "./ReceivePayment";
 import Settings from "./Settings";
@@ -81,18 +80,7 @@ const WalletPageContainer: React.FC<Props> = () => {
       <Route path="send" element={<SendPayment walletId={walletId} />} />
       <Route path="settings" element={<Settings walletId={walletId} />} />
       <Route path="receive" element={<ReceivePayment walletId={walletId} />} />
-      {/* This code was commented out because wallet sahring functionality is temporarily disabled */}
-      {/*<Route exact path={`${generatePath(routes.wallet, { id })}/users`}>*/}
-      {/*  <Users canShare={canShare} walletId={id} />*/}
-      {/*</Route>*/}
-      {
-        canShare && (
-          <Route
-            path={`${generatePath(routes.wallet, { id: walletId })}/users/add`}
-            element={<AddWalletMember walletId={walletId} />}
-          />
-        )
-      }
+      <Route path="users" element={<Users canShare={canShare} walletId={walletId} />} />
     </Routes>
   )
 }

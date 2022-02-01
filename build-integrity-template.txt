@@ -8,3 +8,9 @@ To verify:
 3. Build the project: "DOCKER_BUILDKIT=0 docker build --build-arg ENVIRON=__integrity_env__ -f build-integrity.Dockerfile --no-cache ."
 4. It should output an Integrity Hash that matches the one included in this file.
 
+------------------------------------
+The integrity hash of the root html file is __index_html_hash__
+
+To verify:
+1. Create a sha256 hash of contents returned by https://rino.io
+2. The hashes should match

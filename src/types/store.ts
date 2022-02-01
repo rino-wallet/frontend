@@ -125,6 +125,14 @@ export interface ResetPasswordConfirmThunkPayload {
   recovery_key: string;
 }
 
+export interface ShareWalletThunkPayload {
+  email: string;
+  password: string;
+  accessLevel: number;
+  wallet: Wallet;
+  code?: string;
+}
+
 export interface Subaddress {
   address: string;
   index: number;

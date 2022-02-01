@@ -6,7 +6,6 @@ import {
   CreateUnsignedTransactionResponse,
   Destination,
   WalletMember,
-  // ShareWalletResponse,
   CreateSubaddressThunkPayload,
   DeleteWalletPayload,
   DeleteWalletResponse,
@@ -16,35 +15,34 @@ import {
   FetchWalletSubaddressThunkPayload,
   RemoveWalletAccessPayload,
   RemoveWalletAccessResponse,
-  // ShareWalletPayload,
   Subaddress,
   UpdateWalletDetailsPayload,
   UpdateWalletDetailsResponse,
   RootState,
   PersistWalletPayload,
   PendingTransaction,
+  ShareWalletThunkPayload,
+  ShareWalletResponse,
 } from "../types";
 import walletsApi from "../api/wallets";
+import publicKeysApi from "../api/publicKeys";
 import walletService from "./walletInstance";
 import pollTask from "../utils/pollTask";
 import {generateExtraReducer, createLoadingSelector, generateListReqParams, getEncryptedKeys, deriveUserKeys, decryptKeys} from "../utils";
-import { createNewWalletSteps, createTransactionSteps } from "../constants";
-import { decryptWalletKeys } from "../wallet"
-// import publicKeysApi from "../api/publicKeys";
+import { accessLevels, createNewWalletSteps, createTransactionSteps } from "../constants";
+import { decryptWalletKeys, encryptWalletKeys } from "../wallet"
 import modals from "../modules/2FAModals";
 
-// This function was commented out because this functionality is temporarily disabled
-
-// function updateShareWalletResponse(response: ShareWalletResponse): WalletMember {
-//   return {
-//     id: response.id,
-//     user: response.user.email,
-//     accessLevel: response.accessLevel,
-//     encryptedKeys: "",
-//     createdAt: response.createdAt,
-//     updatedAt: response.createdAt,
-//   }
-// }
+function updateShareWalletResponse(response: ShareWalletResponse): WalletMember {
+  return {
+    id: response.id,
+    user: response.user.email,
+    accessLevel: response.accessLevel,
+    encryptedKeys: "",
+    createdAt: response.createdAt,
+    updatedAt: response.createdAt,
+  }
+}
 
 export const createNewWallet = createAsyncThunk<any, { name: string }>(
   "wallet/createNewWallet",
@@ -324,31 +322,51 @@ export const deleteWallet = createAsyncThunk<DeleteWalletResponse, DeleteWalletP
     }
   },
 ); 
-// This thunk was commented out because this functionality is temporarily disabled
 
-// export const shareWallet = createAsyncThunk<string, { wallet: Wallet, loginPassword: string; body: ShareWalletPayload }>(
-//   "wallet/shareWallet",
-//   async ({wallet, loginPassword, body}, { rejectWithValue, getState, dispatch }) => {
-//     const requestBody = {
-//       ...body,
-//       encrypted_keys: "",
-//     }
-//     try {
-//       if (body.access_level === accessLevels.admin.code) {
-//         const publicKeys = await publicKeysApi.fetchPublicKey({ email: body.email });
-//         const { encPrivateKey, email, username } = (getState() as any).session.user;
-//         const encryptedWalletKeys = getEncryptedKeys(wallet, email);
-//         const { walletKeys, walletPassword } = await decryptWalletKeys(encryptedWalletKeys, encPrivateKey, loginPassword, username);
-//         requestBody.encrypted_keys = await encryptWalletKeys(publicKeys[0].publicKey, walletKeys, walletPassword); 
-//       }
-//       const response = await walletsApi.shareWallet(wallet.id, requestBody);
-//       dispatch(addMember(updateShareWalletResponse(response)));
-//       return "";
-//     } catch(err) {
-//       return rejectWithValue(err?.data || err)
-//     }
-//   },
-// );
+export const shareWallet = createAsyncThunk<void, ShareWalletThunkPayload>(
+  "wallet/shareWallet",
+  async (data, { rejectWithValue, getState, dispatch }) => {
+    const requestBody = { access_level: data.accessLevel, email: data.email, encrypted_keys: "" }
+    try {
+      if (data.accessLevel === accessLevels.admin.code) {
+        const publicKeys = await publicKeysApi.fetchPublicKey({ email: data.email });
+        // stop execution if there is no such user
+        if (!publicKeys.length) {
+          return;
+        }
+        const { encryptionPublicKey, email, username, encPrivateKey } = (getState() as any).session.user;
+        const { encryptionKey, clean: cleanDerivedKeys } = await deriveUserKeys(data.password, username);
+        const encryptedWalletKeysJson = getEncryptedKeys(data.wallet, email);
+        const encryptedWalletKeys = JSON.parse(encryptedWalletKeysJson).enc_content;
+        const { encryptionPrivateKey, clean: cleanDecryptedKeys } = await decryptKeys(
+          Uint8Array.from(Buffer.from(encPrivateKey.enc_content, "base64")),
+          Uint8Array.from(Buffer.from(encPrivateKey.nonce, "base64")),
+          encryptionKey,
+        );
+        const { walletKeys, walletPassword } = await decryptWalletKeys(
+          Uint8Array.from(Buffer.from(encryptedWalletKeys, "base64")),
+          Uint8Array.from(Buffer.from(encryptionPublicKey, "base64")),
+          encryptionPrivateKey,
+        );
+        const reEncWalletKeys = await encryptWalletKeys(Uint8Array.from(Buffer.from(publicKeys[0].encryptionPublicKey, "base64")), walletKeys, walletPassword); 
+        requestBody.encrypted_keys = JSON.stringify({
+          version: 1,
+          method: "asymmetric",
+          enc_content: Buffer.from(reEncWalletKeys).toString("base64"),
+        });
+        cleanDerivedKeys();
+        cleanDecryptedKeys();
+        const response = await walletsApi.shareWallet(data.wallet.id, requestBody, data.code ? { headers: { "X-RINO-2FA": data.code } } : undefined,);
+        dispatch(addMember(updateShareWalletResponse(response)));
+      } else {
+        const response = await walletsApi.shareWallet(data.wallet.id, requestBody, data.code ? { headers: { "X-RINO-2FA": data.code } } : undefined,);
+        dispatch(addMember(updateShareWalletResponse(response)));
+      }
+    } catch(err) {
+      return rejectWithValue(err?.data || err)
+    }
+  },
+);
 
 export const removeWalletAccess = createAsyncThunk<RemoveWalletAccessResponse, RemoveWalletAccessPayload>(
   "wallet/removeWalletAccess",

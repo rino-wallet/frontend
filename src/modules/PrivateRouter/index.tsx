@@ -3,8 +3,16 @@ import { Helmet } from "react-helmet";
 import { Route, Navigate, Routes } from "react-router-dom";
 import ROUTER_CONFIG from "../../router";
 import { LayoutContainer as Layout } from "../Layout";
+import { browserFeatures } from "../../constants";
+import { wasmSupported } from "../../utils";
 import NotFound from "../../pages/NotFound";
+import UnsupportedBrowser from "../../pages/UnsupportedBrowser";
 import ROUTES from "../../router/routes";
+
+
+const featuresMap = {
+  [browserFeatures.webassembly]: wasmSupported,
+}
 
 interface Props {
   isAuthenticated: boolean;
@@ -21,6 +29,7 @@ const PrivateRouter = ({ isAuthenticated }: Props): React.ReactElement => (
         isPrivate,
         component: Comp,
         key,
+        requiredFeatures,
       } = route;
       const loginRedirect = (): React.ReactElement => {
         return isAuthenticated ? (
@@ -30,6 +39,14 @@ const PrivateRouter = ({ isAuthenticated }: Props): React.ReactElement => (
         );
       }
       const renderPage: React.FC = () => {
+        // Check if browser supports all features required for the current page
+        // Show error message if at leasT one feature is not available
+        if (requiredFeatures && requiredFeatures.length) {
+          const unsupported = !requiredFeatures.reduce((result, feature) => featuresMap[feature], true);
+          if (unsupported) {
+            return <Layout page="unsupported_browser"><UnsupportedBrowser /></Layout>
+          }
+        }
         return (
           <>
             <Helmet>

@@ -35,10 +35,10 @@ export const WalletLayout: React.FC<Props> = ({ wallet, children, tab, id }) => 
               value: 0,
               text: "Transactions",
             },
-            // {
-            //   value: 1,
-            //   text: "Users",
-            // },
+            {
+              value: 1,
+              text: "Users",
+            },
             {
               value: 2,
               text: "Settings",

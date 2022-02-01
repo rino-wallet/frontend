@@ -33,7 +33,7 @@ export class Api extends Axios {
             reject(response);
           });
         }
-        if (error && error.response && error.response.status === 403) {
+        if (error && error.response && error.response.status === 403 && typeof error.response.data !== "object") {
           return new Promise((resolve, reject) => {
             const response = { data: { message: "Error in processing your request.", status: "permission_error" } };
             reject(response);

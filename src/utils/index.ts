@@ -10,6 +10,7 @@ import { getWalletColor } from "./getWalletColor";
 import { generateListReqParams } from "./generateListReqParams";
 import { PdfDocument } from "./createPdf";
 import { getNetworkType } from "./getNetworkType";
+import { wasmSupported } from "./wasmSupported";
 import { generateUserKeyPairInfo, deriveUserKeys, reencrypPrivateKey, decryptKeys } from "./keypairs";
 
 export {
@@ -30,4 +31,5 @@ export {
   generateListReqParams,
   PdfDocument,
   getNetworkType,
+  wasmSupported,
 }

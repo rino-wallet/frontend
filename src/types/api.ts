@@ -203,7 +203,7 @@ export interface FetchPublicKeyPayload {
 }
 
 export type FetchPublicKeyResponse = {
-  publicKey: string;
+  encryptionPublicKey: string;
   email: string;
 }[]
 

@@ -55,7 +55,7 @@ const Enter2FACode: React.FC<Props> = ({ submit, cancel, confirmCancel}) => {
       <Modal
         title="2FA Confirmation"
         onClose={handleCancel}
-        className={hide ? "hidden" : ""}
+        className={hide ? "hidden z-50" : "z-50"}
       >
         <form onSubmit={handleSubmit}>
           <Modal.Body>
@@ -109,7 +109,7 @@ const Enter2FACode: React.FC<Props> = ({ submit, cancel, confirmCancel}) => {
   );
 };
 
-const enter2FACode = createModal(({ confirmCancel, submit, cancel }:{ confirmCancel: () => void, submit: (code: string) => Promise<void>; cancel: () => void; }) => {
+const enter2FACode = createModal(({ confirmCancel, submit, cancel }: Props) => {
   return <Enter2FACode confirmCancel={confirmCancel} submit={submit} cancel={cancel} />
 });
 

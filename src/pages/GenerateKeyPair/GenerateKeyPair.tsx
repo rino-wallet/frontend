@@ -120,16 +120,20 @@ const RenderSuccess: React.FC<{ recoveryKey: string, username: string }> = ({ re
   )
 }
 
-const RenderPending: React.FC = () => {
+const RenderPending: React.FC<{ error: string }> = ({ error }) => {
   return (
     <PageTemplate title={"Download and Store Account Recovery Document"}>
       <div className="mb-10">
         <p className="mb-4">We are creating your Account Recovery Document. It only takes a few seconds.</p>
         <p>Please do not close the browser window now, or we would need to start over the next time you log in.</p>
       </div>
-      <div className="flex justify-center mb-8">
-        <Spinner size={85} />
-      </div>
+      {
+        error ? <div className="theme-text-error">{error}</div> : (
+          <div className="flex justify-center mb-8">
+            <Spinner size={85} />
+          </div>
+        )
+      }
     </PageTemplate>
   )
 }
@@ -137,6 +141,7 @@ const RenderPending: React.FC = () => {
 const GenerateKeyPairPage: React.FC<Props> = ({ setupKeyPair, user, password, setPassword }) => {
   const navigate = useNavigate();
   const [recoveryKey, setRecoveryKey] = useState("");
+  const [errors, setErrors] = useState("");
   const keysSet = user && user.isKeypairSet;
   async function generateKeypairAndSubmit(): Promise<void> {
     const keypairData = await generateUserKeyPairInfo(user?.username, password);
@@ -145,7 +150,11 @@ const GenerateKeyPairPage: React.FC<Props> = ({ setupKeyPair, user, password, se
       await setupKeyPair(keypairData);
       keypairData.clean();
     } catch(err) {
-      console.log(err);
+      if (typeof err === "object" &&
+        !Array.isArray(err) &&
+        err !== null) {
+          setErrors(Object.values(err).join(" "))
+      }
     }
   }
   useEffect(() => {
@@ -167,7 +176,7 @@ const GenerateKeyPairPage: React.FC<Props> = ({ setupKeyPair, user, password, se
     <div className="mt-14">
       {keysSet
         ? <RenderSuccess recoveryKey={recoveryKey} username={user?.username}/>
-        : <RenderPending />}
+        : <RenderPending error={errors} />}
     </div>
   );
 };

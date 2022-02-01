@@ -1,6 +1,7 @@
 import React, { ReactElement } from "react";
 import Loadable from "react-loadable";
 import { Loading } from "../components";
+import { browserFeatures } from "../constants";
 import ROUTES from "./routes";
 
 const ConfirmEmail = Loadable({
@@ -95,6 +96,8 @@ const defaultMetaKeywords = "RINO, Monero, Wallet, Enterprise-Grade, Multisig, C
 const defaultMetaOgImage = "https://rino.io/meta-image.png";
 const env = process.env.REACT_APP_ENV;
 
+type RequiredFeatures = "webassembly";
+
 type RouteType = {
   path: string;
   metaTitle: string;
@@ -104,6 +107,7 @@ type RouteType = {
   component: React.FC;
   isPrivate?: boolean;
   key: string;
+  requiredFeatures?: RequiredFeatures[];
 }
 
 const ROUTER_CONFIG: RouteType[] = [
@@ -133,6 +137,7 @@ const ROUTER_CONFIG: RouteType[] = [
     metaOgImage: defaultMetaOgImage,
     component: (props: any): ReactElement => <Login {...props} />,
     key: "login",
+    requiredFeatures: [browserFeatures.webassembly],
   },
   {
     path: ROUTES.register,
@@ -142,6 +147,7 @@ const ROUTER_CONFIG: RouteType[] = [
     metaOgImage: defaultMetaOgImage,
     component: (props: any): ReactElement => <Register {...props} />,
     key: "register",
+    requiredFeatures: [browserFeatures.webassembly],
   },
   {
     path: ROUTES.resetPassword,
@@ -151,6 +157,7 @@ const ROUTER_CONFIG: RouteType[] = [
     metaOgImage: defaultMetaOgImage,
     component: (props: any): ReactElement => <ResetPassword {...props} />,
     key: "resetPassword",
+    requiredFeatures: [browserFeatures.webassembly],
   },
   {
     path: ROUTES.keypair,
@@ -161,6 +168,7 @@ const ROUTER_CONFIG: RouteType[] = [
     component: (props: any): ReactElement => <GenerateKeyPair {...props} />,
     isPrivate: true,
     key: "keypair",
+    requiredFeatures: [browserFeatures.webassembly],
   },
   {
     path: ROUTES.profile,
@@ -191,6 +199,7 @@ const ROUTER_CONFIG: RouteType[] = [
     component: (props: any): ReactElement => <NewWallet {...props} />,
     isPrivate: true,
     key: "new wallet",
+    requiredFeatures: [browserFeatures.webassembly],
   },
   {
     path: ROUTES.wallet,
@@ -201,6 +210,7 @@ const ROUTER_CONFIG: RouteType[] = [
     component: (props: any): ReactElement => <Wallet {...props} />,
     isPrivate: true,
     key: "wallet details",
+    requiredFeatures: [browserFeatures.webassembly],
   },
   {
     path: ROUTES.changeEmail,

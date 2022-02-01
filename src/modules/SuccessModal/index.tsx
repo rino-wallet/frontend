@@ -19,7 +19,7 @@ export const SuccessModal: React.FC<Props> = ({ goBackCallback, title, message, 
           <div className="flex justify-center">
             <Check size={48} />
           </div>
-          <div>
+          <div className="break-words">
             {typeof message === "function" ? message(goBackCallback) : message}
           </div>
         </div>

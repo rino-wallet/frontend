@@ -82,6 +82,10 @@
   font-family: 'Lato', sans-serif;
 }
 
+.break-words {
+  word-break: break-word;
+}
+
 body {
   font-family: 'Lato', sans-serif;
   background-color:rgba(226, 226, 241, 0.4);

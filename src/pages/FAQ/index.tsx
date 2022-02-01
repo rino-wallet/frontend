@@ -186,7 +186,7 @@ const FAQ: React.FC = () => {
         <Collapsible className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">How much does it cost to use RINO?</h3>}>
           <p className="mb-4">
             At the moment RINO is free. However, while we do want to support the community as much as possible,
-            now and in the future - check out our [LINK]community contributions[/LINK] which will always be
+            now and in the future - check out our <a className="theme-link" href="https://community.rino.io" target="_blank">community contributions</a> which will always be
             free - we do plan on running RINO in the future as a money making business.
           </p>
           <p className="mb-4">

@@ -138,7 +138,21 @@ class BuildHasher:
             hasher.update(bytes.fromhex(hex_digest))
         return hasher.hexdigest().lower()
 
+    def print_and_hash_index_html(self):
+        path = pathlib.Path("./build/index.html")
+        index_hash = self.calculate_hash(path)
+        with open("./build/index.html", "r") as f:
+            contents = f.read()
+        print("Root html file contents:")
+        print(contents)
+        # Pretty printing is probably less useful for comparing strings,
+        # but leaving here in case we change our mind.
+        # print(BeautifulSoup(contents, 'html.parser').prettify())
+        return index_hash
+
     def export_reproducible_build_instructions(self) :
+        index_html_hash = self.print_and_hash_index_html()
+        print(f"\nRoot html file Hash: {index_html_hash}\n")
         integrity_hash = self.get_build_integrity_hash()
         print(f"Integrity Hash: {integrity_hash}\n")
         # ENV vars are set in `.gitlab-ci.yml`
@@ -151,6 +165,7 @@ class BuildHasher:
         data = data.replace("__integrity_project_url__", project_url)
         data = data.replace("__integrity_project_commit__", project_commit)
         data = data.replace("__integrity_env__", project_env)
+        data = data.replace("__index_html_hash__", index_html_hash)
         with open("./build/build-integrity.txt", 'w') as f:
             f.write(data)
 
