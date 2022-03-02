@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import classNames from "classnames";
 import { Transaction } from "../../../types";
 import { piconeroToMonero } from "../../../utils";
-import { Button, FormatNumber, Icon } from "../../../components";
+import { Button, FormatNumber, Icon, Tooltip } from "../../../components";
 import { TransactionStatus } from "../../../modules/index";
 import TransactionItemLayout from "./TransactionItemLayout"
 import TransactionDetails from "../TransactionDetails";
@@ -22,12 +22,25 @@ const TransactionItem: React.FC<Props> = ({ transaction, walletId }) => {
         amount={(
           <span
             className={classNames({
-              "theme-text-red": transaction.direction === "out",
-              "text-green-500": transaction.direction === "in",
+              "theme-text-red": transaction.direction === "out" && !transaction.txToSelf,
+              "text-green-500": transaction.direction === "in" && !transaction.txToSelf,
+              "theme-text-secondary": transaction.txToSelf,
             })}
             data-qa-selector="tx-amount"
           >
-            {transaction.direction === "out" ? "-" : "+"} <FormatNumber value={piconeroToMonero(transaction.amount)} /> XMR
+            {
+              transaction.txToSelf ? (
+                <div>
+                  <Tooltip content={<div className="p-1">Transaction sent back to the same wallet.</div>}>
+                    <div>
+                      <span className="text-xl">&#8635;</span> 0
+                    </div>
+                  </Tooltip>
+                </div>
+              ) : (
+                <div>{transaction.direction === "out" ? "-" : "+"} <FormatNumber value={piconeroToMonero(transaction.amount)} /> XMR</div>
+              )
+            }
           </span>
         )}
         action={(

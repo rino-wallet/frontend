@@ -85,6 +85,10 @@ class Wallet {
   public getMultisigHex = async (): Promise<string> => {
     return await this.wallet.getMultisigHex();
   };
+  public getSubaddresses = async (index: number): Promise<any> => {
+    const sub = await this.wallet.getSubaddresses(0, index);
+    return sub;
+  };
   /**
    * Import multisig info as hex from other participants 
    */

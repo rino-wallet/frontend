@@ -7,6 +7,11 @@ export type RootState = ReturnType<typeof store.getState>;
 
 export type AppDispatch = typeof store.dispatch;
 
+export interface LockedAmount {
+  amount: string,
+  confirmations: number,
+}
+
 export interface WalletMember {
   id: string;
   user: string;
@@ -28,6 +33,7 @@ export type Wallet = {
   address: string;
   balance: string;
   unlockedBalance: string;
+  lockedAmounts: LockedAmount[],
   status: string;
   requires2Fa: boolean;
 }
@@ -63,6 +69,7 @@ export type User = {
   encryptionPublicKey: string;
   signingPublicKey: string;
   encPrivateKey: KeyPairJsonWrapper;
+  txNotifications: boolean;
 }
 
 export interface TransactionDestination {
@@ -83,6 +90,7 @@ export interface Transaction {
   confirmations: number;
   destinations: TransactionDestination[];
   memo: string;
+  txToSelf: boolean;
 }
 
 export interface FetchWalletTransactionsThunkPayload {
@@ -137,4 +145,5 @@ export interface Subaddress {
   address: string;
   index: number;
   isUsed: boolean;
+  isValid?: boolean;
 }

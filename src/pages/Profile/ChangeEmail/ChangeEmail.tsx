@@ -46,7 +46,7 @@ const ChangeEmail: React.FC<Props> = ({ onSubmit, goBackCallback, username }) =>
         clean();
         await onSubmit({ new_email: formValues.new_email, current_password: currentPassword });
         setSubmited(true);
-      } catch (err) {
+      } catch (err: any) {
         setErrors(err.response ? err.response.data : err);
       }
     },
@@ -80,6 +80,7 @@ const ChangeEmail: React.FC<Props> = ({ onSubmit, goBackCallback, username }) =>
             <div className="mb-1">
               <Label label="Account password">
                 <Input
+                  autoComplete="current-password"
                   type="password"
                   name="current_password"
                   value={values.current_password}

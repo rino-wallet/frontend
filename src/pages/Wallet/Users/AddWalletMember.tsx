@@ -63,7 +63,7 @@ const AddWalletMember: React.FC<Props> = ({ wallet, is2FaEnabled, shareWallet, c
           email: formValues.email,
           accessLevel: accessLevels.admin.code,
         });
-      } catch (err) {
+      } catch (err: any) {
         if (err) {
           setErrors(err);
         }
@@ -81,6 +81,7 @@ const AddWalletMember: React.FC<Props> = ({ wallet, is2FaEnabled, shareWallet, c
             <div className="form-field">
               <Label label="User email address">
                 <Input
+                  autoComplete="off"
                   type="email"
                   name="email"
                   value={values.email}
@@ -112,6 +113,7 @@ const AddWalletMember: React.FC<Props> = ({ wallet, is2FaEnabled, shareWallet, c
             <div className="form-field">
               <Label label="Account Password">
                 <Input
+                  autoComplete="current-password"
                   type="password"
                   name="password"
                   value={values.password}
@@ -127,6 +129,7 @@ const AddWalletMember: React.FC<Props> = ({ wallet, is2FaEnabled, shareWallet, c
                 <div className="form-field">
                   <Label label="Password">
                     <Input
+                    autoComplete="current-password"
                       type="password"
                       name="password"
                       value={values.password}

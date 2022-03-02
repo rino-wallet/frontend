@@ -34,16 +34,16 @@
   /* Border colors */
   .theme-border {
     @apply border-default;
-  },
+  }
   .theme-control-border {
     @apply border-control-normal hover:border-control-hover focus:border-control-focused disabled:border-control-disabled;
   }
   .theme-border-error {
     @apply border-control-error;
-  },
+  }
   .theme-border-success {
     @apply border-control-success;
-  },
+  }
   /* Gradients */
   .theme-control-primary-gradient {
     @apply bg-primary-gradient-normal hover:bg-primary-gradient-hover focus:bg-primary-gradient-focused disabled:bg-white;

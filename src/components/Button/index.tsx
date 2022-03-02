@@ -24,6 +24,8 @@ type Props = {
   loading?: boolean;
   className?: string;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onMouseEnter?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onMouseLeave?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
 // eslint-disable-next-line
@@ -41,7 +43,7 @@ export const ICON_SIZE_MAPS: Record<UI_SIZE, string> = {
 
 const SIZE_MAPS: Record<UI_SIZE, string> = {
   [UI_SIZE.BIG]: "px-10 py-4.25 text-lg rounded-big",
-  [UI_SIZE.MEDIUM]: "px-8 rounded-lg py-3.75 text-base rounded-medium",
+  [UI_SIZE.MEDIUM]: "px-8 py-3.75 text-base rounded-medium",
   [UI_SIZE.SMALL]: "py-1.25 px-5 text-sm rounded-small",
 };
 
@@ -67,10 +69,14 @@ export const Button: React.FC<Props> & { variant: typeof Variant; size: typeof U
     loading = false,
     className = "",
     onClick,
+    onMouseEnter,
+    onMouseLeave,
   } = props;
   return (
     <button
       onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       className={classNames(
         "relative inline-flex items-center justify-center font-bold uppercase font-medium whitespace-no-wrap border border-solid",
         className,

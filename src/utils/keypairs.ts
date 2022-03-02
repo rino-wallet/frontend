@@ -15,7 +15,7 @@ export async function deriveUserKeys(password: string, username: string): Promis
   await _sodium.ready;
   const sodium = _sodium;
   const enc = new TextEncoder();
-  const usernameSalt = enc.encode(username);
+  const usernameSalt = Uint8Array.from(enc.encode(username));
   const salt = new Uint8Array(sodium.crypto_pwhash_SALTBYTES);
   salt.set(usernameSalt.subarray(0, sodium.crypto_pwhash_SALTBYTES));
   const key = sodium?.crypto_pwhash(

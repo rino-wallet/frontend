@@ -1,5 +1,5 @@
 import {unwrapResult, AsyncThunk} from "@reduxjs/toolkit";
-import { UseThunkActionCreator } from "../types";
+import { ApiError, UseThunkActionCreator } from "../types";
  import { useDispatch } from "./useDispatch";
 
 /**
@@ -12,11 +12,11 @@ import { UseThunkActionCreator } from "../types";
 export const useThunkActionCreator = <Response, Payload>(asyncThunkAction: AsyncThunk<Response, Payload, Record<string, unknown>>): (data: Payload) => UseThunkActionCreator<Response> => {
   const dispatch = useDispatch();
   return (data: Payload): UseThunkActionCreator<Response> => {
-    const dispatchResult = dispatch(asyncThunkAction(data));
+    const dispatchResult: any = dispatch(asyncThunkAction(data));
     const promise: any = new Promise((reolve, reject) => {
       dispatchResult.then(unwrapResult)
       .then((response: Response) => reolve(response))
-      .catch((error: any) => reject(error))
+      .catch((error: Promise<ApiError>) => reject(error))
     });
     promise.abort = dispatchResult.abort;
     return promise;

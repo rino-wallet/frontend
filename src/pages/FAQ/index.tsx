@@ -133,7 +133,7 @@ const FAQ: React.FC = () => {
     </div>
     <div className="mt-8">
       <div className="w-2 h-2 rounded inline-block mr-8 my-1 bg-orange-900" />
-      <div className="text-2xl md:text-3xl font-bold font-catamaran inline">The Nitty Gitty</div>
+      <div className="text-2xl md:text-3xl font-bold font-catamaran inline">The Nitty Gritty</div>
       <div className="ml-10 my-4">
         <Collapsible className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">Why do I need an Account Recovery Document?</h3>}>
           <p>
@@ -162,6 +162,16 @@ const FAQ: React.FC = () => {
             needing RINO to sign anything with its key (you always have the option to access your funds
             directly using the Wallet Recovery Document). But RINO can’t spend money without you checking
             and signing as part of the normal RINO-usage flow.
+          </p>
+        </Collapsible>
+        <Collapsible className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">Can I delete a wallet?</h3>}>
+          <p>
+          Yes you can. Deleted wallets can’t be restored in RINO, so just be sure before you delete 
+          - all your transaction meta data will be deleted irreversibly.
+          </p>
+          <p>
+            Note that even though you will no longer be able to access a deleted wallet on the RINO website,
+            you can still recover funds from a deleted wallet using your Wallet Recovery Document.
           </p>
         </Collapsible>
         <Collapsible className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">Can RINO see my transactions?</h3>}>
@@ -212,12 +222,13 @@ const FAQ: React.FC = () => {
               A RINO “2-of-3” multisig wallet has three keys. Any two of the three keys are required to
               spend the money in the wallet. Here comes the special sauce: RINO retains only one of the
               keys, and therefore has no way to spend your money. You keep two of the three keys - the
-              User Key and the Recovery Key. You stash the Recovery Key safely offline (it’s on the Wallet
-              Recovery Document). Your User Key stays with us - but…. in encrypted form - we have no way
-              of decrypting it. When you use our service, we send you the encrypted User Key, and it gets
-              decrypted locally in your browser.
+              User Key and the Recovery Key. You stash your two keys safely offline (they are on the Wallet
+              Recovery Document). For day to day usage, we keep an encrypted version of your user key.
+              Your User Key stays with us - but…. in encrypted form - we have no way of decrypting it.
+              When you use our service, we send you the encrypted User Key, and it gets decrypted locally
+              in your browser.
             </p>
-            <p className="mb-4">When you want to spend your funds, you have two options:</p>
+            <p className="mb-4">When you want to spend your funds, you have two options.</p>
             <ul>
               <li className="mb-4">
                 Option A - Using the RINO service. Log in to RINO, navigate to your wallet and spend away.
@@ -232,18 +243,18 @@ const FAQ: React.FC = () => {
             </ul>
           </Collapsible>
         </div>
-        <Collapsible className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">What if my computer is compromised during wallet creation</h3>}>
+        <Collapsible className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">What if my computer is compromised during wallet creation?</h3>}>
           <p className="mb-4">
             It’s not great. Right now we offer convenient in-browser wallet creation
-            which means your funds are at risk if your computer is compromised.
+            which means your funds <b>are at risk</b> if your computer is compromised.
           </p>
           <p>
-            Airgap wallet creation is a feature in the pipeline that would protect
+            Airgapped wallet creation is a feature in the pipeline that would protect
             you against this problem - drop us a line at <a className="theme-link" href="mailto:support@rino.io">support@rino.io</a> to let us
             know if this is a priority for you.
           </p>
         </Collapsible>
-        <Collapsible className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">What if my computer is compromised when using the wallet</h3>}>
+        <Collapsible className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">What if my computer is compromised when using the wallet?</h3>}>
           <p className="mb-4">
             The benefit of RINO is that even if your computer is compromised, attackers cannot
             spend funds without access to your 2FA device. In future RINO will give even more
@@ -251,7 +262,7 @@ const FAQ: React.FC = () => {
             multiple people having to approve transactions, etc.
           </p>
         </Collapsible>
-        <Collapsible className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">What about feature x</h3>}>
+        <Collapsible className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">What about feature x?</h3>}>
           <p>
             Get in touch with us at <a className="theme-link" href="mailto:support@rino.io">support@rino.io</a>.
             Features in the pipeline are targeted at enterprise such as shared wallets,
@@ -271,6 +282,19 @@ const FAQ: React.FC = () => {
             We are building more features dedicated to enterprise wallet hosting.
             Let’s talk about pricing / how we can help. Features in the pipeline
             are shared wallets, different user privileges, daily spending limits.
+          </p>
+        </Collapsible>
+        <Collapsible className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">Why do I need a username?</h3>}>
+          <p>
+            Your username is a unique non-changeably identifier for your account.
+            Having the username fixed means that you can change your email address if you want.
+            And the username will also be useful for some of the cool new features we have in
+            the pipeline like wallet sharing.
+          </p>
+          <p>
+            You can’t ever change your username, as it is used for some low level cryptographic
+            operations associated with your account (for the technically minded - we use it as
+            a salt in the key derivation function).
           </p>
         </Collapsible>
       </div>

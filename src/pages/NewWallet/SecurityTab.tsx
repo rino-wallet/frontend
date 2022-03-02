@@ -22,7 +22,7 @@ const SecurityTab: React.FC<Props> = ({ persistWallet, pdfData, walletId }) => {
   const onWalletFinish = (): void => {
     persistWallet({id: walletId}).then(
       () => navigate(`${generatePath(routes.wallet, { id: walletId })}/transactions`)
-    ).catch((err) => {
+    ).catch((err: any) => {
       if (err?.status === "network_error") {
         setErrorMessage("Failed to save your wallet, probably a network error. Please try to create a new wallet.");
       } else {
@@ -43,7 +43,7 @@ const SecurityTab: React.FC<Props> = ({ persistWallet, pdfData, walletId }) => {
       }
       setPdfUrl(pdf);
     })
-    .catch((error) => {
+    .catch((error: any) => {
       setErrorMessage(error.message);
     });
   }

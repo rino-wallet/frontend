@@ -15,6 +15,7 @@ import routes from "../../router/routes";
 const ChangeEmailConfirmPageContainer: React.FC = () => {
   const navigate = useNavigate();
   const { token } = useParams();
+  const authToken = useSelector(state => state.session.token);
   const succeeded = useSelector(selectors.getSucceeded);
   const loading = useSelector(selectors.pendingConfirmEmailChanging);
   const error = useSelector(selectors.getError);
@@ -29,7 +30,7 @@ const ChangeEmailConfirmPageContainer: React.FC = () => {
   useEffect(() => {
     confirmEmailChanging(({ token: token as string }))
     .finally(() => {
-      getCurrentUser();
+      if (authToken) getCurrentUser()
     });
   }, []);
   return <div>

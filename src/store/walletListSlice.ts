@@ -11,7 +11,7 @@ export const fetchWallets = createAsyncThunk<FetchWalletsResponse, FetchWalletLi
     try {
       const wallets = await walletsApi.fetchWallets(generateListReqParams(page, ITEMS_PER_PAGE));
       return wallets;
-    } catch(err) {
+    } catch(err: any) {
       return rejectWithValue(err?.data)
     }
   },

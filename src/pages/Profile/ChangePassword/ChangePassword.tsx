@@ -51,7 +51,7 @@ const ChangePassword: React.FC<Props> = ({ onSubmit, goBackCallback, updateUser 
         });
         await updateUser();
         setSubmited(true);
-      } catch (err) {
+      } catch (err: any) {
         if (err.decryptKeys) {
           setErrors({ current_password: "Incorrect password." });
         } else {
@@ -73,6 +73,7 @@ const ChangePassword: React.FC<Props> = ({ onSubmit, goBackCallback, updateUser 
             <div className="form-field">
               <Label label="Current Account Password">
                 <Input
+                  autoComplete="current-password"
                   type="password"
                   name="current_password"
                   value={values.current_password}
@@ -86,6 +87,7 @@ const ChangePassword: React.FC<Props> = ({ onSubmit, goBackCallback, updateUser 
             <div className="mb-1">
               <Label label="New Account Password">
                 <Input
+                  autoComplete="new-password"
                   type="password"
                   name="new_password"
                   value={values.new_password}

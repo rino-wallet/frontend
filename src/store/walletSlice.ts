@@ -6,16 +6,12 @@ import {
   CreateUnsignedTransactionResponse,
   Destination,
   WalletMember,
-  CreateSubaddressThunkPayload,
   DeleteWalletPayload,
   DeleteWalletResponse,
-  FetchSubaddressResponse,
   FetchWalletDetailsPayload,
   FetchWalletDetailsResponse,
-  FetchWalletSubaddressThunkPayload,
   RemoveWalletAccessPayload,
   RemoveWalletAccessResponse,
-  Subaddress,
   UpdateWalletDetailsPayload,
   UpdateWalletDetailsResponse,
   RootState,
@@ -26,11 +22,11 @@ import {
 } from "../types";
 import walletsApi from "../api/wallets";
 import publicKeysApi from "../api/publicKeys";
-import walletService from "./walletInstance";
+import walletInstance from "../wallet";
 import pollTask from "../utils/pollTask";
-import {generateExtraReducer, createLoadingSelector, generateListReqParams, getEncryptedKeys, deriveUserKeys, decryptKeys} from "../utils";
+import {generateExtraReducer, createLoadingSelector, getEncryptedKeys, deriveUserKeys, decryptKeys} from "../utils";
 import { accessLevels, createNewWalletSteps, createTransactionSteps } from "../constants";
-import { decryptWalletKeys, encryptWalletKeys } from "../wallet"
+import { decryptWalletKeys, encryptWalletKeys } from "../wallet/WalletService";
 import modals from "../modules/2FAModals";
 
 function updateShareWalletResponse(response: ShareWalletResponse): WalletMember {
@@ -52,11 +48,14 @@ export const createNewWallet = createAsyncThunk<any, { name: string }>(
       // create user and backup wallets
       dispatch(setStage(createNewWalletSteps.wallet1));
       console.log("Creating User and Backup wallets");
-      await walletService.createWallets();
+      await walletInstance.createWallets();
       // prepare multisigs for user and backup wallets
       dispatch(setStage(createNewWalletSteps.wallet2));
+      // With this artificial delay we can show stage of creating wallet in the UI little bit longer time,
+      // so user can read it
+      await new Promise((resolve) => setTimeout(() => resolve({}), 1000));  
       console.log("Preparing multisigs");
-      const preparedMultisigs = await walletService.prepareMultisigs();
+      const preparedMultisigs = await walletInstance.prepareMultisigs();
       // create server wallet
       dispatch(setStage(createNewWalletSteps.wallet3));
       console.log("Creating Server Wallet and prepare multisig");
@@ -73,14 +72,14 @@ export const createNewWallet = createAsyncThunk<any, { name: string }>(
       // Make multisigs for user and backup wallets
       dispatch(setStage(createNewWalletSteps.wallet4));
       console.log("Making multisig for User and Backup wallets");
-      const madeMultisigs = await walletService.makeMultisigs([...preparedMultisigs, preparedServerMultisig]);
+      const madeMultisigs = await walletInstance.makeMultisigs([...preparedMultisigs, preparedServerMultisig]);
       // Exchange multisig information for User and Backup wallets
       dispatch(setStage(createNewWalletSteps.wallet5));
       console.log("Exchanging multisig information for User and Backup wallets");
-      const result = await walletService.exchangeMultisigKeys([...madeMultisigs, madeServerMultisig]);
+      const result = await walletInstance.exchangeMultisigKeys([...madeMultisigs, madeServerMultisig]);
       dispatch(setStage(createNewWalletSteps.wallet6));
       console.log("Finalizing server wallet");
-      const encryptedWalletKeys =  await walletService.encryptWalletKeys(Uint8Array.from(Buffer.from(encryptionPublicKey, "base64")));
+      const encryptedWalletKeys =  await walletInstance.encryptWalletKeys(Uint8Array.from(Buffer.from(encryptionPublicKey, "base64")));
       const finalizedServerWallet = await walletsApi.finalizeWallet(walletId, {
         address: result.userResult.state.address,
         user_multisig_xinfo: madeMultisigs[0],
@@ -92,12 +91,14 @@ export const createNewWallet = createAsyncThunk<any, { name: string }>(
         }),
       });
       // Refresh wallets data and add to store
-      const updatedWallets = await walletService.getWalletsData();
+      const updatedWallets = await walletInstance.getWalletsData();
       // finalize server wallet
       await pollTask(finalizedServerWallet.taskId);
+      walletInstance.closeWallet();
       dispatch(setStage(""));
-      return { ...updatedWallets, walletId, walletPassword: Buffer.from(walletService.walletPassword).toString("hex") };
-    } catch(err) {
+      return { ...updatedWallets, walletId, walletPassword: Buffer.from(walletInstance.walletPassword).toString("hex") };
+    } catch(err: any) {
+      console.log(err);
       return rejectWithValue(err?.data)
     }
   },
@@ -122,11 +123,11 @@ export const openWallet = createAsyncThunk<LocalWalletData, { wallet: Wallet, lo
         Uint8Array.from(Buffer.from(encryptionPublicKey, "base64")),
         encryptionPrivateKey,
       );
-      const userWallet = await walletService.openWallet(walletKeys, walletPassword);
+      const userWallet = await walletInstance.openWallet(walletKeys, walletPassword);
       cleanDerivedKeys();
       cleanDecryptedKeys();
       return userWallet;
-    } catch(err) {
+    } catch(err: any) {
       dispatch(setStage(""));
       return rejectWithValue(err?.data || err)
     }
@@ -137,7 +138,7 @@ export const getOutputs = createAsyncThunk<LocalWalletData | undefined, GetOutpu
   "wallet/getOutputs",
   async (data, { rejectWithValue, dispatch }) => {
     try {
-      const { userWallet } = walletService;
+      const { userWallet } = walletInstance;
       const response = await walletsApi.getOutputs(data);
       const { result: { outputsHex } } = await pollTask(response.taskId);
       const importedOutputs = await userWallet?.importOutputs(outputsHex);
@@ -145,7 +146,7 @@ export const getOutputs = createAsyncThunk<LocalWalletData | undefined, GetOutpu
 
       const userWalletUpdated = await userWallet?.getWalletJSON();
       return userWalletUpdated;
-    } catch(err) {
+    } catch(err: any) {
       dispatch(setStage(""));
       return rejectWithValue(err?.data)
     }
@@ -165,7 +166,7 @@ export const syncMultisig = createAsyncThunk<LocalWalletData | undefined, string
   async (id, { rejectWithValue, dispatch }) => {
     try {
       dispatch(setStage(createTransactionSteps.transaction5));
-      const { userWallet } = walletService;
+      const { userWallet } = walletInstance;
       if (!userWallet) {
         return;
       }
@@ -186,7 +187,7 @@ export const syncMultisig = createAsyncThunk<LocalWalletData | undefined, string
 
       const userWalletUpdated = await userWallet.getWalletJSON();
       return userWalletUpdated;
-    } catch(err) {
+    } catch(err: any) {
       dispatch(setStage(""));
       return rejectWithValue(err?.data || err)
     }
@@ -202,8 +203,11 @@ export const prepareTransaction = createAsyncThunk<CreateUnsignedTransactionResp
          memo: data.memo,
          priority: data.priority,
       }));
+      // With this artificial delay we can show stage of creating transaction in the UI little bit longer time,
+      // so user can read it
       dispatch(setStage(createTransactionSteps.transaction2));
-      const {userWallet} = walletService;
+      await new Promise((resolve) => setTimeout(() => resolve({}), 1000));  
+      const {userWallet} = walletInstance;
       const multisig = await userWallet?.getMultisigHex();
       dispatch(setStage(createTransactionSteps.transaction3));
       const createTransactionResponse = await walletsApi.createUnsignedTransaction(data.id, {
@@ -228,7 +232,8 @@ export const prepareTransaction = createAsyncThunk<CreateUnsignedTransactionResp
         dispatch(setStage(""));
         return rejectWithValue({"detail": "Could not get transaction fee."});
       }
-    } catch (err) {
+    } catch (err: any) {
+      console.log(111, err);
       dispatch(setStage(""));
       return rejectWithValue(err?.data)
     }
@@ -240,7 +245,7 @@ export const createTransaction = createAsyncThunk<CreateUnsignedTransactionRespo
   async (data, { rejectWithValue, getState, dispatch }) => {
     try {
       const pendingTransaction = (getState() as any).wallet.pendingTransaction;
-      const {userWallet} = walletService;
+      const {userWallet} = walletInstance;
       const txHex = await userWallet?.reconstructAndValidateTransaction(pendingTransaction.txsHex, {
         address: pendingTransaction.address,
         amount: pendingTransaction.amount
@@ -263,8 +268,9 @@ export const createTransaction = createAsyncThunk<CreateUnsignedTransactionRespo
         memo: undefined,
         priority: undefined,
       }))
+      walletInstance.closeWallet();
       return submitTransactionResponse;
-    } catch(err) {
+    } catch(err: any) {
       dispatch(setStage(""));
       return rejectWithValue(err?.data)
     }
@@ -276,7 +282,7 @@ export const persistWallet = createAsyncThunk<void, PersistWalletPayload>(
   async (data, { rejectWithValue }) => {
     try {
       await walletsApi.persistWallet(data);
-    } catch(err) {
+    } catch(err: any) {
       return rejectWithValue(err?.data)
     }
   },
@@ -288,7 +294,7 @@ export const fetchWalletDetails = createAsyncThunk<FetchWalletDetailsResponse, F
     try {
       const wallet = await walletsApi.fetchWalletDetails(data);
       return wallet;
-    } catch(err) {
+    } catch(err: any) {
       return rejectWithValue(err?.data)
     }
   },
@@ -300,7 +306,7 @@ export const updateWalletDetails = createAsyncThunk<UpdateWalletDetailsResponse,
     try {
       const wallet = await walletsApi.updateWalletDetails(data, data.code ? { headers: { "X-RINO-2FA": data.code } } : undefined,);
       return wallet;
-    } catch(err) {
+    } catch(err: any) {
       return rejectWithValue(err?.data)
     }
   },
@@ -317,7 +323,7 @@ export const deleteWallet = createAsyncThunk<DeleteWalletResponse, DeleteWalletP
       }
       const wallet = await walletsApi.deleteWallet(data, code ? { headers: { "X-RINO-2FA": code } } : undefined);
       return wallet;
-    } catch(err) {
+    } catch(err: any) {
       return rejectWithValue(err?.data)
     }
   },
@@ -362,7 +368,7 @@ export const shareWallet = createAsyncThunk<void, ShareWalletThunkPayload>(
         const response = await walletsApi.shareWallet(data.wallet.id, requestBody, data.code ? { headers: { "X-RINO-2FA": data.code } } : undefined,);
         dispatch(addMember(updateShareWalletResponse(response)));
       }
-    } catch(err) {
+    } catch(err: any) {
       return rejectWithValue(err?.data || err)
     }
   },
@@ -375,35 +381,7 @@ export const removeWalletAccess = createAsyncThunk<RemoveWalletAccessResponse, R
       const response = await walletsApi.removeWalletAccess(data);
       dispatch(removeMember(data.userId))
       return response;
-    } catch(err) {
-      return rejectWithValue(err?.data)
-    }
-  },
-);
-
-export const fetchWalletSubaddress = createAsyncThunk<FetchSubaddressResponse, FetchWalletSubaddressThunkPayload>(
-  "wallet/fetchWalletSubaddress",
-  async ({ walletId }, { rejectWithValue, dispatch }) => {
-    try {
-      const addresses = await walletsApi.fetchWalletSubaddresses(walletId, generateListReqParams(1, 1));
-      if (addresses.results.length) {
-        dispatch(setAddress(addresses.results[0].address));
-      }
-      return addresses;
-    } catch(err) {
-      return rejectWithValue(err?.data)
-    }
-  },
-);
-
-export const createSubaddress = createAsyncThunk<Subaddress, CreateSubaddressThunkPayload>(
-  "wallet/createSubaddress",
-  async ({ walletId }, { rejectWithValue, dispatch }) => {
-    try {
-      const response = await walletsApi.createSubaddress(walletId);
-      dispatch(setAddress(response.address))
-      return response;
-    } catch(err) {
+    } catch(err: any) {
       return rejectWithValue(err?.data)
     }
   },
@@ -411,7 +389,6 @@ export const createSubaddress = createAsyncThunk<Subaddress, CreateSubaddressThu
 
 export interface State {
   data: Wallet | null;
-  walletSubAddress: string;
   stage: string;
   pendingTransaction: PendingTransaction
   thunksInProgress: string[];
@@ -419,7 +396,6 @@ export interface State {
 
 export const initialState: State = {
   data: null,
-  walletSubAddress: "",
   stage: "",
   thunksInProgress: [],
   pendingTransaction: {
@@ -438,11 +414,6 @@ export const walletSlice = createSlice({
   name: SLICE_NAME,
   initialState,
   reducers: {
-    setAddress(state, action: { payload: string }): void {
-      if (state.data) {
-        state.walletSubAddress = action.payload;
-      }
-    },
     addMember(state, action: { payload: WalletMember }): void {
       if (state.data) {
         state.data = {
@@ -471,7 +442,6 @@ export const walletSlice = createSlice({
     reset(state): void {
       state.data = initialState.data;
       state.stage = initialState.stage;
-      state.walletSubAddress = initialState.walletSubAddress;
       state.thunksInProgress = initialState.thunksInProgress;
       state.pendingTransaction = initialState.pendingTransaction;
     },
@@ -493,13 +463,10 @@ export const walletSlice = createSlice({
     ...generateExtraReducer(deleteWallet),
     // ...generateExtraReducer(shareWallet),
     ...generateExtraReducer(removeWalletAccess),
-    ...generateExtraReducer(fetchWalletSubaddress),
-    ...generateExtraReducer(createSubaddress),
   }
 });
 
 export const selectors = {
-  getWalletSubAddress: (state: RootState): string => state[SLICE_NAME].walletSubAddress,
   getStage: (state: RootState): string => state[SLICE_NAME].stage,
   getWallet: (state: RootState): Wallet => state[SLICE_NAME].data,
   getPendingTransaction: (state: RootState): PendingTransaction => state[SLICE_NAME].pendingTransaction,
@@ -514,14 +481,11 @@ export const selectors = {
   pendingDeleteWallet: createLoadingSelector(SLICE_NAME, deleteWallet.pending.toString()),
   // pendingShareWallet: createLoadingSelector(SLICE_NAME, shareWallet.pending.toString()),
   pendingRemoveWalletAccess: createLoadingSelector(SLICE_NAME, removeWalletAccess.pending.toString()),
-  pendingFetchWalletSubaddress: createLoadingSelector(SLICE_NAME, fetchWalletSubaddress.pending.toString()),
-  pendingCreateSubaddress: createLoadingSelector(SLICE_NAME, createSubaddress.pending.toString()),
 }
 
 export const {
   addMember,
   removeMember,
-  setAddress,
   setStage,
   setPendingTransaction,
   reset,

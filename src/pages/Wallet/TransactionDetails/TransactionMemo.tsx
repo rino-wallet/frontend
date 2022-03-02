@@ -36,7 +36,7 @@ const TransactionMemo: React.FC<Props> = ({ walletId, transactionId, memo }) => 
           memo: values.memo,
         });
         resetForm();
-      } catch (err) {
+      } catch (err: any) {
         if (err) setErrors(err);
       }
     },

@@ -17,7 +17,11 @@ const ChangeEmailContainer: React.FC<Props> = ({ goBackCallback }) => {
   const changeEmail = useThunkActionCreator<void, ChangeEmailRequestPayload>(changeEmailRequestThunk);
   const user = useSelector(sessionSelectors.getUser);
   return (
-    <ChangeEmail username={user?.username} onSubmit={changeEmail} goBackCallback={goBackCallback} />
+    <ChangeEmail
+      username={user?.username}
+      onSubmit={changeEmail}
+      goBackCallback={goBackCallback}
+    />
   );
 }
 

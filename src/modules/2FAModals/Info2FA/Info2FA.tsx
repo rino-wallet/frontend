@@ -27,7 +27,9 @@ const Info2FA: React.FC<Props> = ({ submit, cancel, secretKey }) => {
             </p>
             <div className="form-field">
               <Label label="16-Digit secret key:">
-                <CopyArea text={secretKey} qaSelector="code" />
+                <CopyArea value={secretKey} qaSelector="code">
+                  {secretKey}
+                </CopyArea>
               </Label>
             </div>
             <Checkbox

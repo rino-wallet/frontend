@@ -12,7 +12,7 @@ export class Api extends Axios {
     this.token = "";
     this.axios.interceptors.request.use(
       (req) => {
-        if (this.getToken()) {
+        if (this.getToken() && req.headers) {
           req.headers.authorization = this.getToken();
         }
         return req;
@@ -267,7 +267,7 @@ export class Api extends Axios {
    * @param {AxiosError<T>} error
    * @memberof Api
    */
-  public error<T>(error: AxiosError<T>): Promise<T> {
+  public error<T>(error: AxiosError<T>): Promise<AxiosError> {
     throw error;
   }
 }

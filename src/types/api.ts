@@ -65,7 +65,6 @@ export interface SignUpPayload {
   email: string;
   username: string;
   password: string;
-  invite_code: string;
   password_confirmation: string;
 }
 
@@ -84,7 +83,7 @@ export interface ChangePasswordPayload {
 
 // updateUser api interface
 export interface UpdateUserPayload {
-  name: string;
+  tx_notifications: boolean;
 }
 
 // Reset password api interface
@@ -138,6 +137,7 @@ export interface UserResponse {
   name: string;
   username: string;
   nonce: string;
+  txNotifications: boolean;
   keypair: {
     encPrivateKey: string;
     encryptionPublicKey: string;

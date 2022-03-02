@@ -21,7 +21,7 @@ const DeleteWallet: React.FC<Props> = ({ deleteWallet, goBackCallback, balance, 
     try {
       await deleteWallet();
       navigate(routes.wallets);
-    } catch(err) {
+    } catch(err: any) {
       if (err) {
         setErrors(err);
       }

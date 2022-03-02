@@ -7,6 +7,7 @@ import { SuccessModal, showSuccessModal } from "./SuccessModal";
 import { TransactionStatus } from "./TransactionStatus";
 import { Pagination } from "./Pagination";
 import { CopyArea } from "./CopyArea";
+import { enterPasswordModal } from "./EnterPasswordModal";
 
 export {
   PageTemplate,
@@ -19,4 +20,5 @@ export {
   TransactionStatus,
   Pagination,
   CopyArea,
+  enterPasswordModal,
 };

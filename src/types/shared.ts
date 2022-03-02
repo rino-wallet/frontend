@@ -31,6 +31,7 @@ export type WalletRaw = {
   reconstructValidateTx: (txHex: string, config: TransactionConfig) => Promise<WalletTx[]>;
   loadMultisigTx: (txHex: string) => Promise<{ state: TransactionConfig }>;
   getMultisigSeed: (passphrase: string) => Promise<string>;
+  getSubaddresses: (accountIdx: number, subaddressIndices: number) => Promise<any>;
 }
 
 export type ExchangeMultisigKeysResult = {

@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { createQRCodeImage } from "../../../utils";
 import { generatePath, useNavigate } from "react-router-dom";
-import { CopyArea, Pagination } from "../../../modules/index";
+import { CopyArea, Pagination, enterPasswordModal } from "../../../modules/index";
 import { Button, Label } from "../../../components";
-import { CreateSubaddressThunkPayload, Subaddress, Wallet, FetchSubaddressesThunkPayload, FetchSubaddressResponse } from "../../../types";
+import { CreateSubaddressThunkPayload, Subaddress, Wallet, FetchSubaddressesThunkPayload, FetchSubaddressResponse, UseThunkActionCreator, LocalWalletData } from "../../../types";
 import routes from "../../../router/routes";
 import { SubaddressItem } from "./SubaddressItem";
+// import { ValidateButton } from "./ValidateButton";
 import { WalletPageTemplate } from "../WalletPageTemplate";
+import walletInstance from "../../../wallet";
 
 interface Props {
   walletId: string;
@@ -19,7 +21,9 @@ interface Props {
   hasNextPage: boolean;
   fetchSubaddresses: (payload: FetchSubaddressesThunkPayload) => Promise<FetchSubaddressResponse>;
   createSubaddress: (payload: CreateSubaddressThunkPayload) => Promise<Subaddress>;
-  walletSubAddress: string;
+  openWallet: ({ wallet, loginPassword }: { wallet: Wallet, loginPassword: string }) => UseThunkActionCreator<LocalWalletData>;
+  validateSubAddress: (payload: { address: string, index: number}) => void;
+  walletSubAddress: Subaddress | null;
 }
 
 const ReceivePayment: React.FC<Props> = ({
@@ -33,6 +37,8 @@ const ReceivePayment: React.FC<Props> = ({
   hasNextPage,
   createSubaddress,
   fetchSubaddresses,
+  openWallet,
+  validateSubAddress,
   walletSubAddress,
 }) => {
   const [page, setPage] = useState<number>(1);
@@ -40,7 +46,7 @@ const ReceivePayment: React.FC<Props> = ({
   const [image, setImage] = useState("");
   useEffect(() => {
     if (walletSubAddress) {
-      createQRCodeImage(walletSubAddress, { errorCorrectionLevel: "H", width: 265 })
+      createQRCodeImage(walletSubAddress?.address, { errorCorrectionLevel: "H", width: 265 })
         .then((b64String) => {
           setImage(b64String);
         }, () => { setImage(""); });
@@ -49,6 +55,14 @@ const ReceivePayment: React.FC<Props> = ({
   useEffect(() => {
     fetchSubaddresses({ walletId, page });
   }, [page]);
+  async function validateAddress(address: string, index: number): Promise<void> {
+    if (!walletInstance.userWallet) {
+      await enterPasswordModal({ callback: (password: string) => {
+        return openWallet({ wallet, loginPassword: password });
+      }})
+    }
+    return await validateSubAddress({ address, index });
+  }
   return (
     <WalletPageTemplate
       title="Receive"
@@ -60,12 +74,26 @@ const ReceivePayment: React.FC<Props> = ({
         <div className="mb-8 items-start md:flex">
           <div className="flex justify-center mb-6 order-2" data-qa-selector="address-qr-code">
             {
-              image && <img src={image} alt={walletSubAddress} />
+              image && <img src={image} alt={walletSubAddress?.address} />
             }
           </div>
           <div className="min-w-0 order-1 w-full md:mr-6">
-            <Label label="Current address">
-              <CopyArea text={walletSubAddress} qaSelector="receive-address" />
+            <Label label={
+              <div className="flex items-center" data-qa-selector="validate-current-address">
+                <span className="mr-3">Current address</span>
+                {/* {
+                  walletSubAddress && (
+                    <ValidateButton
+                      subaddress={walletSubAddress}
+                      validateAddress={validateAddress}
+                    />
+                  )
+                } */}
+              </div>
+            }>
+              <CopyArea value={walletSubAddress?.address || ""} qaSelector="receive-address">
+                {walletSubAddress?.address} {walletSubAddress?.isUsed ? <span className="theme-text-secondary font-bold"> (Used)</span> : ""}
+              </CopyArea>
             </Label>
             <Button
               className="mt-6"
@@ -90,7 +118,7 @@ const ReceivePayment: React.FC<Props> = ({
             {
               subaddresses.map((subaddress) => (
                 <li key={subaddress.address} className="mb-3">
-                  <SubaddressItem subaddress={subaddress} />
+                  <SubaddressItem subaddress={subaddress} validateAddress={validateAddress} />
                 </li>
               ))
             }

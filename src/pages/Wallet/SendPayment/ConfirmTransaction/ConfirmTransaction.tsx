@@ -94,7 +94,7 @@ const ConfirmTransaction: React.FC<Props> = ({
           fetchWalletDetails({ id: wallet.id }).then(() => null);
           resetForm();
           navigate(`${generatePath(routes.wallet, { id: walletId })}/transactions`);
-        } catch(err) {
+        } catch(err: any) {
           console.error(err);
           if (err) {
             setErrors(err);

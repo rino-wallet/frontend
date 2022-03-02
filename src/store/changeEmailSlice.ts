@@ -26,7 +26,7 @@ export const changeEmailRequest = createAsyncThunk<void, ChangeEmailRequestPaylo
         code ? { headers: { "X-RINO-2FA": code } } : undefined,
       );
       return response;
-    } catch(err) {
+    } catch(err: any) {
       return rejectWithValue(err?.data)
     }
   },
@@ -38,7 +38,7 @@ export const getEmailChangingInfo = createAsyncThunk<ChangingEmailInfoResponse, 
     try {
       const response = await sessionApi.getEmailChangingInfo(data);
       return response;
-    } catch(err) {
+    } catch(err: any) {
       return rejectWithValue(err?.data)
     }
   },
@@ -50,7 +50,7 @@ export const confirmEmailChanging = createAsyncThunk<void, ChangeEmailConfirmPay
     try {
       const response = await sessionApi.confirmEmailChanging(data);
       return response;
-    } catch(err) {
+    } catch(err: any) {
       return rejectWithValue(err?.data)
     }
   },

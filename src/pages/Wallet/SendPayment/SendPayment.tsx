@@ -1,11 +1,11 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import { useNavigate, generatePath } from "react-router-dom";
 import { Tabs, Check } from "../../../components";
 import { Wallet } from "../../../types";
 import routes from "../../../router/routes";
 import { WalletPageTemplate } from "../WalletPageTemplate";
 import TransactionForm from "./TransactionForm";
-
+import walletInstance from "../../../wallet";
 
 interface Props {
   wallet: Wallet | null;
@@ -18,8 +18,12 @@ const SendPayment: React.FC<Props> = ({
 }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(0);
+  useEffect(() => {
+    return () => {
+      walletInstance.closeWallet();
+    }
+  }, []);
   return (
-    
     <WalletPageTemplate
       title={`Send funds from ${wallet?.name}`}
       goBackCallback={(): void => { navigate(`${generatePath(routes.wallet, { id: walletId })}/transactions`); }}

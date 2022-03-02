@@ -42,7 +42,7 @@ export const signUp = createAsyncThunk<SignUpResponse, SignUpThunkPayload>(
         password_confirmation: password,
       });
       return response;
-    } catch(err) {
+    } catch(err: any) {
       return rejectWithValue(err?.data)
     }
   },
@@ -61,7 +61,7 @@ export const signIn = createAsyncThunk<SignInResponse, SignInPayload>(
       }
       dispatch(setToken(response.data.token));
       return response.data;
-    } catch(err) {
+    } catch(err: any) {
       return rejectWithValue(err?.data)
     }
   },
@@ -80,7 +80,7 @@ export const signOut = createAsyncThunk<void, void>(
       }
       dispatch(fullReset());
       return response;  
-    } catch(err) {
+    } catch(err: any) {
       return rejectWithValue(err?.data)
     }
   },
@@ -99,7 +99,7 @@ export const setupKeyPair = createAsyncThunk<SetUpKeyPairResponse, SetUpKeyPairT
       });
       dispatch(getCurrentUser());
       return response;  
-    } catch(err) {
+    } catch(err: any) {
       return rejectWithValue(err?.data)
     }
   },
@@ -111,7 +111,7 @@ export const getCurrentUser = createAsyncThunk<UserResponse, void>(
     try {
       const response = await sessionApi.getCurrentUser();
       return response;  
-    } catch(err) {
+    } catch(err: any) {
       return rejectWithValue(err?.data)
     }
   },
@@ -144,7 +144,7 @@ export const resetPasswordConfirm = createAsyncThunk<void, ResetPasswordConfirmT
       });
       clean();
       return response;  
-    } catch(err) {
+    } catch(err: any) {
       return rejectWithValue(err?.data || err);
     }
   },
@@ -158,8 +158,8 @@ export const changePassword = createAsyncThunk<void, ChangePasswordThunkPayload>
       const { is2FaEnabled, username, encPrivateKey } = (getState() as any).session.user;
       const { authKey: authKeyOld, encryptionKey: encryptionKeyOld, clean: cleanOld } = await deriveUserKeys(data.current_password, username);
       const { authKey: authKeyNew, encPrivateKeysDataSet, signature, clean: cleanNew } = await reencrypPrivateKey(
-        Buffer.from(encPrivateKey.enc_content, "base64"),
-        Buffer.from(encPrivateKey.nonce, "base64"),
+        Uint8Array.from(Buffer.from(encPrivateKey.enc_content, "base64")),
+        Uint8Array.from(Buffer.from(encPrivateKey.nonce, "base64")),
         encryptionKeyOld,
         data.new_password,
         username,
@@ -178,7 +178,7 @@ export const changePassword = createAsyncThunk<void, ChangePasswordThunkPayload>
       }
       const response = await sessionApi.changePassword(requestBody, code ? { headers: { "X-RINO-2FA": code } } : undefined);
       return response;  
-    } catch(err) {
+    } catch(err: any) {
       return rejectWithValue(err?.data || err)
     }
   },
@@ -189,8 +189,9 @@ export const updateUser = createAsyncThunk<UserResponse, UpdateUserPayload>(
   async (data, { rejectWithValue }) => {
     try {
       const response = await sessionApi.updateUser(data);
+      
       return response;  
-    } catch(err) {
+    } catch(err: any) {
       return rejectWithValue(err?.data)
     }
   },
@@ -275,12 +276,12 @@ export const selectors = {
 }
 
 function updateResponse (data: UserResponse): User {
-  const parsedKeypairJson = data.keypair ? JSON.parse(data.keypair.encPrivateKey) : {};
+  const parsedKeypairJson = data?.keypair ? JSON.parse(data?.keypair.encPrivateKey) : {};
   return {
     ...data,
     encPrivateKey: parsedKeypairJson,
-    encryptionPublicKey: data.keypair?.encryptionPublicKey || "",
-    signingPublicKey: data.keypair?.signingPublicKey || "",
+    encryptionPublicKey: data?.keypair?.encryptionPublicKey || "",
+    signingPublicKey: data?.keypair?.signingPublicKey || "",
   }
 }
 

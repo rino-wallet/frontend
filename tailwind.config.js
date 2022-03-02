@@ -2,8 +2,7 @@
 const colors = require("tailwindcss/colors");
 
 module.exports = {
-  purge: ["./src/**/*.{js,jsx,ts,tsx}", "./public/index.html"],
-  darkMode: false, // or 'media' or 'class'
+  content: ["./src/**/*.{html,jsx,ts,tsx}"],
   theme: {
     colors: {
       transparent: "transparent",
@@ -92,7 +91,7 @@ module.exports = {
   variants: {
     extend: {
       opacity: ["disabled"],
-      backgroundColor: ["checked", "hover", "focus", "disabled"],
+      backgroundColor: ["checked", "focus", "disabled"],
       backgroundImage: ["checked", "hover", "focus", "disabled"],
       borderColor: ["checked", "hover", "focus", "disabled"],
       inset: ["checked"],

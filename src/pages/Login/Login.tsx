@@ -57,7 +57,7 @@ const LoginPage: React.FC<Props> = ({ login, setPassword, getCurrentUser }) => {
                 navigate(ROUTES.wallets);
               }
               return loginResponse;
-            } catch(err) {
+            } catch(err: any) {
               if (err) setErrors(err);
             }
           }}

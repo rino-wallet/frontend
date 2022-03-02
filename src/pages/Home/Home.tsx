@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { HashLink } from "react-router-hash-link";
 import LogoWhite from "./images/logo_white.svg";
-import landingBackground from "./images/background.jpg";
 import routes from "../../router/routes";
 import { ScrollArrow } from "../../components/ScrollArrow";
 import { MultisigDiagram } from "../../components/MultisigDiagram";
+import "./styles.css";
 
 const minWindowHeight = 700;
 
@@ -22,9 +22,8 @@ const HomePage: React.FC = () => {
   return (
     <div>
       <div
-        className="text-white md:bg-center pt-40 pb-14 md:py-0 md:h-screen md:bg-cover relative"
+        className="text-white md:bg-center pt-40 pb-14 md:py-0 md:h-screen md:bg-cover relative landing-page"
         style={{
-          backgroundImage: `url(${landingBackground})`,
           minHeight: windowHeight <  minWindowHeight ? `${minWindowHeight}px` : "auto",
         }}
       >

@@ -1,4 +1,3 @@
-import { expect } from "chai";
 import _sodium from "libsodium-wrappers";
 import {
   deriveUserKeys,
@@ -9,7 +8,11 @@ import {
   signKeys,
   generateUserKeyPairInfo,
   reencrypPrivateKey,
-} from "../../src/utils/keypairs";
+} from "../../utils/keypairs";
+import { TextEncoder, TextDecoder } from 'util';
+
+(global as any).TextEncoder = TextEncoder;
+(global as any).TextDecoder = TextDecoder;
 
 const testVectors = [
   {
@@ -52,25 +55,25 @@ describe("userKeyPairs", function() {
 
     it(`Test deriveUserKeys for the password "${password}"`, async () => {
       const { authKey, encryptionKey } = await deriveUserKeys(password, "pony");
-      expect(Buffer.from(authKey).toString("hex")).to.equal(expectedAuthKey);
-      expect(Buffer.from(encryptionKey).toString("hex")).to.equal(expectedEncryptionKey);
+      expect(Buffer.from(authKey).toString("hex")).toEqual(expectedAuthKey);
+      expect(Buffer.from(encryptionKey).toString("hex")).toEqual(expectedEncryptionKey);
     });
   }
   it("\"generateRecoveryKey\" function should return a random hex string of 32 chars", async () => {
     const keys = [];
     for (let i = 0; i < 100; i++) {
       const key = Buffer.from(await (await generateRecoveryKey()).recoveryKey).toString("hex");
-      expect(key.length).to.equal(64);
-      expect(keys.includes(key)).to.equal(false);
+      expect(key.length).toEqual(64);
+      expect(keys.includes(key)).toEqual(false);
       keys.push(key);
     }
   });
   it("\"generateUserKeyPair\" function should return a valid keys", async () => {
     const { encryption, sign } = await generateUserKeyPair();
-    expect(encryption.publicKey.length).to.equal(32);
-    expect(encryption.privateKey.length).to.equal(32);
-    expect(sign.publicKey.length).to.equal(32);
-    expect(sign.privateKey.length).to.equal(64);
+    expect(encryption.publicKey.length).toEqual(32);
+    expect(encryption.privateKey.length).toEqual(32);
+    expect(sign.publicKey.length).toEqual(32);
+    expect(sign.privateKey.length).toEqual(64);
   });
   it("The \"encryptPrivateKeys\" function encrypts encryption and signing private keys with \"recoveryKey\" and \"encryptionKey\". The encrypted keys possible to decrypt using \"decryptKey\" function", async () => {
     const password = "password";
@@ -80,12 +83,12 @@ describe("userKeyPairs", function() {
     const { ek, rk } = await encryptPrivateKeys(encryption.privateKey, sign.privateKey, encryptionKey, recoveryKey);
     const ekDecrypted = await decryptKeys(ek.encryptedMessage, ek.nonce, encryptionKey);
     const rkDecrypted = await decryptKeys(rk.encryptedMessage, rk.nonce, recoveryKey);
-    expect(ekDecrypted.version).to.equal(1);
-    expect(ekDecrypted.encryptionPrivateKey).to.deep.equal(encryption.privateKey);
-    expect(ekDecrypted.signingPrivateKey).to.deep.equal(sign.privateKey);
-    expect(rkDecrypted.version).to.equal(1);
-    expect(rkDecrypted.encryptionPrivateKey).to.deep.equal(encryption.privateKey);
-    expect(rkDecrypted.signingPrivateKey).to.deep.equal(sign.privateKey);
+    expect(ekDecrypted.version).toEqual(1);
+    expect(ekDecrypted.encryptionPrivateKey).toEqual(encryption.privateKey);
+    expect(ekDecrypted.signingPrivateKey).toEqual(sign.privateKey);
+    expect(rkDecrypted.version).toEqual(1);
+    expect(rkDecrypted.encryptionPrivateKey).toEqual(encryption.privateKey);
+    expect(rkDecrypted.signingPrivateKey).toEqual(sign.privateKey);
   });
   it("The \"signKeys\" should create a valid detached signature", async () => {
     await _sodium.ready;
@@ -106,19 +109,19 @@ describe("userKeyPairs", function() {
     ];
     const message = arrays.reduce((prev, cur) => prev + Buffer.from(cur).toString("base64"), "");
     const valid = sodium.crypto_sign_verify_detached(signature, message, sign.publicKey);
-    expect(valid).to.equal(true);
+    expect(valid).toEqual(true);
   });
   it("The \"generateUserKeyPairInfo\" function should return all the necessary data", async () => {
     const data = await generateUserKeyPairInfo("pony", "password");
-    expect(data.authKey.length).to.equal(32);
-    expect(data.recoveryKey.length).to.equal(32);
-    expect(data.encryptionPublicKey.length).to.equal(32);
-    expect(data.signingPublicKey.length).to.equal(32);
-    expect(data.encPrivateKeysDataSet.ek.encryptedMessage.length).to.equal(114);
-    expect(data.encPrivateKeysDataSet.ek.nonce.length).to.equal(24);
-    expect(data.encPrivateKeysDataSet.rk.encryptedMessage.length).to.equal(114);
-    expect(data.encPrivateKeysDataSet.rk.nonce.length).to.equal(24);
-    expect(data.signature.length).to.equal(64);
+    expect(data.authKey.length).toEqual(32);
+    expect(data.recoveryKey.length).toEqual(32);
+    expect(data.encryptionPublicKey.length).toEqual(32);
+    expect(data.signingPublicKey.length).toEqual(32);
+    expect(data.encPrivateKeysDataSet.ek.encryptedMessage.length).toEqual(114);
+    expect(data.encPrivateKeysDataSet.ek.nonce.length).toEqual(24);
+    expect(data.encPrivateKeysDataSet.rk.encryptedMessage.length).toEqual(114);
+    expect(data.encPrivateKeysDataSet.rk.nonce.length).toEqual(24);
+    expect(data.signature.length).toEqual(64);
   });
   it("The \"reencrypPrivateKey\" function should return all the necessary data", async () => {
     const { encryptionKey } = await deriveUserKeys("password", "pony");
@@ -126,40 +129,40 @@ describe("userKeyPairs", function() {
     const { recoveryKey } = await generateRecoveryKey();
     const { rk } = await encryptPrivateKeys(encryption.privateKey, sign.privateKey, encryptionKey, recoveryKey);
     const data = await reencrypPrivateKey(rk.encryptedMessage, rk.nonce, recoveryKey, "newpassword", "pony");
-    expect(data.authKey.length).to.equal(32);
-    expect(data.recoveryKey.length).to.equal(32);
-    expect(data.encryptionPublicKey.length).to.equal(0);
-    expect(data.signingPublicKey.length).to.equal(0);
-    expect(data.encPrivateKeysDataSet.ek.encryptedMessage.length).to.equal(114);
-    expect(data.encPrivateKeysDataSet.ek.nonce.length).to.equal(24);
-    expect(data.encPrivateKeysDataSet.rk.encryptedMessage.length).to.equal(0);
-    expect(data.encPrivateKeysDataSet.rk.nonce.length).to.equal(0);
-    expect(data.signature.length).to.equal(64);
+    expect(data.authKey.length).toEqual(32);
+    expect(data.recoveryKey.length).toEqual(32);
+    expect(data.encryptionPublicKey.length).toEqual(0);
+    expect(data.signingPublicKey.length).toEqual(0);
+    expect(data.encPrivateKeysDataSet.ek.encryptedMessage.length).toEqual(114);
+    expect(data.encPrivateKeysDataSet.ek.nonce.length).toEqual(24);
+    expect(data.encPrivateKeysDataSet.rk.encryptedMessage.length).toEqual(0);
+    expect(data.encPrivateKeysDataSet.rk.nonce.length).toEqual(0);
+    expect(data.signature.length).toEqual(64);
   });
   it("deriveUserKeys clean methood zero out buffers containing sensitive data", async () => {
     const { authKey, encryptionKey, clean } = await deriveUserKeys("password", "pony");
     clean();
-    expect(isOverwiten(authKey)).to.equal(true);
-    expect(isOverwiten(encryptionKey)).to.equal(true);
+    expect(isOverwiten(authKey)).toEqual(true);
+    expect(isOverwiten(encryptionKey)).toEqual(true);
   });
   it("deriveUserKeys clean methood zero out buffers containing sensitive data", async () => {
     const { authKey, encryptionKey, clean } = await deriveUserKeys("password", "pony");
     clean();
-    expect(isOverwiten(authKey)).to.equal(true);
-    expect(isOverwiten(encryptionKey)).to.equal(true);
+    expect(isOverwiten(authKey)).toEqual(true);
+    expect(isOverwiten(encryptionKey)).toEqual(true);
   });
   it("generateRecoveryKey clean methood zero out buffers containing sensitive data", async () => {
     const { recoveryKey, clean } = await generateRecoveryKey();
     clean();
-    expect(isOverwiten(recoveryKey)).to.equal(true);
+    expect(isOverwiten(recoveryKey)).toEqual(true);
   });
   it("generateUserKeyPair clean methood zero out buffers containing sensitive data", async () => {
     const { encryption, sign, clean } = await generateUserKeyPair();
     clean();
-    expect(isOverwiten(encryption.privateKey)).to.equal(true);
-    expect(isOverwiten(encryption.publicKey)).to.equal(true);
-    expect(isOverwiten(sign.privateKey)).to.equal(true);
-    expect(isOverwiten(sign.publicKey)).to.equal(true);
+    expect(isOverwiten(encryption.privateKey)).toEqual(true);
+    expect(isOverwiten(encryption.publicKey)).toEqual(true);
+    expect(isOverwiten(sign.privateKey)).toEqual(true);
+    expect(isOverwiten(sign.publicKey)).toEqual(true);
   });
   it("decryptKeys clean methood zero out buffers containing sensitive data", async () => {
     const password = "password";
@@ -169,8 +172,8 @@ describe("userKeyPairs", function() {
     const { ek } = await encryptPrivateKeys(encryption.privateKey, sign.privateKey, encryptionKey, recoveryKey);
     const ekDecrypted = await decryptKeys(ek.encryptedMessage, ek.nonce, encryptionKey);
     ekDecrypted.clean();
-    expect(isOverwiten(ekDecrypted.encryptionPrivateKey)).to.equal(true);
-    expect(isOverwiten(ekDecrypted.signingPrivateKey)).to.equal(true);
+    expect(isOverwiten(ekDecrypted.encryptionPrivateKey)).toEqual(true);
+    expect(isOverwiten(ekDecrypted.signingPrivateKey)).toEqual(true);
   });
   it("generateUserKeyPairInfo clean methood zero out buffers containing sensitive data", async () => {
     const password = "password";
@@ -180,13 +183,13 @@ describe("userKeyPairs", function() {
       clean,
     } = await generateUserKeyPairInfo("pony", password);
     clean();
-    expect(isOverwiten(authKey)).to.equal(true);
-    expect(isOverwiten(recoveryKey)).to.equal(true);
+    expect(isOverwiten(authKey)).toEqual(true);
+    expect(isOverwiten(recoveryKey)).toEqual(true);
   });
 });
 
-function isOverwiten(arr) {
-  return arr.every((el) => {
+function isOverwiten(arr: any) {
+  return arr.every((el: number) => {
     return el === 0;
   });
 }

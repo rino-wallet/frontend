@@ -55,7 +55,7 @@ const Enter2FACode: React.FC<Props> = ({ submit, cancel, confirmCancel}) => {
       <Modal
         title="2FA Confirmation"
         onClose={handleCancel}
-        className={hide ? "hidden z-50" : "z-50"}
+        className={hide ? "hidden z-50" : "!z-50"}
       >
         <form onSubmit={handleSubmit}>
           <Modal.Body>

@@ -1,62 +1,45 @@
-const HashOutput = require('webpack-plugin-hash-output');
-const TerserPlugin = require('terser-webpack-plugin');
-const webpack = require('webpack');
-const SriPlugin = require('webpack-subresource-integrity');
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-
+const webpack = require("webpack");
+const TerserPlugin = require("terser-webpack-plugin");
+const { SubresourceIntegrityPlugin } = require("webpack-subresource-integrity");
 
 // craco.config.js
 // Note: the inherited base config of create-react-app is here:
 // https://github.com/facebook/create-react-app/blob/main/packages/react-scripts/config/webpack.config.js
 module.exports = {
-  style: {
-    postcss: {
-      plugins: [
-        require("tailwindcss"),
-        require("autoprefixer"),
-      ],
-    },
-  },
   webpack: {
-    optimization: [],
     configure: (webpackConfig, { env, paths }) => {
-      // Remove pre-existing MiniCssExtractPlugin, as plugin order is important
-      // We re-add it later...
-      let plugins = webpackConfig.plugins.filter((elem) => !(elem instanceof MiniCssExtractPlugin));
-
-      plugins = [
-        new MiniCssExtractPlugin({
-          // We can't use [chunkhash] here
-          // see https://github.com/scinos/webpack-plugin-hash-output/issues/29
-          filename: 'static/css/[name].[contenthash].chunk.css',
-          chunkFilename: 'static/css/[name].[contenthash].chunk.css',
+      webpackConfig.resolve.fallback = {
+        process: require.resolve("process/browser.js"),
+        zlib: require.resolve("browserify-zlib"),
+        stream: require.resolve("stream-browserify"),
+        util: require.resolve("util"),
+        buffer: require.resolve("buffer"),
+        asset: require.resolve("assert"),
+        crypto: require.resolve("crypto-browserify"),
+        path: require.resolve("path-browserify"),
+        https: require.resolve("https-browserify"),
+        http: require.resolve("stream-http"),
+        os: require.resolve("os-browserify"),
+        fs: false,
+        child_process: false,
+      };
+      
+      const plugins = [
+        ...webpackConfig.plugins,
+        new webpack.ProvidePlugin({
+          Buffer: ["buffer", "Buffer"],
+          process: "process/browser.js",
         }),
         // SriPlugin might be better disabled in local development mode
-        //Note: SRIPlugin operates in an earlier phase than HashOutput and so sequence
-        // here is not relevant
-        new SriPlugin({ hashFuncNames: ["sha256"], enabled: env !== "development"}),
-        // LAST: HashOutput replaces the default chunk-hashing plugins, because the default ones
-        // don't really "see" the final compilation artifacts. It will be responsible for
-        // creating the hashes that will take part of the chunk names. See its npm entry
-        // for context see:
-        // * https://www.npmjs.com/package/webpack-plugin-hash-output
-        // * https://github.com/webpack/webpack/issues/4913
-        new HashOutput(),
-
-        // Build determinism is shit by default on webpack. NamedChunksPlugin solves one
-        // of the pain-points. Read this for context:
-        // https://medium.com/webpack/predictable-long-term-caching-with-webpack-d3eee1d3fa31
-        new webpack.NamedChunksPlugin(),
-        ...plugins
+        new SubresourceIntegrityPlugin({ hashFuncNames: ["sha256"] }),
       ];
 
-      // env == production when running 'yarn build'
-      // env == development when running 'yarn start'. For some reason we can't use chunkhash in this case
-      const chunksPattern = env == 'production' ? '[name].[chunkhash].js' : '[name].[hash].js';
-      // HashOutput will inject into these [chunkhash] templates
-      // note: SriPlugin uses 'crossOriginLoading''
-      let output = Object.assign(webpackConfig.output,
-        { filename: chunksPattern, chunkFilename: chunksPattern, crossOriginLoading: "anonymous" }
+      // // env == production when running 'yarn build'
+      // // env == development when running 'yarn start'. For some reason we can't use chunkhash in this case
+      const chunksPattern = "[name].[chunkhash].js" ;
+      // // note: SriPlugin uses 'crossOriginLoading''
+      const output = Object.assign(webpackConfig.output,
+        { crossOriginLoading: "anonymous" }
       );
 
       // We remove the default TerserPlugin instance, and replace it with one with custom configuration.
@@ -68,11 +51,10 @@ module.exports = {
       // For context see:
       // * https://medium.com/webpack/predictable-long-term-caching-with-webpack-d3eee1d3fa31
       // * https://github.com/webpack/webpack/issues/4913
-      const optimization = Object.assign(webpackConfig.optimization, { moduleIds: 'named' , minimizer });
-
+      const optimization = Object.assign(webpackConfig.optimization, { moduleIds: "named", chunkIds: "named", realContentHash: true, minimizer });
       const updatedConf = Object.assign(webpackConfig, { plugins, output, optimization });
-      return updatedConf;
-    }
+      return updatedConf
+    },
   },
   babel: {
     loaderOptions: (babelLoaderOptions, { env, paths }) => {
@@ -86,7 +68,7 @@ module.exports = {
       for (const preset of presets) {
         // preset look like [presetName, presetConfig], where presetName
         // is a string, and presetConfig an object.
-        if (preset[0].includes('babel-preset-react-app')) {
+        if (preset[0].includes("babel-preset-react-app")) {
           preset[1].absoluteRuntime = false;
         }
       }
@@ -94,4 +76,4 @@ module.exports = {
       return updatedOpts;
     }
   }
-}
+};

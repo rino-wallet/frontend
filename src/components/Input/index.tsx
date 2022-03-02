@@ -15,10 +15,12 @@ type Props = {
   className?: string;
   maxLength?: number;
   ref?: any;
+  autoComplete?: "on" | "off" | "current-password" | "new-password";
 };
 
 export const Input = React.forwardRef<HTMLInputElement, Props>((props, ref) => {
   const {
+    autoComplete = "on",
     type,
     value = "",
     name = "",
@@ -33,6 +35,7 @@ export const Input = React.forwardRef<HTMLInputElement, Props>((props, ref) => {
   return (
     <div>
       <input
+        autoComplete={autoComplete}
         ref={ref}
         type={type}
         value={value}
@@ -43,7 +46,7 @@ export const Input = React.forwardRef<HTMLInputElement, Props>((props, ref) => {
         maxLength={maxLength}
         className={classNames(
           className,
-          "w-full font-lato inline-flex rounded border-solid border placeholder-gray-400 theme-text px-6 py-3.25 rounded-medium appearance-none",
+          "w-full font-lato inline-flex border-solid border placeholder-gray-400 theme-text px-6 py-3.25 rounded-medium appearance-none",
           {
             "theme-control-border": !error,
             "theme-border-error": !!error,

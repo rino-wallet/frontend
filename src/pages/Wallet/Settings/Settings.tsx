@@ -44,7 +44,7 @@ const Settings: React.FC<Props> = ({ updateWalletDetails, walletId, is2FaEnabled
           ...(values.name !== wallet.name ? { name: values.name } : {}), // TODO remove this workaround after BE fix
         });
         resetForm();
-      } catch (err) {
+      } catch (err: any) {
         const { non_field_errors, message, detail, ...formErrors } = err || {};
         setNonFieldErrors({ non_field_errors, message, detail });
         setErrors(formErrors || {}); 
@@ -97,7 +97,8 @@ const Settings: React.FC<Props> = ({ updateWalletDetails, walletId, is2FaEnabled
       }
       <section className="border-t theme-border">
         <Panel.Body>
-          <div>
+          <div className="px-6">
+            <h3 className="uppercase font-bold mb-8">General</h3>
             <form className="md:w-1/2" name="form-wallet-settings" onSubmit={formik.handleSubmit}>
               <div className="form-field">
                 <Label label="Wallet name">
@@ -113,7 +114,9 @@ const Settings: React.FC<Props> = ({ updateWalletDetails, walletId, is2FaEnabled
               </div>
               <div className="form-field">
                 <Label label="WALLET PRIMARY ADDRESS">
-                  <CopyArea text={wallet?.address} qaSelector="wallet-address" />
+                  <CopyArea value={wallet?.address || ""} qaSelector="wallet-address">
+                    {wallet?.address}
+                  </CopyArea>
                 </Label>
               </div>
               <div className="form-field">

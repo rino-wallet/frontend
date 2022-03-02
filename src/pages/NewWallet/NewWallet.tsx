@@ -7,13 +7,6 @@ import { PageTemplate } from "../../modules/index";
 import { Tabs } from "../../components";
 import routes from "../../router/routes";
 
-function isSupported(): boolean {
-  const ua = navigator.userAgent;
-  if(/Android/i.test(ua) && /Chrome/i.test(ua)) {
-    return false;
-  }
-  return true;
-}
 interface Props {
   createMultisigWallet: (data: { name: string }) => Promise<{ userWallet: LocalWalletData; backupWallet: LocalWalletData; walletId: string; walletPassword: string }>;
   persistWallet: (data: { id: string }) => Promise<void>;
@@ -25,7 +18,6 @@ interface Props {
 }
 
 const NewWalletContainer: React.FC<Props> = ({ createMultisigWallet, username, persistWallet, isKeypairSet, stage, isWalletCreating, setPreventNavigation }) => {
-  const showWarning = !isSupported();
   const [pdfData, setPdfData] = useState<NewWalletPDFData | null>(null)
   const [walletId, setWalletId] = useState<string>("");
   const isWalletCreated = !!pdfData;
@@ -58,15 +50,6 @@ const NewWalletContainer: React.FC<Props> = ({ createMultisigWallet, username, p
   return (
     <PageTemplate title={isWalletCreated ? `New Wallet: ${pdfData?.walletName}` : "New Wallet"} backButtonRoute={!isWalletCreated ? routes.wallets : ""}>
       <div className="w-full">
-        {
-          showWarning && (
-            <div className="border-2 theme-border-error theme-text-error theme-bg-panel rounded-xl p-5 mb-5 text-center">
-              Your browser is not supported, yet, but we are working on it.
-              We recommend using a desktop computer to create a wallet,
-              or switching to another browser on your device (Firefox has a higher chance of working).
-            </div>
-          )
-        }
         <div className="flex mb-5 m-auto">
           <Tabs
             tabs={[

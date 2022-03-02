@@ -2,3 +2,7 @@
   background: url(./background-message.jpg) no-repeat center;
   background-size: cover;
 }
+
+.footer-dark {
+  background: url(./background_footer.jpg);
+}

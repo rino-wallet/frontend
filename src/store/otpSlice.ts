@@ -18,7 +18,7 @@ export const create2FA = createAsyncThunk<Create2FAResponse, void>(
       dispatch(setProvisioningUri(response.provisioningUri));
       dispatch(setSecretKey(response.secretKey));
       return response;
-    } catch(err) {
+    } catch(err: any) {
       console.log("create2FA: ", err);
       return rejectWithValue(err?.data)
     }
@@ -32,7 +32,7 @@ export const enable2FA = createAsyncThunk<Enable2FAResponse, Enable2FAPayload>(
       const response = await otpApi.enable2FA(data);
       dispatch(switch2fa(true));
       return response;
-    } catch(err) {
+    } catch(err: any) {
       return rejectWithValue(err?.data)
     }
   },
@@ -45,7 +45,7 @@ export const delete2FA = createAsyncThunk<void, Delete2FAPayload>(
       const response = await otpApi.delete2FA(data);
       dispatch(switch2fa(false));
       return response;
-    } catch(err) {
+    } catch(err: any) {
       return rejectWithValue(err?.data)
     }
   },

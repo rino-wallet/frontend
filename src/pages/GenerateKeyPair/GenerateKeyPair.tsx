@@ -27,7 +27,7 @@ const RenderSuccess: React.FC<{ recoveryKey: string, username: string }> = ({ re
       title: "Account Recovery Document",
     }, { recoveryKey, username })
       .then(() => setPdfDownloaded(true))
-      .catch((error) => {
+      .catch((error: any) => {
         setErrorMessage(error.message);
       });
   }
@@ -149,7 +149,7 @@ const GenerateKeyPairPage: React.FC<Props> = ({ setupKeyPair, user, password, se
     try {
       await setupKeyPair(keypairData);
       keypairData.clean();
-    } catch(err) {
+    } catch(err: any) {
       if (typeof err === "object" &&
         !Array.isArray(err) &&
         err !== null) {

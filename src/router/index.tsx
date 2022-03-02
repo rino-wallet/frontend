@@ -219,7 +219,7 @@ const ROUTER_CONFIG: RouteType[] = [
     metaKeywords: defaultMetaKeywords,
     metaOgImage: defaultMetaOgImage,
     component: (props: any): ReactElement => <ChangeEmailConfirm {...props} />,
-    isPrivate: true,
+    isPrivate: false,
     key: "change email confirmation",
   },
   {

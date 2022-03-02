@@ -20,11 +20,6 @@ const registerValidationSchema = yup.object().shape({
   username: yup
     .string()
     .required("This field is required."),
-  invite_code: yup
-    .string()
-    .min(10, "Invite code should be 10 characters long.")
-    .max(10, "Invite code should be 10 characters long.")
-    .required("This field is required."),
   password: passwordValidationSchema,
   re_password: yup
     .string()
@@ -61,7 +56,6 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
               initialValues={{
                 email: "",
                 username: "",
-                invite_code: "",
                 password: "",
                 password_confirmation: "",
                 re_password: "",
@@ -72,14 +66,13 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
                 return signUp({
                   email: values.email,
                   username: values.username,
-                  invite_code: values.invite_code,
                   password: values.password,
                   password_confirmation: values.password_confirmation,
                 })
                   .then(() => {
-                    setSuccessMessage(`${values.invite_code ? "Invite code valid. " : ""}You have registered successfully. Please check your email for further instructions.`);
+                    setSuccessMessage("You have registered successfully. Please check your email for further instructions.");
                   })
-                  .catch(error => {
+                  .catch((error: any) => {
                     setErrors(error);
                   });
               }}
@@ -99,6 +92,7 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
                   <div className="form-field">
                     <Label label="Username">
                       <Input
+                        autoComplete="off"
                         name="username"
                         type="text"
                         value={values.username}
@@ -126,6 +120,7 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
                   <div className="form-field">
                     <Label label="Account Password">
                       <Input
+                        autoComplete="new-password"
                         name="password"
                         type="password"
                         value={values.password}
@@ -139,6 +134,7 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
                   <div className="form-field">
                     <Label label="Account Password Confirmation">
                       <Input
+                        autoComplete="new-password"
                         name="re_password"
                         type="password"
                         value={values.re_password}
@@ -146,19 +142,6 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
                         onBlur={handleBlur}
                         placeholder="Password"
                         error={touched.re_password ? errors.re_password : ""}
-                      />
-                    </Label>
-                  </div>
-                  <div className="form-field">
-                    <Label label="Invite code">
-                      <Input
-                        name="invite_code"
-                        type="text"
-                        value={values.invite_code}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        placeholder="Invite code"
-                        error={touched.invite_code ? errors.invite_code : ""}
                       />
                     </Label>
                   </div>

@@ -28,6 +28,7 @@ export const Status: React.FC<Props> & { variant: typeof Variant;} = (props) => 
   } = props;
   return (
     <div
+    data-qa-selector="tx-status"
       className={classNames(
         "inline-flex items-center justify-center rounded-full font-medium whitespace-no-wrap text-sm py-1.25 px-4 uppercase",
         VARIANT_MAPS[variant],

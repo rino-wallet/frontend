@@ -10,6 +10,7 @@ To verify:
 
 ------------------------------------
 The integrity hash of the root html file is __index_html_hash__
+The integrity hash of the service_worker.js file is __service_worker_js_hash__
 
 To verify:
 1. Create a sha256 hash of contents returned by https://rino.io

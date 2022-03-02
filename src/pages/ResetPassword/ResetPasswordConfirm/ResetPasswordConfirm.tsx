@@ -50,7 +50,7 @@ const ResetPasswordConfirm: React.FC<Props> = ({
           });
           setIsFinished(true);
           return response;
-        } catch(error) {
+        } catch(error: any) {
           if (error) {
             setErrors(error);
           }
@@ -86,6 +86,7 @@ const ResetPasswordConfirm: React.FC<Props> = ({
               <div className="form-field">
                 <Label label="Account Recovery Secret">
                   <Input
+                    autoComplete="off"
                     type="text"
                     name="recovery_key"
                     placeholder="Account Recovery Secret"
@@ -99,6 +100,7 @@ const ResetPasswordConfirm: React.FC<Props> = ({
               <div className="form-field">
                 <Label label="Password">
                   <Input
+                    autoComplete="new-password"
                     type="password"
                     name="new_password"
                     placeholder="Password"
@@ -112,6 +114,7 @@ const ResetPasswordConfirm: React.FC<Props> = ({
               <div className="form-field">
                 <Label label="Confirm Password">
                   <Input
+                    autoComplete="new-password"
                     type="password"
                     name="re_new_password"
                     placeholder="Confirm Password"

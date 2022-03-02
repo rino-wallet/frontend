@@ -49,7 +49,11 @@ const Users: React.FC<Props> = ({ canShare, wallet, user, shareWallet, removeWal
     >
       <div className="pb-5">
         <div className="hidden theme-bg-panel-second md:block">
-          <WalletMemberLayout role="Role" email="email" action="" />
+          <WalletMemberLayout
+            role={<span className="text-sm uppercase">Role</span>}
+            email={<span className="text-sm uppercase">Email</span>}
+            action=""
+          />
         </div>
           {
             !wallet?.members.length && (

@@ -10,14 +10,14 @@ import {
 import walletsApi from "../api/wallets";
 import { createLoadingSelector, generateExtraReducer, generateListReqParams } from "../utils";
 
-export const ITEMS_PER_PAGE = 5;
+export const ITEMS_PER_PAGE = 10;
 
 export const fetchWalletTransactions = createAsyncThunk<FetchWalletTransactionsResponse, FetchWalletTransactionsThunkPayload>(
   "transactionList/fetchTransactions",
   async ({ walletId, page }, { rejectWithValue }) => {
     try {
       return await walletsApi.fetchWalletTransactions(walletId, generateListReqParams(page, ITEMS_PER_PAGE));
-    } catch(err) {
+    } catch(err: any) {
       return rejectWithValue(err.response.data)
     }
   },
@@ -31,7 +31,7 @@ export const updateTransactionDetails = createAsyncThunk<UpdateTransactionDetail
       const response = await walletsApi.updateTransactionDetails(data);
       dispatch(updateTransactionInList(response));
       return response;
-    } catch(err) {
+    } catch(err: any) {
       return rejectWithValue(err?.data)
     }
   },

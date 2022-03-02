@@ -23,7 +23,7 @@ const generateValidationSchema = (balance: number): yup.AnyObjectSchema => yup.o
     .required("This field is required.")
       .test(
         "test-balance",
-        `Your unlocked balance is ${balance}`,
+        `You can only transfer less than ${balance}.`,
         (value) => parseFloat(value ? value : "0") < balance
       )
       .test(
@@ -92,7 +92,7 @@ const TransactionForm: React.FC<Props> = ({
           });
           setCurrentWalletCall(prepareTransactionPromise);
           await prepareTransactionPromise
-        } catch (err) {
+        } catch (err: any) {
           // the error should be ignored if user press on "Edit" button
           if (err && err?.name !== "AbortError") {
             setErrors(err);
@@ -148,6 +148,7 @@ const TransactionForm: React.FC<Props> = ({
                 <Input
                   type="password"
                   name="password"
+                  autoComplete="current-password"
                   value={values.password}
                   onChange={handleChange}
                   onBlur={handleBlur}
@@ -220,7 +221,7 @@ const TransactionForm: React.FC<Props> = ({
                 name="submit-btn"
                 variant={Button.variant.PRIMARY_LIGHT}
                 size={Button.size.BIG}
-                disabled={!isValid}
+                disabled={!isValid || !parseFloat(wallet?.unlockedBalance || "0") }
                 loading={isSubmitting}
               >
                 Review

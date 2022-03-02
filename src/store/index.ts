@@ -9,6 +9,7 @@ import {transactionDetailsSlice} from "./transactionDetailsSlice";
 import {subaddressListSlice} from "./subaddressListSlice";
 import {setApiToken, getToken} from "./sessionUItils";
 import { changeLocation, fullReset } from "./actions";
+import walletInstance from "../wallet";
 
 const combinedReducer = combineReducers({
   session: sessionSlice.reducer,
@@ -30,6 +31,7 @@ const combinedReducer = combineReducers({
 const rootReducer = (state, action): any => {
   if (action.type === changeLocation.toString()) {
     state = { session: state.session };
+    walletInstance.closeWallet();
   }
   if (action.type === fullReset.toString()) {
     state = undefined;

@@ -30,7 +30,7 @@ const WalletNameTab: React.FC<Props> = ({ isKeypairSet, createNewWallet, isWalle
       onSubmit={async (values, { setErrors }): Promise<void> => {
         try {
           await createNewWallet(values.name);
-        } catch (err) {
+        } catch (err: any) {
           if (err?.status === "permission_error") {
             setErrors({ message: err.message });
           } else {

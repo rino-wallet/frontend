@@ -16,7 +16,7 @@ export const fetchTransactionDetails = createAsyncThunk<FetchTransactionDetailsR
   async (data, { rejectWithValue }) => {
     try {
       return await walletsApi.fetchTransactionDetails(data);
-    } catch(err) {
+    } catch(err: any) {
       return rejectWithValue(err?.data)
     }
   },
@@ -28,7 +28,7 @@ export const updateTransactionDetails = createAsyncThunk<UpdateTransactionDetail
   async (data, { rejectWithValue }) => {
     try {
       return await walletsApi.updateTransactionDetails(data);
-    } catch(err) {
+    } catch(err: any) {
       return rejectWithValue(err?.data)
     }
   },

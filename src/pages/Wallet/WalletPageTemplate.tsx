@@ -16,6 +16,7 @@ import { ReactComponent as IconDown } from "../../assets/arrow-down.svg";
 import { fetchWalletDetails as fetchWalletDetailsThunk } from "../../store/walletSlice";
 import { selectors } from "../../store/sessionSlice";
 import { fetchWalletTransactions as fetchWalletTransactionsThunk } from "../../store/transactionListSlice";
+import { BalanceDetails } from "./WalletPageBalanceDetails";
 
 const WalletPlaceholder: React.FC = () => (
   <div className="flex-1 min-w-0 text-left">
@@ -57,7 +58,7 @@ export const WalletPageTemplate: React.FC<Props> = ({
   const isMobile = useIsMobile();
   const userCanCreateTransaction = wallet?.requires2Fa ? user?.is2FaEnabled : true;
   const insufficientBalance = !parseFloat(wallet?.unlockedBalance || "0");
-  const sendButtonDisabled = !userCanCreateTransaction || insufficientBalance;
+  const sendButtonDisabled = !userCanCreateTransaction;
   return (
     <section>
       <header className="flex items-center mb-8 w-full relative hidden md:flex">
@@ -128,54 +129,41 @@ export const WalletPageTemplate: React.FC<Props> = ({
                       <div className="w-5 h-5 leading-5 text-2xl theme-text-secondary">&#x3c;</div>
                     </Button>
                   </div>
-                  <h1 className="text-4xl font-bold flex-1 font-catamaran min-w-0 overflow-ellipsis overflow-hidden whitespace-nowrap" data-qa-selector="wallet-name-mobile">
+                  <h1 className="text-4xl font-bold flex-1 font-catamaran min-w-0 overflow-ellipsis whitespace-nowrap" data-qa-selector="wallet-name-mobile">
                     {title || wallet?.name}
                   </h1>
                 </header>
                 <div className="items-end justify-between flex">
-                  <div className="items-end justify-between md:flex">
-                    <div>
-                    <div className="leading-none text-base uppercase whitespace-nowrap overflow-hidden overflow-ellipsis mb-4" data-qa-selector="wallet-name">
-                      Balance
+                  <div className="items-end justify-between md:flex max-w-full grow">
+                    <div className="flex items-end">
+                      <div>
+                      <div className="leading-none text-base uppercase whitespace-nowrap overflow-ellipsis mb-4" data-qa-selector="wallet-name">
+                        Balance
+                      </div>
+                        <div className="whitespace-nowrap text-xl font-bold md:text-3xl mr-1">
+                          <span data-qa-selector="wallet-balance">
+                            <FormatNumber value={piconeroToMonero(wallet?.balance || 0)} />
+                          </span> XMR
+                        </div>
+                      </div>
+                      {wallet?.unlockedBalance !== wallet?.balance ? <BalanceDetails wallet={wallet} /> : null}
                     </div>
-                      <div className="whitespace-nowrap text-xl font-bold md:text-3xl mr-1">
-                        <span data-qa-selector="wallet-balance">
-                          <FormatNumber value={piconeroToMonero(wallet?.balance || 0)} />
-                        </span> XMR
-                      </div>
-                    </div>
-                    {wallet?.unlockedBalance !== wallet?.balance ? (<div className="min-w-0" title="Unlocked">
-                      <div
-                        className="text-base whitespace-nowrap overflow-ellipsis overflow-hidden theme-text-secondary md:text-2xl">
-                        (
-                          
-                          <span data-qa-selector="wallet-unlocked-balance"><FormatNumber value={piconeroToMonero(wallet?.unlockedBalance || 0)} /></span>
-                          {" "}
-                          <span>unlocked,</span>
-                          {" "}
-                          <span data-qa-selector="wallet-locked-balance"><FormatNumber value={piconeroToMonero(parseInt(wallet?.balance || "0") - parseInt(wallet?.unlockedBalance || "0"))} /></span>
-                          {" "}
-                          <span>locked</span>
-                        )
-                      </div>
-                    </div>) : null
-                    }
-                  </div>
-                  <Button
-                      size={Button.size.MEDIUM}
-                      onClick={(): void => {
-                        setIsRefreshing(true);
-                        fetchWalletTransactions({ walletId: id, page });
-                        fetchWalletDetails({ id }).then((): void => { setTimeout((): void => setIsRefreshing(false), 300) });
-                      }}
-                      name="wallet-refresh"
-                      className="float-right"
-                      icon
-                    >
-                      <div className={classNames({ "animate-spin": isRefreshing })}>
-                        <Icon name="refresh" />
-                      </div>
-                  </Button>
+                    <Button
+                        size={Button.size.MEDIUM}
+                        onClick={(): void => {
+                          setIsRefreshing(true);
+                          fetchWalletTransactions({ walletId: id, page });
+                          fetchWalletDetails({ id }).then((): void => { setTimeout((): void => setIsRefreshing(false), 300) });
+                        }}
+                        name="wallet-refresh"
+                        className="float-right flex-[0_auto]"
+                        icon
+                      >
+                        <div className={classNames({ "animate-spin": isRefreshing })}>
+                          <Icon name="refresh" />
+                        </div>
+                    </Button>
+                </div>
                 </div>
                 {
                   showActions && (

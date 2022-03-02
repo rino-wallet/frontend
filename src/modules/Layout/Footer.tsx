@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import ROUTES from "../../router/routes";
 import { Logo } from "../../components";
 import { PreventAction } from "../PreventAction";
-import backgroundFooter from "./background_footer.jpg";
 import routes from "../../router/routes";
 
 const linkElementClassName = "md:ml-10 font-bold uppercase text-base md:text-lg";
@@ -17,9 +16,9 @@ interface Props {
 const Footer: React.FC<Props> = ({ dark, showDisclaimer }) => {
   const logoElement = dark ? <Logo white /> : <Logo />;
   return (
-    <div className={classNames("px-5 pt-10 pb-6", { "text-white": dark })} style={dark ? { backgroundImage: `url(${backgroundFooter})` } : {}}>
+    <div className={classNames("px-5 pt-10 pb-6", { "text-white footer-dark": dark })}>
       <div
-        className="container max-w-5xl m-auto"
+        className="container max-w-5xl m-auto" data-qa-selector="footer"
       >
         <div className="flex justify-between justify-self-end mb-3">
           <PreventAction content={logoElement}>

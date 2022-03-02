@@ -12,9 +12,9 @@ import {
 } from "../../types";
 import {
   fetchWalletDetails as fetchWalletDetailsThunk,
-  fetchWalletSubaddress as fetchWalletSubaddressThunk,
   selectors,
 } from "../../store/walletSlice";
+import { fetchWalletSubaddress as fetchWalletSubaddressThunk } from "../../store/subaddressListSlice";
 import { selectors as sessionSelectors } from "../../store/sessionSlice";
 import routes from "../../router/routes";
 import { accessLevels } from "../../constants";
