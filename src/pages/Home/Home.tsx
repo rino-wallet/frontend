@@ -29,10 +29,10 @@ const HomePage: React.FC = () => {
       >
         <div className="top-1/2 left-0 w-full md:absolute">
           <div className="max-w-screen-lg m-auto p-5 md:flex md:items-center md:transform md:-translate-y-1/2 md:-mt-10">
-            <div className="w-1/2 pr-20 hidden md:block">
+            <div className="px-20 md:w-1/2 md:pr-20 md:block">
               <img className="w-full" src={LogoWhite} alt="logo" />
             </div>
-            <div className="md:pl-10 mt-10 font-catamaran font-bold text-4xl text-center md:mt-10 md:w-1/2 md:text-left md:whitespace-nowrap md:text-3xl md:text-default">
+            <div className="md:pl-10 mt-10 font-catamaran font-bold text-2xl text-center md:mt-10 md:w-1/2 md:text-left md:whitespace-nowrap md:text-3xl md:text-default">
               Enterprise-Grade Monero Wallet. <br /> Convenient. Secure. Non-custodial.
           </div>
           </div>

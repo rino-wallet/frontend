@@ -23,7 +23,7 @@ const generateValidationSchema = (balance: number): yup.AnyObjectSchema => yup.o
     .required("This field is required.")
       .test(
         "test-balance",
-        `You can only transfer less than ${balance}.`,
+        balance > 0 ? `You can only transfer less than ${balance}.` : "You don't have any unlocked funds to transfer.",
         (value) => parseFloat(value ? value : "0") < balance
       )
       .test(
@@ -121,6 +121,7 @@ const TransactionForm: React.FC<Props> = ({
             <div className="form-field">
               <Label label="To address" inline>
                 <Input
+                  autoComplete="off"
                   type="text"
                   name="address"
                   value={values.address}
@@ -160,6 +161,7 @@ const TransactionForm: React.FC<Props> = ({
             <div className="form-field">
               <Label label="Internal transaction memo" subtitle="optional" inline>
                 <Input
+                  autoComplete="off"
                   type="text"
                   name="memo"
                   value={values.memo}

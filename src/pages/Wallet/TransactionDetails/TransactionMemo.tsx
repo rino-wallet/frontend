@@ -51,6 +51,7 @@ const TransactionMemo: React.FC<Props> = ({ walletId, transactionId, memo }) => 
         valueClassName=""
       >
         <Input
+          autoComplete="off"
           type="text"
           name="memo"
           value={formik.values.memo}

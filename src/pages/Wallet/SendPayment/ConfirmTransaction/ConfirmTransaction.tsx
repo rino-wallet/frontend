@@ -18,7 +18,7 @@ import {Button} from "../../../../components/Button";
 import CreatingTransaction from "./CreatingTransaction";
 import {FormErrors} from "../../../../modules/FormErrors";
 import { enter2FACode } from "../../../../modules/2FAModals";
-import { showWarningModal } from "../../../../modules/WarningModal";
+import { showConfirmationModal } from "../../../../modules/ConfirmationModal";
 import {Spinner} from "../../../../components/Spinner";
 import { BeforeUnloadConfirm } from "../../../../components";
 
@@ -75,7 +75,7 @@ const ConfirmTransaction: React.FC<Props> = ({
           if (is2FaEnabled) {
             code = await enter2FACode({
               confirmCancel: (onConfirm: () => void, onGoBack: () => void): void => {
-                showWarningModal(
+                showConfirmationModal(
                   {
                     title: "Cancel transaction",
                     message: "Cancelling transaction cannot be undone.",

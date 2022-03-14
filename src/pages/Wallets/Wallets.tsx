@@ -61,7 +61,7 @@ const WalletsPage: React.FC<Props> = ({ wallets, loading, pages, hasPreviousPage
           loading={loading}
           message={(
             <div>
-              You don't have any wallets yet. You need to create one - click on the button above, or see <HashLink className="theme-link" smooth to={`${routes.faq}#details`}>here</HashLink> for instructions.
+              You don't have any wallets yet. You need to create one - click on the button above, or see <HashLink className="theme-link" smooth to={`${routes.faq}#getting_started_full`}>here</HashLink> for instructions.
             </div>
           )}
         />

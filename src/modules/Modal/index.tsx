@@ -27,7 +27,7 @@ const Modal: React.FC<Props> & { Actions: typeof Actions; Body: typeof Body  } =
   }, []);
   return (
     <BindHotKeys callback={(): void => undefined} rejectCallback={handleClose}>
-      <div ref={refOverlay} className={classNames("fixed w-full h-full theme-bg-overlay inset-0 z-10 flex items-center", className)} >
+      <div ref={refOverlay} className={classNames("fixed w-full h-full theme-bg-overlay inset-0 z-20 flex items-center", className)} >
         <div ref={ref} className="container mx-auto p-5 mt:p-0 md:max-w-lg md:rounded-3xl">
           <Panel className="relative" title={<div className="mt-3">{title}</div>}>
             {

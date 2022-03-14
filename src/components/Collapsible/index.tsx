@@ -4,13 +4,17 @@ import { Icon } from "../Icon";
 type Props = {
   collapsedDefault?: boolean;
   title?: ReactNode;
+  anchor?: ReactNode;
+  id?: string;
   className?: string;
 }
 
 export const Collapsible: React.FC<Props> = ({
   collapsedDefault = true,
   title = "",
+  id = "",
   className = "",
+  anchor,
   children,
 }) => {
   const [collapsed, setCollapsed] = useState(collapsedDefault);
@@ -45,16 +49,19 @@ export const Collapsible: React.FC<Props> = ({
     }
   }, [collapsed]);
   return (
-    <div className={className}>
-      <button
-        className="inline flex items-start text-sm"
-        onClick={toggleCollapse}
-      >
-        <div className="w-6 flex justify-center mt-1 mr-4">
-          {collapsed ? <Icon name="arrow_right" /> : <Icon name="checvron_up" />}
-        </div>
-        {title}
-      </button>
+    <div id={id} className={className}>
+      <div className="flex items-center">
+        <button
+          className="inline flex items-start text-sm"
+          onClick={toggleCollapse}
+        >
+          <div className="w-6 flex justify-center mt-1 mr-4">
+            {collapsed ? <Icon name="arrow_right" /> : <Icon name="checvron_up" />}
+          </div>
+          {title}
+        </button>
+        {anchor}
+      </div>
       <div
         ref={targetRef}
         style={style}

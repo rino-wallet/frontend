@@ -41,6 +41,7 @@ const LoginPage: React.FC<Props> = ({ login, setPassword, getCurrentUser }) => {
             values,
             { setErrors }
           ): Promise<SignInResponse | undefined> => {
+            localStorage.removeItem("_expiredTime");
             try {
               const { authKey, clean } = await deriveUserKeys(values.password, values.username);
               const password = Buffer.from(authKey).toString("hex");

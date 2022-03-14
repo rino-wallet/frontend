@@ -1,17 +1,50 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 import { Collapsible } from "../../components";
 import { MultisigDiagram } from "../../components/MultisigDiagram";
+import { ReactComponent as LinkSvg } from "./link.svg";
 
+const LinkIcon: React.FC<{ hash: string }> = ({ hash }) => {
+  return <HashLink smooth className="theme-link ml-1 mb-1" to={`#${hash}`}><LinkSvg /></HashLink>
+}
+
+const hashes = {
+  what_is_rino: "what_is_rino",
+  why_use_rino: "why_use_rino",
+  getting_started_short: "getting_started_short",
+  getting_started_full: "getting_started_full",
+  reset_password: "reset_password",
+  recover_password: "recover_password",
+  account_recovery: "account_recovery",
+  can_rino_steal_money: "can_rino_steal_money",
+  delete_wallet: "delete_wallet",
+  can_rino_see_transactions: "can_rino_see_transactions",
+  why_should_believe_rino: "why_should_believe_rino",
+  how_much: "how_much",
+  multisig: "multisig",
+  computer_compromised_wallet_creation: "computer_compromised_wallet_creation",
+  computer_compromised_using_wallet: "computer_compromised_using_wallet",
+  features: "features",
+  api: "api",
+  enterprise: "enterprise",
+}
 
 const FAQ: React.FC = () => {
+  const { hash } = useLocation();
   return <section>
     <h1 className="text-5xl text-center mb-12">FAQ</h1>
     <div className="mt-8">
       <div className="w-2 h-2 rounded inline-block mr-8 my-1 bg-orange-900" />
       <div className="text-2xl md:text-3xl font-bold font-catamaran inline">Overview</div>
       <div className="ml-10 my-4">
-        <Collapsible className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">What is RINO?</h3>}>
+        <Collapsible
+          id={hashes.what_is_rino}
+          collapsedDefault={hash !== `#${hashes.what_is_rino}`}
+          className="mb-4"
+          title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">What is RINO?</h3>}
+          anchor={<LinkIcon hash={hashes.what_is_rino} />}
+        >
           <p>
             RINO is a new type of Monero wallet. We are a non-custodial, enterprise-grade, multisig wallet.
             <b> Non-custodial</b> means we don’t have any way to spend your money. The keys that can actually spend
@@ -21,7 +54,13 @@ const FAQ: React.FC = () => {
             the cryptographic magic that makes it all possible (<HashLink smooth className="theme-link" to="#multisig">details below</HashLink>).
           </p>
         </Collapsible>
-        <Collapsible className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">Why use RINO?</h3>}>
+        <Collapsible
+          id={hashes.why_use_rino}
+          collapsedDefault={hash !== `#${hashes.why_use_rino}`}
+          className="mb-4"
+          title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">Why use RINO?</h3>}
+          anchor={<LinkIcon hash={hashes.why_use_rino} />}
+        >
           <p className="mb-4">With RINO you get all the convenience of an online wallet AND the safety of a non-custodial wallet.</p>
           <p className="mb-4">
             Other online wallets offer convenient features such as 2fa, notifications, etc by taking
@@ -47,7 +86,13 @@ const FAQ: React.FC = () => {
       <div className="w-2 h-2 rounded inline-block mr-8 my-1 bg-orange-900" />
       <div className="text-2xl md:text-3xl font-bold font-catamaran inline">Getting Started</div>
       <div className="ml-10 my-4">
-        <Collapsible className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">Quick version - tl;dr</h3>}>
+        <Collapsible
+          id={hashes.getting_started_short}
+          collapsedDefault={hash !== `#${hashes.getting_started_short}`}
+          className="mb-4"
+          title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">Quick version - tl;dr</h3>}
+          anchor={<LinkIcon hash={hashes.getting_started_short} />}
+        >
           <p>1. Register an account, confirm your email address, and log in.</p>
           <p>2. Create a wallet. Store your Wallet Recovery Document safely!</p>
           <p>3. Receive some moneroj to your RINO wallet - just like a normal wallet!</p>
@@ -55,8 +100,13 @@ const FAQ: React.FC = () => {
           <p><b>For daily RINO use:</b> your password; your 2FA device.</p>
           <p className="mb-4"><b>Store safely:</b> Account Recovery Document; Wallet Recovery Document.</p>
         </Collapsible>
-        <div id="details">
-          <Collapsible collapsedDefault={location.hash !== "#details"} className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">More Detailed Instructions</h3>}>
+        <Collapsible
+          id={hashes.getting_started_full}
+          collapsedDefault={hash !== `#${hashes.getting_started_full}`}
+          className="mb-4"
+          title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">More Detailed Instructions</h3>}
+          anchor={<LinkIcon hash={hashes.getting_started_full} />}
+        >
             <p className="mb-4">
               Creating a RINO wallet is easy.
             </p>
@@ -99,14 +149,19 @@ const FAQ: React.FC = () => {
               if they somehow manage to steal your password.
             </p>
           </Collapsible>
-        </div>
       </div>
     </div>
     <div className="mt-8">
       <div className="w-2 h-2 rounded inline-block mr-8 my-1 bg-orange-900" />
       <div className="text-2xl md:text-3xl font-bold font-catamaran inline">Troubleshooting</div>
       <div className="ml-10 my-4">
-        <Collapsible className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">How can I reset my password if I forgot it?</h3>}>
+        <Collapsible
+          id={hashes.reset_password}
+          collapsedDefault={hash !== `#${hashes.reset_password}`}
+          className="mb-4"
+          title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">How can I reset my password if I forgot it?</h3>}
+          anchor={<LinkIcon hash={hashes.reset_password} />}
+        >
           <p>
             This is what the Account Recovery Document is for. When you create
             your RINO account, we ask you to download and store your Account
@@ -118,7 +173,13 @@ const FAQ: React.FC = () => {
             your account settings). 
           </p>
         </Collapsible>
-        <Collapsible className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">How can I recover my funds if RINO is inaccessible?</h3>}>
+        <Collapsible
+          id={hashes.recover_password}
+          collapsedDefault={hash !== `#${hashes.recover_password}`}
+          className="mb-4"
+          title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">How can I recover my funds if RINO is inaccessible?</h3>}
+          anchor={<LinkIcon hash={hashes.recover_password} />}
+        >
           <p>
             This is what the Wallet Recovery Document is for. You have one
             of these documents for each of your RINO wallets. Each time you
@@ -135,7 +196,13 @@ const FAQ: React.FC = () => {
       <div className="w-2 h-2 rounded inline-block mr-8 my-1 bg-orange-900" />
       <div className="text-2xl md:text-3xl font-bold font-catamaran inline">The Nitty Gritty</div>
       <div className="ml-10 my-4">
-        <Collapsible className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">Why do I need an Account Recovery Document?</h3>}>
+        <Collapsible
+          id={hashes.account_recovery}
+          collapsedDefault={hash !== `#${hashes.account_recovery}`}
+          className="mb-4"
+          title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">Why do I need an Account Recovery Document?</h3>}
+          anchor={<LinkIcon hash={hashes.account_recovery} />}
+        >
           <p>
             At RINO we encrypt everything we can to protect your data from the world, and even from us!
             We use your password to encrypt your essential data on RINO. And we don’t know your password
@@ -152,7 +219,13 @@ const FAQ: React.FC = () => {
             anyone that has access to it can reset your password.
           </p>
         </Collapsible>
-        <Collapsible className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">Can RINO steal my money?</h3>}>
+        <Collapsible
+          id={hashes.can_rino_steal_money}
+          collapsedDefault={hash !== `#${hashes.can_rino_steal_money}`}
+          className="mb-4"
+          title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">Can RINO steal my money?</h3>}
+          anchor={<LinkIcon hash={hashes.can_rino_steal_money} />}
+        >
           <p>
             No. It’s mathematically impossible. See <HashLink smooth className="theme-link" to="#multisig">below</HashLink> for
             a full description of how multisig works.
@@ -164,7 +237,13 @@ const FAQ: React.FC = () => {
             and signing as part of the normal RINO-usage flow.
           </p>
         </Collapsible>
-        <Collapsible className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">Can I delete a wallet?</h3>}>
+        <Collapsible
+          id={hashes.delete_wallet}
+          collapsedDefault={hash !== `#${hashes.delete_wallet}`}
+          className="mb-4"
+          title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">Can I delete a wallet?</h3>}
+          anchor={<LinkIcon hash={hashes.delete_wallet} />}
+        >
           <p>
           Yes you can. Deleted wallets can’t be restored in RINO, so just be sure before you delete 
           - all your transaction meta data will be deleted irreversibly.
@@ -174,7 +253,13 @@ const FAQ: React.FC = () => {
             you can still recover funds from a deleted wallet using your Wallet Recovery Document.
           </p>
         </Collapsible>
-        <Collapsible className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">Can RINO see my transactions?</h3>}>
+        <Collapsible
+          id={hashes.can_rino_see_transactions}
+          collapsedDefault={hash !== `#${hashes.can_rino_see_transactions}`}
+          className="mb-4"
+          title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">Can RINO see my transactions?</h3>}
+          anchor={<LinkIcon hash={hashes.can_rino_see_transactions} />}
+        >
           <p>
             Yes. We have to be able see your transactions to deliver some of our key features - no wallet
             sync wait times - accessing your wallet and its history across multiple devices, etc. But note
@@ -183,7 +268,13 @@ const FAQ: React.FC = () => {
             (as they should be doing anyway), then we have no way of ever knowing who you are sending money to either.
           </p>
         </Collapsible>
-        <Collapsible className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">Why should I believe you?</h3>}>
+        <Collapsible
+          id={hashes.why_should_believe_rino}
+          collapsedDefault={hash !== `#${hashes.why_should_believe_rino}`}
+          className="mb-4"
+          title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">Why should I believe you?</h3>}
+          anchor={<LinkIcon hash={hashes.why_should_believe_rino} />}
+        >
           <p>
             All RINO code that is executed in the web browser is <a className="theme-link" href='https://github.com/rino-wallet/' target="_blank">open source</a>.
             Anyone can inspect it and check that it does exactly what it’s supposed to. Additionally, we went to great lengths
@@ -193,7 +284,13 @@ const FAQ: React.FC = () => {
             indeed the exact same as the code available on our open-source repository.
           </p>
         </Collapsible>
-        <Collapsible className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">How much does it cost to use RINO?</h3>}>
+        <Collapsible
+          id={hashes.how_much}
+          collapsedDefault={hash !== `#${hashes.how_much}`}
+          className="mb-4"
+          title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">How much does it cost to use RINO?</h3>}
+          anchor={<LinkIcon hash={hashes.how_much} />}
+        >
           <p className="mb-4">
             At the moment RINO is free. However, while we do want to support the community as much as possible,
             now and in the future - check out our <a className="theme-link" href="https://community.rino.io" target="_blank">community contributions</a> which will always be
@@ -213,9 +310,13 @@ const FAQ: React.FC = () => {
             combination of features at the right price to keep you all sticking around.
           </p>
         </Collapsible>
-        <div id="multisig">
-          <Collapsible collapsedDefault={location.hash !== "#multisig"} className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">What is multi-signature?</h3>}>
-            <div className="my-6">
+        <Collapsible
+          id={hashes.multisig}
+          collapsedDefault={hash !== `#${hashes.multisig}`}
+          className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">What is multi-signature?</h3>}
+          anchor={<LinkIcon hash={hashes.multisig} />}
+        >
+          <div className="my-6">
               <MultisigDiagram dark />
             </div>
             <p className="mb-4">
@@ -241,9 +342,14 @@ const FAQ: React.FC = () => {
                 are using your User Key and your Recovery Key to spend the funds.
               </li>
             </ul>
-          </Collapsible>
-        </div>
-        <Collapsible className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">What if my computer is compromised during wallet creation?</h3>}>
+        </Collapsible>
+        <Collapsible
+          id={hashes.computer_compromised_wallet_creation}
+          collapsedDefault={hash !== `#${hashes.computer_compromised_wallet_creation}`}
+          className="mb-4"
+          title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">What if my computer is compromised during wallet creation?</h3>}
+          anchor={<LinkIcon hash={hashes.computer_compromised_wallet_creation} />}
+        >
           <p className="mb-4">
             It’s not great. Right now we offer convenient in-browser wallet creation
             which means your funds <b>are at risk</b> if your computer is compromised.
@@ -254,7 +360,13 @@ const FAQ: React.FC = () => {
             know if this is a priority for you.
           </p>
         </Collapsible>
-        <Collapsible className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">What if my computer is compromised when using the wallet?</h3>}>
+        <Collapsible
+          id={hashes.computer_compromised_using_wallet}
+          collapsedDefault={hash !== `#${hashes.computer_compromised_using_wallet}`}
+          className="mb-4"
+          title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">What if my computer is compromised when using the wallet?</h3>}
+          anchor={<LinkIcon hash={hashes.computer_compromised_using_wallet} />}
+        >
           <p className="mb-4">
             The benefit of RINO is that even if your computer is compromised, attackers cannot
             spend funds without access to your 2FA device. In future RINO will give even more
@@ -262,7 +374,13 @@ const FAQ: React.FC = () => {
             multiple people having to approve transactions, etc.
           </p>
         </Collapsible>
-        <Collapsible className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">What about feature x?</h3>}>
+        <Collapsible
+          id={hashes.features}
+          collapsedDefault={hash !== `#${hashes.features}`}
+          className="mb-4"
+          title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">What about feature x?</h3>}
+          anchor={<LinkIcon hash={hashes.features} />}
+        >
           <p>
             Get in touch with us at <a className="theme-link" href="mailto:support@rino.io">support@rino.io</a>.
             Features in the pipeline are targeted at enterprise such as shared wallets,
@@ -270,12 +388,24 @@ const FAQ: React.FC = () => {
             happy to hear about your needs.
           </p>
         </Collapsible>
-        <Collapsible className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">Do you have an SDK? An API?</h3>}>
+        <Collapsible
+          id={hashes.api}
+          collapsedDefault={hash !== `#${hashes.api}`}
+          className="mb-4"
+          title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">Do you have an SDK? An API?</h3>}
+          anchor={<LinkIcon hash={hashes.api} />}
+        >
           <p>
             Yes, we do. Let us finish testing it and you can start having fun :)
           </p>
         </Collapsible>
-        <Collapsible className="mb-4" title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">I’m a business. I want to use RINO as my backend. Can you help?</h3>}>
+        <Collapsible
+          id={hashes.enterprise}
+          collapsedDefault={hash !== `#${hashes.enterprise}`}
+          className="mb-4"
+          title={<h3 className="text-xl mdtext-2xl font-bold font-catamaran">I’m a business. I want to use RINO as my backend. Can you help?</h3>}
+          anchor={<LinkIcon hash={hashes.enterprise} />}
+        >
           <p>
             Absolutely. <br/>
             Get in touch with us at <a className="theme-link" href="mailto:enterprise@rino.io">enterprise@rino.io</a>.

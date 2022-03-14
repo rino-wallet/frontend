@@ -55,6 +55,7 @@ const WalletNameTab: React.FC<Props> = ({ isKeypairSet, createNewWallet, isWalle
             <div className="form-field">
               <Label label="Wallet name" inline>
                 <Input
+                  autoComplete="off"
                   name="name"
                   type="text"
                   placeholder="Wallet name"

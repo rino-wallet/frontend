@@ -29,6 +29,7 @@ export const AmountField: React.FC<Props> = ({
   return (
     <div>
       <Input
+        autoComplete="off"
         type="text"
         name={name}
         value={value}

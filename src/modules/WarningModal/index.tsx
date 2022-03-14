@@ -3,34 +3,23 @@ import { createModal } from "promodal";
 import { Modal } from "../Modal";
 import { Button } from "../../components";
 
-type MessageFunc = (close: () => void) => ReactChild;
 interface Props {
   submit: () => void;
   cancel: () => void;
   title: string;
-  message: ReactChild | MessageFunc;
+  message: ReactChild;
   buttonText?: string;
 }
 
-export const WarningModal: React.FC<Props> = ({ cancel, submit, title, message, buttonText = "Confirm" }) => {
+export const WarningModal: React.FC<Props> = ({ submit, title, message, buttonText = "Proceed" }) => {
   return (
     <Modal title={<span className="font-bold theme-text-error">{title}</span>}>
       <Modal.Body>
-        <div className="font-bold mb-4"> Are you sure? </div>
         <div className="flex space-x-6">
-          {submit ? (<div>
-              {typeof message === "function" ? message(submit) : message}
-            </div>) : null
-          }
+          {message}
         </div>
       </Modal.Body>
       <Modal.Actions>
-        <Button
-          onClick={cancel}
-          name="return-btn"
-        >
-          return
-        </Button>
         <Button
           variant={Button.variant.PRIMARY}
           onClick={submit}

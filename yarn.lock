@@ -1400,10 +1400,10 @@
     redux-thunk "^2.4.1"
     reselect "^4.1.5"
 
-"@rino-wallet/monero-javascript@^0.0.27":
-  version "0.0.27"
-  resolved "https://gitlab.cryptosphere-systems.com/api/v4/projects/621/packages/npm/@rino-wallet/monero-javascript/-/@rino-wallet/monero-javascript-0.0.27.tgz#adc0098de7315e230994130e44a5d984f4f353d1"
-  integrity sha1-rcAJjecxXiMJlBMORKXZhPTzU9E=
+"@rino-wallet/monero-javascript@^0.0.28":
+  version "0.0.28"
+  resolved "https://gitlab.cryptosphere-systems.com/api/v4/projects/621/packages/npm/@rino-wallet/monero-javascript/-/@rino-wallet/monero-javascript-0.0.28.tgz#693f16e2ad7c0add8d1187bf8d43b666e911d304"
+  integrity sha1-aT8W4q18Ct2NEYe/jUO2ZukR0wQ=
   dependencies:
     "@babel/core" "^7.14.6"
     ajv "^6.12.6"

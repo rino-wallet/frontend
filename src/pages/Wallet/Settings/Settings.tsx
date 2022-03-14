@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { Button, Label, Input, Checkbox, Panel } from "../../../components";
+import { Button, Label, Input, Checkbox, Panel, Tooltip } from "../../../components";
 import { FormErrors, CopyArea } from "../../../modules/index";
 import { UpdateWalletDetailsPayload, UpdateWalletDetailsResponse, Wallet } from "../../../types";
 import DeleteWallet from "../DeleteWallet";
 import { enter2FACode } from "../../../modules/2FAModals";
+import { useSelector } from "../../../hooks";
+import { selectors as sessionSelectors } from "../../../store/sessionSlice";
 
 const settingsValidationSchema = yup.object().shape({
   name: yup
@@ -21,6 +23,7 @@ interface Props {
 }
 
 const Settings: React.FC<Props> = ({ updateWalletDetails, walletId, is2FaEnabled, wallet }) => {
+  const user = useSelector(sessionSelectors.getUser);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [nonFieldErrors, setNonFieldErrors] = useState<{non_field_errors?: string, message?: string, detail?: string}>({});
   const formik = useFormik({
@@ -120,13 +123,16 @@ const Settings: React.FC<Props> = ({ updateWalletDetails, walletId, is2FaEnabled
                 </Label>
               </div>
               <div className="form-field">
-                <Checkbox
-                  name="requires_2fa"
-                  checked={formik.values.requires_2fa}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>):void | null => { formik.setFieldValue("requires_2fa", e.target.checked); }}
-                >
-                  Require 2FA for spending.
-                </Checkbox>
+                <Tooltip content="Activate Account 2FA to enable this option." disable={user?.is2FaEnabled}>
+                  <Checkbox
+                    name="requires_2fa"
+                    checked={formik.values.requires_2fa}
+                    disabled={!user?.is2FaEnabled}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>):void | null => { formik.setFieldValue("requires_2fa", e.target.checked); }}
+                  >
+                    Require 2FA for spending.
+                  </Checkbox>
+                </Tooltip>
               </div>
               <FormErrors fields={["requires_2fa"]} errors={{ ...formik.errors, ...nonFieldErrors }} />
               <div className="flex space-x-3 md:hidden">

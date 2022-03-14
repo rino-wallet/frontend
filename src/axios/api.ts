@@ -40,7 +40,7 @@ export class Api extends Axios {
           });
         }
         if (error && error.response && error.response.status === 401 && typeof localStorage !== "undefined") {
-          localStorage.clear();
+          localStorage.removeItem("sessionToken");
           window.location.replace(ROUTES.login);
         }
         if (error && error.response) {

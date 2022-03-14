@@ -73,8 +73,7 @@ export const signOut = createAsyncThunk<void, void>(
     try {
       const response = await sessionApi.signOut();
       try {
-        localStorage.clear(); // this is workaround for mocha which does not have window object
-        // TODO: add a separate module to work with local storage, we can use "store" library
+        localStorage.removeItem("sessionToken");
       } catch {
         console.error("localStorage is not available")
       }

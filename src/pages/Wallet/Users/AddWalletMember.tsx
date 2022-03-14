@@ -5,8 +5,9 @@ import { createModal } from "promodal";
 import { ShareWalletThunkPayload, ShareWalletResponse, Wallet } from "../../../types";
 import { accessLevels } from "../../../constants";
 import { FormErrors, Modal } from "../../../modules/index";
-import { Button, Label, Input, BindHotKeys } from "../../../components";
+import { Button, Label, Input, BindHotKeys, Tooltip } from "../../../components";
 import { enter2FACode } from "../../../modules/2FAModals";
+import { ReactComponent as InfoIcon } from "../SendPayment/TransactionForm/16px_info.svg";
 
 const validationSchema = yup.object().shape({
   email: yup
@@ -79,7 +80,17 @@ const AddWalletMember: React.FC<Props> = ({ wallet, is2FaEnabled, shareWallet, c
               <p>You’re going to share access to {wallet.name}.</p>
             </div>
             <div className="form-field">
-              <Label label="User email address">
+              <Label label={<div>
+                <Tooltip
+                  content={(
+                    <div className="md:w-96 text-sm normal-case" data-qa-selector="tx-priority-tooltip">
+                      Address of the user you are inviting.
+                    </div>
+                  )}
+                >
+                  User email address <div className="text-sm cursor-pointer inline-block" data-qa-selector="cursor-pointer-tx-priority-tooltip"><InfoIcon /></div>
+                </Tooltip>
+              </div>}>
                 <Input
                   autoComplete="off"
                   type="email"
@@ -111,7 +122,17 @@ const AddWalletMember: React.FC<Props> = ({ wallet, is2FaEnabled, shareWallet, c
               </Label>  
             </div> */}
             <div className="form-field">
-              <Label label="Account Password">
+              <Label label={<div>
+                <Tooltip
+                  content={(
+                    <div className="md:w-96 text-sm normal-case" data-qa-selector="tx-priority-tooltip">
+                      Password of your account. Required for sending the invitation.
+                    </div>
+                  )}
+                >
+                  Account Password <div className="text-sm cursor-pointer inline-block" data-qa-selector="cursor-pointer-tx-priority-tooltip"><InfoIcon /></div>
+                </Tooltip>
+              </div>}>
                 <Input
                   autoComplete="current-password"
                   type="password"
@@ -119,7 +140,7 @@ const AddWalletMember: React.FC<Props> = ({ wallet, is2FaEnabled, shareWallet, c
                   value={values.password}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  placeholder="password"
+                  placeholder="Password"
                   error={touched.password && errors.password || ""}
                 />
               </Label>

@@ -8,6 +8,8 @@ import { TransactionStatus } from "./TransactionStatus";
 import { Pagination } from "./Pagination";
 import { CopyArea } from "./CopyArea";
 import { enterPasswordModal } from "./EnterPasswordModal";
+import { showWarningModal } from "./WarningModal";
+import PrivateRouter from "./PrivateRouter";
 
 export {
   PageTemplate,
@@ -21,4 +23,6 @@ export {
   Pagination,
   CopyArea,
   enterPasswordModal,
+  showWarningModal,
+  PrivateRouter,
 };
