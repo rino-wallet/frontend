@@ -1400,10 +1400,10 @@
     redux-thunk "^2.4.1"
     reselect "^4.1.5"
 
-"@rino-wallet/monero-javascript@^0.0.28":
-  version "0.0.28"
-  resolved "https://gitlab.cryptosphere-systems.com/api/v4/projects/621/packages/npm/@rino-wallet/monero-javascript/-/@rino-wallet/monero-javascript-0.0.28.tgz#693f16e2ad7c0add8d1187bf8d43b666e911d304"
-  integrity sha1-aT8W4q18Ct2NEYe/jUO2ZukR0wQ=
+"@rino-wallet/monero-javascript@^0.0.30":
+  version "0.0.30"
+  resolved "https://registry.yarnpkg.com/@rino-wallet/monero-javascript/-/monero-javascript-0.0.30.tgz#b5352926765608b5fd441ebb49eb5bbc2a31055c"
+  integrity sha512-hqV98u54UZcvmGg9Kw6x56wrbvOfDHY2tr65PIjVOBgRvwxnGgwapF82F78dJ1lpBEdhO0vcydzb/rme/Ns6Bw==
   dependencies:
     "@babel/core" "^7.14.6"
     ajv "^6.12.6"
@@ -6781,9 +6781,9 @@ no-case@^3.0.4:
     tslib "^2.0.3"
 
 node-forge@^1.2.0:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-1.2.1.tgz#82794919071ef2eb5c509293325cec8afd0fd53c"
-  integrity sha512-Fcvtbb+zBcZXbTTVwqGA5W+MKBj56UjVRevvchv5XrcyXbmNdesfZL37nlcWOfpgHhgmxApw3tQbTr4CqNmX4w==
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-1.3.0.tgz#37a874ea723855f37db091e6c186e5b67a01d4b2"
+  integrity sha512-08ARB91bUi6zNKzVmaj3QO7cr397uiDT2nJ63cHjyNtCTWIgvS47j3eT0WfzUwS9+6Z5YshRaoasFkXCKrIYbA==
 
 node-gyp-build@^4.3.0:
   version "4.3.0"
