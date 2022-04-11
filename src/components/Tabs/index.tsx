@@ -11,10 +11,11 @@ type Props = {
   activeTab?: number;
   onChange?: (tab: number) => void;
   children?: ReactNode;
+  tabsWithNotification?: number[];
 };
 
 export const Tabs: React.FC<Props> = (props) => {
-  const { tabs, activeTab, children, onChange } = props;
+  const { tabs, activeTab, children, onChange, tabsWithNotification } = props;
   return (
     <div className="w-full">
       <div className="flex border-b theme-border">
@@ -39,7 +40,8 @@ export const Tabs: React.FC<Props> = (props) => {
                   "cursor-pointer": typeof onChange === "function",
               })}
             >
-              {tab.text}
+              {tab.text} {tabsWithNotification?.includes(tab.value) ?
+              <span className="inline-block w-2 h-2 mr-2 bg-red-600 rounded-full ml-1" />: null}
             </button>
           ))
         }

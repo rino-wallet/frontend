@@ -2,7 +2,7 @@ import React from "react";
 import "./style.css";
 
 interface Props {
-  name: "checvron_up" | "checvron_down" | "plus" | "copy" | "cross" | "dot" | "checvron_left" | "arrow_right" | "arrow_left" | "qrcode" | "refresh" | "check" | "caret_down" | "caret_up" | "checvron_right";
+  name: "checvron_up" | "checvron_down" | "plus" | "copy" | "cross" | "dot" | "checvron_left" | "arrow_right" | "arrow_left" | "qrcode" | "refresh" | "check" | "caret_down" | "caret_up" | "checvron_right" | "faq" | "wallets" | "login" | "logout" | "account";
   className?: string;
   title?: string;
 }

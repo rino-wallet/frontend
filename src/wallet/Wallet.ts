@@ -118,7 +118,6 @@ class Wallet {
     } catch(error) {
       throw({data: {message: "Cannot load a transaction."}})
     }
-
   };
 }
 

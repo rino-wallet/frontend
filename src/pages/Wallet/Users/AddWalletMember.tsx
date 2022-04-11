@@ -5,17 +5,16 @@ import { createModal } from "promodal";
 import { ShareWalletThunkPayload, ShareWalletResponse, Wallet } from "../../../types";
 import { accessLevels } from "../../../constants";
 import { FormErrors, Modal } from "../../../modules/index";
-import { Button, Label, Input, BindHotKeys, Tooltip } from "../../../components";
+import { Button, Label, Input, BindHotKeys, Tooltip, Select, DisableAutofill } from "../../../components";
 import { enter2FACode } from "../../../modules/2FAModals";
 import { ReactComponent as InfoIcon } from "../SendPayment/TransactionForm/16px_info.svg";
 
 const validationSchema = yup.object().shape({
-  email: yup
-    .string()
-    .email("Please enter valid email")
-    .required("This field is required."),
-  password: yup.string().required("This field is required."),
-  // access_level: yup.string().required("This field is required."),
+  password: yup.string().when("access_level", {
+    is: (access_level: string) => parseInt(access_level, 10) === accessLevels.admin.code,
+    then:  yup.string().required("This field is required.")
+  }),
+  access_level: yup.string().required("This field is required."),
 });
 
 interface Props {
@@ -23,10 +22,11 @@ interface Props {
   is2FaEnabled: boolean;
   submit: (data: { email: string; password: string; accessLevel: number }) => Promise<void>;
   cancel: () => void;
+  email: string;
   shareWallet: (data: ShareWalletThunkPayload) => Promise<ShareWalletResponse>;
 }
 
-const AddWalletMember: React.FC<Props> = ({ wallet, is2FaEnabled, shareWallet, cancel, submit }) => {
+const AddWalletMember: React.FC<Props> = ({ wallet, is2FaEnabled, email, shareWallet, cancel, submit }) => {
   const {
     isValid,
     dirty,
@@ -40,9 +40,8 @@ const AddWalletMember: React.FC<Props> = ({ wallet, is2FaEnabled, shareWallet, c
   } = useFormik({
     validationSchema,
     initialValues: {
-      email: "",
-      access_level: "",
       password: "",
+      access_level: "",
       encrypted_keys: "",
       non_field_errors: "",
     },
@@ -54,14 +53,14 @@ const AddWalletMember: React.FC<Props> = ({ wallet, is2FaEnabled, shareWallet, c
         }
         await shareWallet({
           password: formValues.password,
-          email: formValues.email,
-          accessLevel: accessLevels.admin.code,
+          email: email,
+          accessLevel: parseInt(formValues.access_level, 10),
           wallet,
           code,
-        }); 
+        });
         submit({
           password: formValues.password,
-          email: formValues.email,
+          email: email,
           accessLevel: accessLevels.admin.code,
         });
       } catch (err: any) {
@@ -75,6 +74,7 @@ const AddWalletMember: React.FC<Props> = ({ wallet, is2FaEnabled, shareWallet, c
     <BindHotKeys callback={handleSubmit} rejectCallback={cancel}>
       <Modal title="Add Wallet User" onClose={cancel} showCloseIcon>
         <form onSubmit={handleSubmit}>
+          <DisableAutofill />
           <Modal.Body>
             <div className="form-field">
               <p>You’re going to share access to {wallet.name}.</p>
@@ -95,15 +95,14 @@ const AddWalletMember: React.FC<Props> = ({ wallet, is2FaEnabled, shareWallet, c
                   autoComplete="off"
                   type="email"
                   name="email"
-                  value={values.email}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
+                  value={email}
+                  onChange={(): null => null}
                   placeholder="User Email Address"
-                  error={touched.email && errors.email || ""}
+                  disabled
                 />
               </Label>
             </div>
-            {/* <div className="form-field">
+            <div className="form-field">
               <Label label="Access level">
                 <Select
                   name="access_level"
@@ -119,38 +118,24 @@ const AddWalletMember: React.FC<Props> = ({ wallet, is2FaEnabled, shareWallet, c
                       .map((option) => <option key={option.code} value={option.code}>{option.title}</option>)
                   }
                 </Select>
-              </Label>  
-            </div> */}
-            <div className="form-field">
-              <Label label={<div>
-                <Tooltip
-                  content={(
-                    <div className="md:w-96 text-sm normal-case" data-qa-selector="tx-priority-tooltip">
-                      Password of your account. Required for sending the invitation.
-                    </div>
-                  )}
-                >
-                  Account Password <div className="text-sm cursor-pointer inline-block" data-qa-selector="cursor-pointer-tx-priority-tooltip"><InfoIcon /></div>
-                </Tooltip>
-              </div>}>
-                <Input
-                  autoComplete="current-password"
-                  type="password"
-                  name="password"
-                  value={values.password}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  placeholder="Password"
-                  error={touched.password && errors.password || ""}
-                />
               </Label>
             </div>
             {
               parseInt(values.access_level) === accessLevels.admin.code && (
                 <div className="form-field">
-                  <Label label="Password">
+                  <Label label={<div>
+                    <Tooltip
+                      content={(
+                        <div className="md:w-96 text-sm normal-case" data-qa-selector="tx-priority-tooltip">
+                          Password of your account. Required for sharing the wallet.
+                        </div>
+                      )}
+                    >
+                      Account Password <div className="text-sm cursor-pointer inline-block" data-qa-selector="cursor-pointer-tx-priority-tooltip"><InfoIcon /></div>
+                    </Tooltip>
+                  </div>}>
                     <Input
-                    autoComplete="current-password"
+                      autoComplete="current-password"
                       type="password"
                       name="password"
                       value={values.password}

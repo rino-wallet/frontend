@@ -1,5 +1,5 @@
 import React from "react";
-import { Spinner, Label, FormatNumber, BeforeUnloadConfirm } from "../../../../components";
+import { Spinner, Label, FormatNumber, Prompt } from "../../../../components";
 
 interface Props {
   amount: string;
@@ -14,7 +14,11 @@ const CreatingTransaction: React.FC<Props> = ({ amount, address, priority, fee, 
     data-qa-selector="creating-transaction"
     className="inset-0 z-10 flex justify-center items-center"
   >
-    <BeforeUnloadConfirm needConfirmation />
+    <Prompt
+      when
+      title="Transaction creation in progress."
+      message="If you interrupt the transaction creation process, no transaction is created."
+    />
     <div className="m-auto p-5">
       <div className="md:flex md:space-x-6">
         <div className="mb-2 text-sm theme-text uppercase font-catamaran leading-none md:mt-6 md:w-1/4 hidden md:block">

@@ -2,39 +2,56 @@ import {createSlice, createAsyncThunk, PayloadAction} from "@reduxjs/toolkit";
 import { FetchSubaddressResponse, Subaddress, FetchSubaddressesThunkPayload, RootState, CreateSubaddressThunkPayload, FetchWalletSubaddressThunkPayload } from "../types";
 import walletsApi from "../api/wallets";
 import walletInstance from "../wallet";
-import { createLoadingSelector, generateExtraReducer, generateListReqParams } from "../utils";
+import { createLoadingSelector, generateExtraReducer, generateListReqParams, deriveUserKeys, signMessage, verifySignature } from "../utils";
 
 export const ITEMS_PER_PAGE = 5;
 
 export const fetchSubaddresses = createAsyncThunk<FetchSubaddressResponse, FetchSubaddressesThunkPayload>(
   "subaddressList/fetchSubaddresses",
-  async ({ page, walletId }, { rejectWithValue }) => {
+  async ({ page, walletId }, { rejectWithValue, dispatch, getState }) => {
     try {
+      const { signingPublicKey } = (getState() as any).session;
       const listReqParams = {
         offset: (page - 1) * ITEMS_PER_PAGE + 1,
         limit: ITEMS_PER_PAGE,
       }
-      const subaddresses = await walletsApi.fetchWalletSubaddresses(walletId, listReqParams);
-      return subaddresses;
+      const response = await walletsApi.fetchWalletSubaddresses(walletId, listReqParams);
+      // verify signatures of all sub addresses
+      response.results.forEach((subaddress: Subaddress) => {
+        if (subaddress.signature) {
+          const verified = verifySignature(Buffer.from(subaddress.signature, "base64"), subaddress.address, Buffer.from(signingPublicKey, "base64"));
+          if (verified) {
+            dispatch(markValidAddress(subaddress.index));
+          }
+        }
+      });
+      dispatch(setAddresses(response));
+      return response;
     } catch(err: any) {
       return rejectWithValue(err?.data)
     }
   },
 );
 
-export const validateSubAddress = createAsyncThunk<void, {address: string; index: number}>(
+export const validateSubAddress = createAsyncThunk<void, {walletId: string; address: string; index: number; loginPassword: string}>(
   "wallet/validateSubAddress",
-  async (data, { rejectWithValue, dispatch }) => {
+  async (data, { rejectWithValue, dispatch, getState }) => {
     try {
       const { userWallet } = walletInstance;
       const subAddress = await userWallet?.getSubaddresses(data.index);
       const isValid = subAddress[0].state.address === data.address;
       if (isValid) {
         dispatch(markValidAddress(data.index));
+        const { encPrivateKey, username } = (getState() as any).session.user;
+        const { encryptionKey, clean: cleanDerivedKeys } = await deriveUserKeys(data.loginPassword, username);
+        const signature = Buffer.from(await signMessage(encPrivateKey, encryptionKey, data.address)).toString("base64");
+        cleanDerivedKeys();
+        await walletsApi.addSubaddressSignature(data.walletId, data.address, { signature });
       }
       walletInstance.closeWallet();
       return;
     } catch(err: any) {
+      console.log(err);
       return rejectWithValue(err?.data)
     }
   },
@@ -42,11 +59,19 @@ export const validateSubAddress = createAsyncThunk<void, {address: string; index
 
 export const fetchWalletSubaddress = createAsyncThunk<FetchSubaddressResponse, FetchWalletSubaddressThunkPayload>(
   "wallet/fetchWalletSubaddress",
-  async ({ walletId }, { rejectWithValue, dispatch }) => {
+  async ({ walletId }, { rejectWithValue, dispatch, getState }) => {
     try {
+      const { signingPublicKey } = (getState() as any).session;
       const addresses = await walletsApi.fetchWalletSubaddresses(walletId, generateListReqParams(1, 1));
       if (addresses.results.length) {
-        dispatch(setAddress(addresses.results[0]));
+        const subaddress = addresses.results[0];
+        dispatch(setAddress(subaddress));
+        if (subaddress.signature) {
+          const verified = verifySignature(Buffer.from(subaddress.signature, "base64"), subaddress.address, Buffer.from(signingPublicKey, "base64"));
+          if (verified) {
+            dispatch(markValidAddress(subaddress.index));
+          }
+        }
       }
       return addresses;
     } catch(err: any) {
@@ -105,6 +130,13 @@ export const subaddressListSlice = createSlice({
         state.validated.push(action.payload);
       }
     },
+    setAddresses(state, action: { payload: FetchSubaddressResponse }): void {
+      state.entities = action.payload.results;
+      state.count = action.payload.count - 1;
+      state.pages = Math.ceil((action.payload.count - 1) / ITEMS_PER_PAGE);
+      state.hasPreviousPage = !!(action.payload.results.length && action.payload.results[0].index !== action.payload.count - 1 && !!action.payload.previous);
+      state.hasNextPage = !!action.payload.next;
+    },
     reset(state): void {
       state.count = initialState.count;
       state.pages = initialState.pages;
@@ -115,17 +147,7 @@ export const subaddressListSlice = createSlice({
     },
   },
   extraReducers: {
-    ...generateExtraReducer(
-      fetchSubaddresses,
-      (data) => ({
-        // We avoid taking first subaddress into consideration, because it is not displayed in this list.
-        entities: data.results,
-        count: data.count - 1,
-        pages: Math.ceil((data.count - 1) / ITEMS_PER_PAGE),
-        hasPreviousPage: data.results.length && data.results[0].index !== data.count - 1 && !!data.previous,
-        hasNextPage: !!data.next,
-      })
-    ),
+    ...generateExtraReducer(fetchSubaddresses),
     ...generateExtraReducer(fetchWalletSubaddress),
     ...generateExtraReducer(createSubaddress),
   }
@@ -149,5 +171,6 @@ export const selectors = {
 export const {
   reset,
   setAddress,
+  setAddresses,
   markValidAddress,
 } = subaddressListSlice.actions;

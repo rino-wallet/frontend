@@ -24,3 +24,16 @@ export function getToken(): string {
   }
   return "";
 }
+
+export function saveSigningPublicKey(key: string): void {
+  if (typeof localStorage !== "undefined") {
+    localStorage.setItem("signingPublicKey", key);
+  }
+}
+
+export function getSigningPublicKey(): string {
+  if (typeof localStorage !== "undefined") {
+    return localStorage.getItem("signingPublicKey") || "";
+  }
+  return "";
+}

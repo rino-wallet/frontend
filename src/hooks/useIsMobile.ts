@@ -11,5 +11,4 @@ export function useIsMobile(): boolean {
     throw new Error("Size be null, please add a context provider");
   }
   return (size.width || 0) < 768;
-
 }

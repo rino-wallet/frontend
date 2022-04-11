@@ -49,11 +49,12 @@ describe("SubaddressListSlice", () => {
     expect(store.getState().subaddressList.hasPreviousPage).toEqual(false);
     expect(store.getState().subaddressList.hasNextPage).toEqual(!!fetchSubaddressesResponse.next);
   });
-    it("setAddress", async() => {
+  it("setAddress", async() => {
     unwrapResult(await store.dispatch(setAddress({
       address: "new address",
       index: 1,
       isUsed: false,
+      signature: null,
     })));
     expect(store.getState().subaddressList.walletSubAddress.address).toEqual("new address");
   });

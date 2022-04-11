@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?6dg2yy');
-  src:  url('fonts/icomoon.eot?6dg2yy#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?6dg2yy') format('truetype'),
-    url('fonts/icomoon.woff?6dg2yy') format('woff'),
-    url('fonts/icomoon.svg?6dg2yy#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?w8xuwc');
+  src:  url('fonts/icomoon.eot?w8xuwc#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?w8xuwc') format('truetype'),
+    url('fonts/icomoon.woff?w8xuwc') format('woff'),
+    url('fonts/icomoon.svg?w8xuwc#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,6 +25,21 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-account:before {
+  content: "\e913";
+}
+.icon-wallets:before {
+  content: "\e90f";
+}
+.icon-logout:before {
+  content: "\e910";
+}
+.icon-login:before {
+  content: "\e911";
+}
+.icon-faq:before {
+  content: "\e912";
+}
 .icon-checvron_up:before {
   content: "\e900";
 }

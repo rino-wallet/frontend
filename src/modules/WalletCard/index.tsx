@@ -45,7 +45,7 @@ export const WalletCard: React.FC<Props> = ({
                     <span data-qa-selector="wallet-balance"><FormatNumber value={piconeroToMonero(balance)} /></span> XMR
                   </div>
                 </div>
-                {unlocked !== balance ? (<div className="min-w-0" title="Unlocked">
+                {unlocked !== balance ? (<div className="min-w-0">
                   <div
                     className="text-base whitespace-nowrap overflow-ellipsis overflow-hidden theme-text-secondary font-bold md:text-3xl">
                     (

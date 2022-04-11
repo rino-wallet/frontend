@@ -153,6 +153,9 @@ class BuildHasher:
         project_url = os.environ.get("INTEGRITY_REPOSITORY_URL", "")
         project_commit = os.environ.get("INTEGRITY_REPOSITORY_COMMIT", "")
         project_env = os.environ.get("REACT_APP_ENV", "")
+        app_url = "app.rino.io"
+        if project_env == "test":
+            app_url = "app.test.rino.io"
         with open("./build-integrity-template.txt", "r") as file_data:
             data = file_data.read()
         data = data.replace("__integrity_hash__", integrity_hash)
@@ -161,6 +164,7 @@ class BuildHasher:
         data = data.replace("__integrity_env__", project_env)
         data = data.replace("__index_html_hash__", index_html_hash)
         data = data.replace("__service_worker_js_hash__", service_worker_hash)
+        data = data.replace("__app_url__", app_url)
         with open("./build/build-integrity.txt", 'w') as f:
             f.write(data)
 

@@ -12,7 +12,8 @@ import { PdfDocument } from "./createPdf";
 import { getNetworkType } from "./getNetworkType";
 import { wasmSupported } from "./wasmSupported";
 import { IdleTimer } from "./idleTimer";
-import { generateUserKeyPairInfo, deriveUserKeys, reencrypPrivateKey, decryptKeys } from "./keypairs";
+import { generateUserKeyPairInfo, deriveUserKeys, reencrypPrivateKey, decryptKeys, getSigningKeys, signMessage, verifySignature } from "./keypairs";
+import { checkAccessLevel } from "./checkAccessLevel";
 
 export {
   generateExtraReducer,
@@ -20,6 +21,9 @@ export {
   transformError,
   generateUserKeyPairInfo,
   deriveUserKeys,
+  getSigningKeys,
+  signMessage,
+  verifySignature,
   reencrypPrivateKey,
   decryptKeys,
   getRandString,
@@ -34,4 +38,5 @@ export {
   getNetworkType,
   wasmSupported,
   IdleTimer,
+  checkAccessLevel,
 }

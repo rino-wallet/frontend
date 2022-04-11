@@ -1,5 +1,5 @@
 import {configureStore, combineReducers} from "@reduxjs/toolkit";
-import {sessionSlice, setToken} from "./sessionSlice";
+import {sessionSlice, setSigningPublicKey, setToken} from "./sessionSlice";
 import {walletSlice} from "./walletSlice";
 import {walletListSlice} from "./walletListSlice";
 import {otpSlice} from "./otpSlice";
@@ -7,7 +7,11 @@ import {transactionListSlice} from "./transactionListSlice";
 import {changeEmailSlice} from "./changeEmailSlice";
 import {transactionDetailsSlice} from "./transactionDetailsSlice";
 import {subaddressListSlice} from "./subaddressListSlice";
-import {setApiToken, getToken} from "./sessionUItils";
+import {setApiToken, getToken, saveSigningPublicKey, getSigningPublicKey} from "./sessionUItils";
+import {publicWalletSlice} from "./publicWalletSlice";
+import {publicWalletTransactionListSlice} from "./publicWalletTransactionListSlice";
+import {publicWalletSubaddressListSlice} from "./publicWalletSubaddressListSlice";
+import {walletShareRequestListSlice} from "./walletShareRequestListSlice";
 import { changeLocation, fullReset } from "./actions";
 import walletInstance from "../wallet";
 
@@ -20,6 +24,10 @@ const combinedReducer = combineReducers({
   changeEmail: changeEmailSlice.reducer,
   transactionDetails: transactionDetailsSlice.reducer,
   subaddressList: subaddressListSlice.reducer,
+  publicWallet: publicWalletSlice.reducer,
+  publicWalletTransactionList: publicWalletTransactionListSlice.reducer,
+  publicWalletSubaddressList: publicWalletSubaddressListSlice.reducer,
+  walletShareRequestList: walletShareRequestListSlice.reducer,
 });
 
 /**
@@ -46,8 +54,10 @@ export const store = configureStore({
 
 // get token from local storage
 const sessionToken = getToken();
-// set token to redux store
+const signingPublicKey = getSigningPublicKey();
+// set token and signingPublicKey to redux store
 store.dispatch(setToken(sessionToken));
+store.dispatch(setSigningPublicKey(signingPublicKey));
 // set token to api services
 setApiToken(sessionToken);
 
@@ -56,5 +66,6 @@ store.subscribe(()=> {
   // sync token in redux state with all api services
   if (state.session) {
     setApiToken(state.session.token || "");
+    saveSigningPublicKey(state.session.signingPublicKey || "")
   }
 });

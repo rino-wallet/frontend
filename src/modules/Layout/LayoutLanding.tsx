@@ -17,7 +17,7 @@ export const LayoutLanding: React.FC<Props> = ({ children, signOut, isAuthentica
         <main className="flex-1 text-lg leading-6" >
           {children}
         </main>
-        <Footer showDisclaimer dark />
+        <Footer isAuthenticated={isAuthenticated} showDisclaimer dark />
       </div>
     </div>
   )

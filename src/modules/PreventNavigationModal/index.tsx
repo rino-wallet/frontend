@@ -1,45 +1,65 @@
-import React, { ReactChild } from "react";
+import React, { RefObject, useRef } from "react";
 import { createModal } from "promodal";
 import { Modal } from "../Modal";
 import { Button } from "../../components";
 import { Warning } from "../../components/Warning";
-import {useDispatch} from "../../hooks";
-import {setPreventNavigation as setPreventNavigationAction} from "../../store/sessionSlice";
 
-type MessageFunc = (close: () => void) => ReactChild;
 interface Props {
-  goBackCallback: () => void;
   title: string;
-  message: ReactChild | MessageFunc;
+  message: string;
+  cancel: (value: boolean) => void;
+  submit: (value: boolean) => void;
 }
 
-export const PreventNavigationModal: React.FC<Props> = ({ goBackCallback, title, message }) => {
-  const dispatch = useDispatch();
-  const setPreventNavigation = (value: boolean): void => { dispatch(setPreventNavigationAction(value)); };
+export type CloseHandle = {
+  closeModal: () => void;
+};
+
+
+export const PreventNavigationModal = React.forwardRef<CloseHandle, Props>(({ cancel, submit, title, message }, ref: any) => {
+  React.useImperativeHandle(ref, () => ({
+    closeModal(): void {
+      cancel(false);
+    }
+  }));
   return (
     <Modal title={title}>
       <Modal.Body>
-        <div className="flex space-x-6">
+        <div ref={ref} className="flex space-x-6">
           <div className="flex justify-center">
             <Warning size={48} />
           </div>
           <div>
-            {typeof message === "function" ? message(goBackCallback) : message}
+            {message}
           </div>
         </div>
       </Modal.Body>
       <Modal.Actions>
         <Button
-          onClick={(): void => { setPreventNavigation(false); goBackCallback() }}
-          name="submit-btn"
+          onClick={(): void => { cancel(false) }}
+          name="cancel-btn"
         >
-          OK
+          Stay Here
+        </Button>
+        <Button
+          onClick={(): void => { submit(true) }}
+          name="submit-btn"
+          variant={Button.variant.PRIMARY}
+        >
+          Leave
         </Button>
       </Modal.Actions>
     </Modal>
   );
-};
+});
 
-export const showPreventNavigationModal = createModal(({ title, message, submit }: { title: string; message: ReactChild; submit: () => void; }) => {
-  return <PreventNavigationModal title={title} message={message} goBackCallback={submit} />
+// export const showPreventNavigationModal = createModal(PreventNavigationModal);
+
+export const showPreventNavigationModal = createModal(({ title, message, cancel, submit }: { title: string; message: string; cancel: any; submit: any; }) => {
+  const ref = useRef();
+  if (ref?.current) {
+    // @ts-ignore
+    ref?.current?.closeModal();
+  }
+  return <PreventNavigationModal title={title} message={message} cancel={cancel} submit={submit} ref={ref as unknown as RefObject<CloseHandle>} />
 });

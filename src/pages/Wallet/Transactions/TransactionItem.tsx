@@ -11,9 +11,10 @@ import TransactionDetails from "../TransactionDetails";
 interface Props {
   transaction: Transaction;
   walletId: string;
+  isPublicWallet?: boolean;
 }
 
-const TransactionItem: React.FC<Props> = ({ transaction, walletId }) => {
+const TransactionItem: React.FC<Props> = ({ transaction, walletId, isPublicWallet }) => {
   const [open, setOpen] = useState(false);
   const timestamp = transaction.timestamp ? transaction.timestamp : transaction.createdAt;
   return (
@@ -62,7 +63,7 @@ const TransactionItem: React.FC<Props> = ({ transaction, walletId }) => {
         )}
       />
       {
-        open && <TransactionDetails transaction={transaction} walletId={walletId} />
+        open && <TransactionDetails isPublicWallet={isPublicWallet} transaction={transaction} walletId={walletId} />
       }
     </div>
   )

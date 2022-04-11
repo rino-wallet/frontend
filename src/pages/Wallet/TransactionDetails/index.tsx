@@ -9,9 +9,10 @@ import "./styles.css";
 interface Props {
   transaction?: Transaction;
   walletId: string;
+  isPublicWallet?: boolean;
 }
 
-const TransactionDetailsContent: React.FC<Props> = ({ transaction, walletId }) => {
+const TransactionDetailsContent: React.FC<Props> = ({ transaction, walletId, isPublicWallet }) => {
   const destAddresses = (transaction?.destinations || []).map(dest => dest.address) || [];
   const timestamp = transaction?.timestamp ? transaction?.timestamp : transaction?.createdAt;
   const loading = !transaction;
@@ -97,7 +98,7 @@ const TransactionDetailsContent: React.FC<Props> = ({ transaction, walletId }) =
         </Label>
       </div>
       {
-        transaction && <TransactionMemo walletId={walletId} transactionId={transaction.id} memo={transaction.memo} />
+        (transaction && !isPublicWallet) && <TransactionMemo walletId={walletId} transactionId={transaction.id} memo={transaction.memo} />
       }
     </div>
   )

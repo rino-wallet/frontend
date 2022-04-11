@@ -31,11 +31,17 @@ export class PdfDocument {
     this.doc.addImage(logo, "png", this.leftOffset, 286, 16, 6);
     layoutContext.fillStyle = "#000000"
     this.doc.setFont("helvetica", "bold");
+    this.doc.setTextColor("#000000");
+    this.doc.setFontSize(14);
+    const textArray = this.config.title.split(" ");
+    this.doc.text(textArray[0], this.doc.internal.pageSize.getWidth()/2 - 25, 14, { align: "center" });
     this.doc.setTextColor("#797d80");
-    this.doc.setFontSize(18);
-    this.doc.text(this.config.title, this.doc.internal.pageSize.getWidth()/2, 14, { align: "center" });
+    this.doc.text(textArray.slice(1).join(" "), this.doc.internal.pageSize.getWidth()/2 + 10, 14, { align: "center" });
     this.doc.setFontSize(13);
-    this.doc.text(this.config.title, this.doc.internal.pageSize.getWidth()/2, 291, { align: "center" });
+    this.doc.setTextColor("#000000");
+    this.doc.text(textArray[0], this.doc.internal.pageSize.getWidth()/2 - 23, 291, { align: "center" });
+    this.doc.setTextColor("#797d80");
+    this.doc.text(textArray.slice(1).join(" "), this.doc.internal.pageSize.getWidth()/2 + 9, 291, { align: "center" });
     this.doc.setFontSize(9);
     this.doc.setTextColor(0, 0, 0);
     this.doc.setFont("helvetica", "normal");
@@ -67,6 +73,14 @@ export class PdfDocument {
     this.doc.text(text, x, y, { maxWidth: pageWidth, lineHeightFactor: 1.5, ...(options || {}) });
   }
   
+  addSmallText(text: string, x: number, y: number, options?: Options, color?: string): void {
+    const colorArg = color || "#000000";
+    this.doc.setTextColor(colorArg);
+    this.doc.setFontSize(7);
+    this.doc.setFont("helvetica", "normal");
+    this.doc.text(text, x, y, { maxWidth: pageWidth, lineHeightFactor: 1.5, ...(options || {}) });
+  }
+
   addText(text: string, x: number, y: number, options?: Options, color?: string): void {
     const colorArg = color || "#000000";
     this.doc.setTextColor(colorArg);

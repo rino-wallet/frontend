@@ -84,7 +84,7 @@ describe("WalletSlice", () => {
     (tasksApi.checkTask as any).mockResolvedValue(camelcaseKeys(createWalletTaskResponse, { deep: true }));
 
     unwrapResult(await store.dispatch(getCurrentUser()) as any);
-    const actionResponse = await store.dispatch(createNewWallet({ name: "Main" }));
+    const actionResponse = await store.dispatch(createNewWallet({ name: "Main", signal: (new AbortController()).signal }));
     const response = unwrapResult(actionResponse as any);
     expect(response).toHaveProperty("userWallet");
     expect(response).toHaveProperty("backupWallet");

@@ -2,14 +2,14 @@ import React from "react";
 import { Button, Copy, Icon } from "../../../components";
 import { Subaddress } from "../../../types";
 import showQRCodeModal from "./QRCodeModal";
-// import { ValidateButton } from "./ValidateButton";
+import { ValidateButton } from "./ValidateButton";
 
 interface Props {
   subaddress: Subaddress;
-  validateAddress: (address: string, index: number) => Promise<void>;
+  validateAddress: (subaddress: Subaddress) => Promise<void>;
 }
 
-export const SubaddressItem: React.FC<Props> = ({ subaddress }) => {
+export const SubaddressItem: React.FC<Props> = ({ subaddress, validateAddress }) => {
   return (
     <div className="flex">
       <Button
@@ -26,9 +26,9 @@ export const SubaddressItem: React.FC<Props> = ({ subaddress }) => {
           <span className="theme-text-secondary">{subaddress.index} :</span> {subaddress.address}{subaddress.isUsed ? <span className="theme-text-secondary font-bold"> (Used)</span> : null}
         </Copy>
       </div>
-      {/* <div className="ml-6" data-qa-selector="validate_btn">
+      <div className="ml-6" data-qa-selector="validate_btn">
         <ValidateButton subaddress={subaddress} validateAddress={validateAddress} />
-      </div> */}
+      </div>
     </div>
   )
 }

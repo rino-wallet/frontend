@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { FormatNumber } from "../../components/FormatNumber";
 import { piconeroToMonero } from "../../utils";
-import { Wallet } from "../../types";
+import { PublicWallet, Wallet } from "../../types";
 import { Tooltip } from "../../components/Tooltip";
 
 interface Props {
-  wallet: Wallet | null;
+  wallet: Wallet | PublicWallet | null;
 }
 
 

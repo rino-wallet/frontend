@@ -28,6 +28,7 @@ export const Layout: React.FC<Props> = ({ children, signOut, isAuthenticated, pa
     }
     case "login":
     case "register":
+    case "resendActivationEmail":  
     case "resetPassword": {
       return <LayoutAuth signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutAuth>
     }

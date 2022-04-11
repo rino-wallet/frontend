@@ -14,13 +14,13 @@ export const accessLevels = {
     code: 20,
     title: "Admin",
   },
-  approver: {
-    code: 30,
-    title: "Approver",
-  },
-  readOnly: {
+  // approver: {
+  //   code: 30,
+  //   title: "Approver",
+  // },
+  viewOnly: {
     code: 40,
-    title: "Read-only",
+    title: "View-only",
   },
 };
 
@@ -51,4 +51,18 @@ export const createTransactionSteps = {
 
 export const browserFeatures: { webassembly: "webassembly" } = {
   webassembly: "webassembly",
+}
+
+export const PUBLIC_APP_URLS_MAP = {
+  production: "https://rino.io",
+  test: "https://test.rino.io",
+  staging: "https://labradoodle.staging.rino.io",
+  develop: "https://labradoodle.dev.rino.io",
+}
+
+export const APP_URLS_MAP = {
+  production: "https://app.rino.io",
+  test: "https://app.test.rino.io",
+  staging: "https://appradoodle.staging.rino.io",
+  develop: "https://proxy.dev.rino.io",
 }

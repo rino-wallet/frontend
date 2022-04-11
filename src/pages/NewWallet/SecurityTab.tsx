@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { generatePath, useNavigate } from "react-router-dom";
 import { NewWalletPDFData } from "../../types";
-import { BeforeUnloadConfirm, Button, Checkbox, Input } from "../../components";
+import { Button, Checkbox, Input, Prompt } from "../../components";
 import { createPDF } from "./createPDF";
 import routes from "../../router/routes";
 
@@ -51,7 +51,11 @@ const SecurityTab: React.FC<Props> = ({ persistWallet, pdfData, walletId }) => {
     createWalletRecoveryDocument({ downloadFile: false });
   }, [pdfData]);
   return <div id="security-tab-content">
-    <BeforeUnloadConfirm needConfirmation />
+    <Prompt
+      when={confirmationCheckInputValue !== pdfData.checkString}
+      title="Wallet creation in progress."
+      message="If you interrupt the wallet creation process, no wallet is created."
+    />
     <p className="mb-4 font-normal">
       Your RINO wallet will not be added to your account unless you
       download and store your Wallet Recovery Document.

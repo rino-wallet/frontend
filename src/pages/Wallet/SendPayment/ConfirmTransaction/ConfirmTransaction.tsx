@@ -6,7 +6,7 @@ import {
   PendingTransaction,
   Wallet,
 } from "../../../../types";
-import {generatePath, useNavigate} from "react-router-dom";
+import {generatePath, Navigate} from "react-router-dom";
 import {Formik, FormikErrors} from "formik";
 import { getOutputs } from "../../../../store/walletSlice";
 import routes from "../../../../router/routes";
@@ -20,7 +20,7 @@ import {FormErrors} from "../../../../modules/FormErrors";
 import { enter2FACode } from "../../../../modules/2FAModals";
 import { showConfirmationModal } from "../../../../modules/ConfirmationModal";
 import {Spinner} from "../../../../components/Spinner";
-import { BeforeUnloadConfirm } from "../../../../components";
+import { Prompt } from "../../../../components";
 
 const transformPriorityText = (priority: (string | undefined)): string => priority ? priority.charAt(0) + priority.slice(1).toLowerCase() : "";
 
@@ -59,9 +59,8 @@ const ConfirmTransaction: React.FC<Props> = ({
   onEdit,
   errors: step1Errors,
 }) => {
-  const navigate = useNavigate();
-
-  const [feeValue, setFeeValue] = useState<null | number>(null)
+  const [feeValue, setFeeValue] = useState<null | number>(null);
+  const [inProgress, setInProgress] = useState(true);
   useEffect(() => {
     if(!feeValue && pendingTransaction.fee) setFeeValue(pendingTransaction.fee)
   }, [pendingTransaction])
@@ -93,9 +92,10 @@ const ConfirmTransaction: React.FC<Props> = ({
           await syncMultisig(wallet.id);
           fetchWalletDetails({ id: wallet.id }).then(() => null);
           resetForm();
-          navigate(`${generatePath(routes.wallet, { id: walletId })}/transactions`);
+          setInProgress(false);
         } catch(err: any) {
           console.error(err);
+          setInProgress(false);
           if (err) {
             setErrors(err);
           }
@@ -108,7 +108,12 @@ const ConfirmTransaction: React.FC<Props> = ({
       isSubmitting,
       errors,
     }): React.ReactElement => <form name="form-sendPayment" onSubmit={handleSubmit}>
-      <BeforeUnloadConfirm needConfirmation />
+      {!inProgress && !isSubmitting && <Navigate to={`${generatePath(routes.wallet, { id: walletId })}/transactions`} />}
+      <Prompt
+        when={isSubmitting}
+        title="Transaction creation in progress."
+        message="If you interrupt the transaction creation process, no transaction is created."
+      />
       {!isSubmitting ? (<div className="m-auto md:w-3/4">
         { loading ? (<div className="md:flex md:space-x-6">
             <div className="mb-2 text-sm theme-text uppercase font-catamaran leading-none md:mt-6 md:w-1/4 hidden md:block">
@@ -173,7 +178,7 @@ const ConfirmTransaction: React.FC<Props> = ({
             name="submit-btn"
             variant={Button.variant.PRIMARY_LIGHT}
             size={Button.size.BIG}
-            disabled={!pendingTransaction?.fee}
+            disabled={!pendingTransaction?.fee || loading}
             loading={loading}
           >
             Confirm Payment

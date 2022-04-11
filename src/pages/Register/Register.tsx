@@ -43,7 +43,7 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
           </div>
         </Panel.Body>
         <Panel.Actions>
-          <Link to={routes.home}><Button name="ok-button">OK</Button></Link>
+          <Link to={routes.wallet}><Button name="ok-button">OK</Button></Link>
         </Panel.Actions>
       </Panel>
     ) : (

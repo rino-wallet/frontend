@@ -20,7 +20,7 @@ export const LayoutAuth: React.FC<Props> = ({ children, signOut, isAuthenticated
         </main>
       </div>
       <div className="-mt-10">
-        <Footer showDisclaimer />
+        <Footer isAuthenticated={isAuthenticated} showDisclaimer />
       </div>
     </div>
   )

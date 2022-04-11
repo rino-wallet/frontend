@@ -35,6 +35,9 @@ import {
   PersistWalletPayload,
   Subaddress,
   SubaddressResponse,
+  AddSubaddressSignaturePayload,
+  RequestWalletSharePayload,
+  FetchWalletShareRequestsResponse,
 } from "../types";
 
 export class WalletsApi extends Api {
@@ -103,6 +106,12 @@ export class WalletsApi extends Api {
       .then(this.success);
   }
 
+  public requestWalletShare(id: string, data: RequestWalletSharePayload, config?: { headers: { "X-RINO-2FA": string } }): Promise<Record<string, never>> {
+    return this.post<Record<string, never>, RequestWalletSharePayload>(`/wallets/${id}/share/share/`, data, config)
+      .then(this.success);
+  }
+
+
   public shareWallet(id: string, data: ShareWalletPayload, config?: { headers: { "X-RINO-2FA": string } }): Promise<ShareWalletResponse> {
     return this.post<ShareWalletResponse, ShareWalletPayload>(`/wallets/${id}/members/`, data, config)
       .then(this.success);
@@ -128,8 +137,17 @@ export class WalletsApi extends Api {
       .then(this.success);
   }
 
+  public addSubaddressSignature(id: string, address: string, data: AddSubaddressSignaturePayload): Promise<SubaddressResponse> {
+    return this.post<Subaddress, AddSubaddressSignaturePayload>(`/wallets/${id}/subaddresses/${address}/sign/`, data)
+      .then(this.success);
+  }
+
   public fetchWalletSubaddresses(walletId: string, params: ListRequestParams): Promise<FetchSubaddressResponse> {
     return this.get<FetchSubaddressResponse>(`/wallets/${walletId}/subaddresses/`, { params })
+      .then(this.success);
+  }
+  public fetchWalletShareRequests(walletId: string, params: ListRequestParams): Promise<FetchWalletShareRequestsResponse> {
+    return this.get<FetchWalletShareRequestsResponse>(`/wallets/${walletId}/share/`, { params })
       .then(this.success);
   }
 }

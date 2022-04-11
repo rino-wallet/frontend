@@ -33,8 +33,22 @@ export type Wallet = {
   address: string;
   balance: string;
   unlockedBalance: string;
-  lockedAmounts: LockedAmount[],
+  lockedAmounts: LockedAmount[];
   status: string;
+  requires2Fa: boolean;
+  isPublic: boolean;
+  publicSlug: string;
+}
+
+export interface PublicWallet {
+  address: string;
+  balance: string;
+  createdAt: string;
+  height: number;
+  lockedAmounts: LockedAmount[];
+  name: string;
+  unlockedBalance: string;
+  updatedAt: string;
   requires2Fa: boolean;
 }
 
@@ -103,6 +117,11 @@ export interface FetchSubaddressesThunkPayload {
   page: number;
 }
 
+export interface FetchWalletShareRequestsThunkPayload {
+  walletId: string;
+  page: number;
+}
+
 export interface FetchWalletSubaddressThunkPayload {
   walletId: string;
 }
@@ -133,6 +152,12 @@ export interface ResetPasswordConfirmThunkPayload {
   recovery_key: string;
 }
 
+export interface RequestWalletShareThunkPayload {
+  email: string;
+  wallet: Wallet;
+  code?: string;
+}
+
 export interface ShareWalletThunkPayload {
   email: string;
   password: string;
@@ -146,4 +171,5 @@ export interface Subaddress {
   index: number;
   isUsed: boolean;
   isValid?: boolean;
+  signature: string | null;
 }

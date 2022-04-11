@@ -19,7 +19,7 @@ import {
   ChangingEmailInfoPayload,
   ChangingEmailInfoResponse,
   ChangeEmailConfirmPayload,
-  UpdateUserPayload,
+  UpdateUserPayload, AcceptWalletSharePayload, ResendActivationEmailPayload,
 } from "../types";
 
 export class SessionApi extends Api {
@@ -63,6 +63,15 @@ export class SessionApi extends Api {
   ): Promise<void> {
     return this.post<void, ResetPasswordRequestPayload>(
       "/accounts/reset_password/",
+      data
+    ).then((response) => this.success<void>(response),);
+  }
+
+  public resendActivationEmail(
+    data: ResendActivationEmailPayload
+  ): Promise<void> {
+    return this.post<void, ResendActivationEmailPayload>(
+      "/accounts/resend_activation/",
       data
     ).then((response) => this.success<void>(response),);
   }
@@ -136,6 +145,13 @@ export class SessionApi extends Api {
       `/accounts/email-changes/${data.token}/confirm/`,
     ).then(this.success);
   }
+
+  public acceptWalletShare({ walletId, shareId }: AcceptWalletSharePayload): Promise<void> {
+    return this.post<void, ConfirmEmailPayload>(
+      `/wallets/${walletId}/share/${shareId}/accept_share/`,
+    ).then(this.success);
+  }
+
 }
 
 const seessionApi = new SessionApi(apiConfig);

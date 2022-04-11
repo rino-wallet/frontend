@@ -1,4 +1,4 @@
-import _sodium from "libsodium-wrappers";
+import _sodium from "libsodium-wrappers-sumo";
 import { Keypair, EncryptedPrivateKeysDataSet, UserKeyPairInfo } from "../types";
 
 /**
@@ -260,4 +260,45 @@ export async function reencrypPrivateKey(
       cleanDecrypredKeys();
     }
   }
+}
+
+/**
+ * This function is used to get signingPrivateKey and signingPublicKey from enc_private_key.
+ * @param data enc_private_key data
+ */
+export async function getSigningKeys(data: { enc_content: string; nonce: string; }, encryptionKey: Uint8Array): Promise<{
+  signingPrivateKey: Uint8Array;
+  signingPublicKey: Uint8Array;
+  clean: () => void;
+}> {
+  const sodium = _sodium;
+  const enc_content = Buffer.from(data.enc_content, "base64");
+  const nonce =  Buffer.from(data.nonce, "base64");
+  const { signingPrivateKey, clean } = await decryptKeys(enc_content, nonce, encryptionKey);
+  const signingPublicKey =  sodium.crypto_sign_ed25519_sk_to_pk(signingPrivateKey);
+  return {
+    signingPrivateKey,
+    signingPublicKey,
+    clean,
+  };
+}
+
+/**
+ * This function is used to create signature for message.
+ * @param data enc_private_key data
+ */
+export async function signMessage(data: any, encryptionKey: Uint8Array, message: string): Promise<Uint8Array> {
+  const sodium = _sodium;
+  const { signingPrivateKey, clean } = await getSigningKeys(data, encryptionKey);
+  const signature = sodium.crypto_sign_detached(message, signingPrivateKey);
+  clean();
+  return signature;
+}
+
+/**
+ * This function is used to verify signature
+ */
+export function verifySignature(signature: Uint8Array, message: string, signingPublicKey: Uint8Array): boolean {
+  const sodium = _sodium;
+  return sodium.crypto_sign_verify_detached(signature, message, signingPublicKey);
 }

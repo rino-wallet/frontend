@@ -90,6 +90,10 @@ export interface UpdateUserPayload {
 export interface ResetPasswordRequestPayload {
   email: string;
 }
+
+export interface ResendActivationEmailPayload {
+  email: string;
+}
 export interface ResetPasswordConfirmPayload {
   uid: string;
   token: string;
@@ -103,6 +107,13 @@ export interface ResetPasswordConfirmPayload {
 export interface ConfirmEmailPayload {
   token: string;
   uid: string;
+}
+
+
+// Accept wallet sahre api interface
+export interface AcceptWalletSharePayload {
+  walletId: string;
+  shareId: string;
 }
 
 // Create wallet api interface
@@ -181,6 +192,8 @@ export interface UpdateWalletDetailsPayload {
   name?: string;
   requires_2fa?: boolean;
   code?: string;
+  is_public?: boolean;
+  public_slug?: string | null;
 }
 
 export type UpdateWalletDetailsResponse = Wallet;
@@ -262,6 +275,10 @@ export interface SyncMultisigResponse {
 
 export interface PersistWalletPayload {
   id: string;
+}
+
+export interface RequestWalletSharePayload {
+  email: string,
 }
 
 // share wallet api interface
@@ -359,4 +376,39 @@ export type SubaddressResponse = Subaddress;
 
 export interface FetchSubaddressResponse extends ListResponse {
   results: Subaddress[];
+}
+
+export interface AddSubaddressSignaturePayload {
+  signature: string;
+}
+export interface FetchPublicWalletDetailsResponse {
+  address: string;
+  balance: string;
+  created_at: string;
+  height: number;
+  locked_amounts: [];
+  name: string;
+  unlocked_balance: string;
+  updated_at: string;
+}
+
+export interface FetchPublicWalletTransactionDetailsPayload {
+  publicSlug: string;
+  transactionId: string;
+}
+
+
+export interface WalletShareRequest {
+  id: string;
+  wallet: string;
+  email: string;
+  isAccepted: boolean;
+  accessLevel: string;
+}
+
+
+
+// Fetch wallet share requests api interface
+export interface FetchWalletShareRequestsResponse extends ListResponse {
+  results: WalletShareRequest[];
 }

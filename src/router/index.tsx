@@ -8,8 +8,9 @@ const ConfirmEmail = Loadable({
   loader: () => import("../pages/ConfirmEmail" /* webpackChunkName: "ConfirmEmail" */),
   loading: Loading,
 });
-const Home = Loadable({
-  loader: () => import("../pages/Home" /* webpackChunkName: "Home" */),
+
+const AcceptWalletShare = Loadable({
+  loader: () => import("../pages/AcceptWalletShare" /* webpackChunkName: "NotFound" */),
   loading: Loading,
 });
 const Login = Loadable({
@@ -38,6 +39,10 @@ const NewWallet = Loadable({
 });
 const Wallet = Loadable({
   loader: () => import("../pages/Wallet" /* webpackChunkName: "Wallet" */),
+  loading: Loading,
+});
+const PublicWallet = Loadable({
+  loader: () => import("../pages/Wallet/PublicWallet" /* webpackChunkName: "PublicWallet" */),
   loading: Loading,
 });
 const ChangeEmailConfirm = Loadable({
@@ -90,6 +95,11 @@ const NotFound = Loadable({
   loading: Loading,
 });
 
+const ResendActivationEmail = Loadable({
+  loader: () => import("../pages/ResendActivationEmail" /* webpackChunkName: "ResendActivationEmail" */),
+  loading: Loading,
+});
+
 const defaultTitle = "RINO - Enterprise-Grade Monero Wallet";
 const defaultDescription = "RINO is a new type of Monero wallet. We are a non-custodial, enterprise-grade, multisig wallet.";
 const defaultMetaKeywords = "RINO, Monero, Wallet, Enterprise-Grade, Multisig, Convenient, Secure, Non-custodial";
@@ -121,15 +131,6 @@ const ROUTER_CONFIG: RouteType[] = [
     key: "emailConfirm",
   },
   {
-    path: ROUTES.home,
-    metaTitle: defaultTitle,
-    metaDescription: defaultDescription,
-    metaKeywords: defaultMetaKeywords,
-    metaOgImage: defaultMetaOgImage,
-    component: (props: any): ReactElement => <Home {...props} />,
-    key: "landing",
-  },
-  {
     path: ROUTES.login,
     metaTitle: defaultTitle,
     metaDescription: defaultDescription,
@@ -158,6 +159,16 @@ const ROUTER_CONFIG: RouteType[] = [
     component: (props: any): ReactElement => <ResetPassword {...props} />,
     key: "resetPassword",
     requiredFeatures: [browserFeatures.webassembly],
+  },
+  {
+    path: ROUTES.resendActivationEmail,
+    metaTitle: defaultTitle,
+    metaDescription: defaultDescription,
+    metaKeywords: defaultMetaKeywords,
+    metaOgImage: defaultMetaOgImage,
+    component: (props: any): ReactElement => <ResendActivationEmail {...props} />,
+    key: "resendActivationEmail",
+    requiredFeatures: [],
   },
   {
     path: ROUTES.keypair,
@@ -191,6 +202,16 @@ const ROUTER_CONFIG: RouteType[] = [
     key: "wallets",
   },
   {
+    path: ROUTES.acceptWalletShare,
+    metaTitle: defaultTitle,
+    metaDescription: defaultDescription,
+    metaKeywords: defaultMetaKeywords,
+    metaOgImage: defaultMetaOgImage,
+    component: (props: any): ReactElement => <AcceptWalletShare {...props} />,
+    isPrivate: false,
+    key: "acceptWalletShare",
+  },
+  {
     path: ROUTES.newWallet,
     metaTitle: defaultTitle,
     metaDescription: defaultDescription,
@@ -211,6 +232,17 @@ const ROUTER_CONFIG: RouteType[] = [
     isPrivate: true,
     key: "wallet details",
     requiredFeatures: [browserFeatures.webassembly],
+  },
+  {
+    path: ROUTES.publicWallet,
+    metaTitle: defaultTitle,
+    metaDescription: defaultDescription,
+    metaKeywords: defaultMetaKeywords,
+    metaOgImage: defaultMetaOgImage,
+    component: (props: any): ReactElement => <PublicWallet {...props} />,
+    isPrivate: false,
+    key: "public wallet",
+    requiredFeatures: [],
   },
   {
     path: ROUTES.changeEmail,

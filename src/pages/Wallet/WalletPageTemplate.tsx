@@ -5,17 +5,19 @@ import { piconeroToMonero, getWalletColor } from "../../utils";
 import routes from "../../router/routes";
 import { Button, Placeholder, FormatNumber, Tooltip, Icon } from "../../components"
 import {
-  FetchWalletDetailsPayload,
-  FetchWalletDetailsResponse,
-  FetchWalletTransactionsResponse, FetchWalletTransactionsThunkPayload,
+  PublicWallet,
   Wallet
 } from "../../types";
+import {
+  fetchWalletDetails as fetchPublicWalletDetailsThunk,
+} from "../../store/publicWalletSlice";
 import { useIsMobile, useQuery, useThunkActionCreator, useSelector } from "../../hooks";
 import { ReactComponent as IconUp } from "./arrow-up.svg";
 import { ReactComponent as IconDown } from "../../assets/arrow-down.svg";
 import { fetchWalletDetails as fetchWalletDetailsThunk } from "../../store/walletSlice";
 import { selectors } from "../../store/sessionSlice";
 import { fetchWalletTransactions as fetchWalletTransactionsThunk } from "../../store/transactionListSlice";
+import { fetchWalletTransactions as fetchPublicWalletTransactionsThunk } from "../../store/publicWalletTransactionListSlice";
 import { BalanceDetails } from "./WalletPageBalanceDetails";
 
 const WalletPlaceholder: React.FC = () => (
@@ -32,11 +34,13 @@ const WalletPlaceholder: React.FC = () => (
 interface Props {
   goBackCallback?: () => void;
   children?: ReactNode;
-  wallet: Wallet | null;
+  wallet: Wallet | PublicWallet | null;
   title?: string;
   id: string;
   loading?: boolean;
   showActions?: boolean;
+  viewOnly?: boolean;
+  isPublicWallet?: boolean;
 }
 
 export const WalletPageTemplate: React.FC<Props> = ({
@@ -47,9 +51,11 @@ export const WalletPageTemplate: React.FC<Props> = ({
   loading,
   title,
   showActions,
+  viewOnly,
+  isPublicWallet,
 }) => {
-  const fetchWalletDetails = useThunkActionCreator<FetchWalletDetailsResponse, FetchWalletDetailsPayload>(fetchWalletDetailsThunk);
-  const fetchWalletTransactions = useThunkActionCreator<FetchWalletTransactionsResponse, FetchWalletTransactionsThunkPayload>(fetchWalletTransactionsThunk);
+  const fetchWalletDetails = isPublicWallet ? useThunkActionCreator(fetchPublicWalletDetailsThunk) : useThunkActionCreator(fetchWalletDetailsThunk);
+  const fetchWalletTransactions = isPublicWallet ? useThunkActionCreator(fetchPublicWalletTransactionsThunk) : useThunkActionCreator(fetchWalletTransactionsThunk);
   const user = useSelector(selectors.getUser);
   const query = useQuery();
   const page = parseInt(query.get("page")) || 1;
@@ -58,25 +64,29 @@ export const WalletPageTemplate: React.FC<Props> = ({
   const isMobile = useIsMobile();
   const userCanCreateTransaction = wallet?.requires2Fa ? user?.is2FaEnabled : true;
   const insufficientBalance = !parseFloat(wallet?.unlockedBalance || "0");
-  const sendButtonDisabled = !userCanCreateTransaction;
+  const sendButtonDisabled = !userCanCreateTransaction || viewOnly;
   return (
     <section>
       <header className="flex items-center mb-8 w-full relative hidden md:flex">
         <div className="mr-6">
-          <Button
-            size={Button.size.BIG}
-            onClick={goBackCallback}
-            name="back-button"
-            icon
-          >
-            <div className="w-5 h-5 leading-5 text-2xl theme-text-secondary">&#x3c;</div>
-          </Button>
+          {
+            typeof goBackCallback === "function" && (
+              <Button
+                size={Button.size.BIG}
+                onClick={goBackCallback}
+                name="back-button"
+                icon
+              >
+                <div className="w-5 h-5 leading-5 text-2xl theme-text-secondary">&#x3c;</div>
+              </Button>
+            )
+          }
         </div>
         <h1 className="text-4xl font-bold flex-1 font-catamaran min-w-0 overflow-ellipsis overflow-hidden whitespace-nowrap" data-qa-selector="wallet-name">
           {title || wallet?.name}
         </h1>
         {
-          showActions && (
+          (showActions && !isPublicWallet) && (
             <div>
               <div className="flex justify-center space-x-5 md:justify-end">
                 {
@@ -86,6 +96,7 @@ export const WalletPageTemplate: React.FC<Props> = ({
                           content={`
                             ${!userCanCreateTransaction ? "This wallet requires 2FA for spending. " : ""}
                             ${insufficientBalance ? "Insufficient balance." : ""}
+                            ${viewOnly ? "This functionality is not available in read-only wallets." : ""}
                           `}
                         >
                           <Button size={Button.size.BIG} disabled={sendButtonDisabled} name="button-send">
@@ -101,7 +112,7 @@ export const WalletPageTemplate: React.FC<Props> = ({
                     </Link>
                   )
                 }
-                <Link to={`${generatePath(routes.wallet, { id })}/receive`}>
+                <Link to={`${generatePath(isPublicWallet ? routes.publicWallet : routes.wallet, { id })}/receive`}>
                   <Button size={Button.size.BIG} name="button-receive">
                     <div className="flex space-x-3 items-center">
                       <IconDown /> <span>Receive</span></div>
@@ -129,7 +140,7 @@ export const WalletPageTemplate: React.FC<Props> = ({
                       <div className="w-5 h-5 leading-5 text-2xl theme-text-secondary">&#x3c;</div>
                     </Button>
                   </div>
-                  <h1 className="text-4xl font-bold flex-1 font-catamaran min-w-0 overflow-ellipsis whitespace-nowrap" data-qa-selector="wallet-name-mobile">
+                  <h1 className="text-4xl font-bold flex-1 font-catamaran min-w-0 overflow-ellipsis overflow-hidden whitespace-nowrap" data-qa-selector="wallet-name-mobile">
                     {title || wallet?.name}
                   </h1>
                 </header>
@@ -153,6 +164,7 @@ export const WalletPageTemplate: React.FC<Props> = ({
                         onClick={(): void => {
                           setIsRefreshing(true);
                           fetchWalletTransactions({ walletId: id, page });
+                          //@ts-ignore
                           fetchWalletDetails({ id }).then((): void => { setTimeout((): void => setIsRefreshing(false), 300) });
                         }}
                         name="wallet-refresh"

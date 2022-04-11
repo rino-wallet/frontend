@@ -17,6 +17,7 @@ interface Props {
   hasPreviousPage: boolean;
   hasNextPage: boolean;
   fetchWalletTransactions: (data: FetchWalletTransactionsThunkPayload) => Promise<FetchWalletTransactionsResponse>
+  isPublicWallet?: boolean;
 }
 
 const Transactions: React.FC<Props> = ({
@@ -28,6 +29,7 @@ const Transactions: React.FC<Props> = ({
   hasPreviousPage,
   hasNextPage,
   fetchWalletTransactions,
+  isPublicWallet,
 }) => {
   const [isFirstLoading, setIsFirstLoading] = useState(true);
   const navigate = useNavigate();
@@ -80,7 +82,7 @@ const Transactions: React.FC<Props> = ({
                   transactions.map((transaction, index) => {
                     return (
                       <div key={transaction.id} className={index % 2 !== 0 ? "theme-bg-panel-second bg-opacity-50" : ""}>
-                         <TransactionItem walletId={walletId} transaction={transaction} />
+                         <TransactionItem isPublicWallet={isPublicWallet} walletId={walletId} transaction={transaction} />
                       </div>
                     )
                   })

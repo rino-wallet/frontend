@@ -76,6 +76,10 @@ const PrivateRouter = ({ isAuthenticated }: Props): React.ReactElement => (
       );
     })}
     <Route
+      path="/"
+      element={<Navigate to={ROUTES.wallets} />}
+    />
+    <Route
       path="*"
       element={<Layout page="404"><NotFound /></Layout>}
     />

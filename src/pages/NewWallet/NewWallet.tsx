@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import { format } from "date-fns";
 import { LocalWalletData, NewWalletPDFData } from "../../types";
 import SecurityTab from "./SecurityTab";
@@ -14,20 +14,13 @@ interface Props {
   stage: string;
   username: string;
   isWalletCreating: boolean;
-  setPreventNavigation: (value: boolean) => void;
 }
 
-const NewWalletContainer: React.FC<Props> = ({ createMultisigWallet, username, persistWallet, isKeypairSet, stage, isWalletCreating, setPreventNavigation }) => {
+const NewWalletContainer: React.FC<Props> = ({ createMultisigWallet, username, persistWallet, isKeypairSet, stage, isWalletCreating }) => {
   const [pdfData, setPdfData] = useState<NewWalletPDFData | null>(null)
   const [walletId, setWalletId] = useState<string>("");
   const isWalletCreated = !!pdfData;
-  useEffect(() => {
-    return (): void => {
-      setPreventNavigation(false);
-    };
-  }, []);
   function createNewWallet(name: string): Promise<any> {
-    setPreventNavigation(true);
     return createMultisigWallet({ name })
       .then((actionResponse) => {
         setWalletId(actionResponse.walletId);
@@ -43,7 +36,6 @@ const NewWalletContainer: React.FC<Props> = ({ createMultisigWallet, username, p
         });
         return actionResponse;
       }, (err) => {
-        setPreventNavigation(false);
         throw(err);
       });
   }

@@ -25,6 +25,8 @@ import { FormatNumber } from "./FormatNumber";
 import { Tooltip } from "./Tooltip";
 import { BeforeUnloadConfirm } from "./BeforeUnloadConfirm";
 import { Icon } from "./Icon";
+import { Prompt } from "./Prompt";
+import { DisableAutofill } from "./DisableAutofill";
 
 export {
   Loading,
@@ -54,4 +56,6 @@ export {
   Tooltip,
   BeforeUnloadConfirm,
   Icon,
+  Prompt,
+  DisableAutofill,
 }

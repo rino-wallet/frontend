@@ -15,7 +15,7 @@ import {
   ResetPasswordConfirmThunkPayload,
 } from "../types";
 import sessionApi from "../api/session";
-import { saveToken } from "./sessionUItils";
+import { saveToken, saveSigningPublicKey } from "./sessionUItils";
 import { createLoadingSelector, deriveUserKeys, generateExtraReducer, reencrypPrivateKey } from "../utils";
 import modals from "../modules/2FAModals";
 import { fullReset } from "./actions";
@@ -51,12 +51,20 @@ export const signUp = createAsyncThunk<SignUpResponse, SignUpThunkPayload>(
 export const signIn = createAsyncThunk<SignInResponse, SignInPayload>(
   "session/signIn",
   async (credentials: SignInPayload, { rejectWithValue, dispatch }) => {
+    let twoFACancelled = false;
     try {
       let response = await sessionApi.signIn(credentials);
       if (response.status === 202) {
-        const code = await modals.enter2FACode();
+        const code = await modals.enter2FACode().catch(
+          () => {
+             twoFACancelled = true;
+          }
+        )
+        if (twoFACancelled) {
+          return rejectWithValue({"2fa": "Two-factor Authentication code is missing."})
+        }
         response = await sessionApi.signIn(credentials, {
-          headers: { "X-RINO-2FA": code || "" },
+          headers: { "X-RINO-2FA": code },
         });
       }
       dispatch(setToken(response.data.token));
@@ -96,6 +104,7 @@ export const setupKeyPair = createAsyncThunk<SetUpKeyPairResponse, SetUpKeyPairT
         signing_public_key: Buffer.from(payload.signingPublicKey).toString("base64"),
         signature: Buffer.from(payload.signature).toString("base64"),
       });
+      dispatch(setSigningPublicKey(Buffer.from(payload.signingPublicKey).toString("base64")));
       dispatch(getCurrentUser());
       return response;  
     } catch(err: any) {
@@ -199,16 +208,16 @@ export const updateUser = createAsyncThunk<UserResponse, UpdateUserPayload>(
 interface State {
   token: string;
   password: string;
+  signingPublicKey: string;
   user: User | null;
-  preventNavigation: boolean;
   thunksInProgress: string[];
 }
 
 export const initialState: State = {
   token: "",
   password: "",
+  signingPublicKey: "",
   user: null,
-  preventNavigation: false,
   thunksInProgress: [],
 };
 
@@ -230,16 +239,16 @@ export const sessionSlice = createSlice({
     setPassword(state, action: PayloadAction<string>): void {
       state.password = action.payload;
     },
+    setSigningPublicKey(state, action: PayloadAction<string>): void {
+      state.signingPublicKey = action.payload;
+      saveSigningPublicKey(action.payload);
+    },
     reset(state): void {
       state.token = initialState.token;
       state.password = initialState.password;
       state.user = initialState.user;
       state.thunksInProgress = initialState.thunksInProgress;
-      state.preventNavigation = initialState.preventNavigation;
     },
-    setPreventNavigation(state, action: PayloadAction<boolean>): void {
-      state.preventNavigation = action.payload;
-    }
   },
   extraReducers: {
     ...generateExtraReducer(signUp),
@@ -261,7 +270,6 @@ export const sessionSlice = createSlice({
 export const selectors = {
   getToken: (state: RootState): string => state[SLICE_NAME].token,
   getPassword: (state: RootState): string => state[SLICE_NAME].password,
-  getPreventNavigation: (state: RootState): boolean => state[SLICE_NAME].preventNavigation,
   getUser: (state: RootState): User => state[SLICE_NAME].user,
   // thunk statuses
   pendingSignUp: createLoadingSelector(SLICE_NAME, signUp.pending.toString()),
@@ -284,4 +292,4 @@ function updateResponse (data: UserResponse): User {
   }
 }
 
-export const {setToken, switch2fa, setPassword, setPreventNavigation, reset} = sessionSlice.actions;
+export const {setToken, setSigningPublicKey, switch2fa, setPassword, reset} = sessionSlice.actions;

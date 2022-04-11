@@ -10,7 +10,7 @@ import {
 } from "../../../../types";
 import { Formik } from "formik";
 import routes from "../../../../router/routes";
-import { Label, Button, Input, AmountField, Collapsible, Radio, Tooltip } from "../../../../components";
+import { Label, Button, Input, AmountField, Collapsible, Radio, Tooltip, DisableAutofill } from "../../../../components";
 import { moneroToPiconero, piconeroToMonero } from "../../../../utils";
 import { transactionPriorities } from "../../../../constants";
 import { FormErrors } from "../../../../modules/FormErrors";
@@ -117,6 +117,7 @@ const TransactionForm: React.FC<Props> = ({
     }): React.ReactElement | null => {
       return !transactionPrepared ? (
         <form name="form-sendPayment" onSubmit={handleSubmit}>
+          <DisableAutofill />
           <div className="m-auto md:w-3/4">
             <div className="form-field">
               <Label label="To address" inline>

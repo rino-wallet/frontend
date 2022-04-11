@@ -9,7 +9,9 @@ import { Pagination } from "./Pagination";
 import { CopyArea } from "./CopyArea";
 import { enterPasswordModal } from "./EnterPasswordModal";
 import { showWarningModal } from "./WarningModal";
+import { showConfirmationModal } from "./ConfirmationModal";
 import PrivateRouter from "./PrivateRouter";
+import { showPreventNavigationModal } from "./PreventNavigationModal";
 
 export {
   PageTemplate,
@@ -24,5 +26,7 @@ export {
   CopyArea,
   enterPasswordModal,
   showWarningModal,
+  showConfirmationModal,
+  showPreventNavigationModal,
   PrivateRouter,
 };

@@ -28,6 +28,7 @@ import {generateExtraReducer, createLoadingSelector, getEncryptedKeys, deriveUse
 import { accessLevels, createNewWalletSteps, createTransactionSteps } from "../constants";
 import { decryptWalletKeys, encryptWalletKeys } from "../wallet/WalletService";
 import modals from "../modules/2FAModals";
+import {RequestWalletShareThunkPayload} from "../types/store";
 
 function updateShareWalletResponse(response: ShareWalletResponse): WalletMember {
   return {
@@ -39,16 +40,20 @@ function updateShareWalletResponse(response: ShareWalletResponse): WalletMember 
     updatedAt: response.createdAt,
   }
 }
-
-export const createNewWallet = createAsyncThunk<any, { name: string }>(
+export const createNewWallet = createAsyncThunk<any, { name: string, signal: any}>(
   "wallet/createNewWallet",
-  async ({name}, { rejectWithValue, dispatch, getState }) => {
+  async ({name, signal}, { rejectWithValue, dispatch, getState }) => {
+    signal.addEventListener("abort", () => {
+      console.log("Wallet Creation Aborted.");
+      rejectWithValue(signal);
+    });
     try {
       const { encryptionPublicKey } = (getState() as any).session.user;
       // create user and backup wallets
       dispatch(setStage(createNewWalletSteps.wallet1));
       console.log("Creating User and Backup wallets");
       await walletInstance.createWallets();
+      if(signal.aborted) return;
       // prepare multisigs for user and backup wallets
       dispatch(setStage(createNewWalletSteps.wallet2));
       // With this artificial delay we can show stage of creating wallet in the UI little bit longer time,
@@ -56,6 +61,7 @@ export const createNewWallet = createAsyncThunk<any, { name: string }>(
       await new Promise((resolve) => setTimeout(() => resolve({}), 1000));  
       console.log("Preparing multisigs");
       const preparedMultisigs = await walletInstance.prepareMultisigs();
+      if(signal.aborted) return;
       // create server wallet
       dispatch(setStage(createNewWalletSteps.wallet3));
       console.log("Creating Server Wallet and prepare multisig");
@@ -64,6 +70,7 @@ export const createNewWallet = createAsyncThunk<any, { name: string }>(
         user_multisig_info: preparedMultisigs[0],
         backup_multisig_info: preparedMultisigs[1],
       });
+      if(signal.aborted) return;
       // get the task result
       const createServerWalletTask = await pollTask(serverWallet.taskId);
       const preparedServerMultisig = createServerWalletTask.result.serverMultisigInfo;
@@ -73,13 +80,18 @@ export const createNewWallet = createAsyncThunk<any, { name: string }>(
       dispatch(setStage(createNewWalletSteps.wallet4));
       console.log("Making multisig for User and Backup wallets");
       const madeMultisigs = await walletInstance.makeMultisigs([...preparedMultisigs, preparedServerMultisig]);
+      if(signal.aborted) return;
       // Exchange multisig information for User and Backup wallets
       dispatch(setStage(createNewWalletSteps.wallet5));
       console.log("Exchanging multisig information for User and Backup wallets");
+      // With this artificial delay we can show stage of creating wallet in the UI little bit longer time,
+      // so user can read it
+      await new Promise((resolve) => setTimeout(() => resolve({}), 1000));
       const result = await walletInstance.exchangeMultisigKeys([...madeMultisigs, madeServerMultisig]);
       dispatch(setStage(createNewWalletSteps.wallet6));
       console.log("Finalizing server wallet");
       const encryptedWalletKeys =  await walletInstance.encryptWalletKeys(Uint8Array.from(Buffer.from(encryptionPublicKey, "base64")));
+      if(signal.aborted) return;
       const finalizedServerWallet = await walletsApi.finalizeWallet(walletId, {
         address: result.userResult.state.address,
         user_multisig_xinfo: madeMultisigs[0],
@@ -90,11 +102,14 @@ export const createNewWallet = createAsyncThunk<any, { name: string }>(
           enc_content: Buffer.from(encryptedWalletKeys).toString("base64"),
         }),
       });
+      if(signal.aborted) return;
       // Refresh wallets data and add to store
       const updatedWallets = await walletInstance.getWalletsData();
+      if(signal.aborted) return;
       // finalize server wallet
       await pollTask(finalizedServerWallet.taskId);
       walletInstance.closeWallet();
+      if(signal.aborted) return;
       dispatch(setStage(""));
       return { ...updatedWallets, walletId, walletPassword: Buffer.from(walletInstance.walletPassword).toString("hex") };
     } catch(err: any) {
@@ -328,18 +343,19 @@ export const deleteWallet = createAsyncThunk<DeleteWalletResponse, DeleteWalletP
     }
   },
 ); 
-
+export const requestWalletShare = createAsyncThunk<void, RequestWalletShareThunkPayload>(
+  "wallet/walletShareRequest",
+  async (data) => {
+    const requestBody = { email: data.email }
+      await walletsApi.requestWalletShare(data.wallet.id, requestBody, data.code ? { headers: { "X-RINO-2FA": data.code } } : undefined,);
+  }
+)
 export const shareWallet = createAsyncThunk<void, ShareWalletThunkPayload>(
   "wallet/shareWallet",
   async (data, { rejectWithValue, getState, dispatch }) => {
     const requestBody = { access_level: data.accessLevel, email: data.email, encrypted_keys: "" }
     try {
       if (data.accessLevel === accessLevels.admin.code) {
-        const publicKeys = await publicKeysApi.fetchPublicKey({ email: data.email });
-        // stop execution if there is no such user
-        if (!publicKeys.length) {
-          return;
-        }
         const { encryptionPublicKey, email, username, encPrivateKey } = (getState() as any).session.user;
         const { encryptionKey, clean: cleanDerivedKeys } = await deriveUserKeys(data.password, username);
         const encryptedWalletKeysJson = getEncryptedKeys(data.wallet, email);
@@ -349,6 +365,11 @@ export const shareWallet = createAsyncThunk<void, ShareWalletThunkPayload>(
           Uint8Array.from(Buffer.from(encPrivateKey.nonce, "base64")),
           encryptionKey,
         );
+        const publicKeys = await publicKeysApi.fetchPublicKey({ email: data.email });
+        // stop execution if there is no such user
+        if (!publicKeys.length) {
+          return;
+        }
         const { walletKeys, walletPassword } = await decryptWalletKeys(
           Uint8Array.from(Buffer.from(encryptedWalletKeys, "base64")),
           Uint8Array.from(Buffer.from(encryptionPublicKey, "base64")),

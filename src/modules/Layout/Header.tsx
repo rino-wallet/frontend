@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { NavLink } from "react-router-dom";
 import classNames from "classnames";
 import routes from "../../router/routes";
-import { Button, Logo } from "../../components";
-import { ReactComponent as Menu } from "./menu.svg";
-import { useIsMobile } from "../../hooks";
-import { PreventAction } from "../PreventAction";
+import { Logo, Icon } from "../../components";
+import { PUBLIC_APP_URLS_MAP } from "../../constants";
+import { Env } from "../../types";
 
 interface Props {
   signOut: () => Promise<void>;
@@ -14,105 +13,66 @@ interface Props {
 }
 
 export const Header: React.FC<Props> = ({ signOut, isAuthenticated, landing }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const isMobile = useIsMobile();
   const logoElement = landing ? <Logo white /> : <Logo />;
-  const linkClassNames = classNames("block mb-3 md:mb-0 md:inline-block md:px-5", { "text-white": landing });
+  const linkClassNames = classNames("block inline-block px-5 text-2xl md:text-lg cursor-pointer", { "text-white md:theme-text": landing });
   return (
-    <header className={classNames("px-4 py-6 font-catamaran md:px-16 text-lg uppercase md:flex relative z-10", { "text-white": isMobile && landing })}>
-      <div className="flex justify-between items-center ">
-        <div>
-          <PreventAction content={logoElement}>
-            <NavLink to={isAuthenticated ? routes.wallets : routes.home} className="d-block">
-              {logoElement}
-            </NavLink>
-          </PreventAction>
-        </div>
-        <div className="md:hidden">
-          <Button size={Button.size.MEDIUM} onClick={(): void => { setIsOpen((value) => !value); }} icon>
-            <Menu />
-          </Button>
-        </div>
+    <header className={classNames("px-4 py-6 font-catamaran md:px-16 text-lg uppercase flex relative z-10", { "text-white": landing })}>
+      <a href={isAuthenticated ? routes.wallets : PUBLIC_APP_URLS_MAP[process.env.REACT_APP_ENV as Env]} className="d-block">
+        {logoElement}
+      </a>
+      <div className="text-center flex items-center flex-1 justify-end">
+        <NavLink
+          id="nav-link-faq"
+          className={({ isActive }): string => `${linkClassNames} ${isActive ? "font-bold" : ""}`}
+          to={routes.faq}
+        >
+          <span className="hidden md:inline">FAQ</span> <Icon className="md:hidden" name="faq" />
+        </NavLink>
+        {
+          isAuthenticated ? (
+            <>
+              <NavLink
+                className={({ isActive }): string => `${linkClassNames} ${isActive ? "font-bold" : ""}`}
+                id="nav-link-wallets"
+                to={routes.wallets}
+              >
+                <span className="hidden md:inline">Wallets</span> <Icon className="md:hidden" name="wallets" />
+              </NavLink>
+              <NavLink
+                className={({ isActive }): string => `${linkClassNames} ${isActive ? "font-bold" : ""}`}
+                id="nav-link-settings"
+                to={routes.profile}
+              >
+                <span className="hidden md:inline">Account</span> <Icon className="md:hidden" name="account" />
+              </NavLink>
+              <button
+                className={`${linkClassNames} md:mb-0 uppercase`}
+                name="log-out"
+                onClick={signOut}
+              >
+                <span className="hidden md:inline">Logout</span> <Icon className="md:hidden" name="logout" />
+              </button>
+            </>
+          ) : (
+            <>
+              <NavLink
+                id="nav-link-login"
+                className={({ isActive }): string => `${linkClassNames} ${isActive ? "font-bold" : ""}`}
+                to={routes.login}
+              >
+                <span className="hidden md:inline">Login</span> <Icon className="md:hidden" name="login" />
+              </NavLink>
+              <NavLink
+                id="nav-link-register"
+                className={({ isActive }): string => `${linkClassNames} hidden lg:block ${isActive ? "font-bold" : ""}`}
+                to={routes.register}
+              >
+                <span>Sign up</span>
+              </NavLink>
+            </>
+          )
+        }
       </div>
-      {
-        (isOpen || !isMobile) && (
-          <div className="text-center md:flex items-center flex-1 md:justify-end">
-            {
-              isAuthenticated && (
-                <div className="md:flex-1">
-                  <PreventAction content="Wallets" className="block mb-3 md:mb-0 md:inline-block md:px-5" >
-                    <NavLink
-                      className={({ isActive }): string => isActive ? `${linkClassNames} font-bold` : linkClassNames}
-                      id="nav-link-wallets"
-                      to={routes.wallets}
-                    >
-                      Wallets
-                    </NavLink>
-                  </PreventAction>
-                  <PreventAction content="Account" className="block mb-3 md:mb-0 md:inline-block md:px-5" >
-                    <NavLink
-                      className={({ isActive }): string => isActive ? `${linkClassNames} font-bold` : linkClassNames}
-                      id="nav-link-settings"
-                      to={routes.profile}
-                      >
-                        Account
-                      </NavLink>
-                  </PreventAction>
-                </div>
-              )
-            }
-            {
-              isAuthenticated ? (
-                <>
-                  {
-                    landing && (
-                      <NavLink
-                        id="nav-link-faq"
-                        className={({ isActive }): string => `white-text-shadow block mb-3 md:mb-0 md:inline-block md:px-5 ${isActive ? "font-bold" : ""}`}
-                        to={routes.faq}
-                      >
-                        FAQ
-                      </NavLink>
-                    )
-                  }
-                  <PreventAction content="Logout" className="block mb-3 md:mb-0 md:inline-block p-0" >
-                    <button className="uppercase" name="log-out" onClick={signOut}>Logout</button>
-                  </PreventAction>
-                </>
-
-              ) : (
-                <div>
-                  {
-                    landing && (
-                      <NavLink
-                        id="nav-link-faq"
-                        className={({ isActive }): string => `white-text-shadow block mb-3 md:mb-0 md:inline-block md:px-5 ${isActive ? "font-bold" : ""}`}
-                        to={routes.faq}
-                      >
-                        FAQ
-                      </NavLink>
-                    )
-                  }
-                  <NavLink
-                    id="nav-link-register"
-                    className={({ isActive }): string => `white-text-shadow block mb-3 md:mb-0 md:inline-block md:px-5 ${isActive ? "font-bold" : ""}`}
-                    to={routes.register}
-                  >
-                    Sign Up
-                  </NavLink>
-                  <NavLink
-                    id="nav-link-login"
-                    className={({ isActive }): string => `white-text-shadow block mb-3 md:mb-0 md:inline-block md:px-5 ${isActive ? "font-bold" : ""}`}
-                    to={routes.login}
-                  >
-                    Login
-                  </NavLink>
-                </div>
-              )
-            }
-          </div>
-        )
-      }
     </header>
   )
 }

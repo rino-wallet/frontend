@@ -1,4 +1,4 @@
-FROM node:16.4.0-buster-slim
+FROM node:16.14.2-buster-slim
 
 ARG ENVIRON=prod
 

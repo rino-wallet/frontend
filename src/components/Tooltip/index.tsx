@@ -4,12 +4,13 @@ import "./styles.css";
 type Props = {
   content?: ReactNode;
   disable?: boolean;
+  className?: string;
 };
 
-export const Tooltip: React.FC<Props> = ({ content, children , disable = false}) => {
+export const Tooltip: React.FC<Props> = ({ content, children, disable = false, className }) => {
   return (
     <div
-      className="tooltip inline-block relative z-10"
+      className={`tooltip inline-block relative z-10 ${className}`}
     >
       {children}
       {disable ? null : <div

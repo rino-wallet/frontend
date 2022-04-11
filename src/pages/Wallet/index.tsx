@@ -1,23 +1,20 @@
 import React, { useEffect } from "react";
 import { Route, Routes, useParams, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch, useThunkActionCreator } from "../../hooks";
+import { useDispatch, useThunkActionCreator } from "../../hooks";
 import {
   FetchWalletDetailsResponse,
   FetchWalletDetailsPayload,
-  WalletMember,
-  Wallet,
-  User,
   FetchWalletSubaddressThunkPayload,
   FetchSubaddressResponse,
+  FetchWalletShareRequestsThunkPayload,
+  FetchWalletShareRequestsResponse,
 } from "../../types";
 import {
   fetchWalletDetails as fetchWalletDetailsThunk,
-  selectors,
 } from "../../store/walletSlice";
 import { fetchWalletSubaddress as fetchWalletSubaddressThunk } from "../../store/subaddressListSlice";
-import { selectors as sessionSelectors } from "../../store/sessionSlice";
+import { fetchWalletShareRequests as fetchWalletShareRequestsThunk } from "../../store/walletShareRequestListSlice";
 import routes from "../../router/routes";
-import { accessLevels } from "../../constants";
 import { changeLocation } from "../../store/actions";
 import TransactionDetails from "./TransactionDetails";
 import Transactions from "./Transactions";
@@ -35,22 +32,13 @@ interface Props {
   };
 }
 
-function isUserOwner(user: User, wallet: Wallet): boolean {
-  const m = user
-  && wallet
-  && wallet.members
-  .find((member: WalletMember) => [accessLevels.owner.title, accessLevels.admin.title].includes(member.accessLevel) && member.user === user.email);
-  return !!m;
-}
-
 const WalletPageContainer: React.FC<Props> = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const walletId = id  as string;
-  const wallet = useSelector(selectors.getWallet);
-  const user = useSelector(sessionSelectors.getUser);
   const fetchWalletDetails = useThunkActionCreator<FetchWalletDetailsResponse, FetchWalletDetailsPayload>(fetchWalletDetailsThunk);
   const fetchWalletSubaddress = useThunkActionCreator<FetchSubaddressResponse, FetchWalletSubaddressThunkPayload>(fetchWalletSubaddressThunk);
+  const fetchWalletShareRequests = useThunkActionCreator<FetchWalletShareRequestsResponse, FetchWalletShareRequestsThunkPayload>(fetchWalletShareRequestsThunk);
   const dispatch = useDispatch();
   useEffect(() => {
     return (): void => {
@@ -66,13 +54,13 @@ const WalletPageContainer: React.FC<Props> = () => {
         .catch(() => {
           navigate(routes.not_found);
         });
-      fetchWalletSubaddress({ walletId })
+      fetchWalletSubaddress({ walletId });
+      fetchWalletShareRequests({ walletId, page: 1 });
     })();
     return (): void => {
       clearInterval(intervalID);
     }
   }, []);
-  const canShare = isUserOwner(user, wallet);
   return (
     <Routes>
       <Route path="transactions" element={<Transactions walletId={walletId} />} />
@@ -80,7 +68,7 @@ const WalletPageContainer: React.FC<Props> = () => {
       <Route path="send" element={<SendPayment walletId={walletId} />} />
       <Route path="settings" element={<Settings walletId={walletId} />} />
       <Route path="receive" element={<ReceivePayment walletId={walletId} />} />
-      <Route path="users" element={<Users canShare={canShare} walletId={walletId} />} />
+      <Route path="users" element={<Users walletId={walletId} />} />
     </Routes>
   )
 }

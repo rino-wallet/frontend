@@ -20,5 +20,7 @@
   "address": "59JLVpgAksCUakjQneamP3SPvAMDm2LNeTR1fjeCyMsJXjot42CYnotbWNsFfepujfccg9kt3FKsM6WL1Tyngj9HJ2vABLG",
   "balance": "0",
   "unlocked_balance": "0",
-  "status": "FINALIZED"
+  "status": "FINALIZED",
+  "is_public": false,
+  "public_slug": "wallet"
 }

@@ -1400,10 +1400,10 @@
     redux-thunk "^2.4.1"
     reselect "^4.1.5"
 
-"@rino-wallet/monero-javascript@^0.0.28":
-  version "0.0.28"
-  resolved "https://gitlab.cryptosphere-systems.com/api/v4/projects/621/packages/npm/@rino-wallet/monero-javascript/-/@rino-wallet/monero-javascript-0.0.28.tgz#693f16e2ad7c0add8d1187bf8d43b666e911d304"
-  integrity sha1-aT8W4q18Ct2NEYe/jUO2ZukR0wQ=
+"@rino-wallet/monero-javascript@0.0.30":
+  version "0.0.30"
+  resolved "https://gitlab.cryptosphere-systems.com/api/v4/projects/621/packages/npm/@rino-wallet/monero-javascript/-/@rino-wallet/monero-javascript-0.0.30.tgz#b5352926765608b5fd441ebb49eb5bbc2a31055c"
+  integrity sha1-tTUpJnZWCLX9RB67SetbvCoxBVw=
   dependencies:
     "@babel/core" "^7.14.6"
     ajv "^6.12.6"
@@ -1858,7 +1858,14 @@
   resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha1-7ihweulOEdK4J7y+UnC86n8+ce4=
 
-"@types/libsodium-wrappers@^0.7.9":
+"@types/libsodium-wrappers-sumo@^0.7.5":
+  version "0.7.5"
+  resolved "https://registry.yarnpkg.com/@types/libsodium-wrappers-sumo/-/libsodium-wrappers-sumo-0.7.5.tgz#c5191fc28d44edd39583552bd1855f6b7b77ca88"
+  integrity sha512-CL7rmLxw28H/FpFUnMu5BzzRsE+ICxHBpRoaY8ks+3HMsCJdA/Vp809sj+qNhw64Ht0OEnfoN3BC1sHwagoVaw==
+  dependencies:
+    "@types/libsodium-wrappers" "*"
+
+"@types/libsodium-wrappers@*", "@types/libsodium-wrappers@^0.7.9":
   version "0.7.9"
   resolved "https://registry.yarnpkg.com/@types/libsodium-wrappers/-/libsodium-wrappers-0.7.9.tgz#89c3ad2156d5143e64bce86cfeb0045a983aeccc"
   integrity sha512-LisgKLlYQk19baQwjkBZZXdJL0KbeTpdEnrAfz5hQACbklCY0gVFnsKUyjfNWF1UQsCSjw93Sj5jSbiO8RPfdw==
@@ -6406,6 +6413,18 @@ levn@~0.3.0:
   dependencies:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
+
+libsodium-sumo@^0.7.0:
+  version "0.7.10"
+  resolved "https://registry.yarnpkg.com/libsodium-sumo/-/libsodium-sumo-0.7.10.tgz#169756dbf32088f42e30dfb0a7860074663fb0b4"
+  integrity sha512-xvYHwrTPvw9EFvX77x6gFiB7vdTv4+9xpM5DCkg9FJwysHoBO7sYXxXjy5L2gQSuWaINbtjBUry9eCg/+nYwCA==
+
+libsodium-wrappers-sumo@^0.7.10:
+  version "0.7.10"
+  resolved "https://registry.yarnpkg.com/libsodium-wrappers-sumo/-/libsodium-wrappers-sumo-0.7.10.tgz#592b0cc714ddf3954f93e2292ff3aadebd2b282b"
+  integrity sha512-1noz8Mcl/LUzO/iSO/FJzoJyIaPwxl+/+E4CoTIXtsPiEEXQx2sxalmrVWxteLpynqgX0ASo28ChB9NEVRh0Pg==
+  dependencies:
+    libsodium-sumo "^0.7.0"
 
 libsodium-wrappers@^0.7.9:
   version "0.7.9"

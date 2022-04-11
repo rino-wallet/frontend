@@ -5,6 +5,7 @@ import { useCopy } from "./useCopy";
 import { useWindowSize } from "./useWindowSize";
 import { useIsMobile } from "./useIsMobile";
 import { useQuery } from "./useQuery";
+import { usePrompt } from "./usePrompt";
 
 export {
   useSelector,
@@ -14,4 +15,5 @@ export {
   useWindowSize,
   useIsMobile,
   useQuery,
+  usePrompt,
 };

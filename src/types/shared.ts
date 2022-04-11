@@ -89,6 +89,8 @@ export type AsyncActionStatuses = typeof asyncActionStatusesList[number];
 
 export type TaskStatus = "COMPLETED" | "FAILED" | "CREATED";
 
+export type Env = "production" | "test" | "staging" | "develop";
+
 export type ApiErrorRaw = Record<string, string | string[]>
 
 export type ApiError = Record<string, string>

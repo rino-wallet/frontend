@@ -4,7 +4,7 @@ import * as yup from "yup";
 import { Link, useNavigate, generatePath } from "react-router-dom";
 import ROUTES from "../../router/routes";
 import { SignInPayload, SignInResponse, UserResponse } from "../../types";
-import { deriveUserKeys } from "../../utils";
+import { deriveUserKeys, getSigningKeys } from "../../utils";
 import { FormErrors } from "../../modules/index";
 import { Label, Input, Button, Panel, Logo } from "../../components";
 
@@ -19,8 +19,9 @@ interface Props {
   login: (data: SignInPayload) => Promise<SignInResponse>
   getCurrentUser: () => Promise<UserResponse>
   setPassword: (password: string) => void;
+  setSigningPublicKey: (key: string) => void;
 }
-const LoginPage: React.FC<Props> = ({ login, setPassword, getCurrentUser }) => {
+const LoginPage: React.FC<Props> = ({ login, setPassword, getCurrentUser, setSigningPublicKey }) => {
   const navigate = useNavigate();
   return (
     <Panel>
@@ -43,9 +44,8 @@ const LoginPage: React.FC<Props> = ({ login, setPassword, getCurrentUser }) => {
           ): Promise<SignInResponse | undefined> => {
             localStorage.removeItem("_expiredTime");
             try {
-              const { authKey, clean } = await deriveUserKeys(values.password, values.username);
+              const { authKey, encryptionKey, clean } = await deriveUserKeys(values.password, values.username);
               const password = Buffer.from(authKey).toString("hex");
-              clean();
               const loginResponse = await login({
                 username: values.username,
                 password,
@@ -55,6 +55,9 @@ const LoginPage: React.FC<Props> = ({ login, setPassword, getCurrentUser }) => {
                 setPassword(values.password);
                 navigate(ROUTES.keypair);
               } else {
+                const { signingPublicKey } = await getSigningKeys(JSON.parse(user.keypair?.encPrivateKey), encryptionKey);
+                setSigningPublicKey(Buffer.from(signingPublicKey).toString("base64"));
+                clean();
                 navigate(ROUTES.wallets);
               }
               return loginResponse;
@@ -101,16 +104,27 @@ const LoginPage: React.FC<Props> = ({ login, setPassword, getCurrentUser }) => {
                 </Label>
               </div>
               <div className="form-field">
-                <Link
-                  className="theme-link"
-                  id="forgot-password"
-                  to={generatePath(ROUTES.resetPassword, {"*": "reset"})}
-                >
-                  I forgot my password
-                </Link>
+                <p className="mb-1">
+                  <Link
+                    className="theme-link"
+                    id="forgot-password"
+                    to={generatePath(ROUTES.resetPassword, {"*": "reset"})}
+                  >
+                    I forgot my password
+                  </Link>
+                </p>
+                <p>
+                  <Link
+                    className="theme-link"
+                    id="forgot-password"
+                    to={ROUTES.resendActivationEmail}
+                  >
+                    I did not receive my activation email
+                  </Link>
+                </p>
               </div>
               <FormErrors errors={errors} />
-              <div className="mt-10">
+              <div className="mt-10 mb-3">
                 <Button
                   disabled={!isValid || isSubmitting}
                   type="submit"
@@ -122,6 +136,12 @@ const LoginPage: React.FC<Props> = ({ login, setPassword, getCurrentUser }) => {
                 >
                   Login
                 </Button>
+              </div>
+              <div className="theme-text flex justify-center mb-3">
+                Don't have an account?
+                <Link id="link-login" className="theme-link ml-1" to={ROUTES.register}>
+                    Create account
+                </Link>
               </div>
             </form>
           )}

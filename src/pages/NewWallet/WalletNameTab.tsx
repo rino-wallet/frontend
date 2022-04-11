@@ -1,7 +1,7 @@
 import React from "react";
 import * as yup from "yup";
 import { Formik } from "formik";
-import { Label, Input, Button, BeforeUnloadConfirm } from "../../components";
+import { Label, Input, Button, Prompt } from "../../components";
 import { FormErrors } from "../../modules/index";
 import CreatingWallet from "./CreatingWallet";
 
@@ -50,7 +50,11 @@ const WalletNameTab: React.FC<Props> = ({ isKeypairSet, createNewWallet, isWalle
         touched,
       }): React.ReactElement => (
         <div id="wallet-name-tab-content" className="md:w-3/4">
-          <BeforeUnloadConfirm needConfirmation={!!values.name} />
+          <Prompt
+            when={!!values.name}
+            title="Wallet creation in progress."
+            message="If you interrupt the wallet creation process, no wallet is created."
+          />
           <form onSubmit={handleSubmit}>
             <div className="form-field">
               <Label label="Wallet name" inline>
