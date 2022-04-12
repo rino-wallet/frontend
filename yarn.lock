@@ -1402,8 +1402,8 @@
 
 "@rino-wallet/monero-javascript@0.0.30":
   version "0.0.30"
-  resolved "https://gitlab.cryptosphere-systems.com/api/v4/projects/621/packages/npm/@rino-wallet/monero-javascript/-/@rino-wallet/monero-javascript-0.0.30.tgz#b5352926765608b5fd441ebb49eb5bbc2a31055c"
-  integrity sha1-tTUpJnZWCLX9RB67SetbvCoxBVw=
+  resolved "https://registry.yarnpkg.com/@rino-wallet/monero-javascript/-/monero-javascript-0.0.30.tgz#b5352926765608b5fd441ebb49eb5bbc2a31055c"
+  integrity sha512-hqV98u54UZcvmGg9Kw6x56wrbvOfDHY2tr65PIjVOBgRvwxnGgwapF82F78dJ1lpBEdhO0vcydzb/rme/Ns6Bw==
   dependencies:
     "@babel/core" "^7.14.6"
     ajv "^6.12.6"
