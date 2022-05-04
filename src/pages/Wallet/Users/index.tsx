@@ -1,27 +1,40 @@
 import React from "react";
-import { useSelector, useThunkActionCreator } from "../../../hooks";
-import { removeWalletAccess as removeWalletAccessThunk,  shareWallet as shareWalletThunk, requestWalletShare as requestWalletShareThunk, selectors } from "../../../store/walletSlice";
-import { selectors as sessionSelectors } from "../../../store/sessionSlice";
-import { fetchWalletShareRequests as fetchWalletShareRequestsThunk, selectors as walletShareSelectors } from "../../../store/walletShareRequestListSlice";
+import { useParams } from "react-router-dom";
+import {useSelector, useThunkActionCreator} from "../../../hooks";
+import {
+  removeWalletAccess as removeWalletAccessThunk,
+  shareWallet as shareWalletThunk,
+  requestWalletShare as requestWalletShareThunk,
+  selectors
+} from "../../../store/walletSlice";
+import {selectors as sessionSelectors} from "../../../store/sessionSlice";
+import {
+  fetchWalletShareRequests as fetchWalletShareRequestsThunk,
+  selectors as walletShareRequestsSelectors,
+} from "../../../store/walletShareRequestListSlice";
 import Users from "./Users";
-import { WalletLayout } from "../WalletLayout";
-import { checkAccessLevel } from "../../../utils";
-import { ShareWalletThunkPayload } from "../../../types";
+import {WalletLayout} from "../WalletLayout";
+import {checkAccessLevel} from "../../../utils";
+import {ShareWalletThunkPayload} from "../../../types";
 
 interface Props {
   walletId: string;
+  refresh: () => Promise<void>;
 }
 
-const UsersContainer: React.FC<Props> = ({ walletId }) => {
+const UsersContainer: React.FC<Props> = ({ walletId, refresh }) => {
+  const { shareId } = useParams();
   const wallet = useSelector(selectors.getWallet);
   const user = useSelector(sessionSelectors.getUser);
-  const walletShareRequests = useSelector(walletShareSelectors.getWalletShareRequests)
-  const getWalletShareRequests = useThunkActionCreator(fetchWalletShareRequestsThunk)
+  const loading = useSelector(walletShareRequestsSelectors.pendingFetchWalletShareRequests);
+  const walletShareRequests = useSelector(walletShareRequestsSelectors.getWalletShareRequests)
+  const shareRequestListMetaData = useSelector(walletShareRequestsSelectors.getListMetaData);
+  const fetchWalletShareRequests = useThunkActionCreator(fetchWalletShareRequestsThunk)
   const accessLevel = checkAccessLevel(user, wallet);
   const shareWallet = useThunkActionCreator(shareWalletThunk);
-  const shareWalletAndRefresh = (data: ShareWalletThunkPayload): void => {
-    shareWallet(data).then(() => {
-      getWalletShareRequests({walletId, page: 1});
+  const shareWalletAndRefresh = (data: ShareWalletThunkPayload): Promise<void> => {
+    return shareWallet(data).then(() => {
+      fetchWalletShareRequests({walletId, page: 1});
     });
   }
   const requestWalletShare = useThunkActionCreator(requestWalletShareThunk)
@@ -34,10 +47,15 @@ const UsersContainer: React.FC<Props> = ({ walletId }) => {
             accessLevel={accessLevel}
             wallet={wallet}
             user={user}
+            finalizeShareId={shareId}
             removeWalletAccess={removeWalletAccess}
             requestWalletShare={requestWalletShare}
             walletShareRequests={walletShareRequests}
             shareWallet={shareWalletAndRefresh}
+            loading={loading}
+            refresh={refresh}
+            shareRequestListMetaData={shareRequestListMetaData}
+            fetchWalletShareRequests={fetchWalletShareRequests}
           />
         ) : null
       }

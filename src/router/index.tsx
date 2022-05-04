@@ -100,6 +100,11 @@ const ResendActivationEmail = Loadable({
   loading: Loading,
 });
 
+const Logout = Loadable({
+  loader: () => import("../pages/Logout" /* webpackChunkName: "Logout" */),
+  loading: Loading,
+});
+
 const defaultTitle = "RINO - Enterprise-Grade Monero Wallet";
 const defaultDescription = "RINO is a new type of Monero wallet. We are a non-custodial, enterprise-grade, multisig wallet.";
 const defaultMetaKeywords = "RINO, Monero, Wallet, Enterprise-Grade, Multisig, Convenient, Secure, Non-custodial";
@@ -333,6 +338,16 @@ const ROUTER_CONFIG: RouteType[] = [
     component: (props: any): ReactElement => <NotFound {...props} />,
     isPrivate: false,
     key: "404",
+  },
+  {
+    path: ROUTES.logout,
+    metaTitle: defaultTitle,
+    metaDescription: defaultDescription,
+    metaKeywords: defaultMetaKeywords,
+    metaOgImage: defaultMetaOgImage,
+    component: (props: any): ReactElement => <Logout {...props} />,
+    isPrivate: false,
+    key: "logout",
   },
 ];
 

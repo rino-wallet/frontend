@@ -115,7 +115,7 @@ describe("WalletSlice", () => {
     store.dispatch(addMember({
       id: "user id",
       user: "user@emai.com",
-      accessLevel: "30",
+      accessLevel: "Admin",
       encryptedKeys: "",
       createdAt: "",
       updatedAt: "",

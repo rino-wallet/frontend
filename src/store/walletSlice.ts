@@ -345,10 +345,15 @@ export const deleteWallet = createAsyncThunk<DeleteWalletResponse, DeleteWalletP
 ); 
 export const requestWalletShare = createAsyncThunk<void, RequestWalletShareThunkPayload>(
   "wallet/walletShareRequest",
-  async (data) => {
+  async (data, {rejectWithValue}) => {
     const requestBody = { email: data.email }
+    try{
       await walletsApi.requestWalletShare(data.wallet.id, requestBody, data.code ? { headers: { "X-RINO-2FA": data.code } } : undefined,);
-  }
+    }
+    catch(err:any){
+      return rejectWithValue(err?.data || err)
+    }
+    }
 )
 export const shareWallet = createAsyncThunk<void, ShareWalletThunkPayload>(
   "wallet/shareWallet",
@@ -383,8 +388,14 @@ export const shareWallet = createAsyncThunk<void, ShareWalletThunkPayload>(
         });
         cleanDerivedKeys();
         cleanDecryptedKeys();
-        const response = await walletsApi.shareWallet(data.wallet.id, requestBody, data.code ? { headers: { "X-RINO-2FA": data.code } } : undefined,);
-        dispatch(addMember(updateShareWalletResponse(response)));
+        if( data.update && data.member ) {
+          const response = await walletsApi.updateWalletAccess(data.wallet.id, data.member.id, requestBody, data.code ? { headers: { "X-RINO-2FA": data.code } } : undefined,);
+          await dispatch(removeMember(data.member.id));
+          dispatch(addMember(updateShareWalletResponse(response)));
+        } else {
+          const response = await walletsApi.shareWallet(data.wallet.id, requestBody, data.code ? { headers: { "X-RINO-2FA": data.code } } : undefined,);
+          dispatch(addMember(updateShareWalletResponse(response)));
+        }
       } else {
         const response = await walletsApi.shareWallet(data.wallet.id, requestBody, data.code ? { headers: { "X-RINO-2FA": data.code } } : undefined,);
         dispatch(addMember(updateShareWalletResponse(response)));

@@ -2,23 +2,35 @@ import { useFormik } from "formik";
 import React from "react";
 import * as yup from "yup";
 import { createModal } from "promodal";
-import { ShareWalletThunkPayload, ShareWalletResponse, Wallet } from "../../../types";
+import { ShareWalletThunkPayload, ShareWalletResponse, Wallet, WalletMember } from "../../../types";
 import { accessLevels } from "../../../constants";
 import { FormErrors, Modal } from "../../../modules/index";
 import { Button, Label, Input, BindHotKeys, Tooltip, Select, DisableAutofill } from "../../../components";
+import { IconName } from "../../../components/Icon";
 import { enter2FACode } from "../../../modules/2FAModals";
 import { ReactComponent as InfoIcon } from "../SendPayment/TransactionForm/16px_info.svg";
+import { ObjectSchema } from "yup";
 
-const validationSchema = yup.object().shape({
+
+const getValidationSchema = (member: WalletMember | null = null): ObjectSchema<any> => yup.object().shape({
   password: yup.string().when("access_level", {
     is: (access_level: string) => parseInt(access_level, 10) === accessLevels.admin.code,
     then:  yup.string().required("This field is required.")
   }),
-  access_level: yup.string().required("This field is required."),
+  access_level: yup.string()
+    .test(
+    "test-access-level-same",
+    `User already has ${member?.accessLevel} access.`,
+    (value) => {
+      const currentAccessLevel = Object.values(accessLevels).find((val: any) => val.code === parseInt(value || "0", 10));
+      return member !== null ? member.accessLevel !== currentAccessLevel?.title : true
+    },
+  ).required("This field is required."),
 });
 
 interface Props {
   wallet: Wallet;
+  member: WalletMember;
   is2FaEnabled: boolean;
   submit: (data: { email: string; password: string; accessLevel: number }) => Promise<void>;
   cancel: () => void;
@@ -26,7 +38,14 @@ interface Props {
   shareWallet: (data: ShareWalletThunkPayload) => Promise<ShareWalletResponse>;
 }
 
-const AddWalletMember: React.FC<Props> = ({ wallet, is2FaEnabled, email, shareWallet, cancel, submit }) => {
+const iconsMap: { [key: string]: string } = {
+  "10": "account",
+  "20": "settings",
+  "30": "arrow-down-bold",
+  "40": "eye",
+}
+
+const WalletMemberModal: React.FC<Props> = ({ wallet, member, is2FaEnabled, email, shareWallet, cancel, submit }) => {
   const {
     isValid,
     dirty,
@@ -38,7 +57,7 @@ const AddWalletMember: React.FC<Props> = ({ wallet, is2FaEnabled, email, shareWa
     touched,
     isSubmitting,
   } = useFormik({
-    validationSchema,
+    validationSchema: getValidationSchema(member),
     initialValues: {
       password: "",
       access_level: "",
@@ -55,9 +74,11 @@ const AddWalletMember: React.FC<Props> = ({ wallet, is2FaEnabled, email, shareWa
           password: formValues.password,
           email: email,
           accessLevel: parseInt(formValues.access_level, 10),
+          update: !!member,
           wallet,
           code,
-        });
+          member,
+        })
         submit({
           password: formValues.password,
           email: email,
@@ -72,12 +93,12 @@ const AddWalletMember: React.FC<Props> = ({ wallet, is2FaEnabled, email, shareWa
   });
   return (
     <BindHotKeys callback={handleSubmit} rejectCallback={cancel}>
-      <Modal title="Add Wallet User" onClose={cancel} showCloseIcon>
+      <Modal title={member ? "Change wallet access" : "Add Wallet User"} onClose={cancel} showCloseIcon>
         <form onSubmit={handleSubmit}>
           <DisableAutofill />
           <Modal.Body>
             <div className="form-field">
-              <p>You’re going to share access to {wallet.name}.</p>
+              <p>You’re going to {member ? "change" : "share"} access to {wallet.name}{member ? ` for ${email}.` : "."}</p>
             </div>
             <div className="form-field">
               <Label label={<div>
@@ -105,6 +126,7 @@ const AddWalletMember: React.FC<Props> = ({ wallet, is2FaEnabled, email, shareWa
             <div className="form-field">
               <Label label="Access level">
                 <Select
+                  icon={iconsMap[values.access_level] as IconName}
                   name="access_level"
                   value={values.access_level}
                   onChange={handleChange}
@@ -166,7 +188,7 @@ const AddWalletMember: React.FC<Props> = ({ wallet, is2FaEnabled, email, shareWa
               loading={isSubmitting}
               variant={Button.variant.PRIMARY_LIGHT}
             >
-              Add user
+              {member ? "Change" : "Add user"}
             </Button>
           </Modal.Actions>
         </form>
@@ -175,4 +197,4 @@ const AddWalletMember: React.FC<Props> = ({ wallet, is2FaEnabled, email, shareWa
   );
 };
 
-export default createModal(AddWalletMember);
+export default createModal(WalletMemberModal);

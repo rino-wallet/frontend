@@ -155,6 +155,7 @@ const ComponentsPage: React.FC = () => {
         <Label label="Select">
           <Select
             value={selectValue}
+            icon="eye"
             onChange={(e: React.ChangeEvent<HTMLSelectElement>): void => setSelectValue(e.target.value)}
           >
             <option value=""></option>

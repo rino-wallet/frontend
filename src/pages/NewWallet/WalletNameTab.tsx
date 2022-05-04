@@ -51,7 +51,7 @@ const WalletNameTab: React.FC<Props> = ({ isKeypairSet, createNewWallet, isWalle
       }): React.ReactElement => (
         <div id="wallet-name-tab-content" className="md:w-3/4">
           <Prompt
-            when={!!values.name}
+            when={!!values.name && !Object.keys(errors).length}
             title="Wallet creation in progress."
             message="If you interrupt the wallet creation process, no wallet is created."
           />

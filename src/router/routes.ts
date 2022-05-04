@@ -21,4 +21,5 @@ export default {
   cookie_policy: "/cookie-policy",
   faq: "/faq",
   not_found: "/404",
+  logout: "/logout",
 };

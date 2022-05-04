@@ -1,6 +1,6 @@
 
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import { generatePath, useNavigate } from "react-router-dom";
 import {
   RemoveWalletAccessPayload,
   RemoveWalletAccessResponse,
@@ -10,16 +10,18 @@ import {
   Wallet,
   WalletShareRequest,
   WalletMember,
+  FetchWalletShareRequestsThunkPayload,
+  FetchWalletShareRequestsResponse,
 } from "../../../types";
-import { Panel, Button, Icon } from "../../../components";
-import { showSuccessModal } from "../../../modules/index";
+import { Panel, Button, Icon, WalletRole } from "../../../components";
+import {Pagination, showSuccessModal} from "../../../modules/index";
 import WalletMemberLayout from "./WalletMemberLayout";
 import WalletMemberPlaceholder from "./WalletMemberPlaceholder";
 import AddWalletShareRequestModal from "./AddWalletShareRequest";
 import removeWalletMember from "./RemoveWalletMember"
 import routes from "../../../router/routes"
 import { accessLevels } from "../../../constants";
-import AddWalletMemberModal from "./AddWalletMember";
+import WalletMemberModal from "./WalletMember";
 
 
 interface AccessLevelInt {
@@ -28,19 +30,24 @@ interface AccessLevelInt {
   isViewOnly: () => boolean;
 }
 
-
-function showDeleteButton(currentUserAccess: AccessLevelInt, currentUser: User, walletMember: WalletMember): boolean {
+function showDeleteButton(currentUserAccess: AccessLevelInt, walletMember: WalletMember): boolean {
   switch (walletMember.accessLevel) {
-    case accessLevels.viewOnly.title: {
-      return currentUserAccess.isAdmin() || currentUserAccess.isOwner() || walletMember.user === currentUser.email;
+    case accessLevels.viewOnly.value: {
+      return currentUserAccess.isAdmin() || currentUserAccess.isOwner();
     }
-    case accessLevels.admin.title: {
+    case accessLevels.admin.value: {
       return currentUserAccess.isAdmin() || currentUserAccess.isOwner();
     }
     default:
       return false;
   }
 }
+interface ListMetadata {
+  pages: number,
+  hasPreviousPage: boolean,
+  hasNextPage: boolean,
+}
+
 interface Props {
   wallet: Wallet;
   user: User;
@@ -49,16 +56,42 @@ interface Props {
   requestWalletShare: (data: RequestWalletShareThunkPayload) => Promise<void>;
   removeWalletAccess: (data: RemoveWalletAccessPayload) => Promise<RemoveWalletAccessResponse>;
   walletShareRequests: WalletShareRequest[];
+  shareRequestListMetaData: ListMetadata;
+  fetchWalletShareRequests: (data: FetchWalletShareRequestsThunkPayload) => Promise<FetchWalletShareRequestsResponse>
+  finalizeShareId?: string;
+  loading: boolean;
+  refresh: () => Promise<void>;
 }
 
-const Users: React.FC<Props> = ({ accessLevel, wallet, user, shareWallet, walletShareRequests, requestWalletShare, removeWalletAccess }) => {
+const Users: React.FC<Props> = ({ accessLevel, wallet, user, shareWallet, walletShareRequests, shareRequestListMetaData, requestWalletShare, fetchWalletShareRequests, finalizeShareId = null, removeWalletAccess, refresh, loading }) => {
   const navigate = useNavigate();
+  const [page, setPage] = useState(1);
   const canShare = accessLevel.isAdmin() || accessLevel.isOwner();
+  const showWalletShareRequestModal = (shareRequest: WalletShareRequest): void => WalletMemberModal({ wallet, is2FaEnabled: user.is2FaEnabled, email: shareRequest.email, shareWallet })
+  .then(async ({ email }: { email: string; password: string; accessLevel: number }) => {
+    showSuccessModal({
+      goBackCallback: () => { console.log("User added."); },
+      title: "User added",
+      message: (
+        <div>
+          <p className="mb-3">{`User ${email} was added to the wallet.`}</p>
+        </div>
+      ),
+      buttonText: "OK",
+    });
+    await refresh();
+    if (finalizeShareId) {
+      navigate(`${generatePath(routes.wallet, {id: wallet.id})}/users`)
+    }
+  });
   async function onAddUserClick(): Promise<void> {
     AddWalletShareRequestModal({ wallet, is2FaEnabled: user.is2FaEnabled, requestWalletShare })
     .then(async ({ email }: { email: string; password: string; accessLevel: number }) => {
       showSuccessModal({
-        goBackCallback: () => { console.log("Share request created."); },
+        goBackCallback: () => {
+          console.log("Share request created.");
+          refresh();
+        },
         title: "Invite Sent",
         message: (
           <div>
@@ -70,6 +103,19 @@ const Users: React.FC<Props> = ({ accessLevel, wallet, user, shareWallet, wallet
       });
     });
   }
+
+  const changePage = (pageNumber: number): void => {
+    fetchWalletShareRequests({walletId: wallet.id, page: pageNumber});
+    setPage(pageNumber);
+  }
+  useEffect(() => {
+    if (finalizeShareId) {
+      const shareRequest = walletShareRequests.find(request => request.id === finalizeShareId);
+      if (shareRequest) {
+        showWalletShareRequestModal(shareRequest);
+      }
+    }
+  }, [walletShareRequests])
   return (
     <div>
       <Panel
@@ -100,12 +146,44 @@ const Users: React.FC<Props> = ({ accessLevel, wallet, user, shareWallet, wallet
                 return (
                   <div key={member.id} className={index % 2 !== 0 ? "theme-bg-panel-second bg-opacity-50" : ""}>
                       <WalletMemberLayout
-                        role={member.accessLevel}
+                        role={(
+                          <WalletRole role={member.accessLevel} />
+                        )}
                         email={member.user}
                         action={
                         <div>
                           {
-                            (showDeleteButton(accessLevel, user, member)) && (
+                            ![accessLevels.admin.title, accessLevels.owner.title].includes(member.accessLevel) && !accessLevel.isViewOnly() ? (
+                              <Button
+                                name="share-wallet"
+                                loading={false}
+                                onClick={(): void => {
+                                  WalletMemberModal({ wallet, member, is2FaEnabled: user.is2FaEnabled, email: member.user, shareWallet })
+                                    .then(async ({ email }: { email: string; password: string; accessLevel: number }) => {
+                                      showSuccessModal({
+                                        goBackCallback: () => {
+                                          console.log("User added.");
+                                          refresh();
+                                        },
+                                        title: "Wallet access changed.",
+                                        message: (
+                                          <div>
+                                            <p className="mb-3">Access level to {wallet.name} was changed for {email}.</p>
+                                          </div>
+                                        ),
+                                        buttonText: "OK",
+                                      });
+                                    });
+                                  }}
+                                variant={Button.variant.PRIMARY}
+                                size={Button.size.SMALL}
+                              >
+                                Change
+                              </Button>
+                            ) : null
+                          }
+                          {
+                            (showDeleteButton(accessLevel, member)) && (
                               <button
                                 onClick={(): void => {
                                   removeWalletMember({ email: member.user })
@@ -119,7 +197,7 @@ const Users: React.FC<Props> = ({ accessLevel, wallet, user, shareWallet, wallet
                                     });
                                 }}
                               >
-                                <span className="text-xs"><Icon name="cross" /></span>
+                                <span className="text-xs ml-4"><Icon name="cross" /></span>
                               </button>
                             )
                           }
@@ -149,21 +227,7 @@ const Users: React.FC<Props> = ({ accessLevel, wallet, user, shareWallet, wallet
                       action={<Button
                           name="share-wallet"
                           loading={false}
-                          onClick={(): void => {
-                            AddWalletMemberModal({ wallet, is2FaEnabled: user.is2FaEnabled, email: shareRequest.email, shareWallet })
-                              .then(async ({ email }: { email: string; password: string; accessLevel: number }) => {
-                                showSuccessModal({
-                                  goBackCallback: () => { console.log("User added."); },
-                                  title: "User added",
-                                  message: (
-                                    <div>
-                                      <p className="mb-3">{`User ${email} was added to the wallet.`}</p>
-                                    </div>
-                                  ),
-                                  buttonText: "OK",
-                                });
-                              });
-                          }}
+                          onClick={(): void => showWalletShareRequestModal(shareRequest)}
                           variant={Button.variant.PRIMARY}
                           size={Button.size.SMALL}
                         >
@@ -172,6 +236,18 @@ const Users: React.FC<Props> = ({ accessLevel, wallet, user, shareWallet, wallet
                        }
                     />
                   </div>)
+                )
+              }
+              {
+                shareRequestListMetaData.pages > 1 && (
+                  <Pagination
+                    loading={loading}
+                    page={page}
+                    pageCount={shareRequestListMetaData.pages}
+                    hasNextPage={shareRequestListMetaData.hasNextPage}
+                    hasPreviousPage={shareRequestListMetaData.hasPreviousPage}
+                    onChange={changePage}
+                  />
                 )
               }
             </div>

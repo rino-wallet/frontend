@@ -1,7 +1,8 @@
 import React from "react";
 import classNames from "classnames";
 import { piconeroToMonero, getWalletColor } from "../../utils";
-import { Placeholder, FormatNumber } from "../../components";
+import { Placeholder, FormatNumber, WalletRole } from "../../components";
+import { AccessLevel } from "../../types";
 
 const WalletPlaceholder: React.FC = () => (
   <div className="flex-1 min-w-0 text-left">
@@ -20,6 +21,7 @@ interface Props {
   inList?: boolean;
   loading?: boolean;
   card?: boolean;
+  role?: AccessLevel;
 }
 
 export const WalletCard: React.FC<Props> = ({
@@ -27,17 +29,18 @@ export const WalletCard: React.FC<Props> = ({
   unlocked = "",
   name = "",
   loading = false,
+  role,
 }) => {
   const gradient = getWalletColor()
   return (
-    <div className={classNames("theme-bg-panel theme-border border rounded-3xl rounded-tl-none h-36 flex items-stretch", gradient.light)}>
-      <div className={classNames("-my-px -mx-px flex-shrink-0 rounded-3xl rounded-tl-none w-10 md:w-16", gradient.main)} />
+    <div className={classNames("theme-bg-panel theme-border border rounded-large rounded-tr-none h-36 flex items-stretch", gradient.light)}>
+      <div className={classNames("-my-px -mx-px flex-shrink-0 rounded-large rounded-tr-none w-10 md:w-16", gradient.main)} />
       <div className="flex flex-1 min-w-0 px-5 py-9 items-stretch md:px-10">
         {
           loading ? <WalletPlaceholder /> : (
             <div className="flex flex-col justify-center flex-1 min-w-0 text-left">
-              <div className="leading-none text-base uppercase whitespace-nowrap overflow-hidden overflow-ellipsis mb-4" data-qa-selector="wallet-name">
-                {name}
+              <div className="leading-none text-base uppercase whitespace-nowrap overflow-hidden overflow-ellipsis mb-4 flex" data-qa-selector="wallet-name">
+                {role && <WalletRole small className="mr-1" role={role} />} {name}
               </div>
               <div className="flex items-end space-x-2">
                 <div>

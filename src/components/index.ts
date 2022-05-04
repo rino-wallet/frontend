@@ -27,6 +27,7 @@ import { BeforeUnloadConfirm } from "./BeforeUnloadConfirm";
 import { Icon } from "./Icon";
 import { Prompt } from "./Prompt";
 import { DisableAutofill } from "./DisableAutofill";
+import { WalletRole } from "./WalletRole";
 
 export {
   Loading,
@@ -58,4 +59,5 @@ export {
   Icon,
   Prompt,
   DisableAutofill,
+  WalletRole,
 }

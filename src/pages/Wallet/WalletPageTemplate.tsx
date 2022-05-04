@@ -84,6 +84,9 @@ export const WalletPageTemplate: React.FC<Props> = ({
         </div>
         <h1 className="text-4xl font-bold flex-1 font-catamaran min-w-0 overflow-ellipsis overflow-hidden whitespace-nowrap" data-qa-selector="wallet-name">
           {title || wallet?.name}
+          <span>
+            { isPublicWallet ? <p className="text-lg font-normal theme-text-secondary">Public read-only view of this wallet.</p> : null }
+          </span>
         </h1>
         {
           (showActions && !isPublicWallet) && (

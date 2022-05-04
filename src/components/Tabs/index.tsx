@@ -41,7 +41,7 @@ export const Tabs: React.FC<Props> = (props) => {
               })}
             >
               {tab.text} {tabsWithNotification?.includes(tab.value) ?
-              <span className="inline-block w-2 h-2 mr-2 bg-red-600 rounded-full ml-1" />: null}
+              <span className="inline-block w-2 h-2 mr-2 bg-red-600 rounded-full ml-1" data-qa-selector="pending_share_red_dot"/>: null}
             </button>
           ))
         }

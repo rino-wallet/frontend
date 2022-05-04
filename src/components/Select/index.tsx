@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react";
 import classNames from "classnames";
+import { Icon, IconName } from "../Icon";
 import "./styles.css";
 
 // eslint-disable-next-line
@@ -14,6 +15,7 @@ type Props = {
   name?: string;
   size?: UI_SIZE;
   error?: string;
+  icon?: IconName;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onBlur?: (e: React.FocusEvent<HTMLSelectElement>) => void;
   children: ReactNode;
@@ -31,13 +33,21 @@ export const Select: React.FC<Props> & { size: typeof UI_SIZE; } = (props) => {
     value = "",
     name = "",
     error = "",
+    icon = "",
     size = UI_SIZE.MEDIUM,
     onChange,
     children,
     onBlur = ():void => undefined,
   } = props;
   return (
-    <div>
+    <div className={icon ? "relative" : ""}>
+      {
+        icon && (
+          <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-600 flex items-center">
+            <Icon name={icon} />
+          </div>
+        )
+      }
       <select
         name={name}
         value={value}
@@ -46,6 +56,9 @@ export const Select: React.FC<Props> & { size: typeof UI_SIZE; } = (props) => {
         className={classNames(
           "select w-full inline-flex border border-solid text-lg placeholder-gray-400",
           SIZE_MAPS[size],
+          {
+            "pl-12": icon,
+          }
         )}
       >
         {children}

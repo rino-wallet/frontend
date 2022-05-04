@@ -91,6 +91,8 @@ export type TaskStatus = "COMPLETED" | "FAILED" | "CREATED";
 
 export type Env = "production" | "test" | "staging" | "develop";
 
+export type AccessLevel = "Owner" | "View-only" | "Spender" | "Admin";
+
 export type ApiErrorRaw = Record<string, string | string[]>
 
 export type ApiError = Record<string, string>

@@ -20,7 +20,7 @@ const WalletsPageContainer: React.FC = () => {
   }, [])
   return <div>
     <Wallets
-      isKeypairSet={user?.isKeypairSet}
+      user={user}
       loading={loading}
       wallets={wallets}
       pages={pages}

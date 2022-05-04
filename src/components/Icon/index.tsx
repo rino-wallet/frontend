@@ -1,8 +1,10 @@
 import React from "react";
 import "./style.css";
 
+export type IconName = "checvron_up" | "checvron_down" | "plus" | "copy" | "cross" | "dot" | "checvron_left" | "arrow_right" | "arrow_left" | "qrcode" | "refresh" | "check" | "caret_down" | "caret_up" | "checvron_right" | "faq" | "wallets" | "login" | "logout" | "account" | "account-outline" | "settings" | "settings-outline" | "eye" | "arrow-down-bold";
+
 interface Props {
-  name: "checvron_up" | "checvron_down" | "plus" | "copy" | "cross" | "dot" | "checvron_left" | "arrow_right" | "arrow_left" | "qrcode" | "refresh" | "check" | "caret_down" | "caret_up" | "checvron_right" | "faq" | "wallets" | "login" | "logout" | "account";
+  name: IconName;
   className?: string;
   title?: string;
 }

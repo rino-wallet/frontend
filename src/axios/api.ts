@@ -3,6 +3,7 @@ import camelcaseKeys from "camelcase-keys";
 import { Axios } from "./axios";
 import ROUTES from "../router/routes";
 import transformError from "../utils/transformError";
+import { setCookie } from "../utils";
 
 export class Api extends Axios {
   private token: string;
@@ -14,6 +15,7 @@ export class Api extends Axios {
       (req) => {
         if (this.getToken() && req.headers) {
           req.headers.authorization = this.getToken();
+          setCookie("loggedIn", "true", 0.5, ".rino.io");
         }
         return req;
       },

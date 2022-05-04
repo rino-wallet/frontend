@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?w8xuwc');
-  src:  url('fonts/icomoon.eot?w8xuwc#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?w8xuwc') format('truetype'),
-    url('fonts/icomoon.woff?w8xuwc') format('woff'),
-    url('fonts/icomoon.svg?w8xuwc#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?ro4tae');
+  src:  url('fonts/icomoon.eot?ro4tae#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?ro4tae') format('truetype'),
+    url('fonts/icomoon.woff?ro4tae') format('woff'),
+    url('fonts/icomoon.svg?ro4tae#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,17 +25,32 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-account:before {
+.icon-settings:before {
   content: "\e913";
+}
+.icon-account:before {
+  content: "\e916";
+}
+.icon-arrow-down-bold:before {
+  content: "\e917";
+}
+.icon-eye:before {
+  content: "\e918";
+}
+.icon-login:before {
+  content: "\e910";
+}
+.icon-logout:before {
+  content: "\e911";
+}
+.icon-settings-outline:before {
+  content: "\e915";
+}
+.icon-account-outline:before {
+  content: "\e914";
 }
 .icon-wallets:before {
   content: "\e90f";
-}
-.icon-logout:before {
-  content: "\e910";
-}
-.icon-login:before {
-  content: "\e911";
 }
 .icon-faq:before {
   content: "\e912";

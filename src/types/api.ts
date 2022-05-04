@@ -1,4 +1,5 @@
 import { Subaddress } from "./store";
+import { AccessLevel } from "./shared";
 
 interface ListResponse {
   count: number;
@@ -27,7 +28,7 @@ interface Wallet {
 interface WalletMember {
   id: string;
   user: string;
-  accessLevel: string;
+  accessLevel: AccessLevel;
   encryptedKeys: string;
   createdAt: string;
   updatedAt: string
@@ -290,7 +291,7 @@ export interface ShareWalletPayload {
 
 export interface ShareWalletResponse {
     id: string;
-    accessLevel: string;
+    accessLevel: AccessLevel;
     createdAt: string;
     user: {
     id: 0,

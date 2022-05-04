@@ -6,13 +6,27 @@ import {
   RootState,
 } from "../types";
 import walletsApi from "../api/wallets";
-import { createLoadingSelector, generateExtraReducer, generateListReqParams } from "../utils";
+import {checkAccessLevel, createLoadingSelector, generateExtraReducer, generateListReqParams} from "../utils";
+
 
 export const ITEMS_PER_PAGE = 10;
 
 export const fetchWalletShareRequests = createAsyncThunk<FetchWalletShareRequestsResponse, FetchWalletShareRequestsThunkPayload>(
   "walletShareRequests/fetchRequests",
-  async ({ walletId, page }, { rejectWithValue }) => {
+  async ({ walletId, page }, { rejectWithValue, getState }) => {
+    const state = getState() as any;
+    const wallet = state.wallet.wallet;
+    const user = state.session.user;
+    const accessLevel = checkAccessLevel(user, wallet);
+    if (accessLevel.isViewOnly()) {
+      return new Promise<FetchWalletShareRequestsResponse>((resolve) => resolve({
+          results: [],
+          count: 0,
+          next: null,
+          previous: null,
+        })
+      );
+    }
     try {
       return await walletsApi.fetchWalletShareRequests(walletId, generateListReqParams(page, ITEMS_PER_PAGE));
     } catch(err: any) {
@@ -60,11 +74,11 @@ export const walletShareRequestListSlice = createSlice({
     ...generateExtraReducer(
       fetchWalletShareRequests,
       (data) => ({
-        entities: data.results,
-        count: data.count,
-        pages: Math.ceil(data.count / ITEMS_PER_PAGE),
-        hasPreviousPage: !!data.previous,
-        hasNextPage: !!data.next,
+        entities: data?.results || [],
+        count: data?.count || 0,
+        pages: data ? Math.ceil(data?.count / ITEMS_PER_PAGE) : 0,
+        hasPreviousPage: !!data?.previous,
+        hasNextPage: !!data?.next,
       }),
     ),
   }
@@ -79,7 +93,7 @@ export const selectors = {
   }),
   getWalletShareRequests: (state: RootState): WalletShareRequest[] => state[SLICE_NAME].entities,
   // thunk statuses
-  pendingFetchWalletTransactions: createLoadingSelector(SLICE_NAME, fetchWalletShareRequests.pending.toString()),
+  pendingFetchWalletShareRequests: createLoadingSelector(SLICE_NAME, fetchWalletShareRequests.pending.toString()),
 }
 
 export const {

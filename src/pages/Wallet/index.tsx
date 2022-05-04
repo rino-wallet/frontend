@@ -39,6 +39,15 @@ const WalletPageContainer: React.FC<Props> = () => {
   const fetchWalletDetails = useThunkActionCreator<FetchWalletDetailsResponse, FetchWalletDetailsPayload>(fetchWalletDetailsThunk);
   const fetchWalletSubaddress = useThunkActionCreator<FetchSubaddressResponse, FetchWalletSubaddressThunkPayload>(fetchWalletSubaddressThunk);
   const fetchWalletShareRequests = useThunkActionCreator<FetchWalletShareRequestsResponse, FetchWalletShareRequestsThunkPayload>(fetchWalletShareRequestsThunk);
+  const refresh = async (): Promise<void> => {
+    await fetchWalletDetails({ id: walletId })
+      .catch(() => {
+        navigate(routes.not_found);
+      });
+    fetchWalletSubaddress({ walletId });
+    fetchWalletShareRequests({ walletId, page: 1 });
+  }
+
   const dispatch = useDispatch();
   useEffect(() => {
     return (): void => {
@@ -49,14 +58,7 @@ const WalletPageContainer: React.FC<Props> = () => {
     const intervalID = setInterval(() => {
       fetchWalletDetails({ id: walletId });
     }, 30000);
-    (async (): Promise<void> => {
-      await fetchWalletDetails({ id: walletId })
-        .catch(() => {
-          navigate(routes.not_found);
-        });
-      fetchWalletSubaddress({ walletId });
-      fetchWalletShareRequests({ walletId, page: 1 });
-    })();
+    refresh();
     return (): void => {
       clearInterval(intervalID);
     }
@@ -68,7 +70,8 @@ const WalletPageContainer: React.FC<Props> = () => {
       <Route path="send" element={<SendPayment walletId={walletId} />} />
       <Route path="settings" element={<Settings walletId={walletId} />} />
       <Route path="receive" element={<ReceivePayment walletId={walletId} />} />
-      <Route path="users" element={<Users walletId={walletId} />} />
+      <Route path="users" element={<Users walletId={walletId} refresh={refresh} />} />
+      <Route path="users/:shareId/finalize-share/" element={<Users walletId={walletId} refresh={refresh} />} />
     </Routes>
   )
 }

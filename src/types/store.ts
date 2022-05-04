@@ -1,6 +1,6 @@
 
 import {store} from "../store";
-import {UserKeyPairInfo, KeyPairJsonWrapper} from "./shared";
+import {UserKeyPairInfo, KeyPairJsonWrapper, AccessLevel} from "./shared";
 import {SignUpPayload} from "./api";
 
 export type RootState = ReturnType<typeof store.getState>;
@@ -11,11 +11,10 @@ export interface LockedAmount {
   amount: string,
   confirmations: number,
 }
-
 export interface WalletMember {
   id: string;
   user: string;
-  accessLevel: string;
+  accessLevel: AccessLevel;
   encryptedKeys: string;
   createdAt: string;
   updatedAt: string;
@@ -163,7 +162,9 @@ export interface ShareWalletThunkPayload {
   password: string;
   accessLevel: number;
   wallet: Wallet;
+  update?: boolean;
   code?: string;
+  member?: WalletMember;
 }
 
 export interface Subaddress {

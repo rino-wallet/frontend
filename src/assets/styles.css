@@ -13,6 +13,9 @@
   .theme-text-primary {
     @apply text-primary;
   }
+  .theme-text-primary {
+    @apply text-primary;
+  }
   .theme-text-secondary {
     @apply text-secondary;
   }

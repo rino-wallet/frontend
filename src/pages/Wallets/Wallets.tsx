@@ -3,7 +3,7 @@ import { generatePath, Link } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 import { Button, EmptyList, Icon } from "../../components";
 import { PageTemplate, WalletCard, Pagination } from "../../modules/index";
-import { FetchWalletListThunkPayload, FetchWalletsResponse, Wallet } from "../../types";
+import { FetchWalletListThunkPayload, FetchWalletsResponse, Wallet, User, AccessLevel } from "../../types";
 import routes from "../../router/routes";
 
 interface Props {
@@ -13,16 +13,16 @@ interface Props {
   hasPreviousPage: boolean;
   hasNextPage: boolean;
   fetchWallets: (data: FetchWalletListThunkPayload) => Promise<FetchWalletsResponse>;
-  isKeypairSet: boolean;
+  user: User;
 }
 
-const WalletsPage: React.FC<Props> = ({ wallets, loading, pages, hasPreviousPage, hasNextPage, fetchWallets, isKeypairSet }) => {
+const WalletsPage: React.FC<Props> = ({ wallets, loading, pages, hasPreviousPage, hasNextPage, fetchWallets, user }) => {
   const [page, setPage] = useState<number>(1);
   useEffect(() => {
-    if (isKeypairSet) {
+    if (user?.isKeypairSet) {
       fetchWallets({ page });
     }
-  }, [page, isKeypairSet]);
+  }, [page, user?.isKeypairSet]);
   return <PageTemplate
     title={(
       <div className="flex w-full justify-between items-center">
@@ -76,6 +76,7 @@ const WalletsPage: React.FC<Props> = ({ wallets, loading, pages, hasPreviousPage
                 name={wallet.name}
                 balance={wallet.balance}
                 unlocked={wallet.unlockedBalance}
+                role={wallet.members.find((member) => member.user === user.email)?.accessLevel as AccessLevel}
               />
             </Link>
           </li>

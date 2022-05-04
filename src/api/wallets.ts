@@ -117,6 +117,13 @@ export class WalletsApi extends Api {
       .then(this.success);
   }
 
+
+  public updateWalletAccess(walletId: string, membershipId: string, data: ShareWalletPayload, config?: { headers: { "X-RINO-2FA": string } }): Promise<ShareWalletResponse> {
+    return this.put<ShareWalletResponse, ShareWalletPayload>(`/wallets/${walletId}/members/${membershipId}/`, data, config)
+      .then(this.success);
+  }
+
+
   public removeWalletAccess(data: RemoveWalletAccessPayload): Promise<RemoveWalletAccessResponse> {
     return this.delete<RemoveWalletAccessResponse>(`/wallets/${data.walletId}/members/${data.userId}/`)
       .then(this.success);

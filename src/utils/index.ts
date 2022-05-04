@@ -14,6 +14,7 @@ import { wasmSupported } from "./wasmSupported";
 import { IdleTimer } from "./idleTimer";
 import { generateUserKeyPairInfo, deriveUserKeys, reencrypPrivateKey, decryptKeys, getSigningKeys, signMessage, verifySignature } from "./keypairs";
 import { checkAccessLevel } from "./checkAccessLevel";
+import { setCookie } from "./setCookie";
 
 export {
   generateExtraReducer,
@@ -39,4 +40,5 @@ export {
   wasmSupported,
   IdleTimer,
   checkAccessLevel,
+  setCookie,
 }

@@ -8,10 +8,12 @@ export const asyncActionStatuses = {
 export const accessLevels = {
   owner: {
     code: 10,
+    value: "Owner",
     title: "Owner",
   },
   admin: {
     code: 20,
+    value: "Admin",
     title: "Admin",
   },
   // approver: {
@@ -20,7 +22,8 @@ export const accessLevels = {
   // },
   viewOnly: {
     code: 40,
-    title: "View-only",
+    value: "View-only",
+    title: "Viewer",
   },
 };
 

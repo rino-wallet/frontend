@@ -1,5 +1,5 @@
 import { BooleanSchema } from "yup";
-import { User } from "../../types";
+import { User, Wallet } from "../../types";
 import { checkAccessLevel } from "../../utils";
 
 const user = {
@@ -50,7 +50,7 @@ const wallet = {
 
 describe("checkAccessLevel", function() {
   it("Admin", () => {
-    const accessLevel = checkAccessLevel(user as User, wallet);
+    const accessLevel = checkAccessLevel(user as User, wallet as Wallet);
     expect(accessLevel.isAdmin()).toEqual(true);
     expect(accessLevel.isOwner()).toEqual(false);
     expect(accessLevel.isViewOnly()).toEqual(false);
