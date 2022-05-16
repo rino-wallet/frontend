@@ -33,18 +33,21 @@ export enum UI_SIZE {
   BIG,
   MEDIUM,
   SMALL,
+  TINY,
 }
 
 export const ICON_SIZE_MAPS: Record<UI_SIZE, string> = {
   [UI_SIZE.BIG]: "w-16 h-16 rounded-big",
   [UI_SIZE.MEDIUM]: "w-14 h-14 rounded-medium",
   [UI_SIZE.SMALL]: "w-8 h-8 rounded-small",
+  [UI_SIZE.TINY]: "w-6 h-6 rounded-small",
 };
 
 const SIZE_MAPS: Record<UI_SIZE, string> = {
   [UI_SIZE.BIG]: "px-10 py-4.25 text-lg rounded-big",
   [UI_SIZE.MEDIUM]: "px-8 py-3.75 text-base rounded-medium",
   [UI_SIZE.SMALL]: "py-1.25 px-5 text-sm rounded-small",
+  [UI_SIZE.TINY]: "py-0.75 px-4 text-xs rounded-small",
 };
 
 const VARIANT_MAPS: Record<Variant, string> = {

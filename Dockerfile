@@ -26,7 +26,7 @@ RUN npm config set "@rino-wallet:registry=https://gitlab.cryptosphere-systems.co
 
 # Perhaps there is a better way. But i was only able to run the project
 # using the line below
-RUN yarn global add react-scripts @craco/craco
+RUN yarn global add react-scripts @craco/craco node-gyp-build
 RUN yarn install --modules-folder=/home/1000/node_modules
 
 USER 1000

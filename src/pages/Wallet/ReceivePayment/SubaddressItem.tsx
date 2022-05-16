@@ -1,15 +1,17 @@
 import React from "react";
 import { Button, Copy, Icon } from "../../../components";
 import { Subaddress } from "../../../types";
+import { EditLabelForm } from "./EditLabelForm";
 import showQRCodeModal from "./QRCodeModal";
 import { ValidateButton } from "./ValidateButton";
 
 interface Props {
   subaddress: Subaddress;
+  walletId: string;
   validateAddress: (subaddress: Subaddress) => Promise<void>;
 }
 
-export const SubaddressItem: React.FC<Props> = ({ subaddress, validateAddress }) => {
+export const SubaddressItem: React.FC<Props> = ({ subaddress, walletId, validateAddress }) => {
   return (
     <div className="flex">
       <Button
@@ -23,7 +25,17 @@ export const SubaddressItem: React.FC<Props> = ({ subaddress, validateAddress })
       </Button>
       <div className="ml-6 break-all">
         <Copy value={subaddress.address}>
-          <span className="theme-text-secondary">{subaddress.index} :</span> {subaddress.address}{subaddress.isUsed ? <span className="theme-text-secondary font-bold"> (Used)</span> : null}
+          <EditLabelForm
+            short
+            className="align-bottom"
+            id={walletId} address={subaddress?.address || ""}
+            label={subaddress?.label || ""}
+          />
+          {
+            !subaddress?.label && <span className="theme-text-secondary"> {subaddress.index} </span>
+          }
+          {subaddress.isUsed ? <span className="theme-text-secondary font-bold"> (Used)</span> : null}
+          <span className="align-bottom">:</span> <span className="align-bottom">{subaddress.address}</span>
         </Copy>
       </div>
       <div className="ml-6" data-qa-selector="validate_btn">

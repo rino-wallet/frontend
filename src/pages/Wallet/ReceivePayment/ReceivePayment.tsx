@@ -7,6 +7,7 @@ import { CreateSubaddressThunkPayload, Subaddress, Wallet, FetchSubaddressesThun
 import routes from "../../../router/routes";
 import { SubaddressItem } from "./SubaddressItem";
 import { ValidateButton } from "./ValidateButton";
+import { EditLabelForm } from "./EditLabelForm";
 import { WalletPageTemplate } from "../WalletPageTemplate";
 
 
@@ -100,6 +101,7 @@ const ReceivePayment: React.FC<Props> = ({
               </div>
             }>
               <CopyArea value={walletSubAddress?.address || ""} qaSelector="receive-address">
+                <EditLabelForm id={walletId} address={walletSubAddress?.address || ""} label={walletSubAddress?.label || ""} block />
                 {walletSubAddress?.address} {walletSubAddress?.isUsed ? <span className="theme-text-secondary font-bold"> (Used)</span> : ""}
               </CopyArea>
             </Label>
@@ -143,7 +145,11 @@ const ReceivePayment: React.FC<Props> = ({
             {
               subaddresses.map((subaddress) => (
                 <li key={subaddress.address} className="mb-3">
-                  <SubaddressItem subaddress={subaddress} validateAddress={validateAddress} />
+                  <SubaddressItem
+                    walletId={walletId}
+                    subaddress={subaddress}
+                    validateAddress={validateAddress}
+                  />
                 </li>
               ))
             }

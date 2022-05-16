@@ -11,7 +11,7 @@ export const ValidateButton: React.FC<Props> = ({ subaddress, validateAddress })
   const [loading, setLoading] = useState(false);
   return (
     <Button
-      size={Button.size.SMALL}
+      size={Button.size.TINY}
       variant={subaddress.isValid ? Button.variant.GREEN : Button.variant.GRAY}
       loading={loading}
       onClick={(): void => {

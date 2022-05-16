@@ -407,9 +407,11 @@ export interface WalletShareRequest {
   accessLevel: string;
 }
 
-
-
 // Fetch wallet share requests api interface
 export interface FetchWalletShareRequestsResponse extends ListResponse {
   results: WalletShareRequest[];
+}
+
+export interface UpdateSubaddressPayload {
+  label: string;
 }

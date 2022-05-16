@@ -1,13 +1,14 @@
 import {createSlice, createAsyncThunk, PayloadAction} from "@reduxjs/toolkit";
-import { FetchSubaddressResponse, Subaddress, FetchSubaddressesThunkPayload, RootState, CreateSubaddressThunkPayload, FetchWalletSubaddressThunkPayload } from "../types";
+import { FetchSubaddressResponse, Subaddress, FetchSubaddressesThunkPayload, RootState, CreateSubaddressThunkPayload, FetchWalletSubaddressThunkPayload, UpdateSubaddressThunkPayload, SubaddressResponse } from "../types";
 import walletsApi from "../api/wallets";
 import walletInstance from "../wallet";
 import { createLoadingSelector, generateExtraReducer, generateListReqParams, deriveUserKeys, signMessage, verifySignature } from "../utils";
 
 export const ITEMS_PER_PAGE = 5;
+const SLICE_NAME = "subaddressList";
 
 export const fetchSubaddresses = createAsyncThunk<FetchSubaddressResponse, FetchSubaddressesThunkPayload>(
-  "subaddressList/fetchSubaddresses",
+  `${SLICE_NAME}/fetchSubaddresses`,
   async ({ page, walletId }, { rejectWithValue, dispatch, getState }) => {
     try {
       const { signingPublicKey } = (getState() as any).session;
@@ -34,7 +35,7 @@ export const fetchSubaddresses = createAsyncThunk<FetchSubaddressResponse, Fetch
 );
 
 export const validateSubAddress = createAsyncThunk<void, {walletId: string; address: string; index: number; loginPassword: string}>(
-  "wallet/validateSubAddress",
+  `${SLICE_NAME}/validateSubAddress`,
   async (data, { rejectWithValue, dispatch, getState }) => {
     try {
       const { userWallet } = walletInstance;
@@ -58,14 +59,14 @@ export const validateSubAddress = createAsyncThunk<void, {walletId: string; addr
 );
 
 export const fetchWalletSubaddress = createAsyncThunk<FetchSubaddressResponse, FetchWalletSubaddressThunkPayload>(
-  "wallet/fetchWalletSubaddress",
+  `${SLICE_NAME}/fetchWalletSubaddress`,
   async ({ walletId }, { rejectWithValue, dispatch, getState }) => {
     try {
       const { signingPublicKey } = (getState() as any).session;
       const addresses = await walletsApi.fetchWalletSubaddresses(walletId, generateListReqParams(1, 1));
       if (addresses.results.length) {
         const subaddress = addresses.results[0];
-        dispatch(setAddress(subaddress));
+        dispatch(setWalletSubaddress(subaddress));
         if (subaddress.signature) {
           const verified = verifySignature(Buffer.from(subaddress.signature, "base64"), subaddress.address, Buffer.from(signingPublicKey, "base64"));
           if (verified) {
@@ -80,12 +81,31 @@ export const fetchWalletSubaddress = createAsyncThunk<FetchSubaddressResponse, F
   },
 );
 
+export const updateSubaddress = createAsyncThunk<SubaddressResponse, UpdateSubaddressThunkPayload>(
+  `${SLICE_NAME}/updateSubaddress`,
+  async ({ id, address, label}, { rejectWithValue, dispatch, getState }) => {
+    try {
+      const walletSubAddress = (getState() as any)[SLICE_NAME].walletSubAddress;
+      const subaddress = await walletsApi.updateWalletSubaddresses(id, address, { label });
+      if (walletSubAddress.address === subaddress.address) {
+        dispatch(setWalletSubaddress(subaddress));
+      } else {
+        dispatch(updateSubaddressInList(subaddress));
+      }
+      return subaddress;
+    } catch(err: any) {
+      return rejectWithValue(err?.data)
+    }
+  },
+);
+
+
 export const createSubaddress = createAsyncThunk<Subaddress, CreateSubaddressThunkPayload>(
-  "wallet/createSubaddress",
+  `${SLICE_NAME}/createSubaddress`,
   async ({ walletId }, { rejectWithValue, dispatch }) => {
     try {
       const response = await walletsApi.createSubaddress(walletId);
-      dispatch(setAddress(response))
+      dispatch(setWalletSubaddress(response))
       return response;
     } catch(err: any) {
       return rejectWithValue(err?.data)
@@ -116,14 +136,15 @@ export const initialState: State = {
   thunksInProgress: [],
 };
 
-const SLICE_NAME = "subaddressList";
-
 export const subaddressListSlice = createSlice({
   name: SLICE_NAME,
   initialState,
   reducers: {
-    setAddress(state, action: { payload: Subaddress }): void {
+    setWalletSubaddress(state, action: { payload: Subaddress }): void {
       state.walletSubAddress = action.payload;
+    },
+    updateSubaddressInList(state, action: { payload: Subaddress }): void {
+      state.entities = state.entities.map((entity) => entity.address === action.payload.address ? action.payload : entity);
     },
     markValidAddress(state, action: PayloadAction<number>): void {
       if (!state.validated.includes(action.payload)) {
@@ -170,7 +191,8 @@ export const selectors = {
 
 export const {
   reset,
-  setAddress,
+  setWalletSubaddress,
+  updateSubaddressInList,
   setAddresses,
   markValidAddress,
 } = subaddressListSlice.actions;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { generatePath, useNavigate } from "react-router-dom";
 import { NewWalletPDFData } from "../../types";
 import { Button, Checkbox, Input, Prompt } from "../../components";
@@ -12,7 +12,8 @@ interface Props {
 }
 
 const SecurityTab: React.FC<Props> = ({ persistWallet, pdfData, walletId }) => {
-  const [pdfUrl, setPdfUrl] = useState("");
+  const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|firefox/i.test(navigator.userAgent.toLowerCase());
+  const filename = `RINO Wallet Recovery Document - ${pdfData.walletName}`;
   const [errorMessage, setErrorMessage] = useState("");
   const [infoChecked, setInfoChecked] = useState(false);
   const [pdfDownloaded, setPdfDownloaded] = useState(false);
@@ -33,23 +34,17 @@ const SecurityTab: React.FC<Props> = ({ persistWallet, pdfData, walletId }) => {
   function createWalletRecoveryDocument({ downloadFile }: { downloadFile?: boolean }): Promise<void> {
     return createPDF({
       title: "Wallet Recovery Document",
-      filename: `RINO Wallet Recovery Document - ${pdfData.walletName}`,
+      filename,
       totalPages: 4,
       downloadFile,
     }, pdfData)
-    .then((pdf: string) => {
-      if (downloadFile) {
-        setPdfDownloaded(true);
-      }
-      setPdfUrl(pdf);
+    .then(() => {
+      setPdfDownloaded(true);
     })
     .catch((error: any) => {
       setErrorMessage(error.message);
     });
   }
-  useEffect(() => {
-    createWalletRecoveryDocument({ downloadFile: false });
-  }, [pdfData]);
   return <div id="security-tab-content">
     <Prompt
       when={confirmationCheckInputValue !== pdfData.checkString}
@@ -93,33 +88,16 @@ const SecurityTab: React.FC<Props> = ({ persistWallet, pdfData, walletId }) => {
           information in this document).
         </p>
         <div className="md:w-1/2 m-auto">
-          {
-            /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()) ? (
-              <a href={pdfUrl} target="_blanc">
-                <Button
-                  name="download-pdf"
-                  type="button"
-                  onClick={(): void => {
-                    setPdfDownloaded(true);
-                  }}
-                  block
-                >
-                  DOWNLOAD WALLET RECOVERY DOCUMENT
-                </Button>
-              </a>
-            ) : (
-              <Button
-                name="download-pdf"
-                type="button"
-                block
-                onClick={(): void => {
-                  createWalletRecoveryDocument({ downloadFile: true });
-                }}
-              >
-                DOWNLOAD WALLET RECOVERY DOCUMENT
-              </Button>
-            )
-          }
+          <Button
+            name="download-pdf"
+            type="button"
+            onClick={(): void => {
+              createWalletRecoveryDocument({ downloadFile: !isMobile });
+            }}
+            block
+          >
+            DOWNLOAD WALLET RECOVERY DOCUMENT
+          </Button>
         </div>
       </div>
     )}

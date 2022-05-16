@@ -5,7 +5,7 @@ const networkType = getNetworkType();
 
 class WalletPdf extends PdfDocument {}
 
-export async function createPDF(config: PdfDocumentConfig, data: NewWalletPDFData): Promise<string> {
+export async function createPDF(config: PdfDocumentConfig, data: NewWalletPDFData): Promise<void> {
   const pdf = new WalletPdf(config);
   await pdf.addPage(function(self: PdfDocument) {
     const layoutContext = self.doc.context2d;
@@ -86,9 +86,11 @@ export async function createPDF(config: PdfDocumentConfig, data: NewWalletPDFDat
   });
   if (config.downloadFile) {
     pdf.save();
-    return "";
+  } else {
+    const url = URL.createObjectURL(pdf.doc.output("blob"));
+    window.open(url);
+    URL.revokeObjectURL(url);
   }
-  return pdf.getBlobUrl();
 }
 
 /**

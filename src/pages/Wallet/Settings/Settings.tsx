@@ -116,7 +116,7 @@ const Settings: React.FC<Props> = ({ updateWalletDetails, walletId, is2FaEnabled
       }
       <section className="border-t theme-border">
         <Panel.Body>
-          <div className="px-6">
+          <div>
             <h3 className="uppercase font-bold mb-8">General</h3>
             <form className="md:w-1/2" name="form-wallet-settings" onSubmit={formik.handleSubmit}>
               <div className="form-field">
@@ -161,36 +161,6 @@ const Settings: React.FC<Props> = ({ updateWalletDetails, walletId, is2FaEnabled
                     }
                   </div>
                 </Checkbox>
-              </div>
-              <div className="flex space-x-3 md:hidden">
-                {
-                  formik.dirty && (
-                    <Button
-                      variant={Button.variant.GRAY}
-                      size={Button.size.MEDIUM}
-                      type="button"
-                      onClick={(): void => {
-                        formik.resetForm();
-                      }}
-                      name="cancel-btn"
-                    >
-                      Cancel
-                    </Button>
-                  )
-                }
-                <Button
-                  variant={Button.variant.PRIMARY_LIGHT}
-                  size={Button.size.MEDIUM}
-                  disabled={!formik.isValid || !formik.dirty || formik.isSubmitting}
-                  type="submit"
-                  onClick={(): void => {
-                    formik.handleSubmit();
-                  }}
-                  name="submit-btn"
-                  loading={formik.isSubmitting}
-                >
-                  Save Changes
-                </Button>
               </div>
               <h3 className="uppercase font-bold mb-8">Public wallet</h3>
               <div>
@@ -238,22 +208,61 @@ const Settings: React.FC<Props> = ({ updateWalletDetails, walletId, is2FaEnabled
                 )}
               </div>
               <FormErrors fields={["requires_2fa"]} errors={{ ...formik.errors, ...nonFieldErrors }} />
-            </form>
-          </div>
-          {canDelete && (
-            <div>
-              <hr className="border-t theme-border my-10 -mx-10" />
-              <div className="flex justify-between mt-8">
+              {canDelete && (
                 <Button
+                  className="mt-8 md:hidden"
                   name="delete-wallet-btn"
                   onClick={(): void => setDeleteModalOpen(true)}
                   variant={Button.variant.RED}
                 >
                   Delete Wallet
-              </Button>
+                </Button>
+              )}
+              <hr className="border-t theme-border my-10 -mx-10 md:hidden" />
+              <div className="flex space-x-3 md:hidden">
+                {
+                  formik.dirty && (
+                    <Button
+                      variant={Button.variant.GRAY}
+                      size={Button.size.MEDIUM}
+                      type="button"
+                      onClick={(): void => {
+                        formik.resetForm();
+                      }}
+                      name="cancel-btn"
+                    >
+                      Cancel
+                    </Button>
+                  )
+                }
+                <Button
+                  variant={Button.variant.PRIMARY_LIGHT}
+                  size={Button.size.MEDIUM}
+                  disabled={!formik.isValid || !formik.dirty || formik.isSubmitting}
+                  type="submit"
+                  onClick={(): void => {
+                    formik.handleSubmit();
+                  }}
+                  name="submit-btn"
+                  loading={formik.isSubmitting}
+                >
+                  Save Changes
+                </Button>
               </div>
-            </div>
-          )}
+            </form>
+            {canDelete && (
+                <div className="hidden md:block">
+                  <hr className="border-t theme-border my-10 -mx-10" />
+                  <Button
+                    name="delete-wallet-btn"
+                    onClick={(): void => setDeleteModalOpen(true)}
+                    variant={Button.variant.RED}
+                  >
+                    Delete Wallet
+                  </Button>
+                </div>
+              )}
+          </div>
         </Panel.Body>
       </section>
     </Panel>

@@ -168,9 +168,16 @@ export interface ShareWalletThunkPayload {
 }
 
 export interface Subaddress {
+  label: string;
   address: string;
   index: number;
   isUsed: boolean;
   isValid?: boolean;
   signature: string | null;
+}
+
+export interface UpdateSubaddressThunkPayload {
+  label: string;
+  id: string;
+  address: string;
 }

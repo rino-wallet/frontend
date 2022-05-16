@@ -78,7 +78,7 @@ const AddWalletShareRequest: React.FC<Props> = ({ wallet, is2FaEnabled, requestW
               <Label label={<div>
                 <Tooltip
                   content={(
-                    <div className="md:w-96 text-sm normal-case" data-qa-selector="tx-priority-tooltip">
+                    <div className="md:w-76 text-sm text-center normal-case" data-qa-selector="tx-priority-tooltip">
                       Address of the user you are inviting.
                     </div>
                   )}

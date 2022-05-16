@@ -102,15 +102,6 @@ const WalletMemberModal: React.FC<Props> = ({ wallet, member, is2FaEnabled, emai
             </div>
             <div className="form-field">
               <Label label={<div>
-                <Tooltip
-                  content={(
-                    <div className="md:w-96 text-sm normal-case" data-qa-selector="tx-priority-tooltip">
-                      Address of the user you are inviting.
-                    </div>
-                  )}
-                >
-                  User email address <div className="text-sm cursor-pointer inline-block" data-qa-selector="cursor-pointer-tx-priority-tooltip"><InfoIcon /></div>
-                </Tooltip>
               </div>}>
                 <Input
                   autoComplete="off"

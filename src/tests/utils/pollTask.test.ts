@@ -7,7 +7,8 @@ jest.mock("../../api/tasks", () => ({
 
 describe("pollTask", function() {
   it("\"pollTask\" should call the server until the task completed", async () => {
-    const data = await pollTask("1");
+    const abortController = new AbortController();
+    const data = await pollTask("1", abortController.signal);
     expect(data.status).toEqual("COMPLETED");
   });
 });

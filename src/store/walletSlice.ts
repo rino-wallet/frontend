@@ -53,7 +53,7 @@ export const createNewWallet = createAsyncThunk<any, { name: string, signal: any
       dispatch(setStage(createNewWalletSteps.wallet1));
       console.log("Creating User and Backup wallets");
       await walletInstance.createWallets();
-      if(signal.aborted) return;
+      if(signal.aborted) return rejectWithValue({});
       // prepare multisigs for user and backup wallets
       dispatch(setStage(createNewWalletSteps.wallet2));
       // With this artificial delay we can show stage of creating wallet in the UI little bit longer time,
@@ -61,7 +61,7 @@ export const createNewWallet = createAsyncThunk<any, { name: string, signal: any
       await new Promise((resolve) => setTimeout(() => resolve({}), 1000));  
       console.log("Preparing multisigs");
       const preparedMultisigs = await walletInstance.prepareMultisigs();
-      if(signal.aborted) return;
+      if(signal.aborted) return rejectWithValue({});
       // create server wallet
       dispatch(setStage(createNewWalletSteps.wallet3));
       console.log("Creating Server Wallet and prepare multisig");
@@ -70,9 +70,14 @@ export const createNewWallet = createAsyncThunk<any, { name: string, signal: any
         user_multisig_info: preparedMultisigs[0],
         backup_multisig_info: preparedMultisigs[1],
       });
-      if(signal.aborted) return;
+      if(signal.aborted) return rejectWithValue({});
       // get the task result
-      const createServerWalletTask = await pollTask(serverWallet.taskId);
+      const polledTaskPromise = pollTask(serverWallet.taskId, signal);
+      if(signal.aborted) {
+        return rejectWithValue({});
+      }
+      const createServerWalletTask = await polledTaskPromise;
+
       const preparedServerMultisig = createServerWalletTask.result.serverMultisigInfo;
       const madeServerMultisig = createServerWalletTask.result.serverMultisigXinfo.state.multisigHex;
       const walletId = createServerWalletTask.walletId;
@@ -80,7 +85,7 @@ export const createNewWallet = createAsyncThunk<any, { name: string, signal: any
       dispatch(setStage(createNewWalletSteps.wallet4));
       console.log("Making multisig for User and Backup wallets");
       const madeMultisigs = await walletInstance.makeMultisigs([...preparedMultisigs, preparedServerMultisig]);
-      if(signal.aborted) return;
+      if(signal.aborted) return rejectWithValue({});
       // Exchange multisig information for User and Backup wallets
       dispatch(setStage(createNewWalletSteps.wallet5));
       console.log("Exchanging multisig information for User and Backup wallets");
@@ -91,7 +96,7 @@ export const createNewWallet = createAsyncThunk<any, { name: string, signal: any
       dispatch(setStage(createNewWalletSteps.wallet6));
       console.log("Finalizing server wallet");
       const encryptedWalletKeys =  await walletInstance.encryptWalletKeys(Uint8Array.from(Buffer.from(encryptionPublicKey, "base64")));
-      if(signal.aborted) return;
+      if(signal.aborted) return rejectWithValue({});
       const finalizedServerWallet = await walletsApi.finalizeWallet(walletId, {
         address: result.userResult.state.address,
         user_multisig_xinfo: madeMultisigs[0],
@@ -102,14 +107,14 @@ export const createNewWallet = createAsyncThunk<any, { name: string, signal: any
           enc_content: Buffer.from(encryptedWalletKeys).toString("base64"),
         }),
       });
-      if(signal.aborted) return;
+      if(signal.aborted) return rejectWithValue({});
       // Refresh wallets data and add to store
       const updatedWallets = await walletInstance.getWalletsData();
-      if(signal.aborted) return;
+      if(signal.aborted) return rejectWithValue({});
       // finalize server wallet
-      await pollTask(finalizedServerWallet.taskId);
+      await pollTask(finalizedServerWallet.taskId, signal);
       walletInstance.closeWallet();
-      if(signal.aborted) return;
+      if(signal.aborted) return rejectWithValue({});
       dispatch(setStage(""));
       return { ...updatedWallets, walletId, walletPassword: Buffer.from(walletInstance.walletPassword).toString("hex") };
     } catch(err: any) {
@@ -181,6 +186,7 @@ export const syncMultisig = createAsyncThunk<LocalWalletData | undefined, string
   async (id, { rejectWithValue, dispatch }) => {
     try {
       dispatch(setStage(createTransactionSteps.transaction5));
+      await new Promise((resolve) => setTimeout(() => resolve({}), 500));
       const { userWallet } = walletInstance;
       if (!userWallet) {
         return;

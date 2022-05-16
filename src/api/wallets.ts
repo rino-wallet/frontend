@@ -38,6 +38,7 @@ import {
   AddSubaddressSignaturePayload,
   RequestWalletSharePayload,
   FetchWalletShareRequestsResponse,
+  UpdateSubaddressPayload,
 } from "../types";
 
 export class WalletsApi extends Api {
@@ -155,6 +156,10 @@ export class WalletsApi extends Api {
   }
   public fetchWalletShareRequests(walletId: string, params: ListRequestParams): Promise<FetchWalletShareRequestsResponse> {
     return this.get<FetchWalletShareRequestsResponse>(`/wallets/${walletId}/share/`, { params })
+      .then(this.success);
+  }
+  public updateWalletSubaddresses(id: string, address: string, data: UpdateSubaddressPayload): Promise<SubaddressResponse> {
+    return this.put<Subaddress, UpdateSubaddressPayload>(`/wallets/${id}/subaddresses/${address}/`, data)
       .then(this.success);
   }
 }

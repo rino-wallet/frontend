@@ -98,7 +98,7 @@ export const WalletPageTemplate: React.FC<Props> = ({
                       <Tooltip
                           content={`
                             ${!userCanCreateTransaction ? "This wallet requires 2FA for spending. " : ""}
-                            ${insufficientBalance ? "Insufficient balance." : ""}
+                            ${insufficientBalance && !viewOnly ? "Insufficient balance." : ""}
                             ${viewOnly ? "This functionality is not available in read-only wallets." : ""}
                           `}
                         >
@@ -184,7 +184,7 @@ export const WalletPageTemplate: React.FC<Props> = ({
                   showActions && (
                     <div className="flex space-x-5 mt-8 md:hidden">
                       <Link className="block w-1/2" to={`${generatePath(routes.wallet, { id })}/send`}>
-                        <Button size={Button.size.BIG} disabled={!wallet?.unlockedBalance} name="button-send" block={isMobile}>
+                        <Button size={Button.size.BIG} disabled={sendButtonDisabled} name="button-send" block={isMobile}>
                           <div className="flex space-x-3 items-center"><IconUp /> <span>Send</span></div>
                         </Button>
                       </Link>
