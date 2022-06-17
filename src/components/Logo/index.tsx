@@ -16,7 +16,7 @@ type Props = {
 export const Logo: React.FC<Props> = ({ className, small, white }) => {
   const stagenet = getNetworkType() === "stagenet";
   return (
-    <div className={classNames("inline-flex w-12 h-12", className, {"w-12 h-12": small, "w-32": !small})}>
+    <div className={classNames("inline-flex w-12 h-12", className, { "w-12 h-12": small, "w-32": !small })}>
       {
         (small && white) && <img src={LogoSmall} alt="logo" />
       }
@@ -36,5 +36,5 @@ export const Logo: React.FC<Props> = ({ className, small, white }) => {
         (!small && white && stagenet) && <img src={LogoBigWhiteStagenet} alt="logo" />
       }
     </div>
-    )
-}
+  );
+};

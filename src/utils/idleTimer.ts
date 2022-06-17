@@ -1,9 +1,14 @@
 export class IdleTimer {
   timeout: number;
+
   interval!: ReturnType<typeof setTimeout>;
+
   onTimeout: () => void;
+
   eventHandler!: () => void;
+
   timeoutTracker!: ReturnType<typeof setTimeout>;
+
   constructor({ timeout, onTimeout, onExpired }: { timeout: number; onTimeout: () => void; onExpired: () => void; }) {
     this.timeout = timeout;
     this.onTimeout = onTimeout;
@@ -24,7 +29,7 @@ export class IdleTimer {
     this.interval = setInterval(() => {
       const expiredTime = parseInt(
         localStorage.getItem("_expiredTime") || "0",
-        10
+        10,
       );
       if (expiredTime > 0 && expiredTime < Date.now()) {
         if (this.onTimeout) {

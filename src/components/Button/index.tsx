@@ -88,19 +88,20 @@ export const Button: React.FC<Props> & { variant: typeof Variant; size: typeof U
         {
           "cursor-default": disabled,
           "w-full": block,
-        }
+        },
       )}
       disabled={disabled}
       name={name}
+      // eslint-disable-next-line
       type={type}
     >
       { loading && <div className="inset-0 absolute flex items-center justify-center"><Spinner /></div>}
-      <div className={classNames({"opacity-0": loading})}>
+      <div className={classNames({ "opacity-0": loading })}>
         {children}
       </div>
     </button>
   );
-}
+};
 
 Button.variant = Variant;
 Button.size = UI_SIZE;

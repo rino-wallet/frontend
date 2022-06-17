@@ -1,21 +1,16 @@
 import React, { ReactNode } from "react";
 
+const PanelBody: React.FC = ({ children }) => (
+  <div className="m-10 mt-8">
+    {children}
+  </div>
+);
 
-const PanelBody: React.FC = ({ children }) => {
-  return (
-    <div className="m-10 mt-8">
-      {children}
-    </div>
-  )
-}
-
-const PanelActions: React.FC = ({ children }) => {
-  return (
-    <div className="py-5 px-10 theme-bg-panel-second flex justify-end space-x-3 rounded-bl-medium rounded-br-medium">
-      {children}
-    </div>
-  )
-}
+const PanelActions: React.FC = ({ children }) => (
+  <div className="py-5 px-10 theme-bg-panel-second flex justify-end space-x-3 rounded-bl-medium rounded-br-medium">
+    {children}
+  </div>
+);
 
 type Props = {
   children?: ReactNode;
@@ -31,7 +26,7 @@ export const Panel: React.FC<Props> & { Body: typeof PanelBody; Actions: typeof 
       {children}
     </div>
   );
-}
+};
 
 Panel.Body = PanelBody;
 Panel.Actions = PanelActions;

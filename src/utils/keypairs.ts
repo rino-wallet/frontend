@@ -3,7 +3,7 @@ import { Keypair, EncryptedPrivateKeysDataSet, UserKeyPairInfo } from "../types"
 
 /**
  * Derivation of authentication and encryption keys from the user password and username.
- * 
+ *
  * This function generates a 64 bytes key using the crypto_pwhash derivation function.
  * This means using the key-derivation algorithm on a password that the user chooses.
  * This algorithm requires a password and salt. We'll use username as salt
@@ -37,7 +37,7 @@ export async function deriveUserKeys(password: string, username: string): Promis
       sodium.memzero(authKey);
       sodium.memzero(encryptionKey);
       sodium.memzero(key);
-    }
+    },
   };
 }
 
@@ -53,14 +53,14 @@ export async function generateRecoveryKey(): Promise<{ recoveryKey: Uint8Array; 
     recoveryKey,
     clean(): void {
       sodium.memzero(recoveryKey);
-    }
+    },
   };
 }
 
 /**
  * Generate new key pair
  */
-export async function generateUserKeyPair(): Promise<{encryption: Keypair; sign: Keypair; clean: () => void;}> {
+export async function generateUserKeyPair(): Promise<{ encryption: Keypair; sign: Keypair; clean: () => void; }> {
   await _sodium.ready;
   const sodium = _sodium;
   const encryption = sodium.crypto_box_keypair();
@@ -73,8 +73,8 @@ export async function generateUserKeyPair(): Promise<{encryption: Keypair; sign:
       sodium.memzero(encryption.publicKey);
       sodium.memzero(sign.privateKey);
       sodium.memzero(sign.publicKey);
-    }
-  }
+    },
+  };
 }
 
 /**
@@ -106,7 +106,7 @@ export async function encryptPrivateKeys(
       encryptedMessage: encryptedMessageRK,
       nonce: recoveryKey ? nonceRK : new Uint8Array(),
     },
-  }
+  };
 }
 
 /**
@@ -117,11 +117,11 @@ export async function decryptKeys(
   nonce: Uint8Array,
   encryptionKey: Uint8Array,
 ): Promise<{
-  version: number;
-  encryptionPrivateKey: Uint8Array;
-  signingPrivateKey: Uint8Array;
-  clean: () => void;
-}> {
+    version: number;
+    encryptionPrivateKey: Uint8Array;
+    signingPrivateKey: Uint8Array;
+    clean: () => void;
+  }> {
   try {
     await _sodium.ready;
     const sodium = _sodium;
@@ -136,10 +136,10 @@ export async function decryptKeys(
       clean(): void {
         sodium.memzero(encryptionPrivateKey);
         sodium.memzero(signingPrivateKey);
-      }
+      },
     };
-  } catch(error) {
-    throw({ decryptKeys: "Decryption failed.", password: "Incorrect password." });
+  } catch (error) {
+    throw ({ decryptKeys: "Decryption failed.", password: "Incorrect password." });
   }
 }
 
@@ -179,7 +179,7 @@ export async function generateUserKeyPairInfo(
   password: string,
   derivedKeys?: { authKey: Uint8Array, encryptionKey: Uint8Array, clean: () => void },
 ): Promise<UserKeyPairInfo> {
-  const { authKey, encryptionKey, clean: cleanDerivedKeys } = derivedKeys ? derivedKeys : await deriveUserKeys(password, username);
+  const { authKey, encryptionKey, clean: cleanDerivedKeys } = derivedKeys || await deriveUserKeys(password, username);
   const { recoveryKey, clean: cleanRecoveryKey } = await generateRecoveryKey();
   const { clean: cleanUserKeyPair, ...keyPair } = await generateUserKeyPair();
   const encPrivateKeysDataSet = await encryptPrivateKeys(
@@ -208,8 +208,8 @@ export async function generateUserKeyPairInfo(
       cleanDerivedKeys();
       cleanRecoveryKey();
       cleanUserKeyPair();
-    }
-  }
+    },
+  };
 }
 
 /**
@@ -258,8 +258,8 @@ export async function reencrypPrivateKey(
     clean(): void {
       cleanDerivedKeys();
       cleanDecrypredKeys();
-    }
-  }
+    },
+  };
 }
 
 /**
@@ -273,9 +273,9 @@ export async function getSigningKeys(data: { enc_content: string; nonce: string;
 }> {
   const sodium = _sodium;
   const enc_content = Buffer.from(data.enc_content, "base64");
-  const nonce =  Buffer.from(data.nonce, "base64");
+  const nonce = Buffer.from(data.nonce, "base64");
   const { signingPrivateKey, clean } = await decryptKeys(enc_content, nonce, encryptionKey);
-  const signingPublicKey =  sodium.crypto_sign_ed25519_sk_to_pk(signingPrivateKey);
+  const signingPublicKey = sodium.crypto_sign_ed25519_sk_to_pk(signingPrivateKey);
   return {
     signingPrivateKey,
     signingPublicKey,

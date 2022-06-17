@@ -33,13 +33,13 @@ export class SessionApi extends Api {
 
   public signIn(
     credentials: SignInPayload,
-    config?: { headers: { "X-RINO-2FA": string } }
+    config?: { headers: { "X-RINO-2FA": string } },
   ): Promise<AxiosResponse<SignInResponse>> {
     return this.post<SignInResponse, SignInPayload>(
       "/auth/login/",
       credentials,
-      config
-    )
+      config,
+    );
   }
 
   public verifyPassword(
@@ -50,8 +50,8 @@ export class SessionApi extends Api {
       credentials,
       {
         headers: {},
-      }
-    )
+      },
+    );
   }
 
   public signOut(): Promise<void> {
@@ -59,49 +59,49 @@ export class SessionApi extends Api {
   }
 
   public resetPasswordRequest(
-    data: ResetPasswordRequestPayload
+    data: ResetPasswordRequestPayload,
   ): Promise<void> {
     return this.post<void, ResetPasswordRequestPayload>(
       "/accounts/reset_password/",
-      data
-    ).then((response) => this.success<void>(response),);
+      data,
+    ).then((response) => this.success<void>(response));
   }
 
   public resendActivationEmail(
-    data: ResendActivationEmailPayload
+    data: ResendActivationEmailPayload,
   ): Promise<void> {
     return this.post<void, ResendActivationEmailPayload>(
       "/accounts/resend_activation/",
-      data
-    ).then((response) => this.success<void>(response),);
+      data,
+    ).then((response) => this.success<void>(response));
   }
 
   public resetPasswordConfirm(
-    data: ResetPasswordConfirmPayload
+    data: ResetPasswordConfirmPayload,
   ): Promise<void> {
     return this.post<void, ResetPasswordConfirmPayload>(
       "/accounts/reset_password_confirm/",
-      data
+      data,
     ).then(this.success);
   }
 
   public confirmEmail(data: ConfirmEmailPayload): Promise<void> {
     return this.post<void, ConfirmEmailPayload>(
       "/accounts/activation/",
-      data
+      data,
     ).then(this.success);
   }
 
   public setupKeyPair(data: SetUpKeyPairPayload): Promise<SetUpKeyPairResponse> {
     return this.post<SetUpKeyPairResponse, SetUpKeyPairPayload>(
       "/accounts/keypair/",
-      data
+      data,
     ).then(this.success);
   }
 
   public fetchBackupPrivateKey({ uid, token }: FetchBackupPrivateKeyPayload): Promise<FetchBackupPrivateKeyResponse> {
     return this.get<FetchBackupPrivateKeyResponse>(
-      `/accounts/${uid}/reset-password/${token}/`
+      `/accounts/${uid}/reset-password/${token}/`,
     ).then(this.success);
   }
 
@@ -151,7 +151,6 @@ export class SessionApi extends Api {
       `/wallets/${walletId}/share/${shareId}/accept_share/`,
     ).then(this.success);
   }
-
 }
 
 const seessionApi = new SessionApi(apiConfig);

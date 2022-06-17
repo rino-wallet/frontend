@@ -1,10 +1,8 @@
 import React from "react";
 import { useSelector, useThunkActionCreator } from "../../../hooks";
 import ReceivePayment from "./ReceivePayment";
-import { selectors } from "../../../store/walletSlice";
+import { selectors, openWallet as openWalletThunk } from "../../../store/walletSlice";
 import { selectors as sessionSelectors } from "../../../store/sessionSlice";
-import { FetchSubaddressesThunkPayload, FetchSubaddressResponse } from "../../../types";
-import { openWallet as openWalletThunk } from "../../../store/walletSlice";
 import {
   createSubaddress as createSubaddressThunk,
   fetchSubaddresses as fetchSubaddressesThunk,
@@ -28,8 +26,8 @@ const ReceivePaymentContainer: React.FC<Props> = ({ walletId }) => {
   const listLoading = useSelector(subaddressListSelectors.pendingFetchSubaddresses);
   const subaddressCreating = useSelector(subaddressListSelectors.pendingCreateSubaddress);
   const walletSubAddress = useSelector(subaddressListSelectors.getWalletSubAddress);
-  const {pages, hasPreviousPage, hasNextPage} = useSelector(subaddressListSelectors.getListMetaData);
-  const fetchSubaddresses = useThunkActionCreator<FetchSubaddressResponse, FetchSubaddressesThunkPayload>(fetchSubaddressesThunk);
+  const { pages, hasPreviousPage, hasNextPage } = useSelector(subaddressListSelectors.getListMetaData);
+  const fetchSubaddresses = useThunkActionCreator(fetchSubaddressesThunk);
   return (
     <ReceivePayment
       walletId={walletId}
@@ -47,7 +45,7 @@ const ReceivePaymentContainer: React.FC<Props> = ({ walletId }) => {
       openWallet={openWallet}
       validateSubAddress={validateSubAddress}
     />
-  )
-}
+  );
+};
 
 export default ReceivePaymentContainer;

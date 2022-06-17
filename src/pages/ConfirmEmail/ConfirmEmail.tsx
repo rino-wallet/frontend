@@ -19,7 +19,7 @@ const ConfirmEmailPage: React.FC = () => {
       (err) => {
         setLoading(false);
         setErrors(err.data);
-      }
+      },
     );
   }, [userId, token]);
   return (
@@ -31,7 +31,7 @@ const ConfirmEmailPage: React.FC = () => {
             title="Account activated"
             message="You have successfully verified your email address."
             goBackCallback={(): void => navigate(routes.login)}
-            buttonText={"Continue"}
+            buttonText="Continue"
           />
         )
       }

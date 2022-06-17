@@ -1,8 +1,12 @@
-import {createSlice, createAsyncThunk, PayloadAction} from "@reduxjs/toolkit";
-import { FetchSubaddressResponse, Subaddress, FetchSubaddressesThunkPayload, RootState, CreateSubaddressThunkPayload, FetchWalletSubaddressThunkPayload, UpdateSubaddressThunkPayload, SubaddressResponse } from "../types";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import {
+  FetchSubaddressResponse, Subaddress, FetchSubaddressesThunkPayload, RootState, CreateSubaddressThunkPayload, FetchWalletSubaddressThunkPayload, UpdateSubaddressThunkPayload, SubaddressResponse,
+} from "../types";
 import walletsApi from "../api/wallets";
 import walletInstance from "../wallet";
-import { createLoadingSelector, generateExtraReducer, generateListReqParams, deriveUserKeys, signMessage, verifySignature } from "../utils";
+import {
+  createLoadingSelector, generateExtraReducer, generateListReqParams, deriveUserKeys, signMessage, verifySignature,
+} from "../utils";
 
 export const ITEMS_PER_PAGE = 5;
 const SLICE_NAME = "subaddressList";
@@ -15,7 +19,7 @@ export const fetchSubaddresses = createAsyncThunk<FetchSubaddressResponse, Fetch
       const listReqParams = {
         offset: (page - 1) * ITEMS_PER_PAGE + 1,
         limit: ITEMS_PER_PAGE,
-      }
+      };
       const response = await walletsApi.fetchWalletSubaddresses(walletId, listReqParams);
       // verify signatures of all sub addresses
       response.results.forEach((subaddress: Subaddress) => {
@@ -28,13 +32,13 @@ export const fetchSubaddresses = createAsyncThunk<FetchSubaddressResponse, Fetch
       });
       dispatch(setAddresses(response));
       return response;
-    } catch(err: any) {
-      return rejectWithValue(err?.data)
+    } catch (err: any) {
+      return rejectWithValue(err?.data);
     }
   },
 );
 
-export const validateSubAddress = createAsyncThunk<void, {walletId: string; address: string; index: number; loginPassword: string}>(
+export const validateSubAddress = createAsyncThunk<void, { walletId: string; address: string; index: number; loginPassword: string }>(
   `${SLICE_NAME}/validateSubAddress`,
   async (data, { rejectWithValue, dispatch, getState }) => {
     try {
@@ -51,9 +55,10 @@ export const validateSubAddress = createAsyncThunk<void, {walletId: string; addr
       }
       walletInstance.closeWallet();
       return;
-    } catch(err: any) {
+    } catch (err: any) {
+      // eslint-disable-next-line
       console.log(err);
-      return rejectWithValue(err?.data)
+      return rejectWithValue(err?.data);
     }
   },
 );
@@ -75,15 +80,15 @@ export const fetchWalletSubaddress = createAsyncThunk<FetchSubaddressResponse, F
         }
       }
       return addresses;
-    } catch(err: any) {
-      return rejectWithValue(err?.data)
+    } catch (err: any) {
+      return rejectWithValue(err?.data);
     }
   },
 );
 
 export const updateSubaddress = createAsyncThunk<SubaddressResponse, UpdateSubaddressThunkPayload>(
   `${SLICE_NAME}/updateSubaddress`,
-  async ({ id, address, label}, { rejectWithValue, dispatch, getState }) => {
+  async ({ id, address, label }, { rejectWithValue, dispatch, getState }) => {
     try {
       const walletSubAddress = (getState() as any)[SLICE_NAME].walletSubAddress;
       const subaddress = await walletsApi.updateWalletSubaddresses(id, address, { label });
@@ -93,26 +98,24 @@ export const updateSubaddress = createAsyncThunk<SubaddressResponse, UpdateSubad
         dispatch(updateSubaddressInList(subaddress));
       }
       return subaddress;
-    } catch(err: any) {
-      return rejectWithValue(err?.data)
+    } catch (err: any) {
+      return rejectWithValue(err?.data);
     }
   },
 );
-
 
 export const createSubaddress = createAsyncThunk<Subaddress, CreateSubaddressThunkPayload>(
   `${SLICE_NAME}/createSubaddress`,
   async ({ walletId }, { rejectWithValue, dispatch }) => {
     try {
       const response = await walletsApi.createSubaddress(walletId);
-      dispatch(setWalletSubaddress(response))
+      dispatch(setWalletSubaddress(response));
       return response;
-    } catch(err: any) {
-      return rejectWithValue(err?.data)
+    } catch (err: any) {
+      return rejectWithValue(err?.data);
     }
   },
 );
-
 
 export interface State {
   count: number;
@@ -144,7 +147,7 @@ export const subaddressListSlice = createSlice({
       state.walletSubAddress = action.payload;
     },
     updateSubaddressInList(state, action: { payload: Subaddress }): void {
-      state.entities = state.entities.map((entity) => entity.address === action.payload.address ? action.payload : entity);
+      state.entities = state.entities.map((entity) => (entity.address === action.payload.address ? action.payload : entity));
     },
     markValidAddress(state, action: PayloadAction<number>): void {
       if (!state.validated.includes(action.payload)) {
@@ -171,11 +174,11 @@ export const subaddressListSlice = createSlice({
     ...generateExtraReducer(fetchSubaddresses),
     ...generateExtraReducer(fetchWalletSubaddress),
     ...generateExtraReducer(createSubaddress),
-  }
+  },
 });
 
 export const selectors = {
-  getWalletSubAddress: (state: RootState): Subaddress => state[SLICE_NAME].walletSubAddress ? ({ ...state[SLICE_NAME].walletSubAddress, isValid: state[SLICE_NAME].validated.includes(state[SLICE_NAME].walletSubAddress.index) }) : null,
+  getWalletSubAddress: (state: RootState): Subaddress => (state[SLICE_NAME].walletSubAddress ? ({ ...state[SLICE_NAME].walletSubAddress, isValid: state[SLICE_NAME].validated.includes(state[SLICE_NAME].walletSubAddress.index) }) : null),
   getListMetaData: (state: RootState): any => ({
     count: state[SLICE_NAME].count,
     pages: state[SLICE_NAME].pages,
@@ -187,7 +190,7 @@ export const selectors = {
   pendingFetchSubaddresses: createLoadingSelector(SLICE_NAME, fetchSubaddresses.pending.toString()),
   pendingFetchWalletSubaddress: createLoadingSelector(SLICE_NAME, fetchWalletSubaddress.pending.toString()),
   pendingCreateSubaddress: createLoadingSelector(SLICE_NAME, createSubaddress.pending.toString()),
-}
+};
 
 export const {
   reset,

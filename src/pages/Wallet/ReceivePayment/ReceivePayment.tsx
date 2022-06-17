@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { createQRCodeImage } from "../../../utils";
 import { generatePath, useNavigate } from "react-router-dom";
+import { createQRCodeImage } from "../../../utils";
 import { CopyArea, Pagination, enterPasswordModal } from "../../../modules/index";
-import { Button, Label, Tooltip } from "../../../components";
-import { CreateSubaddressThunkPayload, Subaddress, Wallet, FetchSubaddressesThunkPayload, FetchSubaddressResponse, UseThunkActionCreator, LocalWalletData, PublicWallet } from "../../../types";
+import {
+  Button, EmptyList, Label, Tooltip,
+} from "../../../components";
+import {
+  CreateSubaddressThunkPayload, Subaddress, Wallet, FetchSubaddressesThunkPayload, FetchSubaddressResponse, UseThunkActionCreator, LocalWalletData, PublicWallet,
+} from "../../../types";
 import routes from "../../../router/routes";
 import { SubaddressItem } from "./SubaddressItem";
 import { ValidateButton } from "./ValidateButton";
 import { EditLabelForm } from "./EditLabelForm";
 import { WalletPageTemplate } from "../WalletPageTemplate";
-
 
 interface Props {
   walletId: string;
@@ -56,7 +59,7 @@ const ReceivePayment: React.FC<Props> = ({
           setImage(b64String);
         }, () => { setImage(""); });
     }
-  }, [walletSubAddress])
+  }, [walletSubAddress]);
   useEffect(() => {
     fetchSubaddresses({ walletId, page });
   }, [page]);
@@ -64,15 +67,18 @@ const ReceivePayment: React.FC<Props> = ({
     if (typeof openWallet === "function" && typeof validateSubAddress === "function") {
       await enterPasswordModal({
         callback: async (password: string) => {
-          //@ts-ignore
+          // @ts-ignore
           await openWallet({ wallet, loginPassword: password });
-          await validateSubAddress({ walletId, address: subaddress.address, index: subaddress.index, loginPassword: password });
-        }
-      })
+          await validateSubAddress({
+            walletId, address: subaddress.address, index: subaddress.index, loginPassword: password,
+          });
+        },
+      });
     }
   }
   return (
     <WalletPageTemplate
+      showNameInBox
       title="Receive"
       goBackCallback={(): void => { navigate(`${generatePath(isPublicWallet ? routes.publicWallet : routes.wallet, { id: walletId })}/transactions`); }}
       id={walletId}
@@ -87,7 +93,7 @@ const ReceivePayment: React.FC<Props> = ({
             }
           </div>
           <div className="min-w-0 order-1 w-full md:mr-6">
-            <Label label={
+            <Label label={(
               <div className="flex items-center" data-qa-selector="validate-current-address">
                 <span className="mr-3">Current address</span>
                 {
@@ -99,16 +105,22 @@ const ReceivePayment: React.FC<Props> = ({
                   )
                 }
               </div>
-            }>
+            )}
+            >
               <CopyArea value={walletSubAddress?.address || ""} qaSelector="receive-address">
                 <EditLabelForm id={walletId} address={walletSubAddress?.address || ""} label={walletSubAddress?.label || ""} block />
-                {walletSubAddress?.address} {walletSubAddress?.isUsed ? <span className="theme-text-secondary font-bold"> (Used)</span> : ""}
+                {walletSubAddress?.address}
+                {" "}
+                {walletSubAddress?.isUsed ? <span className="theme-text-secondary font-bold"> (Used)</span> : ""}
               </CopyArea>
             </Label>
             {viewOnly || isPublicWallet ? (
-              <Tooltip className="w-full" content={(
-                <div className="md:w-48">This functionality is not available in read-only wallets.</div>
-              )}>
+              <Tooltip
+                className="w-full"
+                content={(
+                  <div className="md:w-48">This functionality is not available in read-only wallets.</div>
+              )}
+              >
                 <Button
                   className="mt-6"
                   name="create-new-address-btn"
@@ -127,7 +139,7 @@ const ReceivePayment: React.FC<Props> = ({
                     createSubaddress({ walletId })
                       .then(() => {
                         fetchSubaddresses({ walletId, page });
-                      })
+                      });
                   }
                 }}
                 disabled={subaddressCreating}
@@ -142,6 +154,11 @@ const ReceivePayment: React.FC<Props> = ({
         <div>
           <h2 className="font-catamaran uppercase text-2xl font-bold mb-8">Previous addresses</h2>
           <ul>
+            {
+              (!subaddresses.length && !listLoading) && (
+                <EmptyList message="No previous addresses yet." />
+              )
+            }
             {
               subaddresses.map((subaddress) => (
                 <li key={subaddress.address} className="mb-3">
@@ -169,7 +186,7 @@ const ReceivePayment: React.FC<Props> = ({
         </div>
       </div>
     </WalletPageTemplate>
-  )
-}
+  );
+};
 
 export default ReceivePayment;

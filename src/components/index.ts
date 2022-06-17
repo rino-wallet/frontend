@@ -60,4 +60,4 @@ export {
   Prompt,
   DisableAutofill,
   WalletRole,
-}
+};

@@ -7,10 +7,11 @@ import { TaskStatus } from "../types";
  * @param signal
  * @returns Promise
  */
-export default function pollTask(id: string, signal: AbortSignal|null = null): Promise<any> {
+export default function pollTask(id: string, signal: AbortSignal | null = null): Promise<any> {
   return new Promise((resolve, reject) => {
     let aborted = false;
     signal?.addEventListener("abort", () => {
+      // eslint-disable-next-line
       console.log("Polling aborted.");
       aborted = true;
       return reject(signal);
@@ -19,17 +20,17 @@ export default function pollTask(id: string, signal: AbortSignal|null = null): P
     async function fetchData(_timeoutID?: any): Promise<void> {
       try {
         if (aborted) {
-          reject({ data: { message: "ABORTED" }});
+          reject({ data: { message: "ABORTED" } });
           return;
         }
-        const resp = await tasksApi.checkTask<{ status: TaskStatus, result: any}>(id);
+        const resp = await tasksApi.checkTask<{ status: TaskStatus, result: any }>(id);
         if (resp.status === "COMPLETED") {
           resolve(resp);
           if (_timeoutID) {
             clearInterval(_timeoutID);
           }
         } else if (resp.status === "FAILED") {
-          reject({ data: { message: resp.result }});
+          reject({ data: { message: resp.result } });
           if (_timeoutID) {
             clearInterval(_timeoutID);
           }
@@ -38,7 +39,7 @@ export default function pollTask(id: string, signal: AbortSignal|null = null): P
             fetchData(timeoutID);
           }, 10000);
         }
-      } catch(error) {
+      } catch (error) {
         setTimeout(fetchData, 10000);
       }
     }

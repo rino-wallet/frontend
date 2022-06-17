@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Modal, FormErrors } from "../../../modules/index";
@@ -16,7 +15,9 @@ interface Props {
 
 const controlString = "permanently delete";
 
-const DeleteWallet: React.FC<Props> = ({ deleteWallet, goBackCallback, balance, loading }) => {
+const DeleteWallet: React.FC<Props> = ({
+  deleteWallet, goBackCallback, balance, loading,
+}) => {
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const [confirmationString, setConfirmation] = useState("");
@@ -24,7 +25,7 @@ const DeleteWallet: React.FC<Props> = ({ deleteWallet, goBackCallback, balance, 
     try {
       await deleteWallet();
       navigate(routes.wallets);
-    } catch(err: any) {
+    } catch (err: any) {
       if (err) {
         setErrors(err);
       }
@@ -45,16 +46,28 @@ const DeleteWallet: React.FC<Props> = ({ deleteWallet, goBackCallback, balance, 
           (balance && balance !== "0") && (
             <p>
               <span className="block mb-2">
-                This wallet has <span className="font-bold"><span data-qa-selector="wallet-balance">{piconeroToMonero(balance)}</span> XMR</span> left.
+                This wallet has
+                {" "}
+                <span className="font-bold">
+                  <span data-qa-selector="wallet-balance">{piconeroToMonero(balance)}</span>
+                  {" "}
+                  XMR
+                </span>
+                {" "}
+                left.
               </span>
             </p>
           )
         }
         <div className="mt-4">
-            A deleted wallet cannot be restored!
+          A deleted wallet cannot be restored!
         </div>
         <div className="mt-4">
-          <p className="mb-3">Please confirm deleting the wallet by typing "<span className="theme-text-red">permanently delete</span>" in the field below.</p>
+          <p className="mb-3">
+            Please confirm deleting the wallet by typing &quot;
+            <span className="theme-text-red">permanently delete</span>
+            &quot; in the field below.
+          </p>
           <Input
             type="text"
             name="confirmation"
@@ -81,7 +94,7 @@ const DeleteWallet: React.FC<Props> = ({ deleteWallet, goBackCallback, balance, 
         </div>
       </Modal.Actions>
     </Modal>
-  )
+  );
 };
 
 export default DeleteWallet;

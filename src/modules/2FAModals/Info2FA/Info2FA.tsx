@@ -1,6 +1,8 @@
 import React, { useState } from "react";
-import { BindHotKeys, Button, Checkbox, Label } from "../../../components";
-import { Modal, CopyArea } from "../../../modules/index";
+import {
+  BindHotKeys, Button, Checkbox, Label,
+} from "../../../components";
+import { Modal, CopyArea } from "../../index";
 
 interface Props {
   submit: () => Promise<void>;
@@ -19,7 +21,9 @@ const Info2FA: React.FC<Props> = ({ submit, cancel, secretKey }) => {
           <div>
             <p className="mb-6 text-xl font-bold">Your account is now secure.</p>
             <p className="mb-6">
-              <span className="theme-text-red font-bold">Important:</span> Save your 16-digit
+              <span className="theme-text-red font-bold">Important:</span>
+              {" "}
+              Save your 16-digit
               secret key, for example by writing it down on paper, and store it
               safely. You will need it in the case you lose access to your phone.
               Without your phone or the 16-digit secret key you will be locked

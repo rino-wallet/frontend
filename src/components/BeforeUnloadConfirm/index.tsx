@@ -15,7 +15,7 @@ export const BeforeUnloadConfirm: React.FC<Props> = ({ needConfirmation }) => {
     }
     return (): void => {
       window.removeEventListener("beforeunload", handleOnBeforeUnload);
-    }
+    };
   }, [needConfirmation]);
   return null;
-}
+};

@@ -7,8 +7,9 @@ interface Options {
 
 export default async function createQRCodeImage(string: string, options?: Options): Promise<string> {
   try {
-    return await QRCode.toDataURL(string, { errorCorrectionLevel: "M", ...(options ? options : {}) })
+    return await Promise.resolve(QRCode.toDataURL(string, { errorCorrectionLevel: "M", ...(options || {}) }));
   } catch (err) {
+    // eslint-disable-next-line
     console.error(err);
     return "";
   }

@@ -4,11 +4,11 @@ const asyncActionStatusesList = [asyncActionStatuses.idle, asyncActionStatuses.l
 
 export type WalletTxSet = {
   getMultisigTxHex: () => string;
-}
+};
 
 export type WalletTx = {
   getTxSet: () => WalletTxSet;
-}
+};
 
 export type WalletRaw = {
   isConnected: () => boolean;
@@ -20,7 +20,7 @@ export type WalletRaw = {
   isMultisig: () => boolean;
   getAddress: (a: number, b: number) => Promise<string>;
   prepareMultisig: () => Promise<string>;
-  makeMultisig: (peerMultisigHexes: string[], numberOfParticipants: number,  walletPassword: string) => Promise<{ getMultisigHex: () => string}>;
+  makeMultisig: (peerMultisigHexes: string[], numberOfParticipants: number, walletPassword: string) => Promise<{ getMultisigHex: () => string }>;
   exchangeMultisigKeys: (multisigHexes: string[], walletPassword: string) => Promise<ExchangeMultisigKeysResult>;
   close: () => Promise<any>;
   getData: () => Promise<Array<Uint8Array>>;
@@ -32,13 +32,13 @@ export type WalletRaw = {
   loadMultisigTx: (txHex: string) => Promise<{ state: TransactionConfig }>;
   getMultisigSeed: (passphrase: string) => Promise<string>;
   getSubaddresses: (accountIdx: number, subaddressIndices: number) => Promise<any>;
-}
+};
 
 export type ExchangeMultisigKeysResult = {
   state: {
     address: string;
   };
-}
+};
 
 export type WalletConfig = {
   path?: string;
@@ -58,13 +58,13 @@ export type WalletConfig = {
   proxyToWorker?: boolean;
   keysData?: Uint8Array,
   cacheData?: Uint8Array,
-}
+};
 
 export type TransactionConfig = {
   address?: string,
   amount?: string,
   fee?: number
-}
+};
 export interface NewWalletPDFData {
   userWalletSeed: string;
   backupWalletSeed: string;
@@ -93,9 +93,11 @@ export type Env = "production" | "test" | "staging" | "develop";
 
 export type AccessLevel = "Owner" | "View-only" | "Spender" | "Admin";
 
-export type ApiErrorRaw = Record<string, string | string[]>
+export type ReactAppEnv = "production" | "test" | "staging" | "develop";
 
-export type ApiError = Record<string, string>
+export type ApiErrorRaw = Record<string, string | string[]>;
+
+export type ApiError = Record<string, string>;
 
 export interface DerivedKeys { authKey: string; encryptionKey: string }
 

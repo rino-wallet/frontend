@@ -10,10 +10,10 @@ interface Props {
 
 export const LayoutContainer: React.FC<Props> = ({ children, page }) => {
   const signOut = useThunkActionCreator<void, void>(signOutAction);
-  const token = useSelector(state => state.session.token);
+  const token = useSelector((state) => state.session.token);
   return (
     <Layout signOut={signOut} isAuthenticated={token} page={page}>
       {children}
     </Layout>
-  )
-}
+  );
+};

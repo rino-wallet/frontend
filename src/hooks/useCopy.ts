@@ -17,11 +17,11 @@ const defaultOptions = {
 };
 
 export function useCopy(
-  params = {}
+  params = {},
 ): {
-  successFlag: boolean;
-  copyToClipboard: (str: string) => void;
-} {
+    successFlag: boolean;
+    copyToClipboard: (str: string) => void;
+  } {
   const options = {
     ...defaultOptions,
     ...params,

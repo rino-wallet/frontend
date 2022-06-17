@@ -25,8 +25,8 @@ const ResetPassword = Loadable({
   loader: () => import("../pages/ResetPassword" /* webpackChunkName: "ResetPassword" */),
   loading: Loading,
 });
-const Profile = Loadable({
-  loader: () => import("../pages/Profile" /* webpackChunkName: "Profile" */),
+const Settings = Loadable({
+  loader: () => import("../pages/Settings" /* webpackChunkName: "Settings" */),
   loading: Loading,
 });
 const Wallets = Loadable({
@@ -55,38 +55,6 @@ const Components = Loadable({
 });
 const GenerateKeyPair = Loadable({
   loader: () => import("../pages/GenerateKeyPair" /* webpackChunkName: "GenerateKeyPair" */),
-  loading: Loading,
-});
-const Security = Loadable({
-  loader: () => import("../pages/Security" /* webpackChunkName: "Security" */),
-  loading: Loading,
-});
-const Acknowledgments = Loadable({
-  loader: () => import("../pages/Acknowledgments" /* webpackChunkName: "Acknowledgments" */),
-  loading: Loading,
-});
-const SecurityPGPKey = Loadable({
-  loader: () => import("../pages/SecurityPGPKey" /* webpackChunkName: "SecurityPGPKey" */),
-  loading: Loading,
-});
-
-const FAQ = Loadable({
-  loader: () => import("../pages/FAQ" /* webpackChunkName: "FAQ" */),
-  loading: Loading,
-});
-
-const TermsOfService = Loadable({
-  loader: () => import("../pages/TermsOfService" /* webpackChunkName: "TermsOfService" */),
-  loading: Loading,
-});
-
-const PrivacyPolicy = Loadable({
-  loader: () => import("../pages/PrivacyPolicy" /* webpackChunkName: "PrivacyPolicy" */),
-  loading: Loading,
-});
-
-const CookiePolicy = Loadable({
-  loader: () => import("../pages/CookiePolicy" /* webpackChunkName: "CookiePolicy" */),
   loading: Loading,
 });
 
@@ -123,7 +91,7 @@ type RouteType = {
   isPrivate?: boolean;
   key: string;
   requiredFeatures?: RequiredFeatures[];
-}
+};
 
 const ROUTER_CONFIG: RouteType[] = [
   {
@@ -187,14 +155,14 @@ const ROUTER_CONFIG: RouteType[] = [
     requiredFeatures: [browserFeatures.webassembly],
   },
   {
-    path: ROUTES.profile,
+    path: ROUTES.settings,
     metaTitle: defaultTitle,
     metaDescription: defaultDescription,
     metaKeywords: defaultMetaKeywords,
     metaOgImage: defaultMetaOgImage,
-    component: (props: any): ReactElement => <Profile {...props} />,
+    component: (props: any): ReactElement => <Settings {...props} />,
     isPrivate: true,
-    key: "profile",
+    key: "settings",
   },
   {
     path: ROUTES.wallets,
@@ -258,76 +226,6 @@ const ROUTER_CONFIG: RouteType[] = [
     component: (props: any): ReactElement => <ChangeEmailConfirm {...props} />,
     isPrivate: false,
     key: "change email confirmation",
-  },
-  {
-    path: ROUTES.security,
-    metaTitle: defaultTitle,
-    metaDescription: defaultDescription,
-    metaKeywords: defaultMetaKeywords,
-    metaOgImage: defaultMetaOgImage,
-    component: (props: any): ReactElement => <Security {...props} />,
-    isPrivate: false,
-    key: "security",
-  },
-  {
-    path: ROUTES.acknowledgments,
-    metaTitle: defaultTitle,
-    metaDescription: defaultDescription,
-    metaKeywords: defaultMetaKeywords,
-    metaOgImage: defaultMetaOgImage,
-    component: (props: any): ReactElement => <Acknowledgments {...props} />,
-    isPrivate: false,
-    key: "acknowledgments",
-  },
-  {
-    path: ROUTES.security_pgp_key,
-    metaTitle: defaultTitle,
-    metaDescription: defaultDescription,
-    metaKeywords: defaultMetaKeywords,
-    metaOgImage: defaultMetaOgImage,
-    component: (props: any): ReactElement => <SecurityPGPKey {...props} />,
-    isPrivate: false,
-    key: "security_pgp_key",
-  },
-  {
-    path: ROUTES.faq,
-    metaTitle: defaultTitle,
-    metaDescription: defaultDescription,
-    metaKeywords: defaultMetaKeywords,
-    metaOgImage: defaultMetaOgImage,
-    component: (props: any): ReactElement => <FAQ {...props} />,
-    isPrivate: false,
-    key: "faq",
-  },
-  {
-    path: ROUTES.terms_of_service,
-    metaTitle: defaultTitle,
-    metaDescription: defaultDescription,
-    metaKeywords: defaultMetaKeywords,
-    metaOgImage: defaultMetaOgImage,
-    component: (props: any): ReactElement => <TermsOfService {...props} />,
-    isPrivate: false,
-    key: "terms_of_service",
-  },
-  {
-    path: ROUTES.privacy_policy,
-    metaTitle: defaultTitle,
-    metaDescription: defaultDescription,
-    metaKeywords: defaultMetaKeywords,
-    metaOgImage: defaultMetaOgImage,
-    component: (props: any): ReactElement => <PrivacyPolicy {...props} />,
-    isPrivate: false,
-    key: "privacy_policy",
-  },
-  {
-    path: ROUTES.cookie_policy,
-    metaTitle: defaultTitle,
-    metaDescription: defaultDescription,
-    metaKeywords: defaultMetaKeywords,
-    metaOgImage: defaultMetaOgImage,
-    component: (props: any): ReactElement => <CookiePolicy {...props} />,
-    isPrivate: false,
-    key: "cookie_policy",
   },
   {
     path: ROUTES.not_found,

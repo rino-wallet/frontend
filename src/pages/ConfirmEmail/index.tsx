@@ -5,12 +5,10 @@ import ConfirmEmail from "./ConfirmEmail";
 
 const ConfirmEmailPageContainer: React.FC = () => {
   const dispatch = useDispatch();
-  useEffect(() => {
-    return (): void => {
-      dispatch(changeLocation());
-    }
-  }, [])
-  return <ConfirmEmail />
-}
+  useEffect(() => (): void => {
+    dispatch(changeLocation());
+  }, []);
+  return <ConfirmEmail />;
+};
 
 export default ConfirmEmailPageContainer;

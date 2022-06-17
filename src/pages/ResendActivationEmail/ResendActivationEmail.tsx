@@ -4,7 +4,9 @@ import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { ResendActivationEmailPayload } from "../../types";
 import { FormErrors } from "../../modules/index";
-import { Label, Input, Button, Panel } from "../../components";
+import {
+  Label, Input, Button, Panel,
+} from "../../components";
 import routes from "../../router/routes";
 
 const forgotPasswordRequestValidationSchema = yup.object().shape({
@@ -28,20 +30,18 @@ const ResendActivationEmailPage: React.FC<Props> = ({ onSubmit }) => {
         non_field_errors: "",
       }}
       validationSchema={forgotPasswordRequestValidationSchema}
-      onSubmit={(values, { setErrors }): Promise<void> => {
-        return onSubmit({ email: values.email }).then(
-          () => {
+      onSubmit={(values, { setErrors }): Promise<void> => onSubmit({ email: values.email }).then(
+        () => {
+          setHasSubmitCompleted(true);
+        },
+        (err) => {
+          if (Object.keys(err?.data || {}).length === 0) {
             setHasSubmitCompleted(true);
-          },
-          (err) => {
-            if (Object.keys(err?.data || {}).length === 0) {
-              setHasSubmitCompleted(true);
-            } else {
-              setErrors(err.data);
-            }
+          } else {
+            setErrors(err.data);
           }
-        );
-      }}
+        },
+      )}
     >
       {({
         values,
@@ -60,7 +60,11 @@ const ResendActivationEmailPage: React.FC<Props> = ({ onSubmit }) => {
               <Panel title="I did not receive my activation email">
                 <Panel.Body>
                   <p>
-                    We sent an email to <span className="text-primary font-bold break-words">{values.email}</span> with the activation link.
+                    We sent an email to
+                    {" "}
+                    <span className="text-primary font-bold break-words">{values.email}</span>
+                    {" "}
+                    with the activation link.
                   </p>
                 </Panel.Body>
                 <Panel.Actions>
@@ -74,7 +78,7 @@ const ResendActivationEmailPage: React.FC<Props> = ({ onSubmit }) => {
                     Ok
                   </Button>
                 </Panel.Actions>
-              </Panel> 
+              </Panel>
             ) : (
               <Panel title="I did not receive my activation email">
                 <Panel.Body>
@@ -89,7 +93,7 @@ const ResendActivationEmailPage: React.FC<Props> = ({ onSubmit }) => {
                         onChange={handleChange}
                         onBlur={handleBlur}
                         placeholder="Your email"
-                        error={touched.email ? errors.email: ""}
+                        error={touched.email ? errors.email : ""}
                       />
                     </Label>
                   </div>
@@ -108,7 +112,7 @@ const ResendActivationEmailPage: React.FC<Props> = ({ onSubmit }) => {
                   <Button
                     size={Button.size.BIG}
                     variant={Button.variant.PRIMARY_LIGHT}
-                    disabled={dirty && !isValid || isSubmitting}
+                    disabled={dirty && (!isValid || isSubmitting)}
                     type="submit"
                     name="submit-btn"
                     className="whitespace-nowrap"

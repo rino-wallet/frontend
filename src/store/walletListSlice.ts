@@ -1,9 +1,13 @@
-import {createSlice, createAsyncThunk} from "@reduxjs/toolkit";
-import { FetchWalletsResponse, Wallet, FetchWalletListThunkPayload, RootState } from "../types";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  FetchWalletsResponse, Wallet, FetchWalletListThunkPayload, RootState,
+} from "../types";
 import walletsApi from "../api/wallets";
-import { createLoadingSelector, generateExtraReducer, generateListReqParams } from "../utils";
+import {
+  createLoadingSelector, generateExtraReducer, generateListReqParams, isMobile,
+} from "../utils";
 
-export const ITEMS_PER_PAGE = 3;
+export const ITEMS_PER_PAGE = isMobile() ? 3 : 4;
 
 export const fetchWallets = createAsyncThunk<FetchWalletsResponse, FetchWalletListThunkPayload>(
   "walletList/fetchWallets",
@@ -11,8 +15,8 @@ export const fetchWallets = createAsyncThunk<FetchWalletsResponse, FetchWalletLi
     try {
       const wallets = await walletsApi.fetchWallets(generateListReqParams(page, ITEMS_PER_PAGE));
       return wallets;
-    } catch(err: any) {
-      return rejectWithValue(err?.data)
+    } catch (err: any) {
+      return rejectWithValue(err?.data);
     }
   },
 );
@@ -61,7 +65,7 @@ export const walletListSlice = createSlice({
         hasNextPage: !!data.next,
       }),
     ),
-  }
+  },
 });
 
 export const selectors = {
@@ -74,7 +78,7 @@ export const selectors = {
   getWallets: (state: RootState): Wallet[] => state[SLICE_NAME].entities,
   // thunk statuses
   pendingFetchWallets: createLoadingSelector(SLICE_NAME, fetchWallets.pending.toString()),
-}
+};
 
 export const {
   reset,

@@ -25,13 +25,17 @@ const validationSchema = yup.object().shape({
   label: yup.string().max(100, "Ensure this field has no more than 100 characters."),
 });
 
-export const EditLabelForm: React.FC<Props> = ({ label, block, id, address, className = "", short }) => {
+export const EditLabelForm: React.FC<Props> = ({
+  label, block, id, address, className = "", short,
+}) => {
   const isMobile = useIsMobile();
   const updateSubaddress = useThunkActionCreator(updateSubaddressThunk);
   const [isEditing, setIsEditing] = useState(false);
   function onEdit(): void {
     if (isMobile) {
-      editLabelModal({ id, label, address, updateSubaddress });
+      editLabelModal({
+        id, label, address, updateSubaddress,
+      });
     } else {
       setIsEditing(true);
     }
@@ -49,7 +53,7 @@ export const EditLabelForm: React.FC<Props> = ({ label, block, id, address, clas
           const response = await updateSubaddress({ id, address, label: values.label });
           setIsEditing(false);
           return response;
-        } catch(err: any) {
+        } catch (err: any) {
           if (err) setErrors(err);
         }
       }}
@@ -64,7 +68,7 @@ export const EditLabelForm: React.FC<Props> = ({ label, block, id, address, clas
           isValid,
           isSubmitting,
         }): React.ReactChild => (
-          <form className={classNames("items-center", className, { "block": block, "inline-block": !block })} onSubmit={handleSubmit}>
+          <form className={classNames("items-center", className, { block, "inline-block": !block })} onSubmit={handleSubmit}>
             <div className="flex items-center">
               <Button
                 loading={isSubmitting}
@@ -72,12 +76,13 @@ export const EditLabelForm: React.FC<Props> = ({ label, block, id, address, clas
                 className="mr-2"
                 size={Button.size.TINY}
                 disabled={!isValid}
+                name="save-label"
               >
                 {short ? "Save" : "Save Label"}
               </Button>
               <input
                 className={classNames("shadow-none outline-none focus:outline-none focus:ring-0 bg-transparent border-t-0 border-l-0 border-r-0 border-b-2", {
-                  "flex-1": block
+                  "flex-1": block,
                 })}
                 style={{ borderColor: "rgba(105, 98, 169, 0.6)", color: "rgba(105, 98, 169, 1)", marginBottom: "-2px" }}
                 value={values.label}
@@ -95,14 +100,17 @@ export const EditLabelForm: React.FC<Props> = ({ label, block, id, address, clas
       }
     </Formik>
   ) : (
-    <div className={classNames("items-center", className, { "flex": block, "inline-flex": !block })}>
+    <div className={classNames("items-start", className, { flex: block, "inline-flex": !block })}>
       <Button
         onClick={onEdit}
-        className="mr-2 whitespace-nowrap"
+        className="mr-2 whitespace-nowrap shrink-0 relative top-0.25"
         size={Button.size.TINY}
+        name={label ? "Edit Label" : "Add Label"}
       >
         { label ? (short ? "Edit" : "Edit Label") : "Add Label" }
-      </Button> <div className="font-bold whitespace-nowrap text-ellipsis min-w-0 overflow-hidden">{label}</div>
+      </Button>
+      {" "}
+      <div className="font-bold text-ellipsis min-w-0 overflow-hidden">{label}</div>
     </div>
-  )
-}
+  );
+};

@@ -2,8 +2,10 @@ import React, { useEffect, useRef } from "react";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import { Delete2FAPayload, UseThunkActionCreator } from "../../../types";
-import { BindHotKeys, Input, Button, Label } from "../../../components";
-import { Modal, FormErrors } from "../../../modules/index";
+import {
+  BindHotKeys, Input, Button, Label,
+} from "../../../components";
+import { Modal, FormErrors } from "../../index";
 
 const validationSchema = yup.object().shape({
   code: yup.string().required("This field is required."),
@@ -32,17 +34,14 @@ const Disable2FA: React.FC<Props> = ({ submit, cancel, delete2FA }) => {
       code: "",
       detail: "",
     },
-    onSubmit: (formValues, { setErrors }) => {
-      return delete2FA({ code: formValues.code }).then(
-        () => {
-          submit();
-        },
-        (err) => {
-
-          setErrors(err);
-        }
-      );
-    },
+    onSubmit: (formValues, { setErrors }) => delete2FA({ code: formValues.code }).then(
+      () => {
+        submit();
+      },
+      (err) => {
+        setErrors(err);
+      },
+    ),
   });
   useEffect(() => {
     if (inputRef.current) {
@@ -70,7 +69,7 @@ const Disable2FA: React.FC<Props> = ({ submit, cancel, delete2FA }) => {
                     className="tracking-widest"
                     maxLength={6}
                     placeholder="XXXXXX"
-                    error={touched.code && errors.code || ""}
+                    error={touched.code ? errors.code : ""}
                   />
                 </div>
               </Label>
@@ -85,7 +84,7 @@ const Disable2FA: React.FC<Props> = ({ submit, cancel, delete2FA }) => {
                 onClick={cancel}
               >
                 Cancel
-                  </Button>
+              </Button>
               <Button
                 disabled={!isValid || !dirty || isSubmitting}
                 type="submit"
@@ -94,7 +93,7 @@ const Disable2FA: React.FC<Props> = ({ submit, cancel, delete2FA }) => {
                 variant={Button.variant.RED}
               >
                 Disable 2FA
-                  </Button>
+              </Button>
             </div>
           </Modal.Actions>
         </form>

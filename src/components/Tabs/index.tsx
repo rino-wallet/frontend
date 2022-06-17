@@ -15,7 +15,9 @@ type Props = {
 };
 
 export const Tabs: React.FC<Props> = (props) => {
-  const { tabs, activeTab, children, onChange, tabsWithNotification } = props;
+  const {
+    tabs, activeTab, children, onChange, tabsWithNotification,
+  } = props;
   return (
     <div className="w-full">
       <div className="flex border-b theme-border">
@@ -38,10 +40,13 @@ export const Tabs: React.FC<Props> = (props) => {
                   "text-black": tab.value === activeTab,
                   "cursor-default": typeof onChange !== "function",
                   "cursor-pointer": typeof onChange === "function",
-              })}
+                },
+              )}
             >
-              {tab.text} {tabsWithNotification?.includes(tab.value) ?
-              <span className="inline-block w-2 h-2 mr-2 bg-red-600 rounded-full ml-1" data-qa-selector="pending_share_red_dot"/>: null}
+              {tab.text}
+              {" "}
+              {tabsWithNotification?.includes(tab.value)
+                ? <span className="inline-block w-2 h-2 mr-2 bg-red-600 rounded-full ml-1" data-qa-selector="pending_share_red_dot" /> : null}
             </button>
           ))
         }
@@ -49,4 +54,4 @@ export const Tabs: React.FC<Props> = (props) => {
       {children}
     </div>
   );
-}
+};

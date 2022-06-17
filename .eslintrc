@@ -1,0 +1,73 @@
+{
+  "env": {
+    "es2021": true,
+    "browser": true,
+    "amd": true,
+    "node": true,
+    "mocha": true
+  },
+  "extends": [
+    "airbnb",
+    // "airbnb/hooks",
+    "airbnb-typescript"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 2018,
+    "sourceType": "module",
+    "project": "./tsconfig.json"
+  },
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "root": true,
+  "rules": {
+    "quotes": [
+      "error",
+      "double"
+    ],
+    "@typescript-eslint/quotes": "off",
+    "import/extensions": "off",
+    "import/no-extraneous-dependencies": "off",
+    "@typescript-eslint/space-before-blocks": "off",
+    "@typescript-eslint/no-useless-constructor": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/no-empty-interface": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "linebreak-style": "off",
+    "react/jsx-props-no-spreading": "off",
+    "react/require-default-props": "off",
+    "jsx-a11y/label-has-associated-control": "off",
+    "import/prefer-default-export": "off",
+    "prefer-destructuring": "off",
+    "react/prop-types": "off",
+    "@typescript-eslint/no-var-requires": "off",
+    "global-require": "off",
+    "@typescript-eslint/camelcase": "off",
+    "camelcase": 0,
+    "no-param-reassign": [
+      2,
+      {
+        "props": false
+      }
+    ],
+    "class-methods-use-this": "off",
+    "@typescript-eslint/no-throw-literal": "off",
+    "@typescript-eslint/naming-convention": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    // rools to delete
+    "import/no-cycle": "off",
+    "max-len": "off",
+    "prefer-promise-reject-errors": "off",
+    "consistent-return": "off",
+    "react/function-component-definition": "off",
+    "no-nested-ternary": "off",
+    "react/jsx-no-bind": "off",
+    "jsx-a11y/control-has-associated-label": "off",
+  }
+}

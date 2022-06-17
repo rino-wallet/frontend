@@ -4,12 +4,13 @@ import * as yup from "yup";
 import { createModal } from "promodal";
 import {
   Wallet,
-  RequestWalletShareThunkPayload
+  RequestWalletShareThunkPayload,
 } from "../../../types";
 import { FormErrors, Modal } from "../../../modules/index";
-import { Button, Label, Input, BindHotKeys, Tooltip, DisableAutofill } from "../../../components";
+import {
+  Button, Label, Input, BindHotKeys, Tooltip, DisableAutofill, Icon,
+} from "../../../components";
 import { enter2FACode } from "../../../modules/2FAModals";
-import { ReactComponent as InfoIcon } from "../SendPayment/TransactionForm/16px_info.svg";
 
 const validationSchema = yup.object().shape({
   email: yup
@@ -26,7 +27,9 @@ interface Props {
   requestWalletShare: (data: RequestWalletShareThunkPayload) => Promise<Record<string, never>>;
 }
 
-const AddWalletShareRequest: React.FC<Props> = ({ wallet, is2FaEnabled, requestWalletShare, cancel, submit }) => {
+const AddWalletShareRequest: React.FC<Props> = ({
+  wallet, is2FaEnabled, requestWalletShare, cancel, submit,
+}) => {
   const {
     isValid,
     dirty,
@@ -67,25 +70,32 @@ const AddWalletShareRequest: React.FC<Props> = ({ wallet, is2FaEnabled, requestW
   });
   return (
     <BindHotKeys callback={handleSubmit} rejectCallback={cancel}>
-      <Modal title="Add Wallet User" onClose={cancel} showCloseIcon>
+      <Modal title="Invite wallet user" onClose={cancel} showCloseIcon>
         <form onSubmit={handleSubmit}>
           <DisableAutofill />
           <Modal.Body>
             <div className="form-field">
-              <p>In order to access the wallet, user needs to accept the invitation.</p>
+              <p>You can pick a role for the invited user once they accept.</p>
             </div>
             <div className="form-field">
-              <Label label={<div>
-                <Tooltip
-                  content={(
-                    <div className="md:w-76 text-sm text-center normal-case" data-qa-selector="tx-priority-tooltip">
-                      Address of the user you are inviting.
+              <Label label={(
+                <div>
+                  <Tooltip
+                    content={(
+                      <div className="md:w-76 text-sm text-center normal-case" data-qa-selector="tx-priority-tooltip">
+                        Address of the user you are inviting.
+                      </div>
+                    )}
+                  >
+                    User email address
+                    {" "}
+                    <div className="text-sm cursor-pointer inline-block" data-qa-selector="cursor-pointer-tx-priority-tooltip">
+                      <Icon name="info" />
                     </div>
-                  )}
-                >
-                  User email address <div className="text-sm cursor-pointer inline-block" data-qa-selector="cursor-pointer-tx-priority-tooltip"><InfoIcon /></div>
-                </Tooltip>
-              </div>}>
+                  </Tooltip>
+                </div>
+              )}
+              >
                 <Input
                   autoComplete="off"
                   type="email"
@@ -94,7 +104,7 @@ const AddWalletShareRequest: React.FC<Props> = ({ wallet, is2FaEnabled, requestW
                   onChange={handleChange}
                   onBlur={handleBlur}
                   placeholder="User Email Address"
-                  error={touched.email && errors.email || ""}
+                  error={touched.email ? errors.email || "" : ""}
                 />
               </Label>
             </div>
@@ -116,7 +126,7 @@ const AddWalletShareRequest: React.FC<Props> = ({ wallet, is2FaEnabled, requestW
               loading={isSubmitting}
               variant={Button.variant.PRIMARY_LIGHT}
             >
-              Add user
+              Invite
             </Button>
           </Modal.Actions>
         </form>

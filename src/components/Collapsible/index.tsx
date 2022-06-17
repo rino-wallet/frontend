@@ -1,4 +1,6 @@
-import React, {ReactNode, useEffect, useLayoutEffect, useRef, useState} from "react";
+import React, {
+  ReactNode, useEffect, useLayoutEffect, useRef, useState,
+} from "react";
 import { Icon } from "../Icon";
 
 type Props = {
@@ -7,7 +9,7 @@ type Props = {
   anchor?: ReactNode;
   id?: string;
   className?: string;
-}
+};
 
 export const Collapsible: React.FC<Props> = ({
   collapsedDefault = true,
@@ -18,7 +20,7 @@ export const Collapsible: React.FC<Props> = ({
   children,
 }) => {
   const [collapsed, setCollapsed] = useState(collapsedDefault);
-  const [style, setStyle] = useState({height: "0px", overflow: "hidden"});
+  const [style, setStyle] = useState({ height: "0px", overflow: "hidden" });
 
   const targetRef = useRef<HTMLDivElement>(null);
   const childRef = useRef<HTMLDivElement>(null);
@@ -26,20 +28,20 @@ export const Collapsible: React.FC<Props> = ({
     e.preventDefault();
     setCollapsed(!collapsed);
   };
-  useEffect(() => setCollapsed(collapsedDefault), [collapsedDefault])
+  useEffect(() => setCollapsed(collapsedDefault), [collapsedDefault]);
   useLayoutEffect(() => {
     if (childRef.current) {
       if (!collapsed) {
         setStyle({
           overflow: "hidden",
-          height: childRef.current?.getBoundingClientRect().height + "px",
+          height: `${childRef.current?.getBoundingClientRect().height}px`,
         });
         setTimeout(() => {
           setStyle({
             overflow: "visible",
-            height: childRef.current?.getBoundingClientRect().height + "px",
+            height: `${childRef.current?.getBoundingClientRect().height}px`,
           });
-        }, 300)
+        }, 300);
       } else {
         setStyle({
           overflow: "hidden",
@@ -52,6 +54,7 @@ export const Collapsible: React.FC<Props> = ({
     <div id={id} className={className}>
       <div className="flex items-center">
         <button
+          type="button"
           className="inline flex items-start text-sm"
           onClick={toggleCollapse}
         >
@@ -70,5 +73,5 @@ export const Collapsible: React.FC<Props> = ({
         <div ref={childRef}>{children}</div>
       </div>
     </div>
-  )
-}
+  );
+};

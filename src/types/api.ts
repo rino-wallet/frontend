@@ -110,7 +110,6 @@ export interface ConfirmEmailPayload {
   uid: string;
 }
 
-
 // Accept wallet sahre api interface
 export interface AcceptWalletSharePayload {
   walletId: string;
@@ -126,7 +125,7 @@ export interface CreateWalletPayload {
 
 export type CreateWalletResponse = {
   taskId: string;
-}
+};
 
 // Finalize wallet api interface
 export interface FinalizeWalletPayload {
@@ -219,7 +218,7 @@ export interface FetchPublicKeyPayload {
 export type FetchPublicKeyResponse = {
   encryptionPublicKey: string;
   email: string;
-}[]
+}[];
 
 // 2FA  api interface
 export interface Create2FAResponse {
@@ -290,10 +289,10 @@ export interface ShareWalletPayload {
 }
 
 export interface ShareWalletResponse {
-    id: string;
-    accessLevel: AccessLevel;
-    createdAt: string;
-    user: {
+  id: string;
+  accessLevel: AccessLevel;
+  createdAt: string;
+  user: {
     id: 0,
     email: string;
     name: string;
@@ -331,6 +330,7 @@ export interface CreateUnsignedTransactionResponse {
 // submit transaction api interface
 export interface SubmitTransactionPayload {
   tx_hex: string;
+  order_id?: string;
   memo: string;
 }
 
@@ -398,7 +398,6 @@ export interface FetchPublicWalletTransactionDetailsPayload {
   transactionId: string;
 }
 
-
 export interface WalletShareRequest {
   id: string;
   wallet: string;
@@ -414,4 +413,63 @@ export interface FetchWalletShareRequestsResponse extends ListResponse {
 
 export interface UpdateSubaddressPayload {
   label: string;
+}
+
+export interface GetExchangeRangePayload {
+  platform: string;
+}
+
+export interface GetExchangeRangeResponse {
+  minAmount: number;
+  maxAmount: number;
+}
+
+export interface GetExchangeEstimationPayload {
+  platform: string;
+  to_currency: string;
+  amount_set_in: "from" | "to";
+  amount: number;
+}
+
+export interface GetExchangeEstimationResponse {
+  fromAmount: number;
+  toAmount: number;
+  rateId: string;
+  validUntil: string;
+}
+
+export interface GetExchangeOrderPayload {
+  id: string;
+}
+
+export interface CreateExchangeOrderPayload {
+  to_currency: string;
+  platform: string;
+  wallet: string;
+  amount_set_in: "from" | "to";
+  amount: number;
+  address: string;
+  refund_address: string;
+  rate_id: string;
+}
+
+export interface GetExchangeOrderResponse {
+  id: string;
+  paidWith: string;
+  status: number;
+  createdAt: string;
+  updatedAt: string;
+  platform: string;
+  platformFee: number;
+  paymentCurrency: string;
+  paymentAmount: number;
+  paymentAddress: string;
+  paymentTxid: string;
+  refundAddress: string;
+  paidAt: string;
+  acknowledgedAt: string;
+  outgoingCurrency: string;
+  outgoingAmount: number;
+  outgoingAddress: string;
+  outgoingTxid: string;
 }

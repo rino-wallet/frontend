@@ -1,5 +1,7 @@
 import React, { useEffect } from "react";
-import { Route, Routes, useParams, useNavigate } from "react-router-dom";
+import {
+  Route, Routes, useParams, useNavigate,
+} from "react-router-dom";
 import { useDispatch, useThunkActionCreator } from "../../../hooks";
 import {
   fetchWalletDetails as fetchWalletDetailsThunk,
@@ -22,29 +24,19 @@ interface Props {
 const PublicWalletPageContainer: React.FC<Props> = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const walletId = id  as string;
+  const walletId = id as string;
   const fetchWalletDetails = useThunkActionCreator(fetchWalletDetailsThunk);
   const fetchWalletSubaddress = useThunkActionCreator(fetchWalletSubaddressThunk);
   const dispatch = useDispatch();
-  useEffect(() => {
-    return (): void => {
-      dispatch(changeLocation());
-    }
+  useEffect(() => (): void => {
+    dispatch(changeLocation());
   }, []);
   useEffect(() => {
-    const intervalID = setInterval(() => {
-      fetchWalletDetails({ id: walletId });
-    }, 30000);
-    (async (): Promise<void> => {
-      await fetchWalletDetails({ id: walletId })
-        .catch(() => {
-          navigate(routes.not_found);
-        });
-      fetchWalletSubaddress({ walletId })
-    })();
-    return (): void => {
-      clearInterval(intervalID);
-    }
+    fetchWalletDetails({ id: walletId })
+      .catch(() => {
+        navigate(routes.not_found);
+      });
+    fetchWalletSubaddress({ walletId });
   }, []);
   return (
     <Routes>
@@ -52,7 +44,7 @@ const PublicWalletPageContainer: React.FC<Props> = () => {
       <Route path="transactions" element={<TransactionsContainer walletId={walletId} />} />
       <Route path="receive" element={<ReceivePaymentContainer walletId={walletId} />} />
     </Routes>
-  )
-}
+  );
+};
 
 export default PublicWalletPageContainer;

@@ -3,6 +3,7 @@ import walletsApi from "../api/wallets";
 import tasksApi from "../api/tasks";
 import publicKeysApi from "../api/publicKeys";
 import otpApi from "../api/otp";
+import exchangeApi from "../api/exchange";
 import { setCookie } from "../utils";
 
 export function setApiToken(token: string): void {
@@ -11,6 +12,7 @@ export function setApiToken(token: string): void {
   tasksApi.setToken(token);
   publicKeysApi.setToken(token);
   otpApi.setToken(token);
+  exchangeApi.setToken(token);
   setCookie("loggedIn", token ? "true" : "false", 0.5, ".rino.io");
 }
 

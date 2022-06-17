@@ -1,15 +1,15 @@
-import {createQRCodeImage, PdfDocument} from "../../utils";
+import { createQRCodeImage, getNetworkType, PdfDocument } from "../../utils";
 import { PdfDocumentConfig } from "../../types";
 
 class AccountPdf extends PdfDocument {}
 
 export async function createPDF(config: PdfDocumentConfig, data: { username: string, recoveryKey: string }): Promise<void> {
   const pdf = new AccountPdf(config);
-  await pdf.addPage(function(self: PdfDocument) {
+  await pdf.addPage((self: PdfDocument) => {
     self.addText("Hello and welcome to your new account. Congratulations on choosing RINO, the fast and safe wallet!", self.leftOffset, 35);
-    self.addText("This account runs on the Monero stagenet.", self.leftOffset, 40);
+    self.addText(`This account runs on the Monero ${getNetworkType()}.`, self.leftOffset, 40);
     const qrCodeSize = 40;
-    createQRCodeImage(data.recoveryKey).then(qrCode => {
+    createQRCodeImage(data.recoveryKey).then((qrCode) => {
       pdf.doc.addImage(
         qrCode,
         "png",
@@ -24,7 +24,6 @@ export async function createPDF(config: PdfDocumentConfig, data: { username: str
     self.addText("USERNAME USED TO REGISTER THIS ACCOUNT:", self.leftOffset + 50, 70);
     self.addBoldText(data.username, self.leftOffset + 50, 75);
     self.addSmallText("YOUR ACCOUNT KEY", self.leftOffset + 12, 87);
-
 
     self.addTitle2("What is Your Account Key?", self.leftOffset, 100);
     self.addText("If you forget your account password, RINO cannot reset it for you! It's a security feature - only you are in control of your funds at RINO. RINO Account Recovery Document provides a way to recover your account in case you forget your password.", self.leftOffset, 107);

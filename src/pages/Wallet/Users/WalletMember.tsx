@@ -2,30 +2,32 @@ import { useFormik } from "formik";
 import React from "react";
 import * as yup from "yup";
 import { createModal } from "promodal";
-import { ShareWalletThunkPayload, ShareWalletResponse, Wallet, WalletMember } from "../../../types";
+import { ObjectSchema } from "yup";
+import {
+  ShareWalletThunkPayload, ShareWalletResponse, Wallet, WalletMember,
+} from "../../../types";
 import { accessLevels } from "../../../constants";
 import { FormErrors, Modal } from "../../../modules/index";
-import { Button, Label, Input, BindHotKeys, Tooltip, Select, DisableAutofill } from "../../../components";
+import {
+  Button, Label, Input, BindHotKeys, Tooltip, Select, DisableAutofill, Icon,
+} from "../../../components";
 import { IconName } from "../../../components/Icon";
 import { enter2FACode } from "../../../modules/2FAModals";
-import { ReactComponent as InfoIcon } from "../SendPayment/TransactionForm/16px_info.svg";
-import { ObjectSchema } from "yup";
-
 
 const getValidationSchema = (member: WalletMember | null = null): ObjectSchema<any> => yup.object().shape({
   password: yup.string().when("access_level", {
     is: (access_level: string) => parseInt(access_level, 10) === accessLevels.admin.code,
-    then:  yup.string().required("This field is required.")
+    then: yup.string().required("This field is required."),
   }),
   access_level: yup.string()
     .test(
-    "test-access-level-same",
-    `User already has ${member?.accessLevel} access.`,
-    (value) => {
-      const currentAccessLevel = Object.values(accessLevels).find((val: any) => val.code === parseInt(value || "0", 10));
-      return member !== null ? member.accessLevel !== currentAccessLevel?.title : true
-    },
-  ).required("This field is required."),
+      "test-access-level-same",
+      `User already has ${member?.accessLevel} access.`,
+      (value) => {
+        const currentAccessLevel = Object.values(accessLevels).find((val: any) => val.code === parseInt(value || "0", 10));
+        return member !== null ? member.accessLevel !== currentAccessLevel?.title : true;
+      },
+    ).required("This field is required."),
 });
 
 interface Props {
@@ -39,13 +41,15 @@ interface Props {
 }
 
 const iconsMap: { [key: string]: string } = {
-  "10": "account",
-  "20": "settings",
-  "30": "arrow-down-bold",
-  "40": "eye",
-}
+  10: "account",
+  20: "settings",
+  30: "arrow-down-bold",
+  40: "eye",
+};
 
-const WalletMemberModal: React.FC<Props> = ({ wallet, member, is2FaEnabled, email, shareWallet, cancel, submit }) => {
+const WalletMemberModal: React.FC<Props> = ({
+  wallet, member, is2FaEnabled, email, shareWallet, cancel, submit,
+}) => {
   const {
     isValid,
     dirty,
@@ -72,16 +76,16 @@ const WalletMemberModal: React.FC<Props> = ({ wallet, member, is2FaEnabled, emai
         }
         await shareWallet({
           password: formValues.password,
-          email: email,
+          email,
           accessLevel: parseInt(formValues.access_level, 10),
           update: !!member,
           wallet,
           code,
           member,
-        })
+        });
         submit({
           password: formValues.password,
-          email: email,
+          email,
           accessLevel: accessLevels.admin.code,
         });
       } catch (err: any) {
@@ -93,16 +97,22 @@ const WalletMemberModal: React.FC<Props> = ({ wallet, member, is2FaEnabled, emai
   });
   return (
     <BindHotKeys callback={handleSubmit} rejectCallback={cancel}>
-      <Modal title={member ? "Change wallet access" : "Add Wallet User"} onClose={cancel} showCloseIcon>
+      <Modal title={member ? "Change wallet access" : "Confirm Sharing"} onClose={cancel} showCloseIcon>
         <form onSubmit={handleSubmit}>
           <DisableAutofill />
           <Modal.Body>
             <div className="form-field">
-              <p>You’re going to {member ? "change" : "share"} access to {wallet.name}{member ? ` for ${email}.` : "."}</p>
+              <p>
+                Please select the desired access level for wallet
+                {" "}
+                {"\""}
+                {wallet.name}
+                {"\""}
+                {member ? ` for ${email}.` : "."}
+              </p>
             </div>
             <div className="form-field">
-              <Label label={<div>
-              </div>}>
+              <Label label="User email">
                 <Input
                   autoComplete="off"
                   type="email"
@@ -122,31 +132,41 @@ const WalletMemberModal: React.FC<Props> = ({ wallet, member, is2FaEnabled, emai
                   value={values.access_level}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  error={touched.access_level && errors.access_level || ""}
+                  error={touched.access_level ? errors.access_level || "" : ""}
                 >
-                  <option value=""></option>
+                  <option
+                    value=""
+                  >
+                    {" "}
+                  </option>
                   {
-                    Object.values(accessLevels)
-                      .filter(option => option.code !== accessLevels.owner.code)
+                    // we temporarily hide "View-only" role, just remove filter to revert it
+                    Object.values(accessLevels).filter((level) => level.value !== "View-only")
+                      .filter((option) => option.code !== accessLevels.owner.code)
                       .map((option) => <option key={option.code} value={option.code}>{option.title}</option>)
                   }
                 </Select>
               </Label>
             </div>
             {
-              parseInt(values.access_level) === accessLevels.admin.code && (
+              parseInt(values.access_level, 10) === accessLevels.admin.code && (
                 <div className="form-field">
-                  <Label label={<div>
-                    <Tooltip
-                      content={(
-                        <div className="md:w-96 text-sm normal-case" data-qa-selector="tx-priority-tooltip">
-                          Password of your account. Required for sharing the wallet.
-                        </div>
-                      )}
-                    >
-                      Account Password <div className="text-sm cursor-pointer inline-block" data-qa-selector="cursor-pointer-tx-priority-tooltip"><InfoIcon /></div>
-                    </Tooltip>
-                  </div>}>
+                  <Label label={(
+                    <div>
+                      <Tooltip
+                        content={(
+                          <div className="md:w-96 text-sm normal-case" data-qa-selector="tx-priority-tooltip">
+                            Password of your account. Required for sharing the wallet.
+                          </div>
+                        )}
+                      >
+                        Account Password
+                        {" "}
+                        <div className="text-sm cursor-pointer inline-block" data-qa-selector="cursor-pointer-tx-priority-tooltip"><Icon name="info" /></div>
+                      </Tooltip>
+                    </div>
+                  )}
+                  >
                     <Input
                       autoComplete="current-password"
                       type="password"
@@ -155,7 +175,7 @@ const WalletMemberModal: React.FC<Props> = ({ wallet, member, is2FaEnabled, emai
                       onChange={handleChange}
                       onBlur={handleBlur}
                       placeholder="Password"
-                      error={touched.password && errors.password || ""}
+                      error={touched.password ? errors.password || "" : ""}
                     />
                   </Label>
                 </div>
@@ -179,7 +199,7 @@ const WalletMemberModal: React.FC<Props> = ({ wallet, member, is2FaEnabled, emai
               loading={isSubmitting}
               variant={Button.variant.PRIMARY_LIGHT}
             >
-              {member ? "Change" : "Add user"}
+              {member ? "Change" : "Share"}
             </Button>
           </Modal.Actions>
         </form>

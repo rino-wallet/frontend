@@ -9,14 +9,8 @@ export function checkAccessLevel(user: User | null, wallet: Wallet): {
   const walletMember = user
     && wallet?.members.find((member: WalletMember) => member.user === user.email);
   return {
-    isAdmin: (): boolean => {
-      return walletMember?.accessLevel === accessLevels.admin.value;
-    },
-    isOwner: (): boolean => {
-      return walletMember?.accessLevel === accessLevels.owner.value;
-    },
-    isViewOnly: (): boolean => {
-      return walletMember?.accessLevel === accessLevels.viewOnly.value;
-    },
-  }
+    isAdmin: (): boolean => walletMember?.accessLevel === accessLevels.admin.value,
+    isOwner: (): boolean => walletMember?.accessLevel === accessLevels.owner.value,
+    isViewOnly: (): boolean => walletMember?.accessLevel === accessLevels.viewOnly.value,
+  };
 }

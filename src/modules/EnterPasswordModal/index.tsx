@@ -1,21 +1,23 @@
-import React, {useEffect, useRef} from "react";
+import React, { useEffect, useRef } from "react";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import { createModal } from "promodal";
-import { BindHotKeys, Input, Button, Label } from "../../components";
-import { Modal, FormErrors } from "../../modules/index";
+import {
+  BindHotKeys, Input, Button, Label,
+} from "../../components";
+import { Modal, FormErrors } from "../index";
 
 const validationSchema = yup.object().shape({
   password: yup.string().required("This field is required."),
 });
 
 interface Props {
-  submit: () => void;
+  submit: (password: string) => void;
   callback: (password: string) => Promise<void>;
   cancel: () => void;
 }
 
-const EnterPasswordModal: React.FC<Props> = ({ submit, callback, cancel}) => {
+const EnterPasswordModal: React.FC<Props> = ({ submit, callback, cancel }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const {
     isValid,
@@ -34,13 +36,16 @@ const EnterPasswordModal: React.FC<Props> = ({ submit, callback, cancel}) => {
       non_field_errors: "",
     },
     onSubmit: (formValues, { setErrors }) => {
-      return callback(formValues.password)
-        .then(submit)
-        .catch(
-          (err: any) => {
-            setErrors(err);
-          }
-        );
+      if (typeof callback === "function") {
+        return callback(formValues.password)
+          .then(() => { submit(formValues.password); })
+          .catch(
+            (err: any) => {
+              setErrors(err);
+            },
+          );
+      }
+      return submit(formValues.password);
     },
   });
   useEffect(() => {
@@ -66,7 +71,7 @@ const EnterPasswordModal: React.FC<Props> = ({ submit, callback, cancel}) => {
                   value={values.password}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  error={touched.password && errors.password || ""}
+                  error={touched.password ? errors.password : ""}
                 />
               </Label>
             </div>
@@ -100,8 +105,6 @@ const EnterPasswordModal: React.FC<Props> = ({ submit, callback, cancel}) => {
   );
 };
 
-const enterPasswordModal = createModal(({ submit, cancel, callback }: Props) => {
-  return <EnterPasswordModal callback={callback} submit={submit} cancel={cancel} />
-});
+const enterPasswordModal = createModal(({ submit, cancel, callback }: Props) => <EnterPasswordModal callback={callback} submit={submit} cancel={cancel} />);
 
 export { enterPasswordModal };

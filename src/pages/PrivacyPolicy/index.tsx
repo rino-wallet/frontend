@@ -1,9 +1,9 @@
 import React from "react";
 
-const PrivacyPolicy: React.FC = () => {
-  return <section>
+const PrivacyPolicy: React.FC = () => (
+  <section>
     <h1 className="text-3xl mb-3">Privacy Policy</h1>
-    
+
     <section className="mb-6">
       <p className="mb-3">
         Last revised: September 2021
@@ -21,7 +21,7 @@ const PrivacyPolicy: React.FC = () => {
         Please carefully read the full content of this Privacy Policy. When visiting the RINO website, regardless of whether or not you register for or log in, and/or when you download and use the RINO you acknowledge, understand, and consent to all articles described in this Privacy Policy. We will not use your personal information for any purpose not covered in this Privacy Policy, the Cookies Policy or the Terms without prior notification to you and your consent.
       </p>
       <p className="mb-3">
-        This Privacy Policy has incorporated elements from the General Data Protection Regulation (GDPR) as we act in accordance with its personal information processing rules within the European Economic Area (EEA). We utilize standard contract clauses, rely on the European Commission's adequacy decisions about certain countries, as applicable, and obtain your consent for these data transfers to third countries if required by applicable laws.
+        This Privacy Policy has incorporated elements from the General Data Protection Regulation (GDPR) as we act in accordance with its personal information processing rules within the European Economic Area (EEA). We utilize standard contract clauses, rely on the European Commission&apos;s adequacy decisions about certain countries, as applicable, and obtain your consent for these data transfers to third countries if required by applicable laws.
       </p>
     </section>
 
@@ -105,7 +105,7 @@ const PrivacyPolicy: React.FC = () => {
         A cookie is an element of data that a website can send to your browser, which may then store it on your system. We use cookies in some of our pages to store your preferences and record session information. The information that we collect is then used to ensure a more personalized service level for our users.
       </p>
       <p className="mb-3">
-        Please refer to our Cookie Policy for the exact information on how we use cookies. 
+        Please refer to our Cookie Policy for the exact information on how we use cookies.
       </p>
       <p className="mb-3">
         Information collected from cookies is used by us to evaluate the effectiveness of our site, analyze trends, and manage the platform. The information collected from cookies allows us to determine such things as which parts of our site are most visited and difficulties our visitors may experience in accessing our site.
@@ -117,7 +117,7 @@ const PrivacyPolicy: React.FC = () => {
         Your continued use of this site, as well as any subsequent usage, will be interpreted as your consent to cookies being stored on your device.
       </p>
       <p className="mb-3">
-        Log in information can potentially be saved in cookies. Therefore it is important that you prevent unauthorized access to your password and your computer. If you use a shared computer, you should always log out properly and clear the remaining cookies from the browser. 
+        Log in information can potentially be saved in cookies. Therefore it is important that you prevent unauthorized access to your password and your computer. If you use a shared computer, you should always log out properly and clear the remaining cookies from the browser.
       </p>
       <p className="mb-3">
         (c) User feedback and contact form
@@ -126,10 +126,10 @@ const PrivacyPolicy: React.FC = () => {
         Our feedback and contact forms require you to give us contact information (e.g. your name and email address) so that we can respond to your comments. We use your contact information from the registration form to send you information about our company. Your contact information is also used to contact you where necessary.
       </p>
       <p className="mb-3">
-      (d) Software
+        (d) Software
       </p>
       <p className="mb-3">
-        When you download and use our software the software collects information in the same way and for the same reasons as cookies does when you visit and log into the website.  
+        When you download and use our software the software collects information in the same way and for the same reasons as cookies does when you visit and log into the website.
       </p>
       <p className="mb-3">
         (e) Site tracking
@@ -243,16 +243,18 @@ const PrivacyPolicy: React.FC = () => {
         (b) editing the relevant account settings to unsubscribe; or
       </p>
       <p className="mb-3">
-        (c) sending a request to <a href="mailto:support@rino.io">support@rino.io</a> 
+        (c) sending a request to
+        {" "}
+        <a href="mailto:support@rino.io">support@rino.io</a>
       </p>
     </section>
 
     <section className="mb-6">
-      <h2 className="text-xl mb-3 font-bold"> 
+      <h2 className="text-xl mb-3 font-bold">
         7. To Whom Do We Disclose Your Personal Data?
       </h2>
       <p className="mb-3">
-        We will not trade or sell your Personal Data to third parties. Your Personal Data shall only be disclosed or transferred to the following third parties appointed or authorised by the Company for the fulfilment of the Purpose of (a) data warehouses; (b) IT service providers; (c) data analytics;  (d) legal bodies as permitted or required by law such as in compliance with a warrant or subpoena issued by a court of competent jurisdiction; and/or (e) regulatory authorities applicable to you; and/or (f) safety and security personnel. 
+        We will not trade or sell your Personal Data to third parties. Your Personal Data shall only be disclosed or transferred to the following third parties appointed or authorised by the Company for the fulfilment of the Purpose of (a) data warehouses; (b) IT service providers; (c) data analytics;  (d) legal bodies as permitted or required by law such as in compliance with a warrant or subpoena issued by a court of competent jurisdiction; and/or (e) regulatory authorities applicable to you; and/or (f) safety and security personnel.
       </p>
       <p className="mb-3">
         In addition to the above, your Personal Data may also be disclosed or transferred to any of the Company’s actual and potential assignee, transferee or acquirer (including our affiliates and subsidiaries) or our business, assets or group companies, or in connection with any corporate restructuring or exercise including our restructuring to transfer the business, assets and/or liabilities. We shall take practical steps to ensure that their employees, officers, agents, consultants, contractors and other third parties mentioned above who are involved in the collection, use and disclosure of your Personal Data will observe and adhere to the terms of this Privacy Statement.
@@ -282,16 +284,18 @@ const PrivacyPolicy: React.FC = () => {
 
     <section className="mb-6">
       <h2 className="text-xl mb-3 font-bold">
-      10. Additional Information Or Assistance
+        10. Additional Information Or Assistance
       </h2>
       <p className="mb-3">
         Please note that this Privacy Policy may be amended from time to time in accordance with applicable laws and regulations and such variations may be applicable to you.
       </p>
       <p className="mb-3">
-        For further inquiries or complaints in relation to our handling of your Personal Data or our Privacy Policy or if you wish to access, update or amend your Personal Data as mentioned above please contact us at <a href="mailto:support@rino.io">support@rino.io</a>
+        For further inquiries or complaints in relation to our handling of your Personal Data or our Privacy Policy or if you wish to access, update or amend your Personal Data as mentioned above please contact us at
+        {" "}
+        <a href="mailto:support@rino.io">support@rino.io</a>
       </p>
     </section>
   </section>
-}
+);
 
 export default PrivacyPolicy;

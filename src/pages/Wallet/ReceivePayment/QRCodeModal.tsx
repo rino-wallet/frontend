@@ -22,7 +22,7 @@ const QRCodeModal: React.FC<Props> = ({
           setImage(b64String);
         }, () => { setImage(""); });
     }
-  }, [address])
+  }, [address]);
   return (
     <Modal
       title="Scan QR Code"

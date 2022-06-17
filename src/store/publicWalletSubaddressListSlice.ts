@@ -1,5 +1,7 @@
-import {createSlice, createAsyncThunk, PayloadAction} from "@reduxjs/toolkit";
-import { FetchSubaddressResponse, Subaddress, FetchSubaddressesThunkPayload, RootState, FetchWalletSubaddressThunkPayload } from "../types";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import {
+  FetchSubaddressResponse, Subaddress, FetchSubaddressesThunkPayload, RootState, FetchWalletSubaddressThunkPayload,
+} from "../types";
 import publicApi from "../api/public";
 import { createLoadingSelector, generateExtraReducer, generateListReqParams } from "../utils";
 
@@ -13,15 +15,14 @@ export const fetchSubaddresses = createAsyncThunk<FetchSubaddressResponse, Fetch
       const listReqParams = {
         offset: (page - 1) * ITEMS_PER_PAGE + 1,
         limit: ITEMS_PER_PAGE,
-      }
+      };
       const subaddresses = await publicApi.fetchPublicWalletSubaddresses(walletId, listReqParams);
       return subaddresses;
-    } catch(err: any) {
-      return rejectWithValue(err?.data)
+    } catch (err: any) {
+      return rejectWithValue(err?.data);
     }
   },
 );
-
 
 export const fetchWalletSubaddress = createAsyncThunk<FetchSubaddressResponse, FetchWalletSubaddressThunkPayload>(
   `${SLICE_NAME}/fetchWalletSubaddress`,
@@ -32,8 +33,8 @@ export const fetchWalletSubaddress = createAsyncThunk<FetchSubaddressResponse, F
         dispatch(setAddress(addresses.results[0]));
       }
       return addresses;
-    } catch(err: any) {
-      return rejectWithValue(err?.data)
+    } catch (err: any) {
+      return rejectWithValue(err?.data);
     }
   },
 );
@@ -91,14 +92,14 @@ export const publicWalletSubaddressListSlice = createSlice({
         pages: Math.ceil((data.count - 1) / ITEMS_PER_PAGE),
         hasPreviousPage: data.results.length && data.results[0].index !== data.count - 1 && !!data.previous,
         hasNextPage: !!data.next,
-      })
+      }),
     ),
     ...generateExtraReducer(fetchWalletSubaddress),
-  }
+  },
 });
 
 export const selectors = {
-  getWalletSubAddress: (state: RootState): Subaddress => state[SLICE_NAME].walletSubAddress ? ({ ...state[SLICE_NAME].walletSubAddress, isValid: state[SLICE_NAME].validated.includes(state[SLICE_NAME].walletSubAddress.index) }) : null,
+  getWalletSubAddress: (state: RootState): Subaddress => (state[SLICE_NAME].walletSubAddress ? ({ ...state[SLICE_NAME].walletSubAddress, isValid: state[SLICE_NAME].validated.includes(state[SLICE_NAME].walletSubAddress.index) }) : null),
   getListMetaData: (state: RootState): any => ({
     count: state[SLICE_NAME].count,
     pages: state[SLICE_NAME].pages,
@@ -109,7 +110,7 @@ export const selectors = {
   // thunk statuses
   pendingFetchSubaddresses: createLoadingSelector(SLICE_NAME, fetchSubaddresses.pending.toString()),
   pendingFetchWalletSubaddress: createLoadingSelector(SLICE_NAME, fetchWalletSubaddress.pending.toString()),
-}
+};
 
 export const {
   reset,

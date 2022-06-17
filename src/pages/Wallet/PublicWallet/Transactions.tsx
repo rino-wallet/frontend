@@ -12,8 +12,7 @@ interface Props {
 export const TransactionsContainer: React.FC<Props> = ({ walletId }) => {
   const wallet = useSelector(walletSelectors.getWallet);
   const transactions = useSelector(transactionListSelectors.getTransactions);
-  const loading = useSelector(transactionListSelectors.pendingFetchWalletTransactions);
-  const {pages, hasPreviousPage, hasNextPage} = useSelector(transactionListSelectors.getListMetaData);
+  const { pages, hasPreviousPage, hasNextPage } = useSelector(transactionListSelectors.getListMetaData);
   const fetchWalletTransactions = useThunkActionCreator(fetchWalletTransactionsThunk);
   return (
     <WalletPageTemplate
@@ -27,7 +26,6 @@ export const TransactionsContainer: React.FC<Props> = ({ walletId }) => {
         itemsPerPage={ITEMS_PER_PAGE}
         walletId={walletId}
         transactions={transactions}
-        loading={loading}
         pages={pages}
         hasPreviousPage={hasPreviousPage}
         hasNextPage={hasNextPage}
@@ -35,5 +33,5 @@ export const TransactionsContainer: React.FC<Props> = ({ walletId }) => {
         isPublicWallet
       />
     </WalletPageTemplate>
-  )
-}
+  );
+};

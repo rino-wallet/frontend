@@ -8,7 +8,7 @@ interface Props {
 }
 
 export const CopyArea: React.FC<Props> = ({ children, qaSelector, value }) => {
-  const {successFlag, copyToClipboard} = useCopy();
+  const { successFlag, copyToClipboard } = useCopy();
   return (
     <div className="w-full font-lato inline-flex border-solid border theme-text px-6 py-3.75 text-lg rounded-medium theme-bg-control-disabled">
       <div className="w-full flex justify-between items-center space-x-3">
@@ -27,4 +27,4 @@ export const CopyArea: React.FC<Props> = ({ children, qaSelector, value }) => {
       </div>
     </div>
   );
-}
+};

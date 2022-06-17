@@ -1,4 +1,4 @@
-import {createSlice, createAsyncThunk} from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
   PublicWallet,
   RootState,
@@ -6,7 +6,7 @@ import {
   FetchPublicWalletDetailsResponse,
 } from "../types";
 import publicApi from "../api/public";
-import {generateExtraReducer, createLoadingSelector} from "../utils";
+import { generateExtraReducer, createLoadingSelector } from "../utils";
 
 const SLICE_NAME = "publicWallet";
 
@@ -16,8 +16,8 @@ export const fetchWalletDetails = createAsyncThunk<FetchPublicWalletDetailsRespo
     try {
       const wallet = await publicApi.fetchPublicWalletDetails(data.id);
       return wallet;
-    } catch(err: any) {
-      return rejectWithValue(err?.data)
+    } catch (err: any) {
+      return rejectWithValue(err?.data);
     }
   },
 );
@@ -44,9 +44,9 @@ export const publicWalletSlice = createSlice({
   extraReducers: {
     ...generateExtraReducer(
       fetchWalletDetails,
-      (data) => ({ data: data }),
+      (data) => ({ data }),
     ),
-  }
+  },
 });
 
 export const selectors = {
@@ -55,7 +55,7 @@ export const selectors = {
   getPendingTransaction: (state: RootState): PendingTransaction => state[SLICE_NAME].pendingTransaction,
   // thunk statuses
   pendingFetchWalletDetails: createLoadingSelector(SLICE_NAME, fetchWalletDetails.pending.toString()),
-}
+};
 
 export const {
   reset,

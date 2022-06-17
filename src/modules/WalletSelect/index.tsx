@@ -13,7 +13,7 @@ interface Props {
 export const WalletSelect: React.FC<Props> = ({
   value,
   wallets,
-  name="",
+  name = "",
   onChange,
 }) => {
   const [open, setOpen] = useState(false);
@@ -42,19 +42,17 @@ export const WalletSelect: React.FC<Props> = ({
               options.length === 0 && <div className="theme-text-secondary">No wallets</div>
             }
             {
-              options.map((wallet) => {
-                return (
-                  <ListItem
-                    key={wallet.id}
-                    wallet={wallet}
-                    onClick={onClickHandler}
-                  />
-                )
-              })
+              options.map((wallet) => (
+                <ListItem
+                  key={wallet.id}
+                  wallet={wallet}
+                  onClick={onClickHandler}
+                />
+              ))
             }
           </div>
         )
       }
     </div>
-  )
-}
+  );
+};

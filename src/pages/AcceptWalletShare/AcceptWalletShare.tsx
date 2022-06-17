@@ -5,7 +5,6 @@ import sessionApi from "../../api/session";
 import { SuccessModal } from "../../modules/index";
 
 const AcceptWalletSharePage: React.FC = () => {
-  const [loading, setLoading] = useState(true);
   const [isFinished, setIsFinished] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
   const { walletId, shareId } = useParams();
@@ -13,13 +12,11 @@ const AcceptWalletSharePage: React.FC = () => {
   useEffect(() => {
     sessionApi.acceptWalletShare({ walletId: walletId as string, shareId: shareId as string }).then(
       () => {
-        setLoading(false);
         setIsFinished(true);
       },
       (err) => {
-        setLoading(false);
         setErrors(err.data);
-      }
+      },
     );
   }, [walletId, shareId]);
   return (
@@ -28,18 +25,20 @@ const AcceptWalletSharePage: React.FC = () => {
       {
         isFinished && (
           <SuccessModal
-            title="Wallet sharing accepted."
-            message="you have successfully accepted wallet sharing."
-            goBackCallback={(): void => navigate(routes.login)}
-            buttonText={"Continue"}
+            title="Wallet sharing accepted"
+            message={(
+              <div>
+                You have accepted the invitation to the wallet.
+                The wallet will only become available after the invite sender has defined a role for you.
+              </div>
+              )}
+            goBackCallback={(): void => navigate(routes.wallets)}
+            buttonText="Continue"
           />
         )
       }
       <div>
         <p id="error-message" className="theme-text-error">{Object.values(errors)}</p>
-        {
-          loading && <div>Loading...</div>
-        }
       </div>
     </div>
   );

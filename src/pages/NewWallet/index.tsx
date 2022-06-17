@@ -1,16 +1,16 @@
-import React, {useEffect, useRef, useState} from "react";
-import { useThunkActionCreator, useSelector, useDispatch } from "../../hooks"
+import React, { useEffect, useRef, useState } from "react";
+import { useThunkActionCreator, useSelector, useDispatch } from "../../hooks";
 import {
   createNewWallet,
   persistWallet as persistWalletAction,
-  selectors as walletSelectors
+  selectors as walletSelectors,
 } from "../../store/walletSlice";
 import {
   selectors as sessionSelectors,
 } from "../../store/sessionSlice";
 import NewWallet from "./NewWallet";
 import { changeLocation } from "../../store/actions";
-import {AppDispatch, LocalWalletData} from "../../types";
+import { AppDispatch, LocalWalletData } from "../../types";
 
 const NewWalletContainer: React.FC = () => {
   const abortController = new AbortController();
@@ -23,23 +23,21 @@ const NewWalletContainer: React.FC = () => {
     const promise = createWalletThunk({ signal, ...data });
     setWalletCreatePromise(promise);
     return promise;
-  })
+  });
   const persistWallet = useThunkActionCreator(persistWalletAction);
   const dispatch = useDispatch();
   const [walletCreatePromise, setWalletCreatePromise] = useState<Promise<AppDispatch> | any>(null);
   const valueRef: { current: Promise<AppDispatch> | any } = useRef();
 
-  useEffect(() => {
-    return (): void => {
-      dispatch(changeLocation());
-      abortController.abort();
-    }
+  useEffect(() => (): void => {
+    dispatch(changeLocation());
+    abortController.abort();
   }, []);
 
   useEffect(() => {
-  valueRef.current = walletCreatePromise;
-}, [walletCreatePromise]);
-  return(
+    valueRef.current = walletCreatePromise;
+  }, [walletCreatePromise]);
+  return (
     <NewWallet
       isKeypairSet={!!user?.isKeypairSet}
       createMultisigWallet={createMultisigWallet}
@@ -48,7 +46,7 @@ const NewWalletContainer: React.FC = () => {
       isWalletCreating={isWalletCreating}
       persistWallet={persistWallet}
     />
-  )
-}
+  );
+};
 
 export default NewWalletContainer;

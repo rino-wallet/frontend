@@ -1,4 +1,4 @@
-import {createSlice, PayloadAction, createAsyncThunk} from "@reduxjs/toolkit";
+import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import {
   SignUpThunkPayload,
   SignUpResponse,
@@ -16,7 +16,9 @@ import {
 } from "../types";
 import sessionApi from "../api/session";
 import { saveToken, saveSigningPublicKey } from "./sessionUItils";
-import { createLoadingSelector, deriveUserKeys, generateExtraReducer, reencrypPrivateKey } from "../utils";
+import {
+  createLoadingSelector, deriveUserKeys, generateExtraReducer, reencrypPrivateKey,
+} from "../utils";
 import modals from "../modules/2FAModals";
 import { fullReset } from "./actions";
 
@@ -38,12 +40,12 @@ export const signUp = createAsyncThunk<SignUpResponse, SignUpThunkPayload>(
       clean();
       const response = await sessionApi.signUp({
         ...data,
-        password: password,
+        password,
         password_confirmation: password,
       });
       return response;
-    } catch(err: any) {
-      return rejectWithValue(err?.data)
+    } catch (err: any) {
+      return rejectWithValue(err?.data);
     }
   },
 );
@@ -57,11 +59,11 @@ export const signIn = createAsyncThunk<SignInResponse, SignInPayload>(
       if (response.status === 202) {
         const code = await modals.enter2FACode().catch(
           () => {
-             twoFACancelled = true;
-          }
-        )
+            twoFACancelled = true;
+          },
+        );
         if (twoFACancelled) {
-          return rejectWithValue({"2fa": "Two-factor Authentication code is missing."})
+          return rejectWithValue({ "2fa": "Two-factor Authentication code is missing." });
         }
         response = await sessionApi.signIn(credentials, {
           headers: { "X-RINO-2FA": code },
@@ -69,8 +71,8 @@ export const signIn = createAsyncThunk<SignInResponse, SignInPayload>(
       }
       dispatch(setToken(response.data.token));
       return response.data;
-    } catch(err: any) {
-      return rejectWithValue(err?.data)
+    } catch (err: any) {
+      return rejectWithValue(err?.data);
     }
   },
 );
@@ -83,12 +85,13 @@ export const signOut = createAsyncThunk<void, void>(
       try {
         localStorage.removeItem("sessionToken");
       } catch {
-        console.error("localStorage is not available")
+        // eslint-disable-next-line
+        console.error("localStorage is not available");
       }
       dispatch(fullReset());
-      return response;  
-    } catch(err: any) {
-      return rejectWithValue(err?.data)
+      return response;
+    } catch (err: any) {
+      return rejectWithValue(err?.data);
     }
   },
 );
@@ -106,9 +109,9 @@ export const setupKeyPair = createAsyncThunk<SetUpKeyPairResponse, SetUpKeyPairT
       });
       dispatch(setSigningPublicKey(Buffer.from(payload.signingPublicKey).toString("base64")));
       dispatch(getCurrentUser());
-      return response;  
-    } catch(err: any) {
-      return rejectWithValue(err?.data)
+      return response;
+    } catch (err: any) {
+      return rejectWithValue(err?.data);
     }
   },
 );
@@ -118,13 +121,12 @@ export const getCurrentUser = createAsyncThunk<UserResponse, void>(
   async (_, { rejectWithValue }) => {
     try {
       const response = await sessionApi.getCurrentUser();
-      return response;  
-    } catch(err: any) {
-      return rejectWithValue(err?.data)
+      return response;
+    } catch (err: any) {
+      return rejectWithValue(err?.data);
     }
   },
 );
-
 
 export const resetPasswordConfirm = createAsyncThunk<void, ResetPasswordConfirmThunkPayload>(
   "session/resetPasswordConfirm",
@@ -135,7 +137,9 @@ export const resetPasswordConfirm = createAsyncThunk<void, ResetPasswordConfirmT
         token: payload.token,
       });
       const encPrivateKeyBackupJson = JSON.parse(encPrivateKeyBackup);
-      const { authKey, encPrivateKeysDataSet, signature, clean } = await reencrypPrivateKey(
+      const {
+        authKey, encPrivateKeysDataSet, signature, clean,
+      } = await reencrypPrivateKey(
         Buffer.from(encPrivateKeyBackupJson.enc_content, "base64"),
         Buffer.from(encPrivateKeyBackupJson.nonce, "base64"),
         Buffer.from(payload.recovery_key, "hex"),
@@ -151,8 +155,8 @@ export const resetPasswordConfirm = createAsyncThunk<void, ResetPasswordConfirmT
         enc_private_key: createPrivateKeyJson(encPrivateKeysDataSet.ek),
       });
       clean();
-      return response;  
-    } catch(err: any) {
+      return response;
+    } catch (err: any) {
       return rejectWithValue(err?.data || err);
     }
   },
@@ -165,7 +169,9 @@ export const changePassword = createAsyncThunk<void, ChangePasswordThunkPayload>
       let code = "";
       const { is2FaEnabled, username, encPrivateKey } = (getState() as any).session.user;
       const { authKey: authKeyOld, encryptionKey: encryptionKeyOld, clean: cleanOld } = await deriveUserKeys(data.current_password, username);
-      const { authKey: authKeyNew, encPrivateKeysDataSet, signature, clean: cleanNew } = await reencrypPrivateKey(
+      const {
+        authKey: authKeyNew, encPrivateKeysDataSet, signature, clean: cleanNew,
+      } = await reencrypPrivateKey(
         Uint8Array.from(Buffer.from(encPrivateKey.enc_content, "base64")),
         Uint8Array.from(Buffer.from(encPrivateKey.nonce, "base64")),
         encryptionKeyOld,
@@ -178,16 +184,16 @@ export const changePassword = createAsyncThunk<void, ChangePasswordThunkPayload>
         current_password: Buffer.from(authKeyOld).toString("hex"),
         enc_private_key: createPrivateKeyJson(encPrivateKeysDataSet.ek),
         signature: Buffer.from(signature).toString("base64"),
-      }
+      };
       cleanOld();
       cleanNew();
       if (is2FaEnabled) {
         code = await modals.enter2FACode();
       }
       const response = await sessionApi.changePassword(requestBody, code ? { headers: { "X-RINO-2FA": code } } : undefined);
-      return response;  
-    } catch(err: any) {
-      return rejectWithValue(err?.data || err)
+      return response;
+    } catch (err: any) {
+      return rejectWithValue(err?.data || err);
     }
   },
 );
@@ -197,10 +203,10 @@ export const updateUser = createAsyncThunk<UserResponse, UpdateUserPayload>(
   async (data, { rejectWithValue }) => {
     try {
       const response = await sessionApi.updateUser(data);
-      
-      return response;  
-    } catch(err: any) {
-      return rejectWithValue(err?.data)
+
+      return response;
+    } catch (err: any) {
+      return rejectWithValue(err?.data);
     }
   },
 );
@@ -257,14 +263,14 @@ export const sessionSlice = createSlice({
     ...generateExtraReducer(setupKeyPair),
     ...generateExtraReducer(
       getCurrentUser,
-      (data) => ({ user: updateResponse(data) })
+      (data) => ({ user: updateResponse(data) }),
     ),
     ...generateExtraReducer(changePassword),
     ...generateExtraReducer(
       updateUser,
-      (data) => ({ user: updateResponse(data) })
+      (data) => ({ user: updateResponse(data) }),
     ),
-  }
+  },
 });
 
 export const selectors = {
@@ -280,16 +286,18 @@ export const selectors = {
   pendingResetPasswordConfirm: createLoadingSelector(SLICE_NAME, resetPasswordConfirm.pending.toString()),
   pendingChangePassword: createLoadingSelector(SLICE_NAME, changePassword.pending.toString()),
   pendingUpdateUser: createLoadingSelector(SLICE_NAME, updateUser.pending.toString()),
-}
+};
 
-function updateResponse (data: UserResponse): User {
+function updateResponse(data: UserResponse): User {
   const parsedKeypairJson = data?.keypair ? JSON.parse(data?.keypair.encPrivateKey) : {};
   return {
     ...data,
     encPrivateKey: parsedKeypairJson,
     encryptionPublicKey: data?.keypair?.encryptionPublicKey || "",
     signingPublicKey: data?.keypair?.signingPublicKey || "",
-  }
+  };
 }
 
-export const {setToken, setSigningPublicKey, switch2fa, setPassword, reset} = sessionSlice.actions;
+export const {
+  setToken, setSigningPublicKey, switch2fa, setPassword, reset,
+} = sessionSlice.actions;

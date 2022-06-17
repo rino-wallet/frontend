@@ -10,7 +10,9 @@ type Props = {
 };
 
 export const Switch: React.FC<Props> = (props) => {
-  const { checked = false, id, onChange, children, disabled } = props;
+  const {
+    checked = false, id, onChange, children, disabled,
+  } = props;
   return (
     <label className="switch inline-flex items-center space-x-3 text-sm cursor-pointer">
       <div className="relative inline-block w-8 mr-2 align-middle select-none">
@@ -23,8 +25,8 @@ export const Switch: React.FC<Props> = (props) => {
           className={classNames(
             "top-px right-3.75 checked:right-px duration-200 ease-in absolute block w-4 h-4 rounded-full bg-white appearance-none cursor-pointer",
             {
-              "checked": checked,
-            }
+              checked,
+            },
           )}
         />
         <label
@@ -37,4 +39,4 @@ export const Switch: React.FC<Props> = (props) => {
       </span>
     </label>
   );
-}
+};

@@ -20,7 +20,7 @@ const transformError = (error: ApiErrorRaw): ApiError => {
         } else {
           out[key] = out[key] ? `${out[key]} ${err}` : err;
         }
-      })
+      });
     } else {
       out[key] = (error[key] as string);
     }

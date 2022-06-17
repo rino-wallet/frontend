@@ -1,5 +1,7 @@
 import type { Blocker, History, Transition } from "history";
-import { ContextType, useCallback, useContext, useEffect } from "react";
+import {
+  ContextType, useCallback, useContext, useEffect,
+} from "react";
 import { Navigator as BaseNavigator, UNSAFE_NavigationContext as NavigationContext } from "react-router-dom";
 import { showPreventNavigationModal } from "../modules/index";
 

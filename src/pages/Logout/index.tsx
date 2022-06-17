@@ -10,9 +10,9 @@ const LogoutContainer: React.FC = () => {
   useEffect(() => {
     signOut().finally(() => {
       navigate(routes.login);
-    })
-  }, [])
+    });
+  }, []);
   return null;
-}
+};
 
 export default LogoutContainer;

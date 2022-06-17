@@ -6,12 +6,10 @@ import { useDispatch } from "../../../hooks";
 
 const ResetPasswordRequestContainer: React.FC = () => {
   const dispatch = useDispatch();
-  useEffect(() => {
-    return (): void => {
-      dispatch(changeLocation());
-    }
-  }, [])
-  return <ResetPasswordRequest onSubmit={(data): Promise<void> => sessionApi.resetPasswordRequest(data)} />
-}
+  useEffect(() => (): void => {
+    dispatch(changeLocation());
+  }, []);
+  return <ResetPasswordRequest onSubmit={(data): Promise<void> => sessionApi.resetPasswordRequest(data)} />;
+};
 
 export default ResetPasswordRequestContainer;

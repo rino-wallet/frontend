@@ -6,6 +6,7 @@ export default async function parseWalletData(wallet: WalletRaw): Promise<LocalW
     const multiSigInfo = await wallet.getMultisigInfo();
     isMultisig = multiSigInfo.isMultisig();
   } catch (e) {
+    // eslint-disable-next-line
     console.error("Multisig call failed");
   }
 
@@ -16,7 +17,7 @@ export default async function parseWalletData(wallet: WalletRaw): Promise<LocalW
     wallet.getAddress(0, 0),
     wallet.getBalance(0, 0),
     wallet.getData(),
-    isMultisig ? wallet.getMultisigSeed("") : Promise.resolve("")
+    isMultisig ? wallet.getMultisigSeed("") : Promise.resolve(""),
   ]);
 
   return {

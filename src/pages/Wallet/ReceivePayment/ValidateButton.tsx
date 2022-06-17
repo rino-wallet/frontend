@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { Button } from "../../../components";
 import { Subaddress } from "../../../types";
 
@@ -27,5 +27,5 @@ export const ValidateButton: React.FC<Props> = ({ subaddress, validateAddress })
     >
       {subaddress.isValid ? "Validated" : "Validate"}
     </Button>
-  )
-}
+  );
+};

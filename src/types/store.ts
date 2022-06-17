@@ -1,7 +1,6 @@
-
-import {store} from "../store";
-import {UserKeyPairInfo, KeyPairJsonWrapper, AccessLevel} from "./shared";
-import {SignUpPayload} from "./api";
+import { store } from "../store";
+import { UserKeyPairInfo, KeyPairJsonWrapper, AccessLevel } from "./shared";
+import { SignUpPayload } from "./api";
 
 export type RootState = ReturnType<typeof store.getState>;
 
@@ -37,7 +36,7 @@ export type Wallet = {
   requires2Fa: boolean;
   isPublic: boolean;
   publicSlug: string;
-}
+};
 
 export interface PublicWallet {
   address: string;
@@ -58,7 +57,8 @@ export type PendingTransaction = {
   txsHex?: string;
   memo?: string;
   priority?: string;
-}
+  orderId?: string;
+};
 
 export type LocalWalletData = {
   offlineMode: boolean;
@@ -83,7 +83,7 @@ export type User = {
   signingPublicKey: string;
   encPrivateKey: KeyPairJsonWrapper;
   txNotifications: boolean;
-}
+};
 
 export interface TransactionDestination {
   index: number;
@@ -104,6 +104,7 @@ export interface Transaction {
   destinations: TransactionDestination[];
   memo: string;
   txToSelf: boolean;
+  order?: ExchangeOrder;
 }
 
 export interface FetchWalletTransactionsThunkPayload {
@@ -135,7 +136,6 @@ export interface FetchWalletListThunkPayload {
 }
 
 export type SetUpKeyPairThunkPayload = UserKeyPairInfo;
-
 
 export interface ChangePasswordThunkPayload {
   new_password: string;
@@ -180,4 +180,38 @@ export interface UpdateSubaddressThunkPayload {
   label: string;
   id: string;
   address: string;
+}
+export interface ExchangeRange {
+  minAmount: number;
+  maxAmount: number;
+}
+
+export interface ExchangeEstimation {
+  fromAmount: number;
+  toAmount: number;
+  rateId: string;
+  validUntil: string;
+}
+
+export interface ExchangeOrder {
+  id: string;
+  paidWith: string;
+  status: number;
+  createdAt: string;
+  updatedAt: string;
+  expiresAt: string;
+  platform: string;
+  platformFee: number;
+  platformOrderId: string;
+  paymentCurrency: string;
+  paymentAmount: number;
+  paymentAddress: string;
+  paymentTxid: string;
+  refundAddress: string;
+  paidAt: string;
+  acknowledgedAt: string;
+  outgoingCurrency: string;
+  outgoingAmount: number;
+  outgoingAddress: string;
+  outgoingTxid: string;
 }

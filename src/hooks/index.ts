@@ -6,6 +6,7 @@ import { useWindowSize } from "./useWindowSize";
 import { useIsMobile } from "./useIsMobile";
 import { useQuery } from "./useQuery";
 import { usePrompt } from "./usePrompt";
+import { useSortErrors } from "./useSortErrors";
 
 export {
   useSelector,
@@ -16,4 +17,5 @@ export {
   useIsMobile,
   useQuery,
   usePrompt,
+  useSortErrors,
 };

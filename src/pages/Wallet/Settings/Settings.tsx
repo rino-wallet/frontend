@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { Button, Label, Input, Checkbox, Panel, Tooltip, Copy } from "../../../components";
+import {
+  Button, Label, Input, Checkbox, Panel, Tooltip, Copy, Icon,
+} from "../../../components";
 import { FormErrors, CopyArea } from "../../../modules/index";
-import { Env, UpdateWalletDetailsPayload, UpdateWalletDetailsResponse, Wallet } from "../../../types";
+import {
+  Env, UpdateWalletDetailsPayload, UpdateWalletDetailsResponse, Wallet,
+} from "../../../types";
 import DeleteWallet from "../DeleteWallet";
 import { enter2FACode } from "../../../modules/2FAModals";
 import { useSelector } from "../../../hooks";
 import { selectors as sessionSelectors } from "../../../store/sessionSlice";
-import { ReactComponent as InfoIcon } from "../SendPayment/TransactionForm/16px_info.svg";
 import { APP_URLS_MAP } from "../../../constants";
 
 const settingsValidationSchema = yup.object().shape({
@@ -17,7 +20,7 @@ const settingsValidationSchema = yup.object().shape({
     .required("This field is required."),
   public_slug: yup.string().when("is_public", {
     is: (access_level: boolean) => access_level,
-    then: yup.string().required("This field is required.")
+    then: yup.string().required("This field is required."),
   }),
 });
 
@@ -29,8 +32,9 @@ interface Props {
   updateWalletDetails: (data: UpdateWalletDetailsPayload) => Promise<UpdateWalletDetailsResponse>;
 }
 
-
-const Settings: React.FC<Props> = ({ updateWalletDetails, walletId, is2FaEnabled, wallet, canDelete }) => {
+const Settings: React.FC<Props> = ({
+  updateWalletDetails, walletId, is2FaEnabled, wallet, canDelete,
+}) => {
   const user = useSelector(sessionSelectors.getUser);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [nonFieldErrors, setNonFieldErrors] = useState<{ non_field_errors?: string, message?: string, detail?: string }>({});
@@ -57,23 +61,29 @@ const Settings: React.FC<Props> = ({ updateWalletDetails, walletId, is2FaEnabled
           // and adds public_slug value to payload only if is_public equal to true
           ...((values.is_public !== wallet.isPublic || values.public_slug !== wallet.publicSlug) ? {
             is_public: values.is_public,
-            ...(values.is_public ? { public_slug: values.public_slug, } : {})
+            ...(values.is_public ? { public_slug: values.public_slug } : {}),
           } : {}),
           ...(values.name !== wallet.name ? { name: values.name } : {}), // TODO remove this workaround after BE fix
         });
         resetForm();
       } catch (err: any) {
-        const { non_field_errors, message, detail, ...formErrors } = err || {};
+        const {
+          non_field_errors, message, detail, ...formErrors
+        } = err || {};
         setNonFieldErrors({ non_field_errors, message, detail });
         setErrors(formErrors || {});
       }
     },
   });
-  const publicUrl = APP_URLS_MAP[process.env.REACT_APP_ENV as Env]
+  const publicUrl = APP_URLS_MAP[process.env.REACT_APP_ENV as Env];
   return (
     <Panel title={(
       <div className="flex w-full justify-between items-center">
-        <div className="overflow-ellipsis overflow-hidden whitespace-nowrap">Settings for {wallet?.name}</div>
+        <div className="overflow-ellipsis overflow-hidden whitespace-nowrap">
+          Settings for
+          {" "}
+          {wallet?.name}
+        </div>
         <div className="flex space-x-3 hidden md:block">
           {
             formik.dirty && (
@@ -105,7 +115,8 @@ const Settings: React.FC<Props> = ({ updateWalletDetails, walletId, is2FaEnabled
           </Button>
         </div>
       </div>
-    )}>
+    )}
+    >
       {
         deleteModalOpen && (
           <DeleteWallet
@@ -127,7 +138,7 @@ const Settings: React.FC<Props> = ({ updateWalletDetails, walletId, is2FaEnabled
                     value={formik.values.name}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    error={formik.touched.name && formik.errors.name || ""}
+                    error={formik.touched.name ? formik.errors.name || "" : ""}
                   />
                 </Label>
               </div>
@@ -147,18 +158,23 @@ const Settings: React.FC<Props> = ({ updateWalletDetails, walletId, is2FaEnabled
                 >
                   <div className="flex items-center">
                     Require 2FA for spending.
-                    {!user?.is2FaEnabled ? <Tooltip
-                      content={(
-                        <div className="md:w-48 text-sm" data-qa-selector="tx-priority-tooltip">
-                          Activate Account 2FA to {formik.values.requires_2fa ? "disable" : "enable"} this option.
+                    {!user?.is2FaEnabled ? (
+                      <Tooltip
+                        content={(
+                          <div className="md:w-48 text-sm" data-qa-selector="tx-priority-tooltip">
+                            Activate Account 2FA to
+                            {" "}
+                            {formik.values.requires_2fa ? "disable" : "enable"}
+                            {" "}
+                            this option.
+                          </div>
+                        )}
+                      >
+                        <div className="text-sm cursor-pointer ml-1" data-qa-selector="cursor-pointer-tx-priority-tooltip">
+                          <Icon name="info" />
                         </div>
-                      )}
-                    >
-                      <div className="text-sm cursor-pointer ml-1" data-qa-selector="cursor-pointer-tx-priority-tooltip">
-                        <InfoIcon />
-                      </div>
-                    </Tooltip> : null
-                    }
+                      </Tooltip>
+                    ) : null}
                   </div>
                 </Checkbox>
               </div>
@@ -171,14 +187,14 @@ const Settings: React.FC<Props> = ({ updateWalletDetails, walletId, is2FaEnabled
                     onChange={(e: React.ChangeEvent<HTMLInputElement>): void | null => { formik.setFieldValue("is_public", e.target.checked); }}
                   >
                     <div className="flex items-center">
-                      <span>Public</span>
+                      <span>Make public</span>
                       <Tooltip
                         content={(
-                          <p className="text-sm">Allow public read-only access to this wallet. Simply share the URL with other people.</p>
+                          <p className="text-sm">Make this wallet publicly visible to anyone with the link</p>
                         )}
                       >
                         <div className="text-sm cursor-pointer ml-1" data-qa-selector="cursor-pointer-tx-priority-tooltip">
-                          <InfoIcon />
+                          <Icon name="info" />
                         </div>
                       </Tooltip>
                     </div>
@@ -192,7 +208,7 @@ const Settings: React.FC<Props> = ({ updateWalletDetails, walletId, is2FaEnabled
                       value={formik.values.public_slug}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
-                      error={formik.touched.public_slug && formik.errors.public_slug || ""}
+                      error={formik.errors.public_slug || ""}
                       disabled={!formik.values.is_public}
                     />
                   </Label>
@@ -201,7 +217,9 @@ const Settings: React.FC<Props> = ({ updateWalletDetails, walletId, is2FaEnabled
                   <Label label="Wallet URL:">
                     <div className="break-all text-sm">
                       <Copy value={`${publicUrl}/public/wallets/${wallet?.publicSlug}`}>
-                        {publicUrl}/public/wallets/{wallet?.publicSlug}
+                        {publicUrl}
+                        /public/wallets/
+                        {wallet?.publicSlug}
                       </Copy>
                     </div>
                   </Label>
@@ -251,22 +269,22 @@ const Settings: React.FC<Props> = ({ updateWalletDetails, walletId, is2FaEnabled
               </div>
             </form>
             {canDelete && (
-                <div className="hidden md:block">
-                  <hr className="border-t theme-border my-10 -mx-10" />
-                  <Button
-                    name="delete-wallet-btn"
-                    onClick={(): void => setDeleteModalOpen(true)}
-                    variant={Button.variant.RED}
-                  >
-                    Delete Wallet
-                  </Button>
-                </div>
-              )}
+              <div className="hidden md:block">
+                <hr className="border-t theme-border my-10 -mx-10" />
+                <Button
+                  name="delete-wallet-btn"
+                  onClick={(): void => setDeleteModalOpen(true)}
+                  variant={Button.variant.RED}
+                >
+                  Delete Wallet
+                </Button>
+              </div>
+            )}
           </div>
         </Panel.Body>
       </section>
     </Panel>
-  )
-}
+  );
+};
 
 export default Settings;

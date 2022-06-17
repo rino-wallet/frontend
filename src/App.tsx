@@ -12,9 +12,9 @@ import routes from "./router/routes";
 
 const App: React.FC = () => {
   const navigate = useNavigate();
-  const token = useSelector(state => state.session.token);
-  const user = useSelector(state => state.session.user);
-  const password = useSelector(state => state.session.password);
+  const token = useSelector((state) => state.session.token);
+  const user = useSelector((state) => state.session.user);
+  const password = useSelector((state) => state.session.password);
   const windowSize = useWindowSize();
   const getCurrentUser = useThunkActionCreator(getCurrentUserThunk);
   const signOut = useThunkActionCreator(signOutThunk);
@@ -36,7 +36,7 @@ const App: React.FC = () => {
     }
     return () => {
       timer?.cleanUp();
-    }
+    };
   }, [token]);
   useEffect(() => {
     if (token && !user) {
@@ -58,6 +58,6 @@ const App: React.FC = () => {
       </IsMobileProvider>
     </div>
   );
-}
+};
 
 export default App;

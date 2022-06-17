@@ -83,7 +83,7 @@ export class WalletsApi extends Api {
   }
 
   public syncMultisig(data: SyncMultisigPayload): Promise<SyncMultisigResponse> {
-    return this.post<SyncMultisigResponse, SyncMultisigPayload>(`/wallets/${data.id}/sync_multisig/`, data )
+    return this.post<SyncMultisigResponse, SyncMultisigPayload>(`/wallets/${data.id}/sync_multisig/`, data)
       .then(this.success);
   }
 
@@ -112,25 +112,22 @@ export class WalletsApi extends Api {
       .then(this.success);
   }
 
-
   public shareWallet(id: string, data: ShareWalletPayload, config?: { headers: { "X-RINO-2FA": string } }): Promise<ShareWalletResponse> {
     return this.post<ShareWalletResponse, ShareWalletPayload>(`/wallets/${id}/members/`, data, config)
       .then(this.success);
   }
-
 
   public updateWalletAccess(walletId: string, membershipId: string, data: ShareWalletPayload, config?: { headers: { "X-RINO-2FA": string } }): Promise<ShareWalletResponse> {
     return this.put<ShareWalletResponse, ShareWalletPayload>(`/wallets/${walletId}/members/${membershipId}/`, data, config)
       .then(this.success);
   }
 
-
   public removeWalletAccess(data: RemoveWalletAccessPayload): Promise<RemoveWalletAccessResponse> {
     return this.delete<RemoveWalletAccessResponse>(`/wallets/${data.walletId}/members/${data.userId}/`)
       .then(this.success);
   }
 
-  public  createUnsignedTransaction(id: string, data: CreateUnsignedTransactionPayload): Promise<CreateUnsignedTransactionResponse> {
+  public createUnsignedTransaction(id: string, data: CreateUnsignedTransactionPayload): Promise<CreateUnsignedTransactionResponse> {
     return this.post<CreateUnsignedTransactionResponse, CreateUnsignedTransactionPayload>(`/wallets/${id}/transactions/`, data)
       .then(this.success);
   }
@@ -154,10 +151,12 @@ export class WalletsApi extends Api {
     return this.get<FetchSubaddressResponse>(`/wallets/${walletId}/subaddresses/`, { params })
       .then(this.success);
   }
+
   public fetchWalletShareRequests(walletId: string, params: ListRequestParams): Promise<FetchWalletShareRequestsResponse> {
     return this.get<FetchWalletShareRequestsResponse>(`/wallets/${walletId}/share/`, { params })
       .then(this.success);
   }
+
   public updateWalletSubaddresses(id: string, address: string, data: UpdateSubaddressPayload): Promise<SubaddressResponse> {
     return this.put<Subaddress, UpdateSubaddressPayload>(`/wallets/${id}/subaddresses/${address}/`, data)
       .then(this.success);

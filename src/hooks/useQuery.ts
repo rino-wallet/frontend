@@ -1,5 +1,5 @@
 import {
-  useLocation
+  useLocation,
 } from "react-router-dom";
 
 export function useQuery(): any {

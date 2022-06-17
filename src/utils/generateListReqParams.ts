@@ -2,5 +2,5 @@ export function generateListReqParams(page: number, itemsPerPage: number): { off
   return {
     offset: (page - 1) * itemsPerPage,
     limit: itemsPerPage,
-  }
+  };
 }

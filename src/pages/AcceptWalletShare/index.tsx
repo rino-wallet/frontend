@@ -6,11 +6,9 @@ import AcceptWalletShare from "./AcceptWalletShare";
 const AcceptWalletShareContainer: React.FC = () => {
   const dispatch = useDispatch();
   useEffect(() => {
-    return (): void => {
-      dispatch(changeLocation());
-    }
-  }, [])
-  return <AcceptWalletShare />
-}
+    dispatch(changeLocation());
+  }, []);
+  return <AcceptWalletShare />;
+};
 
 export default AcceptWalletShareContainer;

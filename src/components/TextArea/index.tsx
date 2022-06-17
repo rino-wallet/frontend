@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import classNames from "classnames";
 
 type Props = {
@@ -7,7 +7,6 @@ type Props = {
   name?: string;
   error?: string;
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  children?: ReactNode;
 };
 
 export const TextArea: React.FC<Props> = (props) => {
@@ -30,7 +29,7 @@ export const TextArea: React.FC<Props> = (props) => {
           {
             "theme-control-border": !error,
             "theme-border-red": !!error,
-          }
+          },
         )}
       />
       {
@@ -38,4 +37,4 @@ export const TextArea: React.FC<Props> = (props) => {
       }
     </div>
   );
-}
+};

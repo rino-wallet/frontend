@@ -3,15 +3,20 @@ import { generatePath, Link } from "react-router-dom";
 import classNames from "classnames";
 import { piconeroToMonero, getWalletColor } from "../../utils";
 import routes from "../../router/routes";
-import { Button, Placeholder, FormatNumber, Tooltip, Icon } from "../../components"
 import {
+  Button, Placeholder, FormatNumber, Tooltip, Icon, WalletRole,
+} from "../../components";
+import {
+  AccessLevel,
   PublicWallet,
-  Wallet
+  Wallet,
 } from "../../types";
 import {
   fetchWalletDetails as fetchPublicWalletDetailsThunk,
 } from "../../store/publicWalletSlice";
-import { useIsMobile, useQuery, useThunkActionCreator, useSelector } from "../../hooks";
+import {
+  useIsMobile, useQuery, useThunkActionCreator, useSelector,
+} from "../../hooks";
 import { ReactComponent as IconUp } from "./arrow-up.svg";
 import { ReactComponent as IconDown } from "../../assets/arrow-down.svg";
 import { fetchWalletDetails as fetchWalletDetailsThunk } from "../../store/walletSlice";
@@ -29,7 +34,7 @@ const WalletPlaceholder: React.FC = () => (
       <Placeholder />
     </div>
   </div>
-)
+);
 
 interface Props {
   goBackCallback?: () => void;
@@ -41,6 +46,7 @@ interface Props {
   showActions?: boolean;
   viewOnly?: boolean;
   isPublicWallet?: boolean;
+  showNameInBox?: boolean;
 }
 
 export const WalletPageTemplate: React.FC<Props> = ({
@@ -53,18 +59,20 @@ export const WalletPageTemplate: React.FC<Props> = ({
   showActions,
   viewOnly,
   isPublicWallet,
+  showNameInBox,
 }) => {
   const fetchWalletDetails = isPublicWallet ? useThunkActionCreator(fetchPublicWalletDetailsThunk) : useThunkActionCreator(fetchWalletDetailsThunk);
   const fetchWalletTransactions = isPublicWallet ? useThunkActionCreator(fetchPublicWalletTransactionsThunk) : useThunkActionCreator(fetchWalletTransactionsThunk);
   const user = useSelector(selectors.getUser);
   const query = useQuery();
-  const page = parseInt(query.get("page")) || 1;
+  const page = parseInt(query.get("page"), 10) || 1;
   const [isRefreshing, setIsRefreshing] = useState(false);
   const gradient = getWalletColor();
   const isMobile = useIsMobile();
   const userCanCreateTransaction = wallet?.requires2Fa ? user?.is2FaEnabled : true;
   const insufficientBalance = !parseFloat(wallet?.unlockedBalance || "0");
   const sendButtonDisabled = !userCanCreateTransaction || viewOnly;
+  const role = isPublicWallet ? null : (wallet as Wallet)?.members?.find((member) => member.user === user.email)?.accessLevel as AccessLevel;
   return (
     <section>
       <header className="flex items-center mb-8 w-full relative hidden md:flex">
@@ -85,7 +93,7 @@ export const WalletPageTemplate: React.FC<Props> = ({
         <h1 className="text-4xl font-bold flex-1 font-catamaran min-w-0 overflow-ellipsis overflow-hidden whitespace-nowrap" data-qa-selector="wallet-name">
           {title || wallet?.name}
           <span>
-            { isPublicWallet ? <p className="text-lg font-normal theme-text-secondary">Public read-only view of this wallet.</p> : null }
+            {isPublicWallet ? <p className="text-lg font-normal theme-text-secondary">Public read-only view of this wallet.</p> : null}
           </span>
         </h1>
         {
@@ -96,21 +104,29 @@ export const WalletPageTemplate: React.FC<Props> = ({
                   sendButtonDisabled ? (
                     <div>
                       <Tooltip
-                          content={`
+                        content={`
                             ${!userCanCreateTransaction ? "This wallet requires 2FA for spending. " : ""}
                             ${insufficientBalance && !viewOnly ? "Insufficient balance." : ""}
                             ${viewOnly ? "This functionality is not available in read-only wallets." : ""}
                           `}
-                        >
-                          <Button size={Button.size.BIG} disabled={sendButtonDisabled} name="button-send">
-                            <div className="flex space-x-3 items-center"><IconUp /> <span>Send</span></div>
-                          </Button>
-                        </Tooltip>
+                      >
+                        <Button size={Button.size.BIG} disabled={sendButtonDisabled} name="button-send">
+                          <div className="flex space-x-3 items-center">
+                            <IconUp />
+                            {" "}
+                            <span>Send</span>
+                          </div>
+                        </Button>
+                      </Tooltip>
                     </div>
                   ) : (
                     <Link to={`${generatePath(routes.wallet, { id })}/send`}>
                       <Button size={Button.size.BIG} name="button-send">
-                        <div className="flex space-x-3 items-center"><IconUp /> <span>Send</span></div>
+                        <div className="flex space-x-3 items-center">
+                          <IconUp />
+                          {" "}
+                          <span>Send</span>
+                        </div>
                       </Button>
                     </Link>
                   )
@@ -118,17 +134,20 @@ export const WalletPageTemplate: React.FC<Props> = ({
                 <Link to={`${generatePath(isPublicWallet ? routes.publicWallet : routes.wallet, { id })}/receive`}>
                   <Button size={Button.size.BIG} name="button-receive">
                     <div className="flex space-x-3 items-center">
-                      <IconDown /> <span>Receive</span></div>
+                      <IconDown />
+                      {" "}
+                      <span>Receive</span>
+                    </div>
                   </Button>
-                </Link>   
+                </Link>
               </div>
             </div>
           )
         }
       </header>
-      <div className={classNames("theme-bg-panel theme-border border rounded-3xl rounded-tl-none rounded-tr-none mb-8 md:flex md:items-stretch", gradient.light)}>
-        <div className={classNames("-my-px -mx-px flex-shrink-0 w-full h-5 md:w-16 md:h-auto md:rounded-3xl md:rounded-tl-none", gradient.main)} />
-        <div className="flex flex-1 min-w-0 px-5 py-5 items-stretch md:px-10 md:py-10">
+      <div className={classNames("theme-bg-panel theme-border border rounded-large mb-8 md:flex md:items-stretch", gradient.light)}>
+        <div className={classNames("-my-px -mx-px flex-shrink-0 w-full h-5 md:w-16 md:h-auto md:rounded-large md:rounded-tr-none", gradient.main)} />
+        <div className="flex flex-1 min-w-0 px-5 py-5 items-stretch md:px-10 md:py-8">
           {
             loading ? <WalletPlaceholder /> : (
               <div className="flex flex-col justify-center flex-1 min-w-0 text-left">
@@ -148,51 +167,65 @@ export const WalletPageTemplate: React.FC<Props> = ({
                   </h1>
                 </header>
                 <div className="items-end justify-between flex">
-                  <div className="items-end justify-between md:flex max-w-full grow">
-                    <div className="flex items-end">
+                  <div className="items-center justify-between md:flex max-w-full grow min-w-0">
+                    <div className="lg:flex items-end">
                       <div>
-                      <div className="leading-none text-base uppercase whitespace-nowrap overflow-ellipsis mb-4" data-qa-selector="wallet-name">
-                        Balance
-                      </div>
+                        <div className="leading-none text-base uppercase mb-4" data-qa-selector="wallet-name">
+                          <div className="flex items-center overflow-hidden whitespace-nowrap overflow-ellipsis">
+                            {role && <WalletRole small className="mr-1" role={role} />}
+                            {" "}
+                            {showNameInBox ? wallet?.name : "Balance"}
+                          </div>
+                        </div>
                         <div className="whitespace-nowrap text-xl font-bold md:text-3xl mr-1">
                           <span data-qa-selector="wallet-balance">
-                            <FormatNumber value={piconeroToMonero(wallet?.balance || 0)} />
-                          </span> XMR
+                            {wallet?.balance ? <FormatNumber value={piconeroToMonero(wallet?.balance || 0)} /> : "0.0"}
+                          </span>
+                          {" "}
+                          XMR
                         </div>
                       </div>
-                      {wallet?.unlockedBalance !== wallet?.balance ? <BalanceDetails wallet={wallet} /> : null}
+                      {wallet?.unlockedBalance !== wallet?.balance && <BalanceDetails wallet={wallet} />}
                     </div>
-                    <Button
-                        size={Button.size.MEDIUM}
-                        onClick={(): void => {
-                          setIsRefreshing(true);
-                          fetchWalletTransactions({ walletId: id, page });
-                          //@ts-ignore
-                          fetchWalletDetails({ id }).then((): void => { setTimeout((): void => setIsRefreshing(false), 300) });
-                        }}
-                        name="wallet-refresh"
-                        className="float-right flex-[0_auto]"
-                        icon
-                      >
-                        <div className={classNames({ "animate-spin": isRefreshing })}>
-                          <Icon name="refresh" />
-                        </div>
-                    </Button>
-                </div>
+                  </div>
+                  <Button
+                    size={Button.size.MEDIUM}
+                    onClick={(): void => {
+                      setIsRefreshing(true);
+                      fetchWalletTransactions({ walletId: id, page });
+                      // @ts-ignore
+                      fetchWalletDetails({ id }).then((): void => { setTimeout((): void => setIsRefreshing(false), 300); });
+                    }}
+                    name="wallet-refresh"
+                    className="float-right shrink-0 flex-[0_auto]"
+                    icon
+                  >
+                    <div className={classNames("leading-0 origin-center", { "animate-spin": isRefreshing })}>
+                      <Icon name="refresh" />
+                    </div>
+                  </Button>
                 </div>
                 {
                   showActions && (
                     <div className="flex space-x-5 mt-8 md:hidden">
                       <Link className="block w-1/2" to={`${generatePath(routes.wallet, { id })}/send`}>
                         <Button size={Button.size.BIG} disabled={sendButtonDisabled} name="button-send" block={isMobile}>
-                          <div className="flex space-x-3 items-center"><IconUp /> <span>Send</span></div>
+                          <div className="flex space-x-3 items-center">
+                            <IconUp />
+                            {" "}
+                            <span>Send</span>
+                          </div>
                         </Button>
                       </Link>
                       <Link className="block w-1/2" to={`${generatePath(routes.wallet, { id })}/receive`}>
                         <Button size={Button.size.BIG} name="button-receive" block={isMobile}>
-                          <div className="flex space-x-3 items-center"><IconDown /> <span>Receive</span></div>
+                          <div className="flex space-x-3 items-center">
+                            <IconDown />
+                            {" "}
+                            <span>Receive</span>
+                          </div>
                         </Button>
-                      </Link>     
+                      </Link>
                     </div>
                   )
                 }
@@ -203,5 +236,5 @@ export const WalletPageTemplate: React.FC<Props> = ({
       </div>
       {children}
     </section>
-  )
-}
+  );
+};

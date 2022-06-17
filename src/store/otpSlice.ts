@@ -1,4 +1,4 @@
-import {createSlice, PayloadAction, createAsyncThunk} from "@reduxjs/toolkit";
+import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import {
   Create2FAResponse,
   Enable2FAResponse,
@@ -18,9 +18,10 @@ export const create2FA = createAsyncThunk<Create2FAResponse, void>(
       dispatch(setProvisioningUri(response.provisioningUri));
       dispatch(setSecretKey(response.secretKey));
       return response;
-    } catch(err: any) {
+    } catch (err: any) {
+      // eslint-disable-next-line
       console.log("create2FA: ", err);
-      return rejectWithValue(err?.data)
+      return rejectWithValue(err?.data);
     }
   },
 );
@@ -32,8 +33,8 @@ export const enable2FA = createAsyncThunk<Enable2FAResponse, Enable2FAPayload>(
       const response = await otpApi.enable2FA(data);
       dispatch(switch2fa(true));
       return response;
-    } catch(err: any) {
-      return rejectWithValue(err?.data)
+    } catch (err: any) {
+      return rejectWithValue(err?.data);
     }
   },
 );
@@ -45,8 +46,8 @@ export const delete2FA = createAsyncThunk<void, Delete2FAPayload>(
       const response = await otpApi.delete2FA(data);
       dispatch(switch2fa(false));
       return response;
-    } catch(err: any) {
-      return rejectWithValue(err?.data)
+    } catch (err: any) {
+      return rejectWithValue(err?.data);
     }
   },
 );
@@ -84,7 +85,7 @@ export const otpSlice = createSlice({
   extraReducers: {
     ...generateExtraReducer(create2FA),
     ...generateExtraReducer(enable2FA),
-  }
+  },
 });
 
 export const selectors = {
@@ -94,6 +95,6 @@ export const selectors = {
   pendingCreate2FA: createLoadingSelector(SLICE_NAME, create2FA.pending.toString()),
   pendingEnable2FA: createLoadingSelector(SLICE_NAME, enable2FA.pending.toString()),
   pendingDelete2FA: createLoadingSelector(SLICE_NAME, delete2FA.pending.toString()),
-}
+};
 
-export const {setProvisioningUri, setSecretKey, reset} = otpSlice.actions;
+export const { setProvisioningUri, setSecretKey, reset } = otpSlice.actions;

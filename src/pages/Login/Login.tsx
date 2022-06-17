@@ -5,8 +5,11 @@ import { Link, useNavigate, generatePath } from "react-router-dom";
 import ROUTES from "../../router/routes";
 import { SignInPayload, SignInResponse, UserResponse } from "../../types";
 import { deriveUserKeys, getSigningKeys } from "../../utils";
+import { useSortErrors } from "../../hooks";
 import { FormErrors } from "../../modules/index";
-import { Label, Input, Button, Panel, Logo } from "../../components";
+import {
+  Label, Input, Button, Panel, Logo,
+} from "../../components";
 
 const loginValidationSchema = yup.object().shape({
   username: yup
@@ -21,13 +24,26 @@ interface Props {
   setPassword: (password: string) => void;
   setSigningPublicKey: (key: string) => void;
 }
-const LoginPage: React.FC<Props> = ({ login, setPassword, getCurrentUser, setSigningPublicKey }) => {
+const LoginPage: React.FC<Props> = ({
+  login, setPassword, getCurrentUser, setSigningPublicKey,
+}) => {
   const navigate = useNavigate();
+  const {
+    nonFieldErrors,
+    sortErrors,
+  } = useSortErrors(["non_field_errors", "detail", "2fa"]);
   return (
     <Panel>
       <Panel.Body>
         <h1 className="text-center mb-12 text-4xl flex items-center justify-center space-x-3 font-catamaran">
-          <Logo small /> <span>Welcome to <span className="font-bold">rino</span></span>!
+          <Logo small />
+          {" "}
+          <span>
+            Welcome to
+            {" "}
+            <span className="font-bold">rino</span>
+          </span>
+          !
         </h1>
         <Formik
           initialValues={{
@@ -40,7 +56,7 @@ const LoginPage: React.FC<Props> = ({ login, setPassword, getCurrentUser, setSig
           validationSchema={loginValidationSchema}
           onSubmit={async (
             values,
-            { setErrors }
+            { setErrors },
           ): Promise<SignInResponse | undefined> => {
             localStorage.removeItem("_expiredTime");
             try {
@@ -61,8 +77,8 @@ const LoginPage: React.FC<Props> = ({ login, setPassword, getCurrentUser, setSig
                 navigate(ROUTES.wallets);
               }
               return loginResponse;
-            } catch(err: any) {
-              if (err) setErrors(err);
+            } catch (err: any) {
+              if (err) setErrors(sortErrors(err).fieldErrors);
             }
           }}
         >
@@ -108,7 +124,7 @@ const LoginPage: React.FC<Props> = ({ login, setPassword, getCurrentUser, setSig
                   <Link
                     className="theme-link"
                     id="forgot-password"
-                    to={generatePath(ROUTES.resetPassword, {"*": "reset"})}
+                    to={generatePath(ROUTES.resetPassword, { "*": "reset" })}
                   >
                     I forgot my password
                   </Link>
@@ -123,10 +139,10 @@ const LoginPage: React.FC<Props> = ({ login, setPassword, getCurrentUser, setSig
                   </Link>
                 </p>
               </div>
-              <FormErrors errors={errors} />
+              <FormErrors errors={{ ...errors, ...nonFieldErrors }} />
               <div className="mt-10 mb-3">
                 <Button
-                  disabled={!isValid || isSubmitting}
+                  disabled={(!isValid && !Object.keys(errors).includes("detail")) || isSubmitting}
                   type="submit"
                   name="submit-btn"
                   loading={isSubmitting}
@@ -138,9 +154,9 @@ const LoginPage: React.FC<Props> = ({ login, setPassword, getCurrentUser, setSig
                 </Button>
               </div>
               <div className="theme-text flex justify-center mb-3">
-                Don't have an account?
+                Don&apos;t have an account?
                 <Link id="link-login" className="theme-link ml-1" to={ROUTES.register}>
-                    Create account
+                  Create account
                 </Link>
               </div>
             </form>

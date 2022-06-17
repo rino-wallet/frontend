@@ -7,6 +7,7 @@ enum Variant {
   GREEN,
   YELLOW,
   GRAY,
+  BLUE,
 }
 
 type Props = {
@@ -19,16 +20,17 @@ const VARIANT_MAPS: Record<Variant, string> = {
   [Variant.YELLOW]: "bg-yellow-100 text-yellow-600",
   [Variant.RED]: "bg-red-100 text-red-600",
   [Variant.GREEN]: "bg-green-100 text-green-600",
+  [Variant.BLUE]: "bg-blue-100 text-blue-600",
 };
 
-export const Status: React.FC<Props> & { variant: typeof Variant;} = (props) => {
+export const Status: React.FC<Props> & { variant: typeof Variant; } = (props) => {
   const {
     children,
     variant = Variant.GRAY,
   } = props;
   return (
     <div
-    data-qa-selector="tx-status"
+      data-qa-selector="tx-status"
       className={classNames(
         "inline-flex items-center justify-center rounded-full font-medium whitespace-no-wrap text-sm py-1.25 px-4 uppercase",
         VARIANT_MAPS[variant],
@@ -37,6 +39,6 @@ export const Status: React.FC<Props> & { variant: typeof Variant;} = (props) => 
       {children}
     </div>
   );
-}
+};
 
 Status.variant = Variant;

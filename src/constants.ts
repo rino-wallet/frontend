@@ -27,13 +27,19 @@ export const accessLevels = {
   },
 };
 
-export const transactionPriorities = {
-  "Unimportant": "UNIMPORTANT",
-  "Normal": "NORMAL",
-  "Elevated": "ELEVATED",
-  "Priority": "PRIORITY",
+export const orderStatuses = {
+  PENDING_PAYMENT: "Pending Payment",
+  PENDING_EXECUTION: "Pending Execution",
+  COMPLETE: "Complete",
+  FAILED: "Failed",
 };
 
+export const transactionPriorities = {
+  Unimportant: "UNIMPORTANT",
+  Normal: "NORMAL",
+  Elevated: "ELEVATED",
+  Priority: "PRIORITY",
+};
 
 export const createNewWalletSteps = {
   wallet1: "Step 1/6: Creating user and backup keys locally in your browser",
@@ -42,7 +48,7 @@ export const createNewWalletSteps = {
   wallet4: "Step 4/6: Generating multisig info for the RINO key on the server",
   wallet5: "Step 5/6: Exchanging all multisig info between browser and server",
   wallet6: "Step 6/6: Finalizing your new wallet",
-}
+};
 
 export const createTransactionSteps = {
   transaction1: "Step 1/5: Client-side decryption of user key",
@@ -50,22 +56,22 @@ export const createTransactionSteps = {
   transaction3: "Step 3/5: Client-side check of transaction",
   transaction4: "Step 4/5: Requesting second signature from RINO",
   transaction5: "Step 5/5: Submitting transaction to the Monero network",
-}
+};
 
 export const browserFeatures: { webassembly: "webassembly" } = {
   webassembly: "webassembly",
-}
+};
 
 export const PUBLIC_APP_URLS_MAP = {
   production: "https://rino.io",
   test: "https://test.rino.io",
   staging: "https://labradoodle.staging.rino.io",
   develop: "https://labradoodle.dev.rino.io",
-}
+};
 
 export const APP_URLS_MAP = {
   production: "https://app.rino.io",
   test: "https://app.test.rino.io",
   staging: "https://appradoodle.staging.rino.io",
   develop: "https://proxy.dev.rino.io",
-}
+};

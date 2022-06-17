@@ -1,14 +1,8 @@
 import React, { useEffect } from "react";
-import { Route, Routes, useParams, useNavigate } from "react-router-dom";
-import { useDispatch, useThunkActionCreator } from "../../hooks";
 import {
-  FetchWalletDetailsResponse,
-  FetchWalletDetailsPayload,
-  FetchWalletSubaddressThunkPayload,
-  FetchSubaddressResponse,
-  FetchWalletShareRequestsThunkPayload,
-  FetchWalletShareRequestsResponse,
-} from "../../types";
+  Route, Routes, useParams, useNavigate,
+} from "react-router-dom";
+import { useDispatch, useThunkActionCreator } from "../../hooks";
 import {
   fetchWalletDetails as fetchWalletDetailsThunk,
 } from "../../store/walletSlice";
@@ -35,10 +29,10 @@ interface Props {
 const WalletPageContainer: React.FC<Props> = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const walletId = id  as string;
-  const fetchWalletDetails = useThunkActionCreator<FetchWalletDetailsResponse, FetchWalletDetailsPayload>(fetchWalletDetailsThunk);
-  const fetchWalletSubaddress = useThunkActionCreator<FetchSubaddressResponse, FetchWalletSubaddressThunkPayload>(fetchWalletSubaddressThunk);
-  const fetchWalletShareRequests = useThunkActionCreator<FetchWalletShareRequestsResponse, FetchWalletShareRequestsThunkPayload>(fetchWalletShareRequestsThunk);
+  const walletId = id as string;
+  const fetchWalletDetails = useThunkActionCreator(fetchWalletDetailsThunk);
+  const fetchWalletSubaddress = useThunkActionCreator(fetchWalletSubaddressThunk);
+  const fetchWalletShareRequests = useThunkActionCreator(fetchWalletShareRequestsThunk);
   const refresh = async (): Promise<void> => {
     await fetchWalletDetails({ id: walletId })
       .catch(() => {
@@ -46,13 +40,11 @@ const WalletPageContainer: React.FC<Props> = () => {
       });
     fetchWalletSubaddress({ walletId });
     fetchWalletShareRequests({ walletId, page: 1 });
-  }
+  };
 
   const dispatch = useDispatch();
-  useEffect(() => {
-    return (): void => {
-      dispatch(changeLocation());
-    }
+  useEffect(() => (): void => {
+    dispatch(changeLocation());
   }, []);
   useEffect(() => {
     const intervalID = setInterval(() => {
@@ -61,7 +53,7 @@ const WalletPageContainer: React.FC<Props> = () => {
     refresh();
     return (): void => {
       clearInterval(intervalID);
-    }
+    };
   }, []);
   return (
     <Routes>
@@ -73,7 +65,7 @@ const WalletPageContainer: React.FC<Props> = () => {
       <Route path="users" element={<Users walletId={walletId} refresh={refresh} />} />
       <Route path="users/:shareId/finalize-share/" element={<Users walletId={walletId} refresh={refresh} />} />
     </Routes>
-  )
-}
+  );
+};
 
 export default WalletPageContainer;

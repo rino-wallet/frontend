@@ -6,7 +6,9 @@ import routes from "../../../router/routes";
 import { ResetPasswordConfirmThunkPayload } from "../../../types";
 import { passwordValidationSchema } from "../../../utils";
 import { FormErrors, SuccessModal } from "../../../modules/index";
-import { Label, Input, Button, Panel } from "../../../components";
+import {
+  Label, Input, Button, Panel,
+} from "../../../components";
 
 interface Props {
   onSubmit: (data: ResetPasswordConfirmThunkPayload) => Promise<void>;
@@ -39,7 +41,7 @@ const ResetPasswordConfirm: React.FC<Props> = ({
       validationSchema={resetPasswordConfirmSchema}
       onSubmit={async (
         values,
-        { setErrors }
+        { setErrors },
       ): Promise<void> => {
         try {
           const response = await onSubmit({
@@ -50,7 +52,7 @@ const ResetPasswordConfirm: React.FC<Props> = ({
           });
           setIsFinished(true);
           return response;
-        } catch(error: any) {
+        } catch (error: any) {
           if (error) {
             setErrors(error);
           }
@@ -148,7 +150,7 @@ const ResetPasswordConfirm: React.FC<Props> = ({
                 Update Password
               </Button>
             </Panel.Actions>
-          </Panel>  
+          </Panel>
         </form>
       )}
     </Formik>

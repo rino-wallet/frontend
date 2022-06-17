@@ -15,12 +15,13 @@ export type CloseHandle = {
   closeModal: () => void;
 };
 
-
-export const PreventNavigationModal = React.forwardRef<CloseHandle, Props>(({ cancel, submit, title, message }, ref: any) => {
+export const PreventNavigationModal = React.forwardRef<CloseHandle, Props>(({
+  cancel, submit, title, message,
+}, ref: any) => {
   React.useImperativeHandle(ref, () => ({
     closeModal(): void {
       cancel(false);
-    }
+    },
   }));
   return (
     <Modal title={title}>
@@ -36,13 +37,13 @@ export const PreventNavigationModal = React.forwardRef<CloseHandle, Props>(({ ca
       </Modal.Body>
       <Modal.Actions>
         <Button
-          onClick={(): void => { cancel(false) }}
+          onClick={(): void => { cancel(false); }}
           name="cancel-btn"
         >
           Stay Here
         </Button>
         <Button
-          onClick={(): void => { submit(true) }}
+          onClick={(): void => { submit(true); }}
           name="submit-btn"
           variant={Button.variant.PRIMARY}
         >
@@ -55,11 +56,13 @@ export const PreventNavigationModal = React.forwardRef<CloseHandle, Props>(({ ca
 
 // export const showPreventNavigationModal = createModal(PreventNavigationModal);
 
-export const showPreventNavigationModal = createModal(({ title, message, cancel, submit }: { title: string; message: string; cancel: any; submit: any; }) => {
+export const showPreventNavigationModal = createModal(({
+  title, message, cancel, submit,
+}: { title: string; message: string; cancel: any; submit: any; }) => {
   const ref = useRef();
   if (ref?.current) {
     // @ts-ignore
     ref?.current?.closeModal();
   }
-  return <PreventNavigationModal title={title} message={message} cancel={cancel} submit={submit} ref={ref as unknown as RefObject<CloseHandle>} />
+  return <PreventNavigationModal title={title} message={message} cancel={cancel} submit={submit} ref={ref as unknown as RefObject<CloseHandle>} />;
 });

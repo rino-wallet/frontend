@@ -9,7 +9,9 @@ type Props = {
 };
 
 export const Radio: React.FC<Props> = (props) => {
-  const { value, checked, onChange, children } = props;
+  const {
+    value, checked, onChange, children,
+  } = props;
   return (
     <label className="inline-flex items-center text-base">
       <input checked={checked} type="radio" value={value} className="h-5 w-5" onChange={onChange} />
@@ -18,4 +20,4 @@ export const Radio: React.FC<Props> = (props) => {
       </span>
     </label>
   );
-}
+};

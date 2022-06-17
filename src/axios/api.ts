@@ -22,12 +22,10 @@ export class Api extends Axios {
       (error) => {
         // eslint-disable-next-line
         console.error(error);
-      }
+      },
     );
     this.axios.interceptors.response.use(
-      (response) => {
-        return {...response, data: camelcaseKeys(response.data, { deep: true })};
-      },
+      (response) => ({ ...response, data: camelcaseKeys(response.data, { deep: true }) }),
       (error): Promise<AxiosError> => {
         if (error.code === "ECONNABORTED" || !error.response) {
           return new Promise((resolve, reject) => {
@@ -54,7 +52,7 @@ export class Api extends Axios {
         return new Promise((resolve, reject) => {
           reject(error);
         });
-      }
+      },
     );
   }
 
@@ -111,7 +109,7 @@ export class Api extends Axios {
    *
    */
   public request<T, R = AxiosResponse<T>>(
-    config: AxiosRequestConfig
+    config: AxiosRequestConfig,
   ): Promise<R> {
     return this.axios.request(config);
   }
@@ -129,7 +127,7 @@ export class Api extends Axios {
    */
   public get<T, R = AxiosResponse<T>>(
     url: string,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
   ): Promise<R> {
     return this.axios.get(url, config);
   }
@@ -147,7 +145,7 @@ export class Api extends Axios {
    */
   public options<T, R = AxiosResponse<T>>(
     url: string,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
   ): Promise<R> {
     return this.axios.options(url, config);
   }
@@ -165,7 +163,7 @@ export class Api extends Axios {
    */
   public delete<T, R = AxiosResponse<T>>(
     url: string,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
   ): Promise<R> {
     return this.axios.delete(url, config);
   }
@@ -183,7 +181,7 @@ export class Api extends Axios {
    */
   public head<T, R = AxiosResponse<T>>(
     url: string,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
   ): Promise<R> {
     return this.axios.head(url, config);
   }
@@ -204,7 +202,7 @@ export class Api extends Axios {
   public post<T, B, R = AxiosResponse<T>>(
     url: string,
     data?: B,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
   ): Promise<R> {
     return this.axios.post(url, data, config);
   }
@@ -225,7 +223,7 @@ export class Api extends Axios {
   public put<T, B, R = AxiosResponse<T>>(
     url: string,
     data?: B,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
   ): Promise<R> {
     return this.axios.put(url, data, config);
   }
@@ -246,7 +244,7 @@ export class Api extends Axios {
   public patch<T, B, R = AxiosResponse<T>>(
     url: string,
     data?: B,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
   ): Promise<R> {
     return this.axios.patch(url, data, config);
   }

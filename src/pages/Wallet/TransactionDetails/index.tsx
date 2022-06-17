@@ -1,10 +1,12 @@
 import React from "react";
 import { format } from "date-fns";
+import Decimal from "decimal.js-light";
 import { Transaction } from "../../../types";
 import { Copy, Label, FormatNumber } from "../../../components";
-import { piconeroToMonero } from "../../../utils";
+import { piconeroToMonero, satoshiToBTC } from "../../../utils";
 import TransactionMemo from "./TransactionMemo";
 import "./styles.css";
+import { ExchangeDetails } from "../SendPayment/Exchange/ExchangeDetails";
 
 interface Props {
   transaction?: Transaction;
@@ -13,7 +15,7 @@ interface Props {
 }
 
 const TransactionDetailsContent: React.FC<Props> = ({ transaction, walletId, isPublicWallet }) => {
-  const destAddresses = (transaction?.destinations || []).map(dest => dest.address) || [];
+  const destAddresses = (transaction?.destinations || []).map((dest) => dest.address) || [];
   const timestamp = transaction?.timestamp ? transaction?.timestamp : transaction?.createdAt;
   const loading = !transaction;
   return (
@@ -45,7 +47,11 @@ const TransactionDetailsContent: React.FC<Props> = ({ transaction, walletId, isP
               labelClassName="md:text-right"
               valueClassName=""
             >
-              <div data-qa-selector="transaction-network-fee"><FormatNumber value={piconeroToMonero(transaction?.fee || 0)} /> XMR</div>
+              <div data-qa-selector="transaction-network-fee">
+                <FormatNumber value={piconeroToMonero(transaction?.fee || 0)} />
+                {" "}
+                XMR
+              </div>
             </Label>
           </div>
         )
@@ -89,7 +95,7 @@ const TransactionDetailsContent: React.FC<Props> = ({ transaction, walletId, isP
           {
             transaction && (
               <Copy value={transaction.id}>
-                <span data-qa-selector={"transaction-id = " + transaction?.id} className="break-words">
+                <span data-qa-selector={`transaction-id = ${transaction?.id}`} className="break-words">
                   {transaction?.id}
                 </span>
               </Copy>
@@ -100,8 +106,25 @@ const TransactionDetailsContent: React.FC<Props> = ({ transaction, walletId, isP
       {
         (transaction && !isPublicWallet) && <TransactionMemo walletId={walletId} transactionId={transaction.id} memo={transaction.memo} />
       }
+      {
+          transaction?.order && (
+            <div className="mb-8 md:mb-0">
+              <Label label="" inline>
+                <h3 className="text-2xl mb-3 font-bold">Exchange information:</h3>
+              </Label>
+              <ExchangeDetails
+                platform={transaction?.order.platform}
+                rate={new Decimal(satoshiToBTC(transaction?.order?.outgoingAmount as number)).div(new Decimal(piconeroToMonero(transaction?.order?.paymentAmount as number))).toNumber()}
+                currency={transaction?.order.outgoingCurrency}
+                destinationAddress={transaction?.order.outgoingAddress}
+                exchangeID={transaction?.order.platformOrderId}
+                outgoingTxid={transaction?.order.outgoingTxid}
+              />
+            </div>
+          )
+        }
     </div>
-  )
-}
+  );
+};
 
 export default TransactionDetailsContent;

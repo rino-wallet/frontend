@@ -13,14 +13,12 @@ const WalletPlaceholder: React.FC = () => (
       <Placeholder />
     </div>
   </div>
-)
+);
 interface Props {
   balance?: string;
   unlocked?: string;
   name?: string;
-  inList?: boolean;
   loading?: boolean;
-  card?: boolean;
   role?: AccessLevel;
 }
 
@@ -31,7 +29,7 @@ export const WalletCard: React.FC<Props> = ({
   loading = false,
   role,
 }) => {
-  const gradient = getWalletColor()
+  const gradient = getWalletColor();
   return (
     <div className={classNames("theme-bg-panel theme-border border rounded-large rounded-tr-none h-36 flex items-stretch", gradient.light)}>
       <div className={classNames("-my-px -mx-px flex-shrink-0 rounded-large rounded-tr-none w-10 md:w-16", gradient.main)} />
@@ -40,18 +38,24 @@ export const WalletCard: React.FC<Props> = ({
           loading ? <WalletPlaceholder /> : (
             <div className="flex flex-col justify-center flex-1 min-w-0 text-left">
               <div className="leading-none text-base uppercase whitespace-nowrap overflow-hidden overflow-ellipsis mb-4 flex" data-qa-selector="wallet-name">
-                {role && <WalletRole small className="mr-1" role={role} />} {name}
+                {role && <WalletRole small className="mr-1" role={role} />}
+                {" "}
+                {name}
               </div>
               <div className="flex items-end space-x-2">
                 <div>
                   <div className="text-xl whitespace-nowrap font-bold md:text-3xl">
-                    <span data-qa-selector="wallet-balance"><FormatNumber value={piconeroToMonero(balance)} /></span> XMR
+                    <span data-qa-selector="wallet-balance"><FormatNumber value={piconeroToMonero(balance)} /></span>
+                    {" "}
+                    XMR
                   </div>
                 </div>
-                {unlocked !== balance ? (<div className="min-w-0">
-                  <div
-                    className="text-base whitespace-nowrap overflow-ellipsis overflow-hidden theme-text-secondary font-bold md:text-3xl">
-                    (
+                {unlocked !== balance ? (
+                  <div className="min-w-0">
+                    <div
+                      className="text-base whitespace-nowrap overflow-ellipsis overflow-hidden theme-text-secondary font-bold md:text-3xl"
+                    >
+                      (
                       <span data-qa-selector="wallet-unlocked-balance">
                         <FormatNumber value={piconeroToMonero(unlocked)} />
                       </span>
@@ -59,14 +63,14 @@ export const WalletCard: React.FC<Props> = ({
                       <span>unlocked,</span>
                       {" "}
                       <span data-qa-selector="wallet-locked-balance">
-                        <FormatNumber value={piconeroToMonero(parseInt(balance) - parseInt(unlocked))} />
+                        <FormatNumber value={piconeroToMonero(parseInt(balance, 10) - parseInt(unlocked, 10))} />
                       </span>
                       {" "}
                       <span>locked</span>
-                    )
+                      )
+                    </div>
                   </div>
-                </div>) : null
-                }
+                ) : null}
               </div>
             </div>
           )
@@ -76,5 +80,5 @@ export const WalletCard: React.FC<Props> = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

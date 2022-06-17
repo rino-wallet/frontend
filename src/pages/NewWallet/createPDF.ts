@@ -7,23 +7,23 @@ class WalletPdf extends PdfDocument {}
 
 export async function createPDF(config: PdfDocumentConfig, data: NewWalletPDFData): Promise<void> {
   const pdf = new WalletPdf(config);
-  await pdf.addPage(function(self: PdfDocument) {
+  await pdf.addPage((self: PdfDocument) => {
     const layoutContext = self.doc.context2d;
     self.addBoldText("CONFIRMATION NUMBER", self.doc.internal.pageSize.getWidth() - 10, 8, { align: "right" }, "#797d80");
     self.addTitle1(data.checkString, self.doc.internal.pageSize.getWidth() - 10, 15, { align: "right" }, "#797d80");
     self.addTitle2("Introduction", self.leftOffset, 35);
-    self.addText("Hello and welcome to your new wallet. Congratulations on choosing RINO, the fast and safe wallet!", self.leftOffset, 43)
+    self.addText("Hello and welcome to your new wallet. Congratulations on choosing RINO, the fast and safe wallet!", self.leftOffset, 43);
     if (networkType === "stagenet") {
       self.addText("This account runs on the Monero stagenet.", self.leftOffset, 48);
     }
     layoutContext.fillStyle = "#fee9e9";
     layoutContext.fillRect(self.leftOffset, 53, 190, 12);
     layoutContext.fillStyle = "#000000";
-    self.addTitle2("PRINT THIS DOCUMENT, OR KEEP IT SECURELY OFFLINE.", self.doc.internal.pageSize.getWidth()/2, 61, { align: "center" }, "#EC0B0B");
+    self.addTitle2("PRINT THIS DOCUMENT, OR KEEP IT SECURELY OFFLINE.", self.doc.internal.pageSize.getWidth() / 2, 61, { align: "center" }, "#EC0B0B");
     self.addText("This document is your tool to recover your funds if things go wrong.", self.leftOffset, 73);
     self.addText("We recommend removing it from the computer where you access your RINO account. Remember that with RINO, you are always in control of your money.", self.leftOffset, 78);
-    
-    self.doc.context2d.fillStyle = "#F3F3F3"
+
+    self.doc.context2d.fillStyle = "#F3F3F3";
     self.doc.context2d.fillRect(self.leftOffset, 87, 3, 43);
     self.addText("YOUR SELECTED WALLET NAME", self.leftOffset + 10, 92);
     self.addBoldText(data.walletName, self.leftOffset + 10, 97);
@@ -45,13 +45,13 @@ export async function createPDF(config: PdfDocumentConfig, data: NewWalletPDFDat
     self.addTitle2("What if RINO becomes inaccessible for an extended period?", self.leftOffset, 261);
     self.addText("Of course we work very hard to make sure that doesn't happen. But if it does, that's precisely what this document is for. You can use the official Monero software to recover your wallet from this file. See below for instructions.", self.leftOffset, 268);
   });
-  await pdf.addPage(function(self: PdfDocument) {
+  await pdf.addPage((self: PdfDocument) => {
     self.addTitle2("Recovering the wallet", self.leftOffset, 35);
-    self.addText("There are two ways to read the wallet seed: copy and paste the long piece of text, or scan the QR code. Both methods are equivalent and platform-agnostic", self.leftOffset, 43)
+    self.addText("There are two ways to read the wallet seed: copy and paste the long piece of text, or scan the QR code. Both methods are equivalent and platform-agnostic", self.leftOffset, 43);
 
     self.addText("1. Copy the wallet seed from this PDF. By either copying the long piece of text, or scanning the QR code. Make sure it doesn't contain whitespaces or newlines.", self.leftOffset, 60);
     self.addText("2. Restore the multisig wallet from its seed. With command line wallet for example:", self.leftOffset, 70);
-    self.addCommand(`./monero-wallet-cli ${networkType === "stagenet" ? "--stagenet" : ""} --restore-multisig-wallet`, self.leftOffset  + 5, 75);
+    self.addCommand(`./monero-wallet-cli ${networkType === "stagenet" ? "--stagenet" : ""} --restore-multisig-wallet`, self.leftOffset + 5, 75);
     self.addText("3. You will be prompted for a seed offset passphase. There isn't one", self.leftOffset, 80);
     self.addText(`4. When the wallet asks for a restoration date, provide a resonable date back. Example: ${data.date}`, self.leftOffset, 85);
     self.addTitle2("Sending Moneroj from the recovered wallet", self.leftOffset, 105);
@@ -78,10 +78,10 @@ export async function createPDF(config: PdfDocumentConfig, data: NewWalletPDFDat
     self.addCommand("submit_multisig multisig_monero_tx", self.leftOffset + 5, 230);
     self.addText("This command will actually send the Moneroj.", self.leftOffset + 4, 235);
   });
-  await pdf.addPage(async function(self: PdfDocument) {
+  await pdf.addPage(async (self: PdfDocument) => {
     await createWalletSeedPage(self, data.userWalletSeed);
   });
-  await pdf.addPage(async function(self: PdfDocument) {
+  await pdf.addPage(async (self: PdfDocument) => {
     await createWalletSeedPage(self, data.backupWalletSeed, true);
   });
   if (config.downloadFile) {
@@ -99,19 +99,19 @@ export async function createPDF(config: PdfDocumentConfig, data: NewWalletPDFDat
  */
 async function createWalletSeedPage(pdf: PdfDocument, seed: string, isBackup?: boolean): Promise<void> {
   const title = `${isBackup ? "Backup " : "User "}Wallet Seed`;
-  pdf.addTitle1(title, pdf.doc.internal.pageSize.getWidth()/2, 35, { align: "center" });
+  pdf.addTitle1(title, pdf.doc.internal.pageSize.getWidth() / 2, 35, { align: "center" });
 
   const description = isBackup
     ? "This is the third, backup wallet's seed. RINO Wallet Platform does not use it, but you need it in order to recover your funds."
     : "This is the seed of the wallet you use at RINO platform.";
-  pdf.addText(description, pdf.doc.internal.pageSize.getWidth()/2, 42, { align: "center" });
+  pdf.addText(description, pdf.doc.internal.pageSize.getWidth() / 2, 42, { align: "center" });
 
   pdf.addCommand(seed, pdf.leftOffset, 62);
 
   const qrCode = await createQRCodeImage(seed);
   const leftOffset = pdf.leftOffset + 20;
   const qrYOffset = 105;
-  const qrCodeSize = 150
+  const qrCodeSize = 150;
   pdf.doc.addImage(
     qrCode,
     "png",

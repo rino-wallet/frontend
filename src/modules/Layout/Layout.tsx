@@ -12,10 +12,12 @@ interface Props {
   page?: string;
 }
 
-export const Layout: React.FC<Props> = ({ children, signOut, isAuthenticated, page }) => {
+export const Layout: React.FC<Props> = ({
+  children, signOut, isAuthenticated, page,
+}) => {
   switch (page) {
     case "landing": {
-      return <LayoutLanding signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutLanding>
+      return <LayoutLanding signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutLanding>;
     }
     case "cookie_policy":
     case "privacy_policy":
@@ -24,23 +26,23 @@ export const Layout: React.FC<Props> = ({ children, signOut, isAuthenticated, pa
     case "security_pgp_key":
     case "acknowledgments":
     case "faq": {
-      return <LayoutStatic signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutStatic>
+      return <LayoutStatic signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutStatic>;
     }
     case "login":
     case "register":
-    case "resendActivationEmail":  
+    case "resendActivationEmail":
     case "resetPassword": {
-      return <LayoutAuth signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutAuth>
+      return <LayoutAuth signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutAuth>;
     }
     case "404":
     case "unsupported_browser": {
-      return <LayoutMessage>{children}</LayoutMessage>
+      return <LayoutMessage>{children}</LayoutMessage>;
     }
     case "keypair": {
-      return <LayoutClear>{children}</LayoutClear>
+      return <LayoutClear>{children}</LayoutClear>;
     }
     default: {
-      return <LayoutDefault signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutDefault>
+      return <LayoutDefault signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutDefault>;
     }
   }
-}
+};

@@ -5,6 +5,6 @@ export const passwordValidationSchema = yup.string()
   .matches(/^(?=.*?[A-Za-z])(?=.*?[0-9])/, "The password should contain numbers and characters.")
   .when("email", {
     is: (email: string) => !!email,
-    then: yup.string().notOneOf([yup.ref("email")], "Make sure the password is not similar to email.")
+    then: yup.string().notOneOf([yup.ref("email")], "Make sure the password is not similar to email."),
   })
   .required("This field is required.");

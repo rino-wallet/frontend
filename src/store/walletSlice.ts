@@ -1,4 +1,4 @@
-import {createSlice, PayloadAction, createAsyncThunk} from "@reduxjs/toolkit";
+import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import {
   LocalWalletData,
   GetOutputsPayload,
@@ -24,11 +24,15 @@ import walletsApi from "../api/wallets";
 import publicKeysApi from "../api/publicKeys";
 import walletInstance from "../wallet";
 import pollTask from "../utils/pollTask";
-import {generateExtraReducer, createLoadingSelector, getEncryptedKeys, deriveUserKeys, decryptKeys} from "../utils";
+import {
+  generateExtraReducer, createLoadingSelector, getEncryptedKeys, deriveUserKeys, decryptKeys,
+} from "../utils";
 import { accessLevels, createNewWalletSteps, createTransactionSteps } from "../constants";
 import { decryptWalletKeys, encryptWalletKeys } from "../wallet/WalletService";
 import modals from "../modules/2FAModals";
-import {RequestWalletShareThunkPayload} from "../types/store";
+import { RequestWalletShareThunkPayload } from "../types/store";
+
+const SLICE_NAME = "wallet";
 
 function updateShareWalletResponse(response: ShareWalletResponse): WalletMember {
   return {
@@ -38,12 +42,13 @@ function updateShareWalletResponse(response: ShareWalletResponse): WalletMember 
     encryptedKeys: "",
     createdAt: response.createdAt,
     updatedAt: response.createdAt,
-  }
+  };
 }
-export const createNewWallet = createAsyncThunk<any, { name: string, signal: any}>(
-  "wallet/createNewWallet",
-  async ({name, signal}, { rejectWithValue, dispatch, getState }) => {
+export const createNewWallet = createAsyncThunk<any, { name: string, signal: any }>(
+  `${SLICE_NAME}/createNewWallet`,
+  async ({ name, signal }, { rejectWithValue, dispatch, getState }) => {
     signal.addEventListener("abort", () => {
+      // eslint-disable-next-line
       console.log("Wallet Creation Aborted.");
       rejectWithValue(signal);
     });
@@ -51,29 +56,34 @@ export const createNewWallet = createAsyncThunk<any, { name: string, signal: any
       const { encryptionPublicKey } = (getState() as any).session.user;
       // create user and backup wallets
       dispatch(setStage(createNewWalletSteps.wallet1));
+      // eslint-disable-next-line
       console.log("Creating User and Backup wallets");
       await walletInstance.createWallets();
-      if(signal.aborted) return rejectWithValue({});
+      if (signal.aborted) return rejectWithValue({});
       // prepare multisigs for user and backup wallets
       dispatch(setStage(createNewWalletSteps.wallet2));
       // With this artificial delay we can show stage of creating wallet in the UI little bit longer time,
       // so user can read it
-      await new Promise((resolve) => setTimeout(() => resolve({}), 1000));  
+      await new Promise((resolve) => {
+        setTimeout(resolve, 1000);
+      });
+      // eslint-disable-next-line
       console.log("Preparing multisigs");
       const preparedMultisigs = await walletInstance.prepareMultisigs();
-      if(signal.aborted) return rejectWithValue({});
+      if (signal.aborted) return rejectWithValue({});
       // create server wallet
       dispatch(setStage(createNewWalletSteps.wallet3));
+      // eslint-disable-next-line
       console.log("Creating Server Wallet and prepare multisig");
       const serverWallet = await walletsApi.createWallet({
         name,
         user_multisig_info: preparedMultisigs[0],
         backup_multisig_info: preparedMultisigs[1],
       });
-      if(signal.aborted) return rejectWithValue({});
+      if (signal.aborted) return rejectWithValue({});
       // get the task result
       const polledTaskPromise = pollTask(serverWallet.taskId, signal);
-      if(signal.aborted) {
+      if (signal.aborted) {
         return rejectWithValue({});
       }
       const createServerWalletTask = await polledTaskPromise;
@@ -83,20 +93,25 @@ export const createNewWallet = createAsyncThunk<any, { name: string, signal: any
       const walletId = createServerWalletTask.walletId;
       // Make multisigs for user and backup wallets
       dispatch(setStage(createNewWalletSteps.wallet4));
+      // eslint-disable-next-line
       console.log("Making multisig for User and Backup wallets");
       const madeMultisigs = await walletInstance.makeMultisigs([...preparedMultisigs, preparedServerMultisig]);
-      if(signal.aborted) return rejectWithValue({});
+      if (signal.aborted) return rejectWithValue({});
       // Exchange multisig information for User and Backup wallets
       dispatch(setStage(createNewWalletSteps.wallet5));
+      // eslint-disable-next-line
       console.log("Exchanging multisig information for User and Backup wallets");
       // With this artificial delay we can show stage of creating wallet in the UI little bit longer time,
       // so user can read it
-      await new Promise((resolve) => setTimeout(() => resolve({}), 1000));
+      await new Promise((resolve) => {
+        setTimeout(resolve, 1000);
+      });
       const result = await walletInstance.exchangeMultisigKeys([...madeMultisigs, madeServerMultisig]);
       dispatch(setStage(createNewWalletSteps.wallet6));
+      // eslint-disable-next-line
       console.log("Finalizing server wallet");
-      const encryptedWalletKeys =  await walletInstance.encryptWalletKeys(Uint8Array.from(Buffer.from(encryptionPublicKey, "base64")));
-      if(signal.aborted) return rejectWithValue({});
+      const encryptedWalletKeys = await walletInstance.encryptWalletKeys(Uint8Array.from(Buffer.from(encryptionPublicKey, "base64")));
+      if (signal.aborted) return rejectWithValue({});
       const finalizedServerWallet = await walletsApi.finalizeWallet(walletId, {
         address: result.userResult.state.address,
         user_multisig_xinfo: madeMultisigs[0],
@@ -107,29 +122,32 @@ export const createNewWallet = createAsyncThunk<any, { name: string, signal: any
           enc_content: Buffer.from(encryptedWalletKeys).toString("base64"),
         }),
       });
-      if(signal.aborted) return rejectWithValue({});
+      if (signal.aborted) return rejectWithValue({});
       // Refresh wallets data and add to store
       const updatedWallets = await walletInstance.getWalletsData();
-      if(signal.aborted) return rejectWithValue({});
+      if (signal.aborted) return rejectWithValue({});
       // finalize server wallet
       await pollTask(finalizedServerWallet.taskId, signal);
       walletInstance.closeWallet();
-      if(signal.aborted) return rejectWithValue({});
+      if (signal.aborted) return rejectWithValue({});
       dispatch(setStage(""));
       return { ...updatedWallets, walletId, walletPassword: Buffer.from(walletInstance.walletPassword).toString("hex") };
-    } catch(err: any) {
+    } catch (err: any) {
+      // eslint-disable-next-line
       console.log(err);
-      return rejectWithValue(err?.data)
+      return rejectWithValue(err?.data);
     }
   },
 );
 
 export const openWallet = createAsyncThunk<LocalWalletData, { wallet: Wallet, loginPassword: string }>(
-  "wallet/openWallet",
-  async ({wallet, loginPassword}, { rejectWithValue, dispatch, getState }) => {
+  `${SLICE_NAME}/openWallet`,
+  async ({ wallet, loginPassword }, { rejectWithValue, dispatch, getState }) => {
     try {
       dispatch(setStage(createTransactionSteps.transaction1));
-      const { encPrivateKey, encryptionPublicKey, email, username } = (getState() as any).session.user;
+      const {
+        encPrivateKey, encryptionPublicKey, email, username,
+      } = (getState() as any).session.user;
       const encryptedWalletKeysJson = getEncryptedKeys(wallet, email);
       const encryptedWalletKeys = JSON.parse(encryptedWalletKeysJson).enc_content;
       const { encryptionKey, clean: cleanDerivedKeys } = await deriveUserKeys(loginPassword, username);
@@ -147,28 +165,28 @@ export const openWallet = createAsyncThunk<LocalWalletData, { wallet: Wallet, lo
       cleanDerivedKeys();
       cleanDecryptedKeys();
       return userWallet;
-    } catch(err: any) {
+    } catch (err: any) {
       dispatch(setStage(""));
-      return rejectWithValue(err?.data || err)
+      return rejectWithValue(err?.data || err);
     }
   },
 );
 
 export const getOutputs = createAsyncThunk<LocalWalletData | undefined, GetOutputsPayload>(
-  "wallet/getOutputs",
+  `${SLICE_NAME}/getOutputs`,
   async (data, { rejectWithValue, dispatch }) => {
     try {
       const { userWallet } = walletInstance;
       const response = await walletsApi.getOutputs(data);
       const { result: { outputsHex } } = await pollTask(response.taskId);
       const importedOutputs = await userWallet?.importOutputs(outputsHex);
+      // eslint-disable-next-line
       console.dir(`Imported ${importedOutputs} outputs`);
-
       const userWalletUpdated = await userWallet?.getWalletJSON();
       return userWalletUpdated;
-    } catch(err: any) {
+    } catch (err: any) {
       dispatch(setStage(""));
-      return rejectWithValue(err?.data)
+      return rejectWithValue(err?.data);
     }
   },
 );
@@ -178,22 +196,24 @@ export const getOutputs = createAsyncThunk<LocalWalletData | undefined, GetOutpu
  * On the first exchange, it assumes that the FE doesn't have complete multisig info;
  * so for the backend's benefit it does a second exchange after the FE gets complete
  * multisig info.
- * 
+ *
  * This is kind of experimental and should be polished later, if successful
  */
 export const syncMultisig = createAsyncThunk<LocalWalletData | undefined, string>(
-  "wallet/SyncMultisig",
+  `${SLICE_NAME}/SyncMultisig`,
   async (id, { rejectWithValue, dispatch }) => {
     try {
       dispatch(setStage(createTransactionSteps.transaction5));
-      await new Promise((resolve) => setTimeout(() => resolve({}), 500));
+      await new Promise((resolve) => {
+        setTimeout(resolve, 500);
+      });
       const { userWallet } = walletInstance;
       if (!userWallet) {
         return;
       }
       const payload1 = {
         multisig_hex: await userWallet.getMultisigHex(),
-        id: id,
+        id,
       };
       const response1 = await walletsApi.syncMultisig(payload1);
       const { result: { multisigHex: multisigHex1 } } = await pollTask(response1.taskId);
@@ -201,42 +221,44 @@ export const syncMultisig = createAsyncThunk<LocalWalletData | undefined, string
 
       const payload2 = {
         multisig_hex: await userWallet.getMultisigHex(),
-        id: id,
+        id,
       };
       const response2 = await walletsApi.syncMultisig(payload2);
       await pollTask(response2.taskId);
 
       const userWalletUpdated = await userWallet.getWalletJSON();
       return userWalletUpdated;
-    } catch(err: any) {
+    } catch (err: any) {
       dispatch(setStage(""));
-      return rejectWithValue(err?.data || err)
+      return rejectWithValue(err?.data || err);
     }
   },
 );
-export const prepareTransaction = createAsyncThunk<CreateUnsignedTransactionResponse, { id: string, body: Destination,  memo: string, priority: string }>(
-  "wallet/prepareTransaction",
+export const prepareTransaction = createAsyncThunk<CreateUnsignedTransactionResponse, { id: string, body: Destination, memo: string, priority: string, orderId?: string }>(
+  `${SLICE_NAME}/prepareTransaction`,
   async (data, { rejectWithValue, dispatch }) => {
     try {
       dispatch(setPendingTransaction({
-         address: data.body.address,
-         amount: data.body.amount.toString(),
-         memo: data.memo,
-         priority: data.priority,
+        address: data.body.address,
+        amount: data.body.amount.toString(),
+        memo: data.memo,
+        priority: data.priority,
       }));
       // With this artificial delay we can show stage of creating transaction in the UI little bit longer time,
       // so user can read it
       dispatch(setStage(createTransactionSteps.transaction2));
-      await new Promise((resolve) => setTimeout(() => resolve({}), 1000));  
-      const {userWallet} = walletInstance;
+      await await new Promise((resolve) => {
+        setTimeout(resolve, 1000);
+      });
+      const { userWallet } = walletInstance;
       const multisig = await userWallet?.getMultisigHex();
       dispatch(setStage(createTransactionSteps.transaction3));
       const createTransactionResponse = await walletsApi.createUnsignedTransaction(data.id, {
         destinations: [data.body],
         multisig_hex: multisig || "",
-        priority: data.priority
+        priority: data.priority,
       });
-      const {result: {multisigHex, txsHex}} = await pollTask(createTransactionResponse.taskId);
+      const { result: { multisigHex, txsHex } } = await pollTask(createTransactionResponse.taskId);
       await userWallet?.importMultisigHex([multisigHex]);
       const txData = await userWallet?.loadMultisigTx(txsHex);
       if (txData?.state.fee) {
@@ -244,32 +266,31 @@ export const prepareTransaction = createAsyncThunk<CreateUnsignedTransactionResp
           address: data.body.address,
           amount: data.body.amount.toString(),
           fee: txData.state.fee,
-          txsHex: txsHex,
+          txsHex,
           memo: data.memo,
           priority: data.priority,
+          orderId: data.orderId,
         }));
         return createTransactionResponse;
-      } else {
-        dispatch(setStage(""));
-        return rejectWithValue({"detail": "Could not get transaction fee."});
       }
-    } catch (err: any) {
-      console.log(111, err);
       dispatch(setStage(""));
-      return rejectWithValue(err?.data)
+      return rejectWithValue({ detail: "Could not get transaction fee." });
+    } catch (err: any) {
+      dispatch(setStage(""));
+      return rejectWithValue(err?.data);
     }
   },
 );
 
-export const createTransaction = createAsyncThunk<CreateUnsignedTransactionResponse,{ id: string, code: string }>(
-  "wallet/createTransaction",
+export const createTransaction = createAsyncThunk<CreateUnsignedTransactionResponse, { id: string, code: string }>(
+  `${SLICE_NAME}/createTransaction`,
   async (data, { rejectWithValue, getState, dispatch }) => {
     try {
       const pendingTransaction = (getState() as any).wallet.pendingTransaction;
-      const {userWallet} = walletInstance;
+      const { userWallet } = walletInstance;
       const txHex = await userWallet?.reconstructAndValidateTransaction(pendingTransaction.txsHex, {
         address: pendingTransaction.address,
-        amount: pendingTransaction.amount
+        amount: pendingTransaction.amount,
       });
       dispatch(setStage(createTransactionSteps.transaction4));
       const submitTransactionResponse = await walletsApi.submitTransaction(
@@ -277,6 +298,7 @@ export const createTransaction = createAsyncThunk<CreateUnsignedTransactionRespo
         {
           tx_hex: txHex || "",
           memo: pendingTransaction.memo,
+          ...(pendingTransaction.orderId ? { order_id: pendingTransaction.orderId } : {}),
         },
         data.code ? { headers: { "X-RINO-2FA": data.code } } : undefined,
       );
@@ -284,57 +306,58 @@ export const createTransaction = createAsyncThunk<CreateUnsignedTransactionRespo
       dispatch(setPendingTransaction({
         address: "",
         amount: "",
+        orderId: "",
         fee: undefined,
         txsHex: undefined,
         memo: undefined,
         priority: undefined,
-      }))
+      }));
       walletInstance.closeWallet();
       return submitTransactionResponse;
-    } catch(err: any) {
+    } catch (err: any) {
       dispatch(setStage(""));
-      return rejectWithValue(err?.data)
+      return rejectWithValue(err?.data);
     }
   },
 );
 
 export const persistWallet = createAsyncThunk<void, PersistWalletPayload>(
-  "wallet/PersistWallet",
+  `${SLICE_NAME}/PersistWallet`,
   async (data, { rejectWithValue }) => {
     try {
       await walletsApi.persistWallet(data);
-    } catch(err: any) {
-      return rejectWithValue(err?.data)
+    } catch (err: any) {
+      return rejectWithValue(err?.data);
     }
   },
 );
 
 export const fetchWalletDetails = createAsyncThunk<FetchWalletDetailsResponse, FetchWalletDetailsPayload>(
-  "wallet/fetchWalletDetails",
+  `${SLICE_NAME}/fetchWalletDetails`,
   async (data, { rejectWithValue }) => {
     try {
       const wallet = await walletsApi.fetchWalletDetails(data);
       return wallet;
-    } catch(err: any) {
-      return rejectWithValue(err?.data)
+    } catch (err: any) {
+      return rejectWithValue(err?.data);
     }
   },
 );
 
 export const updateWalletDetails = createAsyncThunk<UpdateWalletDetailsResponse, UpdateWalletDetailsPayload>(
-  "wallet/updateWalletDetails",
+  `${SLICE_NAME}/updateWalletDetails`,
   async (data, { rejectWithValue }) => {
     try {
-      const wallet = await walletsApi.updateWalletDetails(data, data.code ? { headers: { "X-RINO-2FA": data.code } } : undefined,);
+      const wallet = await walletsApi.updateWalletDetails(data, data.code ? { headers: { "X-RINO-2FA": data.code } } : undefined);
       return wallet;
-    } catch(err: any) {
-      return rejectWithValue(err?.data)
+    } catch (err: any) {
+      return rejectWithValue(err?.data);
     }
   },
 );
 
 export const deleteWallet = createAsyncThunk<DeleteWalletResponse, DeleteWalletPayload>(
-  "wallet/deleteWallet",
+  `${SLICE_NAME}/deleteWallet`,
   async (data, { rejectWithValue, getState }) => {
     try {
       let code = "";
@@ -344,30 +367,31 @@ export const deleteWallet = createAsyncThunk<DeleteWalletResponse, DeleteWalletP
       }
       const wallet = await walletsApi.deleteWallet(data, code ? { headers: { "X-RINO-2FA": code } } : undefined);
       return wallet;
-    } catch(err: any) {
-      return rejectWithValue(err?.data)
+    } catch (err: any) {
+      return rejectWithValue(err?.data);
     }
   },
-); 
+);
 export const requestWalletShare = createAsyncThunk<void, RequestWalletShareThunkPayload>(
-  "wallet/walletShareRequest",
-  async (data, {rejectWithValue}) => {
-    const requestBody = { email: data.email }
-    try{
-      await walletsApi.requestWalletShare(data.wallet.id, requestBody, data.code ? { headers: { "X-RINO-2FA": data.code } } : undefined,);
+  `${SLICE_NAME}/walletShareRequest`,
+  async (data, { rejectWithValue }) => {
+    const requestBody = { email: data.email };
+    try {
+      await walletsApi.requestWalletShare(data.wallet.id, requestBody, data.code ? { headers: { "X-RINO-2FA": data.code } } : undefined);
+    } catch (err: any) {
+      return rejectWithValue(err?.data || err);
     }
-    catch(err:any){
-      return rejectWithValue(err?.data || err)
-    }
-    }
-)
+  },
+);
 export const shareWallet = createAsyncThunk<void, ShareWalletThunkPayload>(
-  "wallet/shareWallet",
+  `${SLICE_NAME}/shareWallet`,
   async (data, { rejectWithValue, getState, dispatch }) => {
-    const requestBody = { access_level: data.accessLevel, email: data.email, encrypted_keys: "" }
+    const requestBody = { access_level: data.accessLevel, email: data.email, encrypted_keys: "" };
     try {
       if (data.accessLevel === accessLevels.admin.code) {
-        const { encryptionPublicKey, email, username, encPrivateKey } = (getState() as any).session.user;
+        const {
+          encryptionPublicKey, email, username, encPrivateKey,
+        } = (getState() as any).session.user;
         const { encryptionKey, clean: cleanDerivedKeys } = await deriveUserKeys(data.password, username);
         const encryptedWalletKeysJson = getEncryptedKeys(data.wallet, email);
         const encryptedWalletKeys = JSON.parse(encryptedWalletKeysJson).enc_content;
@@ -386,7 +410,7 @@ export const shareWallet = createAsyncThunk<void, ShareWalletThunkPayload>(
           Uint8Array.from(Buffer.from(encryptionPublicKey, "base64")),
           encryptionPrivateKey,
         );
-        const reEncWalletKeys = await encryptWalletKeys(Uint8Array.from(Buffer.from(publicKeys[0].encryptionPublicKey, "base64")), walletKeys, walletPassword); 
+        const reEncWalletKeys = await encryptWalletKeys(Uint8Array.from(Buffer.from(publicKeys[0].encryptionPublicKey, "base64")), walletKeys, walletPassword);
         requestBody.encrypted_keys = JSON.stringify({
           version: 1,
           method: "asymmetric",
@@ -394,33 +418,33 @@ export const shareWallet = createAsyncThunk<void, ShareWalletThunkPayload>(
         });
         cleanDerivedKeys();
         cleanDecryptedKeys();
-        if( data.update && data.member ) {
-          const response = await walletsApi.updateWalletAccess(data.wallet.id, data.member.id, requestBody, data.code ? { headers: { "X-RINO-2FA": data.code } } : undefined,);
+        if (data.update && data.member) {
+          const response = await walletsApi.updateWalletAccess(data.wallet.id, data.member.id, requestBody, data.code ? { headers: { "X-RINO-2FA": data.code } } : undefined);
           await dispatch(removeMember(data.member.id));
           dispatch(addMember(updateShareWalletResponse(response)));
         } else {
-          const response = await walletsApi.shareWallet(data.wallet.id, requestBody, data.code ? { headers: { "X-RINO-2FA": data.code } } : undefined,);
+          const response = await walletsApi.shareWallet(data.wallet.id, requestBody, data.code ? { headers: { "X-RINO-2FA": data.code } } : undefined);
           dispatch(addMember(updateShareWalletResponse(response)));
         }
       } else {
-        const response = await walletsApi.shareWallet(data.wallet.id, requestBody, data.code ? { headers: { "X-RINO-2FA": data.code } } : undefined,);
+        const response = await walletsApi.shareWallet(data.wallet.id, requestBody, data.code ? { headers: { "X-RINO-2FA": data.code } } : undefined);
         dispatch(addMember(updateShareWalletResponse(response)));
       }
-    } catch(err: any) {
-      return rejectWithValue(err?.data || err)
+    } catch (err: any) {
+      return rejectWithValue(err?.data || err);
     }
   },
 );
 
 export const removeWalletAccess = createAsyncThunk<RemoveWalletAccessResponse, RemoveWalletAccessPayload>(
-  "wallet/removeWalletAccess",
+  `${SLICE_NAME}/removeWalletAccess`,
   async (data, { rejectWithValue, dispatch }) => {
     try {
       const response = await walletsApi.removeWalletAccess(data);
-      dispatch(removeMember(data.userId))
+      dispatch(removeMember(data.userId));
       return response;
-    } catch(err: any) {
-      return rejectWithValue(err?.data)
+    } catch (err: any) {
+      return rejectWithValue(err?.data);
     }
   },
 );
@@ -446,8 +470,6 @@ export const initialState: State = {
   },
 };
 
-const SLICE_NAME = "wallet";
-
 export const walletSlice = createSlice({
   name: SLICE_NAME,
   initialState,
@@ -457,7 +479,7 @@ export const walletSlice = createSlice({
         state.data = {
           ...state.data,
           members: [...state.data.members, action.payload],
-        }
+        };
       }
     },
     removeMember(state, action: { payload: string }): void {
@@ -465,7 +487,7 @@ export const walletSlice = createSlice({
         state.data = {
           ...state.data,
           members: state.data.members.filter((member) => member.id !== action.payload),
-        }
+        };
       }
     },
     setStage(state, action: PayloadAction<string>): void {
@@ -492,16 +514,16 @@ export const walletSlice = createSlice({
     ...generateExtraReducer(createTransaction),
     ...generateExtraReducer(
       fetchWalletDetails,
-      (data) => ({ data: data }),
+      (data) => ({ data }),
     ),
     ...generateExtraReducer(
       updateWalletDetails,
-      (data) => ({ data: data }),
+      (data) => ({ data }),
     ),
     ...generateExtraReducer(deleteWallet),
     // ...generateExtraReducer(shareWallet),
     ...generateExtraReducer(removeWalletAccess),
-  }
+  },
 });
 
 export const selectors = {
@@ -519,7 +541,7 @@ export const selectors = {
   pendingDeleteWallet: createLoadingSelector(SLICE_NAME, deleteWallet.pending.toString()),
   // pendingShareWallet: createLoadingSelector(SLICE_NAME, shareWallet.pending.toString()),
   pendingRemoveWalletAccess: createLoadingSelector(SLICE_NAME, removeWalletAccess.pending.toString()),
-}
+};
 
 export const {
   addMember,

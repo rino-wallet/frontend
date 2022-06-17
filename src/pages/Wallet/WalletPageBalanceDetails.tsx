@@ -8,13 +8,12 @@ interface Props {
   wallet: Wallet | PublicWallet | null;
 }
 
-
 export const BalanceDetails: React.FC<Props> = ({ wallet }) => {
   const [firstTransactionBlocksToGo, setBlocksToGo] = useState(0);
 
   useEffect(() => {
     if (wallet && wallet.lockedAmounts.length) {
-      setBlocksToGo(10 - wallet.lockedAmounts[wallet.lockedAmounts.length - 1].confirmations)
+      setBlocksToGo(10 - wallet.lockedAmounts[wallet.lockedAmounts.length - 1].confirmations);
     }
   }, [wallet, wallet?.lockedAmounts]);
   return (
@@ -23,34 +22,55 @@ export const BalanceDetails: React.FC<Props> = ({ wallet }) => {
         <div className="text-xs">
           <ul>
             {
-              wallet?.lockedAmounts?.map(lockedAmount => (
-                <li>
-                  <FormatNumber value={piconeroToMonero(lockedAmount.amount)} /> XMR {lockedAmount.confirmations == 0 ? "unconfirmed" : "locked"} (~{(10 - lockedAmount.confirmations) * 2}mins)
+              wallet?.lockedAmounts?.map((lockedAmount) => (
+                <li key={lockedAmount.amount}>
+                  <FormatNumber value={piconeroToMonero(lockedAmount.amount)} />
+                  {" "}
+                  XMR
+                  {lockedAmount.confirmations === 0 ? "unconfirmed" : "locked"}
+                  {" "}
+                  (~
+                  {(10 - lockedAmount.confirmations) * 2}
+                  mins)
                 </li>
               ))
             }
           </ul>
         </div>
       )}
-      disable={wallet?.lockedAmounts.length == 0}
+      disable={wallet?.lockedAmounts.length === 0}
     >
       <div className="min-w-0">
         <div
           className="text-base items-end theme-text-secondary md:text-2xl"
         >
-            (
-            <span data-qa-selector="wallet-unlocked-balance"><FormatNumber
-              value={piconeroToMonero(wallet?.unlockedBalance || 0)}/></span>
-            {" "}
-            <span>available,</span>
-            {" "}
-            <span data-qa-selector="wallet-locked-balance"><FormatNumber
-              value={piconeroToMonero(parseInt(wallet?.balance || "0") - parseInt(wallet?.unlockedBalance || "0"))}/></span>
-            {" "}
-          {wallet?.lockedAmounts && wallet?.lockedAmounts.length > 0 ? <span> more in ~ {firstTransactionBlocksToGo * 2} mins</span> : <span>locked</span> }
-            )
+          (
+          <span data-qa-selector="wallet-unlocked-balance">
+            <FormatNumber
+              value={piconeroToMonero(wallet?.unlockedBalance || 0)}
+            />
+          </span>
+          {" "}
+          <span>available,</span>
+          {" "}
+          <span data-qa-selector="wallet-locked-balance">
+            <FormatNumber
+              value={piconeroToMonero(parseInt(wallet?.balance || "0", 10) - parseInt(wallet?.unlockedBalance || "0", 10))}
+            />
+          </span>
+          {" "}
+          {wallet?.lockedAmounts && wallet?.lockedAmounts.length > 0 ? (
+            <span>
+              {" "}
+              more in ~
+              {firstTransactionBlocksToGo * 2}
+              {" "}
+              mins
+            </span>
+          ) : <span>locked</span>}
+          )
         </div>
       </div>
     </Tooltip>
-  )
-}
+  );
+};

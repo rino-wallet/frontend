@@ -4,7 +4,9 @@ import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { ResetPasswordRequestPayload } from "../../../types";
 import { FormErrors } from "../../../modules/index";
-import { Label, Input, Button, Panel } from "../../../components";
+import {
+  Label, Input, Button, Panel,
+} from "../../../components";
 import routes from "../../../router/routes";
 
 const forgotPasswordRequestValidationSchema = yup.object().shape({
@@ -28,16 +30,14 @@ const ResetPasswordRequestPage: React.FC<Props> = ({ onSubmit }) => {
         non_field_errors: "",
       }}
       validationSchema={forgotPasswordRequestValidationSchema}
-      onSubmit={(values, { setErrors }): Promise<void> => {
-        return onSubmit({ email: values.email }).then(
-          () => {
-            setHasSubmitCompleted(true);
-          },
-          (err) => {
-            setErrors(err.response.data);
-          }
-        );
-      }}
+      onSubmit={(values, { setErrors }): Promise<void> => onSubmit({ email: values.email }).then(
+        () => {
+          setHasSubmitCompleted(true);
+        },
+        (err) => {
+          setErrors(err.response.data);
+        },
+      )}
     >
       {({
         values,
@@ -56,7 +56,11 @@ const ResetPasswordRequestPage: React.FC<Props> = ({ onSubmit }) => {
               <Panel title="Forgot Password">
                 <Panel.Body>
                   <p>
-                    We sent an email to <span className="text-primary font-bold break-words">{values.email}</span> with instructions to reset your password.
+                    We sent an email to
+                    {" "}
+                    <span className="text-primary font-bold break-words">{values.email}</span>
+                    {" "}
+                    with instructions to reset your password.
                   </p>
                 </Panel.Body>
                 <Panel.Actions>
@@ -70,7 +74,7 @@ const ResetPasswordRequestPage: React.FC<Props> = ({ onSubmit }) => {
                     Ok
                   </Button>
                 </Panel.Actions>
-              </Panel> 
+              </Panel>
             ) : (
               <Panel title="Forgot Password">
                 <Panel.Body>
@@ -84,7 +88,7 @@ const ResetPasswordRequestPage: React.FC<Props> = ({ onSubmit }) => {
                         onChange={handleChange}
                         onBlur={handleBlur}
                         placeholder="Your email"
-                        error={touched.email ? errors.email: ""}
+                        error={touched.email ? errors.email : ""}
                       />
                     </Label>
                   </div>
@@ -103,7 +107,7 @@ const ResetPasswordRequestPage: React.FC<Props> = ({ onSubmit }) => {
                   <Button
                     size={Button.size.BIG}
                     variant={Button.variant.PRIMARY_LIGHT}
-                    disabled={dirty && !isValid || isSubmitting}
+                    disabled={dirty && (!isValid || isSubmitting)}
                     type="submit"
                     name="submit-btn"
                     loading={isSubmitting}

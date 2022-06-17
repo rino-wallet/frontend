@@ -7,21 +7,21 @@ type Props = {
   hideThreshold?: number;
 };
 
-export const ScrollArrow: React.FC<Props> = ({ className, hideThreshold= 100 }) => {
+export const ScrollArrow: React.FC<Props> = ({ className, hideThreshold = 100 }) => {
   const [isHidden, setIsHidden] = useState(false);
 
   const listenToScroll = (): void => {
     const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-    setIsHidden(winScroll > hideThreshold)
-  }
+    setIsHidden(winScroll > hideThreshold);
+  };
   useEffect(() => {
     window.addEventListener("scroll", listenToScroll);
-    return (): void => { window.removeEventListener("scroll", listenToScroll) };
-  })
+    return (): void => { window.removeEventListener("scroll", listenToScroll); };
+  });
 
   return (
-    <div className={classNames("animate-bounce absolute right-12 bottom-0.5", className, {"hidden": isHidden})}>
+    <div className={classNames("animate-bounce absolute right-12 bottom-0.5", className, { hidden: isHidden })}>
       <ArrowDown />
     </div>
-    )
+  );
 };

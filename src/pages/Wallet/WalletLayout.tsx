@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 import { useNavigate, generatePath } from "react-router-dom";
-import { Tabs } from "../../components"
+import { Tabs } from "../../components";
 import { PublicWallet, Wallet } from "../../types";
 import routes from "../../router/routes";
 import { WalletPageTemplate } from "./WalletPageTemplate";
@@ -16,7 +16,6 @@ interface Props {
   children?: ReactNode;
   viewOnly?: boolean;
   isPublicWallet?: boolean;
-  pendingShareRequestExist?: boolean;
 }
 
 // eslint-disable-next-line
@@ -26,7 +25,9 @@ enum tabsMap {
   settings,
 }
 
-export const WalletLayout: React.FC<Props> = ({ wallet, children, tab, id, viewOnly, isPublicWallet }) => {
+export const WalletLayout: React.FC<Props> = ({
+  wallet, children, tab, id, viewOnly, isPublicWallet,
+}) => {
   const navigate = useNavigate();
   const walletShareRequests = useSelector(selectors.getWalletShareRequests);
   return (
@@ -52,10 +53,10 @@ export const WalletLayout: React.FC<Props> = ({ wallet, children, tab, id, viewO
             ...(!viewOnly ? [{
               value: 2,
               text: "Settings",
-            }]: [])
+            }] : []),
           ]}
           activeTab={tabsMap[tab]}
-          tabsWithNotification={walletShareRequests.length > 0 ? [tabsMap["users"]] : []}
+          tabsWithNotification={walletShareRequests.length > 0 ? [tabsMap.users] : []}
           onChange={(value): void => {
             navigate(`${generatePath(routes.wallet, { id })}/${tabsMap[value]}`);
           }}
@@ -63,8 +64,8 @@ export const WalletLayout: React.FC<Props> = ({ wallet, children, tab, id, viewO
           <div className="mt-6">
             {children}
           </div>
-        </Tabs> 
+        </Tabs>
       </div>
     </WalletPageTemplate>
-  )
-}
+  );
+};

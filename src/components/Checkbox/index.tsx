@@ -11,12 +11,15 @@ type Props = {
 };
 
 export const Checkbox: React.FC<Props> = (props) => {
-  const { checked = false, onChange, children, name = "", disabled = false } = props;
+  const {
+    checked = false, onChange, children, name = "", disabled = false,
+  } = props;
   return (
     <label className={classNames(
       "inline-flex items-center space-x-3 cursor-pointer",
       { "theme-text-secondary": disabled },
-    )}>
+    )}
+    >
       <input
         name={name}
         checked={checked}
@@ -27,7 +30,7 @@ export const Checkbox: React.FC<Props> = (props) => {
           "form-tick appearance-none bg-white bg-check h-8 w-8 border border-solid theme-control-border rounded cursor-pointer checked:border-transparent flex-shrink-0",
           {
             "checked theme-control-primary-gradient-light": checked,
-          }
+          },
         )}
       />
       <span className="font-normal">
@@ -35,4 +38,4 @@ export const Checkbox: React.FC<Props> = (props) => {
       </span>
     </label>
   );
-}
+};

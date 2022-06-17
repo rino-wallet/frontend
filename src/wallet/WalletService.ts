@@ -16,12 +16,16 @@ export async function generateWalletPassword(): Promise<Uint8Array> {
 /**
  * Encrypt wallet keys with the public key
  */
-export async function encryptWalletKeys(publicKey: Uint8Array, walletKeys: Uint8Array, walletPassword: Uint8Array): Promise<Uint8Array> {
+export async function encryptWalletKeys(
+  publicKey: Uint8Array,
+  walletKeys: Uint8Array,
+  walletPassword: Uint8Array,
+): Promise<Uint8Array> {
   await _sodium.ready;
   const sodium = _sodium;
   const message = new Uint8Array(walletPassword.length + walletKeys.length);
   message.set(walletPassword);
-  message.set(walletKeys, walletPassword.length)
+  message.set(walletKeys, walletPassword.length);
   return sodium.crypto_box_seal(message, publicKey);
 }
 
@@ -36,49 +40,59 @@ export async function decryptWalletKeys(
   try {
     await _sodium.ready;
     const sodium = _sodium;
-    const decryptedMessage = sodium.crypto_box_seal_open(encryptedWalletKeys, publicKey, privateKey);
+    const decryptedMessage = sodium
+      .crypto_box_seal_open(encryptedWalletKeys, publicKey, privateKey);
     return {
       walletKeys: decryptedMessage.slice(16),
       walletPassword: decryptedMessage.slice(0, 16),
     };
-  } catch(error) {
-    throw({ password: "Wallet keys decryption failed." });
+  } catch (error) {
+    throw ({ password: "Wallet keys decryption failed." });
   }
 }
 
 /** Class that handle all multisig wallets creation steps */
 export default class WalletService {
   userWallet: InstanceType<typeof Wallet> | null;
+
   backupWallet: InstanceType<typeof Wallet> | null;
+
   walletPassword: Uint8Array;
+
   constructor() {
     this.userWallet = null;
     this.backupWallet = null;
     this.walletPassword = new Uint8Array();
   }
+
   /**
   * Create user and backup wallets
   */
-  createWallets = async (): Promise<{ userWallet: LocalWalletData, backupWallet: LocalWalletData }> => {
+  createWallets = async (): Promise<{
+    userWallet: LocalWalletData,
+    backupWallet: LocalWalletData
+  }> => {
     const walletPassword = await generateWalletPassword();
     this.walletPassword = walletPassword;
-    this.userWallet = await Wallet.init({ password: Buffer.from(walletPassword).toString("hex"), networkType: networkType });
-    this.backupWallet = await Wallet.init({ password: Buffer.from(walletPassword).toString("hex"), networkType: networkType });
+    this.userWallet = await Wallet.init({ password: Buffer.from(walletPassword).toString("hex"), networkType });
+    this.backupWallet = await Wallet.init({ password: Buffer.from(walletPassword).toString("hex"), networkType });
     const userWallet = await this.userWallet.getWalletJSON();
     const backupWallet = await this.backupWallet.getWalletJSON();
     return {
       userWallet,
       backupWallet,
     };
-  }
+  };
+
   /**
    * prepare and collect multisig hex for user and backup wallets
    */
   prepareMultisigs = async (): Promise<Multisig[]> => {
     const preparedUserMultisig = await this.userWallet?.prepareMultisig();
     const preparedBackupMultisig = await this.backupWallet?.prepareMultisig();
-    return [ preparedUserMultisig || "", preparedBackupMultisig || "" ];
-  }
+    return [preparedUserMultisig || "", preparedBackupMultisig || ""];
+  };
+
   /**
    * make wallet multisig and collect result hex for user and backup wallets
    * @param  {Multisig[]} preparedMultisigs - [preparedUserMultisig, preparedBackupMultisig, preparedServerMultisig]
@@ -90,7 +104,8 @@ export default class WalletService {
       madeUserMultisig || "",
       madeBackupMultisig || "",
     ];
-  }
+  };
+
   /**
    * exchange multisig keys among participants and collect results
    * @param  {Multisig[]} madeMultisigs - [madeUserMultisig, madeBackupMultisig, madeServerMultisig]
@@ -103,9 +118,10 @@ export default class WalletService {
     const backupResult = await this.backupWallet?.exchangeMultisigKeys([madeMultisigs[0], madeMultisigs[2]], " ") as ExchangeMultisigKeysResult;
     return {
       userResult,
-      backupResult
-    }
-  }
+      backupResult,
+    };
+  };
+
   /**
    * Get JSON with wallets info
    */
@@ -116,7 +132,8 @@ export default class WalletService {
       userWallet,
       backupWallet,
     };
-  }
+  };
+
   /**
    * Encrypt wallet keys and wallet password with the public key
    */
@@ -126,15 +143,16 @@ export default class WalletService {
       return new Uint8Array();
     }
     const keys = walletData[0];
-    return await encryptWalletKeys(publicKey, keys, this.walletPassword);
-  }
+    return encryptWalletKeys(publicKey, keys, this.walletPassword);
+  };
+
   /**
    * Open walllet in browser using wallet keys
    */
   openWallet = async (decryptedKeys: Uint8Array, walletPassword: Uint8Array): Promise<LocalWalletData> => {
     this.userWallet = await Wallet.init({
       password: Buffer.from(walletPassword).toString("hex"),
-      networkType: networkType,
+      networkType,
       keysData: decryptedKeys,
       cacheData: new Uint8Array(),
       path: "",
@@ -142,7 +160,8 @@ export default class WalletService {
     this.walletPassword = walletPassword;
     const userWallet = await this.userWallet.getWalletJSON();
     return userWallet;
-  }
+  };
+
   /**
    * Close wallet
    */
@@ -152,5 +171,5 @@ export default class WalletService {
     this.userWallet = null;
     this.backupWallet = null;
     this.walletPassword = new Uint8Array();
-  }
+  };
 }

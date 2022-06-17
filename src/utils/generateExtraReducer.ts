@@ -1,7 +1,7 @@
-import {RootState} from "../types";
-import {PayloadAction, AsyncThunk} from "@reduxjs/toolkit";
+import { PayloadAction, AsyncThunk } from "@reduxjs/toolkit";
+import { RootState } from "../types";
 
- /**
+/**
    * This function generates set of extra reducers for a given thunk.
    * @param {object} thunk - thunk created with help of `createAsyncThunk`.
    * @param {function} transformResponse - a callback to transform returned thunk data
@@ -36,8 +36,4 @@ export function generateExtraReducer<ThunkReturned, ThunkArg, TransformedRespons
   };
 }
 
-export const createLoadingSelector = (slice: string, type: string) => {
-  return (state: RootState): boolean => {
-    return state[slice].thunksInProgress.includes(type);
-  }
-}
+export const createLoadingSelector = (slice: string, type: string) => (state: RootState): boolean => state[slice].thunksInProgress.includes(type);

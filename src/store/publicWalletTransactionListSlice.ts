@@ -1,4 +1,4 @@
-import {createSlice, createAsyncThunk} from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
   FetchWalletTransactionsResponse,
   Transaction,
@@ -16,8 +16,8 @@ export const fetchWalletTransactions = createAsyncThunk<FetchWalletTransactionsR
   async ({ walletId, page }, { rejectWithValue }) => {
     try {
       return await publicApi.fetchPublicWalletTransactions(walletId, generateListReqParams(page, ITEMS_PER_PAGE));
-    } catch(err: any) {
-      return rejectWithValue(err.response.data)
+    } catch (err: any) {
+      return rejectWithValue(err.response.data);
     }
   },
 );
@@ -64,7 +64,7 @@ export const publicWalletTransactionListSlice = createSlice({
         hasNextPage: !!data.next,
       }),
     ),
-  }
+  },
 });
 
 export const selectors = {
@@ -77,7 +77,7 @@ export const selectors = {
   getTransactions: (state: RootState): Transaction[] => state[SLICE_NAME].entities,
   // thunk statuses
   pendingFetchWalletTransactions: createLoadingSelector(SLICE_NAME, fetchWalletTransactions.pending.toString()),
-}
+};
 
 export const {
   reset,

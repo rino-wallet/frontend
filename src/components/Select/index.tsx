@@ -27,7 +27,6 @@ const SIZE_MAPS: Record<UI_SIZE, string> = {
   [UI_SIZE.SMALL]: "pl-6 pr-8 py-3.75 text-sm rounded-small",
 };
 
-
 export const Select: React.FC<Props> & { size: typeof UI_SIZE; } = (props) => {
   const {
     value = "",
@@ -58,7 +57,7 @@ export const Select: React.FC<Props> & { size: typeof UI_SIZE; } = (props) => {
           SIZE_MAPS[size],
           {
             "pl-12": icon,
-          }
+          },
         )}
       >
         {children}
@@ -68,6 +67,6 @@ export const Select: React.FC<Props> & { size: typeof UI_SIZE; } = (props) => {
       }
     </div>
   );
-}
+};
 
 Select.size = UI_SIZE;

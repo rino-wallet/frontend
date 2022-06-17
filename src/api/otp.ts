@@ -18,11 +18,11 @@ export class OTPApi extends Api {
   }
 
   public enable2FA(
-    data: Enable2FAPayload
+    data: Enable2FAPayload,
   ): Promise<Enable2FAResponse> {
     return this.post<Enable2FAResponse, Enable2FAPayload>(
       "/otps/enable/",
-      data
+      data,
     ).then(this.success);
   }
 

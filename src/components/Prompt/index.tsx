@@ -6,7 +6,7 @@ interface Props {
   message: string;
 }
 
-export const Prompt: React.FC<Props> = ({title, message, when}) => {
+export const Prompt: React.FC<Props> = ({ title, message, when }) => {
   usePrompt(title, message, when);
   return null;
-}
+};

@@ -22,46 +22,57 @@ export const Header: React.FC<Props> = ({ signOut, isAuthenticated, landing }) =
         {logoElement}
       </a>
       <div className="text-center flex items-center flex-1 justify-end">
-        <NavLink
+        <a
           id="nav-link-faq"
-          className={({ isActive }): string => isActive ? activeLinkClassNames : linkClassNames}
-          to={routes.faq}
+          className={linkClassNames}
+          href={routes.faq}
         >
-          <span className="hidden md:inline">FAQ</span> <Icon className="md:hidden" name="faq" />
-        </NavLink>
+          <span className="hidden md:inline">FAQ</span>
+          {" "}
+          <Icon className="md:hidden" name="faq" />
+        </a>
         {
           isAuthenticated ? (
             <>
               <NavLink
-                className={({ isActive }): string => isActive ? activeLinkClassNames : linkClassNames}
+                className={({ isActive }): string => (isActive ? activeLinkClassNames : linkClassNames)}
                 id="nav-link-wallets"
                 to={routes.wallets}
               >
-                <span className="hidden md:inline">Wallets</span> <Icon className="md:hidden" name="wallets" />
+                <span className="hidden md:inline">Wallets</span>
+                {" "}
+                <Icon className="md:hidden" name="wallets" />
               </NavLink>
               <NavLink
-                className={({ isActive }): string => isActive ? activeLinkClassNames : linkClassNames}
+                className={({ isActive }): string => (isActive ? activeLinkClassNames : linkClassNames)}
                 id="nav-link-settings"
-                to={routes.profile}
+                to={routes.settings}
               >
-                <span className="hidden md:inline">Account</span> <Icon className="md:hidden" name="settings-outline" />
+                <span className="hidden md:inline">Settings</span>
+                {" "}
+                <Icon className="md:hidden" name="settings-outline" />
               </NavLink>
               <button
+                type="button"
                 className={`${linkClassNames} md:mb-0 uppercase`}
                 name="log-out"
                 onClick={signOut}
               >
-                <span className="hidden md:inline">Logout</span> <Icon className="md:hidden" name="logout" />
+                <span className="hidden md:inline">Logout</span>
+                {" "}
+                <Icon className="md:hidden" name="logout" />
               </button>
             </>
           ) : (
             <>
               <NavLink
                 id="nav-link-login"
-                className={({ isActive }): string => isActive ? activeLinkClassNames : linkClassNames}
+                className={({ isActive }): string => (isActive ? activeLinkClassNames : linkClassNames)}
                 to={routes.login}
               >
-                <span className="hidden md:inline">Login</span> <Icon className="md:hidden" name="login" />
+                <span className="hidden md:inline">Login</span>
+                {" "}
+                <Icon className="md:hidden" name="login" />
               </NavLink>
               <NavLink
                 id="nav-link-register"
@@ -75,5 +86,5 @@ export const Header: React.FC<Props> = ({ signOut, isAuthenticated, landing }) =
         }
       </div>
     </header>
-  )
-}
+  );
+};

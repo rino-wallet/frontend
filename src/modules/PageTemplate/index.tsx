@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { Button, Icon } from "../../components"
+import { Button, Icon } from "../../components";
 
 interface Props {
   title: ReactNode;
@@ -9,11 +9,12 @@ interface Props {
   children?: ReactNode;
 }
 
-export const PageTemplate: React.FC<Props> = ({ title, backButtonRoute, children, goBackCallback }) => {
-  return (
-    <section>
-      <header className="flex items-center mb-8 w-full relative">
-        {
+export const PageTemplate: React.FC<Props> = ({
+  title, backButtonRoute, children, goBackCallback,
+}) => (
+  <section>
+    <header className="flex items-center mb-8 w-full relative">
+      {
           backButtonRoute && (
             <div className="mr-6">
               <Link to={backButtonRoute}>
@@ -33,7 +34,7 @@ export const PageTemplate: React.FC<Props> = ({ title, backButtonRoute, children
             </div>
           )
         }
-        {
+      {
           (typeof goBackCallback === "function") && (
             <div className="mr-6">
               <Button
@@ -47,9 +48,8 @@ export const PageTemplate: React.FC<Props> = ({ title, backButtonRoute, children
             </div>
           )
         }
-        <h1 className="text-4xl font-bold flex-1 font-catamaran min-w-0 md:overflow-ellipsis md:overflow-hidden md:whitespace-nowrap">{title}</h1>
-      </header>
-      {children}
-    </section>
-  )
-}
+      <h1 className="text-4xl font-bold flex-1 font-catamaran min-w-0 md:overflow-ellipsis md:overflow-hidden md:whitespace-nowrap">{title}</h1>
+    </header>
+    {children}
+  </section>
+);

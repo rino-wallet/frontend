@@ -6,8 +6,9 @@ import {
   RootState,
 } from "../types";
 import walletsApi from "../api/wallets";
-import {checkAccessLevel, createLoadingSelector, generateExtraReducer, generateListReqParams} from "../utils";
-
+import {
+  checkAccessLevel, createLoadingSelector, generateExtraReducer, generateListReqParams,
+} from "../utils";
 
 export const ITEMS_PER_PAGE = 10;
 
@@ -15,26 +16,26 @@ export const fetchWalletShareRequests = createAsyncThunk<FetchWalletShareRequest
   "walletShareRequests/fetchRequests",
   async ({ walletId, page }, { rejectWithValue, getState }) => {
     const state = getState() as any;
-    const wallet = state.wallet.wallet;
+    const wallet = state.wallet.data;
     const user = state.session.user;
     const accessLevel = checkAccessLevel(user, wallet);
     if (accessLevel.isViewOnly()) {
-      return new Promise<FetchWalletShareRequestsResponse>((resolve) => resolve({
+      return new Promise<FetchWalletShareRequestsResponse>((resolve) => {
+        resolve({
           results: [],
           count: 0,
           next: null,
           previous: null,
-        })
-      );
+        });
+      });
     }
     try {
       return await walletsApi.fetchWalletShareRequests(walletId, generateListReqParams(page, ITEMS_PER_PAGE));
-    } catch(err: any) {
-      return rejectWithValue(err.response.data)
+    } catch (err: any) {
+      return rejectWithValue(err.response.data);
     }
   },
 );
-
 
 export interface State {
   count: number;
@@ -56,7 +57,6 @@ export const initialState: State = {
 
 const SLICE_NAME = "walletShareRequestList";
 
-
 export const walletShareRequestListSlice = createSlice({
   name: SLICE_NAME,
   initialState,
@@ -76,12 +76,12 @@ export const walletShareRequestListSlice = createSlice({
       (data) => ({
         entities: data?.results || [],
         count: data?.count || 0,
-        pages: data ? Math.ceil(data?.count / ITEMS_PER_PAGE) : 0,
+        pages: data ? Math.ceil(data?.count || 0 / ITEMS_PER_PAGE) : 0,
         hasPreviousPage: !!data?.previous,
         hasNextPage: !!data?.next,
       }),
     ),
-  }
+  },
 });
 
 export const selectors = {
@@ -94,7 +94,7 @@ export const selectors = {
   getWalletShareRequests: (state: RootState): WalletShareRequest[] => state[SLICE_NAME].entities,
   // thunk statuses
   pendingFetchWalletShareRequests: createLoadingSelector(SLICE_NAME, fetchWalletShareRequests.pending.toString()),
-}
+};
 
 export const {
   reset,

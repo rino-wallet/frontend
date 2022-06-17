@@ -1,9 +1,11 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import { createModal } from "promodal";
-import { BindHotKeys, Input, Button, Label } from "../../../components";
-import { Modal, FormErrors } from "../../../modules/index";
+import {
+  BindHotKeys, Input, Button, Label,
+} from "../../../components";
+import { Modal, FormErrors } from "../../index";
 
 const validationSchema = yup.object().shape({
   code: yup.string().required("This field is required."),
@@ -12,9 +14,9 @@ const validationSchema = yup.object().shape({
 interface Props {
   submit: (code: string) => Promise<void>;
   cancel: () => void;
-  confirmCancel?: ( onConfirm: () => void, onGoBack: () => void) => void;
+  confirmCancel?: (onConfirm: () => void, onGoBack: () => void) => void;
 }
-const Enter2FACode: React.FC<Props> = ({ submit, cancel, confirmCancel}) => {
+const Enter2FACode: React.FC<Props> = ({ submit, cancel, confirmCancel }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [hide, setHide] = useState(false);
   const {
@@ -38,7 +40,7 @@ const Enter2FACode: React.FC<Props> = ({ submit, cancel, confirmCancel}) => {
         .catch(
           (err: any) => {
             setErrors(err);
-          }
+          },
         );
     },
   });
@@ -73,7 +75,7 @@ const Enter2FACode: React.FC<Props> = ({ submit, cancel, confirmCancel}) => {
                   className="tracking-widest"
                   maxLength={6}
                   placeholder="XXXXXX"
-                  error={touched.code && errors.code || ""}
+                  error={touched.code ? errors.code : ""}
                 />
               </Label>
             </div>
@@ -109,8 +111,6 @@ const Enter2FACode: React.FC<Props> = ({ submit, cancel, confirmCancel}) => {
   );
 };
 
-const enter2FACode = createModal(({ confirmCancel, submit, cancel }: Props) => {
-  return <Enter2FACode confirmCancel={confirmCancel} submit={submit} cancel={cancel} />
-});
+const enter2FACode = createModal(({ confirmCancel, submit, cancel }: Props) => <Enter2FACode confirmCancel={confirmCancel} submit={submit} cancel={cancel} />);
 
 export default enter2FACode;

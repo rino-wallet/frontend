@@ -1,4 +1,4 @@
-import {createSlice, createAsyncThunk} from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
   ChangeEmailRequestPayload,
   ChangingEmailInfoPayload,
@@ -26,8 +26,8 @@ export const changeEmailRequest = createAsyncThunk<void, ChangeEmailRequestPaylo
         code ? { headers: { "X-RINO-2FA": code } } : undefined,
       );
       return response;
-    } catch(err: any) {
-      return rejectWithValue(err?.data)
+    } catch (err: any) {
+      return rejectWithValue(err?.data);
     }
   },
 );
@@ -38,8 +38,8 @@ export const getEmailChangingInfo = createAsyncThunk<ChangingEmailInfoResponse, 
     try {
       const response = await sessionApi.getEmailChangingInfo(data);
       return response;
-    } catch(err: any) {
-      return rejectWithValue(err?.data)
+    } catch (err: any) {
+      return rejectWithValue(err?.data);
     }
   },
 );
@@ -50,8 +50,8 @@ export const confirmEmailChanging = createAsyncThunk<void, ChangeEmailConfirmPay
     try {
       const response = await sessionApi.confirmEmailChanging(data);
       return response;
-    } catch(err: any) {
-      return rejectWithValue(err?.data)
+    } catch (err: any) {
+      return rejectWithValue(err?.data);
     }
   },
 );
@@ -87,9 +87,9 @@ export const changeEmailSlice = createSlice({
   },
   extraReducers: {
     ...generateExtraReducer(changeEmailRequest),
-    ...generateExtraReducer(getEmailChangingInfo, data => ({ details: data })),
+    ...generateExtraReducer(getEmailChangingInfo, (data) => ({ details: data })),
     ...generateExtraReducer(confirmEmailChanging, () => ({ succeeded: true })),
-  }
+  },
 });
 
 export const selectors = {
@@ -100,6 +100,6 @@ export const selectors = {
   pendingChangeEmailRequest: createLoadingSelector(SLICE_NAME, changeEmailRequest.pending.toString()),
   pendingGetEmailChangingInfo: createLoadingSelector(SLICE_NAME, getEmailChangingInfo.pending.toString()),
   pendingConfirmEmailChanging: createLoadingSelector(SLICE_NAME, confirmEmailChanging.pending.toString()),
-}
+};
 
-export const {reset} = changeEmailSlice.actions;
+export const { reset } = changeEmailSlice.actions;
