@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from "axios";
+import { AxiosRequestConfig } from "axios";
 import MockAdapter from "axios-mock-adapter";
 import camelcaseKeys from "camelcase-keys";
 import {
@@ -12,33 +12,6 @@ import {
 } from "../types";
 import { Api } from "../axios/api";
 import { apiConfig } from "./config";
-
-if (process.env.REACT_APP_ENABLE_API_MOCKS === "true") {
-  const axiosMockAdapterInstance = new MockAdapter(axios, { delayResponse: 500 });
-  axiosMockAdapterInstance
-    .onGet("/exchange/orders/range/")
-    .reply(() => ([200, camelcaseKeys({ max_amount: "162393500900000", min_amount: "31822200000" })]));
-
-  axiosMockAdapterInstance
-    .onGet("/exchange/orders/estimation/")
-    .reply(() => ([200, camelcaseKeys({
-      from_amount: "1000000000000", to_amount: "607986", rate_id: "qoGq1g5NFnYkOCRity2YXaYJY5jEFuSf", valid_until: new Date(Date.now() + 15 * 60000).toISOString(),
-    })]));
-
-  axiosMockAdapterInstance
-    // eslint-disable-next-line
-    .onGet(new RegExp("/exchange/orders/*/"))
-    .reply(() => [201, camelcaseKeys({
-      id: "415b1b76-45f8-4949-9322-f0247a4b4cfc", created_by: "sander.taranov@gmail.com", paid_with: "d0bb4e25-1f7a-435d-84e2-97f578bb342e", status: "Pending Payment", created_at: "2022-06-09T08:40:03.856265Z", updated_at: "2022-06-09T08:40:03.856288Z", expires_at: "2022-06-09T09:00:03.803Z", platform: "changenow", platform_order_id: "02bf6525959607", payment_currency: "xmr", payment_amount: "31000000000", payment_address: "8A4Z6Zp49K9EYLh9ttcQ9Mi9TFmvt6jdz489Ev3ZZrhJ4gKSLkRyvsu7D8HVcWYPPaAym7bzkm2wuVGZZWhLE9S4CsJkwhX", payment_txid: "", refund_address: "83kKJrCZGX77iucHbouep93bxaPW7RASiHgKcBzs3bRKLPwpHCE2eXzYkTTtjNUYh64carvFKCwyjXuoa5YCeR3zSFmimRh", paid_at: null, acknowledged_at: null, outgoing_currency: "btc", outgoing_amount: "17468", outgoing_address: "bc1qq54n8a7dat3288gyjuhc94we2x07hn8gpjjenf", outgoing_txid: "",
-    })]);
-
-  axiosMockAdapterInstance
-    // eslint-disable-next-line
-    .onPost(new RegExp("/exchange/orders/"))
-    .reply(() => [201, camelcaseKeys({
-      id: "415b1b76-45f8-4949-9322-f0247a4b4cfc", created_by: "sander.taranov@gmail.com", paid_with: "d0bb4e25-1f7a-435d-84e2-97f578bb342e", status: "Pending Payment", created_at: "2022-06-09T08:40:03.856265Z", updated_at: "2022-06-09T08:40:03.856288Z", expires_at: "2022-06-09T09:00:03.803Z", platform: "changenow", platform_order_id: "02bf6525959607", payment_currency: "xmr", payment_amount: "31000000000", payment_address: "8A4Z6Zp49K9EYLh9ttcQ9Mi9TFmvt6jdz489Ev3ZZrhJ4gKSLkRyvsu7D8HVcWYPPaAym7bzkm2wuVGZZWhLE9S4CsJkwhX", payment_txid: "", refund_address: "83kKJrCZGX77iucHbouep93bxaPW7RASiHgKcBzs3bRKLPwpHCE2eXzYkTTtjNUYh64carvFKCwyjXuoa5YCeR3zSFmimRh", paid_at: null, acknowledged_at: null, outgoing_currency: "btc", outgoing_amount: "17468", outgoing_address: "bc1qq54n8a7dat3288gyjuhc94we2x07hn8gpjjenf", outgoing_txid: "",
-    })]);
-}
 
 export class ExchangeApi extends Api {
   constructor(config: AxiosRequestConfig) {
@@ -67,5 +40,73 @@ export class ExchangeApi extends Api {
 }
 
 const exchangeApi = new ExchangeApi(apiConfig);
+
+if (process.env.REACT_APP_ENABLE_API_MOCKS === "true") {
+  const axiosMockAdapterInstance = new MockAdapter(exchangeApi.axios, { delayResponse: 500 });
+  axiosMockAdapterInstance
+    .onGet("/exchange/orders/range/")
+    .reply(() => ([200, camelcaseKeys({ max_amount: "162393500900000", min_amount: "31822200000" })]));
+
+  axiosMockAdapterInstance
+    .onGet("/exchange/orders/estimation/")
+    .reply(() => ([200, camelcaseKeys({
+      from_amount: "1000000000000",
+      to_amount: "607986",
+      rate_id: "qoGq1g5NFnYkOCRity2YXaYJY5jEFuSf",
+      valid_until: new Date(Date.now() + 15 * 60000).toISOString(),
+    })]));
+
+  axiosMockAdapterInstance
+    // eslint-disable-next-line
+    .onGet(new RegExp("/exchange/orders/*/"))
+    .reply(() => [201, camelcaseKeys({
+      id: "415b1b76-45f8-4949-9322-f0247a4b4cfc",
+      created_by: "sander.taranov@gmail.com",
+      paid_with: "d0bb4e25-1f7a-435d-84e2-97f578bb342e",
+      status: "Pending Payment",
+      created_at: "2022-06-09T08:40:03.856265Z",
+      updated_at: "2022-06-09T08:40:03.856288Z",
+      expires_at: new Date(Date.now() + 15 * 60000).toISOString(),
+      platform: "changenow",
+      platform_order_id: "02bf6525959607",
+      payment_currency: "xmr",
+      payment_amount: "31000000000",
+      payment_address: "8A4Z6Zp49K9EYLh9ttcQ9Mi9TFmvt6jdz489Ev3ZZrhJ4gKSLkRyvsu7D8HVcWYPPaAym7bzkm2wuVGZZWhLE9S4CsJkwhX",
+      payment_txid: "",
+      refund_address: "83kKJrCZGX77iucHbouep93bxaPW7RASiHgKcBzs3bRKLPwpHCE2eXzYkTTtjNUYh64carvFKCwyjXuoa5YCeR3zSFmimRh",
+      paid_at: null,
+      acknowledged_at: null,
+      outgoing_currency: "btc",
+      outgoing_amount: "17468",
+      outgoing_address: "bc1qq54n8a7dat3288gyjuhc94we2x07hn8gpjjenf",
+      outgoing_txid: "",
+    })]);
+
+  axiosMockAdapterInstance
+    // eslint-disable-next-line
+    .onPost(new RegExp("/exchange/orders/"))
+    .reply(() => [201, camelcaseKeys({
+      id: "415b1b76-45f8-4949-9322-f0247a4b4cfc",
+      created_by: "sander.taranov@gmail.com",
+      paid_with: "d0bb4e25-1f7a-435d-84e2-97f578bb342e",
+      status: "Pending Payment",
+      created_at: "2022-06-09T08:40:03.856265Z",
+      updated_at: "2022-06-09T08:40:03.856288Z",
+      expires_at: new Date(Date.now() + 15 * 60000).toISOString(),
+      platform: "changenow",
+      platform_order_id: "02bf6525959607",
+      payment_currency: "xmr",
+      payment_amount: "31000000000",
+      payment_address: "8A4Z6Zp49K9EYLh9ttcQ9Mi9TFmvt6jdz489Ev3ZZrhJ4gKSLkRyvsu7D8HVcWYPPaAym7bzkm2wuVGZZWhLE9S4CsJkwhX",
+      payment_txid: "",
+      refund_address: "83kKJrCZGX77iucHbouep93bxaPW7RASiHgKcBzs3bRKLPwpHCE2eXzYkTTtjNUYh64carvFKCwyjXuoa5YCeR3zSFmimRh",
+      paid_at: null,
+      acknowledged_at: null,
+      outgoing_currency: "btc",
+      outgoing_amount: "17468",
+      outgoing_address: "bc1qq54n8a7dat3288gyjuhc94we2x07hn8gpjjenf",
+      outgoing_txid: "",
+    })]);
+}
 
 export default exchangeApi;

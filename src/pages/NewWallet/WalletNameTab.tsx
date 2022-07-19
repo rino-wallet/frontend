@@ -60,7 +60,7 @@ const WalletNameTab: React.FC<Props> = ({
         />
         <form onSubmit={handleSubmit}>
           <div className="form-field">
-            <Label labelClassName="md:text-right" label="Wallet name" inline>
+            <Label labelClassName="md:text-right" label="Wallet name" isFormField inline>
               <Input
                 autoComplete="off"
                 name="name"

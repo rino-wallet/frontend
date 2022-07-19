@@ -63,7 +63,7 @@ export const transactionListSlice = createSlice({
     updateTransactionInList(state, action): void {
       state.entities = state.entities.map((transaction) => {
         if (action.payload.id === transaction.id) {
-          return action.payload;
+          return { ...transaction, ...action.payload };
         }
         return transaction;
       });

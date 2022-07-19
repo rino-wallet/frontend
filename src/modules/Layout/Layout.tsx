@@ -5,6 +5,7 @@ import { LayoutAuth } from "./LayoutAuth";
 import { LayoutDefault } from "./LayoutDefault";
 import { LayoutClear } from "./LayoutClear";
 import { LayoutMessage } from "./LayoutMessage";
+import { LayoutPublicWallet } from "./LayoutPublicWallet";
 
 interface Props {
   signOut: () => Promise<void>;
@@ -40,6 +41,9 @@ export const Layout: React.FC<Props> = ({
     }
     case "keypair": {
       return <LayoutClear>{children}</LayoutClear>;
+    }
+    case "publicWallet": {
+      return <LayoutPublicWallet signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutPublicWallet>;
     }
     default: {
       return <LayoutDefault signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutDefault>;

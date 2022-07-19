@@ -88,6 +88,7 @@ export type User = {
 export interface TransactionDestination {
   index: number;
   address: string;
+  addressLabel: string;
   amount: string;
 }
 

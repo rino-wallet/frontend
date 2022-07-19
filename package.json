@@ -35,7 +35,7 @@
   "scripts": {
     "copy:wasm": "./bin/copy_wasm_files.sh",
     "start": "yarn copy:wasm && REACT_APP_ENV=develop INLINE_RUNTIME_CHUNK=false REACT_APP_API=http://localhost:8000 craco start",
-    "start:dev": "yarn copy:wasm && HOST=0.0.0.0 REACT_APP_ENV=develop REACT_APP_ENABLE_API_MOCKS=false INLINE_RUNTIME_CHUNK=false REACT_APP_API=http://wallet-dev-nginx.dev-auto.wallet.io craco start",
+    "start:dev": "yarn copy:wasm && HOST=0.0.0.0 REACT_APP_ENV=develop REACT_APP_ENABLE_API_MOCKS=true INLINE_RUNTIME_CHUNK=false REACT_APP_API=http://wallet-dev-nginx.dev-auto.wallet.io craco start",
     "build": "craco build && ./hash_build.py",
     "build:develop": "yarn copy:wasm && REACT_APP_ENV=develop INLINE_RUNTIME_CHUNK=false yarn build",
     "build:staging": "yarn copy:wasm && GENERATE_SOURCEMAP=false REACT_APP_ENV=staging INLINE_RUNTIME_CHUNK=false yarn build",

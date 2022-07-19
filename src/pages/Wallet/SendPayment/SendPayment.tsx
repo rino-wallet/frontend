@@ -107,13 +107,14 @@ const SendPayment: React.FC<Props> = ({
             <div className="w-full p-5 md:p-10 m-auto">
               {
                 activeTab === 0 && (
-                  <div className="mb-10 md:mb-5 m-auto md:w-3/4">
+                  <div className="mb-10 md:mb-8 m-auto md:w-3/4">
                     <Label label="" inline>
                       <div className="text-center md:text-left">
                         <div className="whitespace-nowrap text-sm py-2 border rounded-full bg-white theme-text theme-control-border inline">
                           <button
                             type="button"
-                            className={classNames("text-sm px-5 md:px-10 py-2 rounded-full theme-text inline-block cursor-pointer", { "theme-control-primary-gradient-light text-white border-transparent": !isExchange })}
+                            name="send-btn"
+                            className={classNames("w-1/2 text-sm px-5 md:px-10 py-2 rounded-full theme-text inline-block cursor-pointer", { "theme-control-primary-gradient-light text-white border-transparent": !isExchange })}
                             onClick={(): void => setIsExchange(false)}
                           >
                             <IconUp className={classNames("inline-block h-3.5 w-3.5 fill-black mr-1", { "fill-white": !isExchange })} />
@@ -122,7 +123,8 @@ const SendPayment: React.FC<Props> = ({
                           </button>
                           <button
                             type="button"
-                            className={classNames("text-sm px-5 md:px-10 py-2 rounded-full theme-text inline-block cursor-pointer", { "theme-control-primary-gradient-light text-white border-transparent": isExchange })}
+                            name="exchange-btn"
+                            className={classNames("w-1/2 text-sm px-5 md:px-10 py-2 rounded-full theme-text inline-block cursor-pointer", { "theme-control-primary-gradient-light text-white border-transparent": isExchange })}
                             onClick={(): void => setIsExchange(true)}
                           >
                             <Icon name="refresh" className={classNames("inline-block h-3.5 w-3.5 fill-black mr-1", { "fill-white": isExchange })} />

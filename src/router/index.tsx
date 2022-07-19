@@ -214,7 +214,7 @@ const ROUTER_CONFIG: RouteType[] = [
     metaOgImage: defaultMetaOgImage,
     component: (props: any): ReactElement => <PublicWallet {...props} />,
     isPrivate: false,
-    key: "public wallet",
+    key: "publicWallet",
     requiredFeatures: [],
   },
   {

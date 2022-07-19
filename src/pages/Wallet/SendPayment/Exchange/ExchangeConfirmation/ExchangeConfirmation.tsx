@@ -1,18 +1,19 @@
 import React from "react";
 import Decimal from "decimal.js-light";
-import { Button, Icon, Label } from "../../../../components";
-import { CountDown } from "./CountDown";
-import { TimeOutModal as showTimeOutModal } from "./TimeOutModal";
-import { ExchangeDetails } from "./ExchangeDetails";
-import { ExchangeOrder } from "../../../../types";
-import { piconeroToMonero, satoshiToBTC } from "../../../../utils";
+import { Button, Icon, Label } from "../../../../../components";
+import { CountDown } from "../CountDown";
+import { TimeOutModal as showTimeOutModal } from "../TimeOutModal";
+import { ExchangeDetails } from "../ExchangeDetails";
+import { ExchangeOrder } from "../../../../../types";
+import { piconeroToMonero, satoshiToBTC } from "../../../../../utils";
 
 interface Props {
   setActiveTab: (value: number) => void;
   order?: ExchangeOrder;
+  onEdit: () => void;
 }
 
-const ExchangeConfirmation: React.FC<Props> = ({ setActiveTab, order }) => {
+const ExchangeConfirmation: React.FC<Props> = ({ setActiveTab, onEdit, order }) => {
   async function onRecheck(): Promise<void> {
     await showTimeOutModal({
       recheckRequest: () => new Promise((r) => { setTimeout(r, 1000); }),
@@ -30,7 +31,7 @@ const ExchangeConfirmation: React.FC<Props> = ({ setActiveTab, order }) => {
         <div className="form-field">
           <Label label="" inline>
             <div className="flex whitespace-nowrap">
-              <div>
+              <div data-qa-selector="amount-you-send">
                 <div className="text-sm uppercase mb-1">amount you send</div>
                 <div className="text-2xl font-bold">
                   {piconeroToMonero(order?.paymentAmount || 0)}
@@ -41,7 +42,7 @@ const ExchangeConfirmation: React.FC<Props> = ({ setActiveTab, order }) => {
               <div className="text-3xl mx-10 mt-5">
                 <Icon name="arrow_right" />
               </div>
-              <div>
+              <div data-qa-selector="amount-you-get">
                 <div className="text-sm uppercase mb-1">amount you get</div>
                 <div className="text-2xl font-bold">
                   {satoshiToBTC(order?.outgoingAmount || 0)}
@@ -59,7 +60,7 @@ const ExchangeConfirmation: React.FC<Props> = ({ setActiveTab, order }) => {
           exchangeID={order?.platformOrderId || ""}
           platform={order?.platform || ""}
         />
-        <div className="mt-5">
+        <div className="mt-5" data-qa-selector="confirmation-timer">
           <Label label="" inline>
             Please confirm your payment in
             {" "}
@@ -76,9 +77,7 @@ const ExchangeConfirmation: React.FC<Props> = ({ setActiveTab, order }) => {
             variant={Button.variant.GRAY}
             size={Button.size.BIG}
             name="cancel-btn"
-            onClick={(): void => {
-              setActiveTab(0);
-            }}
+            onClick={onEdit}
           >
             Edit
           </Button>

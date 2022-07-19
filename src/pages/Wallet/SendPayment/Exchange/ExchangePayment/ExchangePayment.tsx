@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Decimal from "decimal.js-light";
 import { FormikErrors } from "formik";
-import { Label } from "../../../../components";
-import { ExchangeDetails } from "./ExchangeDetails";
+import { Label } from "../../../../../components";
+import { ExchangeDetails } from "../ExchangeDetails";
 import {
   CreateUnsignedTransactionResponse,
   Destination,
@@ -14,11 +14,11 @@ import {
   User,
   UseThunkActionCreator,
   Wallet,
-} from "../../../../types";
-import ConfirmTransaction from "../Send/ConfirmTransaction/ConfirmTransaction";
-import { piconeroToMonero, satoshiToBTC } from "../../../../utils";
-import { transactionPriorities } from "../../../../constants";
-import { enterPasswordModal } from "../../../../modules/index";
+} from "../../../../../types";
+import ConfirmTransaction from "../../Send/ConfirmTransaction/ConfirmTransaction";
+import { piconeroToMonero, satoshiToBTC } from "../../../../../utils";
+import { transactionPriorities } from "../../../../../constants";
+import { enterPasswordModal } from "../../../../../modules/index";
 
 interface Props {
   wallet: Wallet | null;
@@ -29,6 +29,7 @@ interface Props {
   user?: User;
   onEdit: (values: any) => void;
   createTransaction: (data: { id: string, code: string }) => Promise<CreateUnsignedTransactionResponse>;
+  pollCreateTransactionTask: (data: { taskId: string }) => Promise<CreateUnsignedTransactionResponse>;
   fetchWalletDetails: (data: { id: string }) => Promise<FetchWalletDetailsResponse>;
   syncMultisig: (id: string) => Promise<LocalWalletData | undefined>;
   openWallet: ({ wallet, loginPassword }: { wallet: Wallet, loginPassword: string }) => UseThunkActionCreator<LocalWalletData>;
@@ -48,6 +49,7 @@ const ExchangePayment: React.FC<Props> = ({
   user,
   onEdit,
   createTransaction,
+  pollCreateTransactionTask,
   fetchWalletDetails,
   syncMultisig,
   openWallet,
@@ -111,6 +113,7 @@ const ExchangePayment: React.FC<Props> = ({
           pendingTransaction={pendingTransaction}
           fetchWalletDetails={fetchWalletDetails}
           createTransaction={createTransaction}
+          pollCreateTransactionTask={pollCreateTransactionTask}
           syncMultisig={syncMultisig}
           transactionData={transactionData}
           is2FaEnabled={!!user?.is2FaEnabled}
@@ -120,7 +123,7 @@ const ExchangePayment: React.FC<Props> = ({
       </div>
       <div className="m-auto md:w-3/4">
         <Label label="" inline>
-          <h3 className="text-2xl mb-3 font-bold">Transaction in progress:</h3>
+          <h3 className="text-2xl mb-3 font-bold">Exchange in progress:</h3>
         </Label>
         <ExchangeDetails
           platform={order?.platform || ""}

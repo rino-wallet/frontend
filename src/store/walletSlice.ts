@@ -302,7 +302,19 @@ export const createTransaction = createAsyncThunk<CreateUnsignedTransactionRespo
         },
         data.code ? { headers: { "X-RINO-2FA": data.code } } : undefined,
       );
-      await pollTask(submitTransactionResponse.taskId);
+      return submitTransactionResponse;
+    } catch (err: any) {
+      dispatch(setStage(""));
+      return rejectWithValue(err?.data);
+    }
+  },
+);
+
+export const pollCreateTransactionTask = createAsyncThunk<CreateUnsignedTransactionResponse, { taskId: string }>(
+  `${SLICE_NAME}/pollCreateTransactionTask`,
+  async (data, { rejectWithValue, dispatch }) => {
+    try {
+      const resp = await pollTask(data.taskId);
       dispatch(setPendingTransaction({
         address: "",
         amount: "",
@@ -313,7 +325,7 @@ export const createTransaction = createAsyncThunk<CreateUnsignedTransactionRespo
         priority: undefined,
       }));
       walletInstance.closeWallet();
-      return submitTransactionResponse;
+      return resp;
     } catch (err: any) {
       dispatch(setStage(""));
       return rejectWithValue(err?.data);

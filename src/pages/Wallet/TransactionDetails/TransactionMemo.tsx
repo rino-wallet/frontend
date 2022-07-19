@@ -48,6 +48,7 @@ const TransactionMemo: React.FC<Props> = ({ walletId, transactionId, memo }) => 
         label="Internal Memo"
         labelClassName="md:text-right"
         valueClassName=""
+        isFormField
       >
         <Input
           autoComplete="off"

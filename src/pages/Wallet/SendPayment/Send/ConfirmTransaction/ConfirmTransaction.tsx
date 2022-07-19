@@ -10,7 +10,6 @@ import {
 } from "../../../../../types";
 import { getOutputs } from "../../../../../store/walletSlice";
 import routes from "../../../../../router/routes";
-import { Label } from "../../../../../components/Label";
 import { FormatNumber } from "../../../../../components/FormatNumber";
 import { piconeroToMonero } from "../../../../../utils";
 import Loading from "../../../../../components/Loading";
@@ -19,8 +18,8 @@ import CreatingTransaction from "./CreatingTransaction";
 import { FormErrors } from "../../../../../modules/FormErrors";
 import { enter2FACode } from "../../../../../modules/2FAModals";
 import { showConfirmationModal } from "../../../../../modules/ConfirmationModal";
-import { Spinner } from "../../../../../components/Spinner";
 import { Prompt } from "../../../../../components";
+import CreatingTransactionStage from "./CreatingTransactionStage";
 
 const transformPriorityText = (priority: (string | undefined)): string => (priority ? priority.charAt(0) + priority.slice(1).toLowerCase() : "");
 
@@ -31,6 +30,7 @@ interface Props {
   stage: string;
   pendingTransaction: PendingTransaction;
   createTransaction: (data: { id: string, code: string }) => Promise<CreateUnsignedTransactionResponse>;
+  pollCreateTransactionTask: (data: { taskId: string }) => Promise<CreateUnsignedTransactionResponse>;
   fetchWalletDetails: (data: { id: string }) => Promise<FetchWalletDetailsResponse>;
   syncMultisig: (id: string) => Promise<LocalWalletData | undefined>;
   transactionData: {
@@ -53,6 +53,7 @@ const ConfirmTransaction: React.FC<Props> = ({
   pendingTransaction,
   fetchWalletDetails,
   createTransaction,
+  pollCreateTransactionTask,
   syncMultisig,
   transactionData,
   is2FaEnabled,
@@ -64,16 +65,14 @@ const ConfirmTransaction: React.FC<Props> = ({
   useEffect(() => {
     if (!feeValue && pendingTransaction.fee) setFeeValue(pendingTransaction.fee);
   }, [pendingTransaction]);
-
   return (
     <Formik
       initialValues={{}}
       onSubmit={async (values, { setErrors, resetForm }): Promise<void> => {
         if (wallet) {
           try {
-            let code = "";
             if (is2FaEnabled) {
-              code = await enter2FACode({
+              const resp = await enter2FACode({
                 confirmCancel: (onConfirm: () => void, onGoBack: () => void): void => {
                   showConfirmationModal(
                     {
@@ -83,12 +82,19 @@ const ConfirmTransaction: React.FC<Props> = ({
                     },
                   ).then(onConfirm, onGoBack);
                 },
+                asyncCallback: (c: string) => createTransaction({
+                  id: wallet.id,
+                  code: c,
+                }),
               });
+              await pollCreateTransactionTask({ taskId: resp.taskId });
+            } else {
+              const resp = await createTransaction({
+                id: wallet.id,
+                code: "",
+              });
+              await pollCreateTransactionTask({ taskId: resp.taskId });
             }
-            await createTransaction({
-              id: wallet.id,
-              code,
-            });
             await getOutputs({ id: wallet.id });
             await syncMultisig(wallet.id);
             fetchWalletDetails({ id: wallet.id }).then(() => null);
@@ -119,86 +125,33 @@ const ConfirmTransaction: React.FC<Props> = ({
           />
           {!isSubmitting ? (
             <div>
-              { loading ? (
-                <div className="md:flex md:space-x-6">
-                  <div className="mb-2 text-sm theme-text uppercase font-catamaran leading-none md:mt-6 md:w-1/4 hidden md:block">
-                    <Spinner size={85} />
-                  </div>
-                  <div className="md:w-3/4">
-                    <div className="flex items-center text-2xl mb-3 font-bold theme-text-error mb-8">
-                      Hold on!
-                      <div className="md:hidden ml-3"><Spinner size={18} /></div>
-                    </div>
-                    <div className="mb-4 text-l font-bold" data-qa-selector="creating-wallet-step">
-                      {stage}
-                      ...
-                    </div>
-                    <div className="text-base mb-10">
-                      Creating transaction takes time - up to a couple of minutes.
-                      {" "}
-                      <br />
-                      <span className="font-bold">Please do not close this window.</span>
-                      {" "}
-                      <br />
-                      You will be asked to confirm the transaction and fee in a second.
-                    </div>
-                  </div>
-                </div>
-              ) : null}
-              <div className="mb-4 md:mb-0">
-                <Label labelClassName="md:text-right" label="amount" inline>
-                  <span data-qa-selector="transaction-amount"><FormatNumber value={transactionData?.amount} /></span>
-                  {" "}
-                  XMR
-                </Label>
-              </div>
-              <div className="mb-4 md:mb-0">
-                <Label labelClassName="md:text-right" label="Destination Address" inline>
-                  <span
-                    className="theme-text-primary break-all"
-                    data-qa-selector="transaction-dest-address"
-                  >
-                    {transactionData?.address}
+              <CreatingTransactionStage
+                amount={(
+                  <span>
+                    {transactionData?.amount}
+                    {" "}
+                    XMR
                   </span>
-                </Label>
-              </div>
-              {
-                transactionData?.memo && (
-                  <div className="mb-4 md:mb-0">
-                    <Label labelClassName="md:text-right" label="Internal Memo" inline>
-                      <span data-qa-selector="transaction-memo">{transactionData?.memo}</span>
-                    </Label>
-                  </div>
-                )
-              }
-              <div className="mb-4 md:mb-0">
-                <Label labelClassName="md:text-right" label="priority" inline>
-                  <span data-qa-selector="transaction-priority">{transformPriorityText(transactionData?.priority)}</span>
-                </Label>
-              </div>
-
-              <div className="form-field">
-                <Label labelClassName="md:text-right" label="fee" inline>
-                  <span
-                    className="break-all"
-                    data-qa-selector="transaction-fee"
-                  >
-                    {pendingTransaction?.fee ? (
-                      <span>
-                        <FormatNumber value={piconeroToMonero(pendingTransaction.fee)} />
-                        {" "}
-                        XMR
-                        (
-                        {((parseFloat(piconeroToMonero(pendingTransaction.fee)) * 100) / parseFloat(transactionData?.amount)).toFixed(2)}
-                        % of transaction amount)
-                      </span>
-                    ) : (loading ? <Loading /> : "-")}
+                )}
+                address={transactionData?.address}
+                memo={transactionData?.memo}
+                priority={transformPriorityText(transactionData?.priority)}
+                stage={stage}
+                fee={pendingTransaction?.fee ? (
+                  <span>
+                    <FormatNumber value={piconeroToMonero(pendingTransaction.fee)} />
+                    {" "}
+                    XMR
+                    (
+                    {((parseFloat(piconeroToMonero(pendingTransaction.fee)) * 100) / parseFloat(transactionData?.amount)).toFixed(2)}
+                    % of transaction amount)
                   </span>
-                </Label>
-              </div>
+                ) : (loading ? <Loading /> : "-")}
+                loading={loading}
+              />
               <FormErrors errors={errors} />
               <FormErrors fields={["address", "amount", "password", "memo"]} errors={step1Errors} />
-              <div className="flex justify-end space-x-3 mt-10">
+              <div className="flex justify-end space-x-3 mt-5 mb-16">
                 <Button onClick={(): void => {
                   onEdit(transactionData);
                 }}

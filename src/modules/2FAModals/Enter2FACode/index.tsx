@@ -15,8 +15,11 @@ interface Props {
   submit: (code: string) => Promise<void>;
   cancel: () => void;
   confirmCancel?: (onConfirm: () => void, onGoBack: () => void) => void;
+  asyncCallback: (code: string) => Promise<any>;
 }
-const Enter2FACode: React.FC<Props> = ({ submit, cancel, confirmCancel }) => {
+const Enter2FACode: React.FC<Props> = ({
+  submit, cancel, confirmCancel, asyncCallback,
+}) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [hide, setHide] = useState(false);
   const {
@@ -35,13 +38,13 @@ const Enter2FACode: React.FC<Props> = ({ submit, cancel, confirmCancel }) => {
       code: "",
       non_field_errors: "",
     },
-    onSubmit: (formValues, { setErrors }) => {
-      submit(formValues.code)
-        .catch(
-          (err: any) => {
-            setErrors(err);
-          },
-        );
+    onSubmit: async (formValues, { setErrors }) => {
+      try {
+        const resp = await asyncCallback(formValues.code);
+        submit(resp || formValues.code);
+      } catch (err: any) {
+        setErrors(err);
+      }
     },
   });
   useEffect(() => {
@@ -111,6 +114,8 @@ const Enter2FACode: React.FC<Props> = ({ submit, cancel, confirmCancel }) => {
   );
 };
 
-const enter2FACode = createModal(({ confirmCancel, submit, cancel }: Props) => <Enter2FACode confirmCancel={confirmCancel} submit={submit} cancel={cancel} />);
+const enter2FACode = createModal(({
+  confirmCancel, submit, cancel, asyncCallback = () => Promise.resolve(),
+}: Props) => <Enter2FACode confirmCancel={confirmCancel} submit={submit} cancel={cancel} asyncCallback={asyncCallback} />);
 
 export default enter2FACode;

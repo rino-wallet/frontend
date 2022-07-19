@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { generatePath, Link } from "react-router-dom";
-import { HashLink } from "react-router-hash-link";
 import { Button, EmptyList, Icon } from "../../components";
 import { PageTemplate, WalletCard, Pagination } from "../../modules/index";
 import {
@@ -78,7 +77,7 @@ const WalletsPage: React.FC<Props> = ({
               <div>
                 You don&apos;t have any wallets yet. You need to create one - click on the button above, or see
                 {" "}
-                <HashLink className="theme-link" smooth to={`${routes.faq}#getting_started_full`}>here</HashLink>
+                <a className="theme-link" href={`${routes.faq}#getting_started_full`}>here</a>
                 {" "}
                 for instructions.
               </div>

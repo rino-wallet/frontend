@@ -122,7 +122,7 @@ const TransactionForm: React.FC<Props> = ({
           <DisableAutofill />
           <div className="m-auto md:w-3/4">
             <div className="form-field">
-              <Label labelClassName="md:text-right" label="To address" inline>
+              <Label labelClassName="md:text-right" label="To address" isFormField inline>
                 <Input
                   autoComplete="off"
                   type="text"
@@ -136,7 +136,7 @@ const TransactionForm: React.FC<Props> = ({
               </Label>
             </div>
             <div className="form-field">
-              <Label labelClassName="md:text-right" label="Amount" inline>
+              <Label labelClassName="md:text-right" label="Amount" isFormField inline>
                 <AmountField
                   name="amount"
                   value={values.amount}
@@ -148,7 +148,7 @@ const TransactionForm: React.FC<Props> = ({
               </Label>
             </div>
             <div className="form-field">
-              <Label labelClassName="md:text-right" label="Password" inline>
+              <Label labelClassName="md:text-right" label="Password" isFormField inline>
                 <Input
                   type="password"
                   name="password"
@@ -162,7 +162,7 @@ const TransactionForm: React.FC<Props> = ({
               </Label>
             </div>
             <div className="form-field">
-              <Label labelClassName="md:text-right" label="Internal transaction memo" subtitle="optional" inline>
+              <Label labelClassName="md:text-right" label="Internal transaction memo" subtitle="optional" isFormField inline>
                 <Input
                   autoComplete="off"
                   type="text"

@@ -8,6 +8,10 @@ import TransactionMemo from "./TransactionMemo";
 import "./styles.css";
 import { ExchangeDetails } from "../SendPayment/Exchange/ExchangeDetails";
 
+function truncateLongString(string: string) {
+  return `${string.slice(0, 10)}...${string.slice(-6)}`;
+}
+
 interface Props {
   transaction?: Transaction;
   walletId: string;
@@ -15,7 +19,6 @@ interface Props {
 }
 
 const TransactionDetailsContent: React.FC<Props> = ({ transaction, walletId, isPublicWallet }) => {
-  const destAddresses = (transaction?.destinations || []).map((dest) => dest.address) || [];
   const timestamp = transaction?.timestamp ? transaction?.timestamp : transaction?.createdAt;
   const loading = !transaction;
   return (
@@ -62,14 +65,26 @@ const TransactionDetailsContent: React.FC<Props> = ({ transaction, walletId, isP
           loading={loading}
           label={transaction?.direction === "out" ? "Destination address" : "Receiving address"}
           labelClassName="md:text-right"
-          valueClassName=""
+          valueClassName="whitespace-nowrap"
         >
-          {destAddresses.length ? destAddresses.map((address, index) => (
-            <Copy key={address} value={address}>
-              <span data-qa-selector={`transaction-address-${index}`} key={address} className="break-words">
-                {address}
-              </span>
-            </Copy>
+          {transaction?.destinations?.length ? (transaction?.destinations || []).map((destAddress, index) => (
+            <div className="flex">
+              <Copy key={destAddress.address} value={destAddress.address}>
+                <div className="whitespace-nowrap flex min-w-0">
+                  {
+                    destAddress.addressLabel && (
+                      <div data-qa-selector="address-label" className="font-bold min-w-0 text-ellipsis overflow-hidden mr-1">
+                        {destAddress.addressLabel}
+                        :
+                      </div>
+                    )
+                  }
+                  <div data-qa-selector={`transaction-address-${index}`} key={destAddress.address} className="break-words">
+                    {truncateLongString(destAddress.address)}
+                  </div>
+                </div>
+              </Copy>
+            </div>
           )) : "This wallet"}
         </Label>
       </div>
@@ -96,7 +111,7 @@ const TransactionDetailsContent: React.FC<Props> = ({ transaction, walletId, isP
             transaction && (
               <Copy value={transaction.id}>
                 <span data-qa-selector={`transaction-id = ${transaction?.id}`} className="break-words">
-                  {transaction?.id}
+                  {truncateLongString(transaction?.id)}
                 </span>
               </Copy>
             )

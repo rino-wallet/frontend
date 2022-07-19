@@ -5,6 +5,7 @@ import {
   createTransaction as createTransactionThunk,
   syncMultisig as syncMultisigThunk,
   fetchWalletDetails as fetchWalletDetailsThunk,
+  pollCreateTransactionTask as pollCreateTransactionTaskThunk,
   selectors as walletSelectors,
 } from "../../../../../store/walletSlice";
 import { useSelector, useThunkActionCreator } from "../../../../../hooks";
@@ -32,6 +33,7 @@ const ConfirmTransactionContainer: React.FC<Props> = ({
   const stage = useSelector(walletSelectors.getStage);
   const pendingTransaction = useSelector(walletSelectors.getPendingTransaction);
   const fetchWalletDetails = useThunkActionCreator(fetchWalletDetailsThunk);
+  const pollCreateTransactionTask = useThunkActionCreator(pollCreateTransactionTaskThunk);
   const createTransaction = useThunkActionCreator(createTransactionThunk);
   const syncMultisig = useThunkActionCreator(syncMultisigThunk);
   return (
@@ -42,6 +44,7 @@ const ConfirmTransactionContainer: React.FC<Props> = ({
       stage={stage}
       pendingTransaction={pendingTransaction}
       fetchWalletDetails={fetchWalletDetails}
+      pollCreateTransactionTask={pollCreateTransactionTask}
       createTransaction={createTransaction}
       syncMultisig={syncMultisig}
       transactionData={transactionData}

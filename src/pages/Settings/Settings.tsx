@@ -40,14 +40,14 @@ const SettingsPage: React.FC<Props> = ({ user, updateUser, pendingUpdateUser }) 
         <div className="md:grid grid-cols-2 gap-4">
           <div>
             <div className="mb-5">
-              <Label inline label="Username:">
+              <Label label="Username:" inline>
                 <div className="flex items-center break-all">
                   {user.username}
                 </div>
               </Label>
             </div>
             <div className="mb-5">
-              <Label inline label="Email:">
+              <Label label="Email:" inline>
                 <div className="flex items-center break-all">
                   {
                     showEmail ? (

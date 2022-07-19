@@ -19,7 +19,7 @@ export const ExchangeDetails: React.FC<Props> = ({
   outgoingTxid,
   platform,
 }) => (
-  <div>
+  <div data-qa-selector="exchange-details">
     {
         platform && (
         <Label labelClassName="md:text-right" label="Exchange platform" inline>

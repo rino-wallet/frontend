@@ -64,6 +64,9 @@
   .theme-bg-control-disabled {
     @apply bg-control-disabled;
   }
+  .theme-placeholder-color {
+    @apply placeholder-gray-300;
+  }
   .theme-bg-overlay {
     background-color: rgba(246, 246, 249, 0.7);
   }

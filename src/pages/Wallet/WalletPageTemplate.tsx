@@ -17,9 +17,8 @@ import {
 import {
   useIsMobile, useQuery, useThunkActionCreator, useSelector,
 } from "../../hooks";
-import { ReactComponent as IconUp } from "./arrow-up.svg";
-import { ReactComponent as IconDown } from "../../assets/arrow-down.svg";
 import { fetchWalletDetails as fetchWalletDetailsThunk } from "../../store/walletSlice";
+import { fetchWalletShareRequests as fetchWalletShareRequestsThunk } from "../../store/walletShareRequestListSlice";
 import { selectors } from "../../store/sessionSlice";
 import { fetchWalletTransactions as fetchWalletTransactionsThunk } from "../../store/transactionListSlice";
 import { fetchWalletTransactions as fetchPublicWalletTransactionsThunk } from "../../store/publicWalletTransactionListSlice";
@@ -63,6 +62,7 @@ export const WalletPageTemplate: React.FC<Props> = ({
 }) => {
   const fetchWalletDetails = isPublicWallet ? useThunkActionCreator(fetchPublicWalletDetailsThunk) : useThunkActionCreator(fetchWalletDetailsThunk);
   const fetchWalletTransactions = isPublicWallet ? useThunkActionCreator(fetchPublicWalletTransactionsThunk) : useThunkActionCreator(fetchWalletTransactionsThunk);
+  const fetchWalletShareRequests = useThunkActionCreator(fetchWalletShareRequestsThunk);
   const user = useSelector(selectors.getUser);
   const query = useQuery();
   const page = parseInt(query.get("page"), 10) || 1;
@@ -112,9 +112,13 @@ export const WalletPageTemplate: React.FC<Props> = ({
                       >
                         <Button size={Button.size.BIG} disabled={sendButtonDisabled} name="button-send">
                           <div className="flex space-x-3 items-center">
-                            <IconUp />
-                            {" "}
-                            <span>Send</span>
+                            <div>
+                              Send
+                              <span className="hidden md:inline">
+                                {" "}
+                                / Exchange
+                              </span>
+                            </div>
                           </div>
                         </Button>
                       </Tooltip>
@@ -123,9 +127,13 @@ export const WalletPageTemplate: React.FC<Props> = ({
                     <Link to={`${generatePath(routes.wallet, { id })}/send`}>
                       <Button size={Button.size.BIG} name="button-send">
                         <div className="flex space-x-3 items-center">
-                          <IconUp />
-                          {" "}
-                          <span>Send</span>
+                          <div>
+                            Send
+                            <span className="hidden md:inline">
+                              {" "}
+                              / Exchange
+                            </span>
+                          </div>
                         </div>
                       </Button>
                     </Link>
@@ -134,8 +142,6 @@ export const WalletPageTemplate: React.FC<Props> = ({
                 <Link to={`${generatePath(isPublicWallet ? routes.publicWallet : routes.wallet, { id })}/receive`}>
                   <Button size={Button.size.BIG} name="button-receive">
                     <div className="flex space-x-3 items-center">
-                      <IconDown />
-                      {" "}
                       <span>Receive</span>
                     </div>
                   </Button>
@@ -152,16 +158,20 @@ export const WalletPageTemplate: React.FC<Props> = ({
             loading ? <WalletPlaceholder /> : (
               <div className="flex flex-col justify-center flex-1 min-w-0 text-left">
                 <header className="flex items-center mb-8 w-full relative md:hidden">
-                  <div className="mr-6">
-                    <Button
-                      size={Button.size.MEDIUM}
-                      onClick={goBackCallback}
-                      name="back-button"
-                      icon
-                    >
-                      <div className="w-5 h-5 leading-5 text-2xl theme-text-secondary">&#x3c;</div>
-                    </Button>
-                  </div>
+                  {
+                    typeof goBackCallback === "function" && (
+                      <div className="mr-6">
+                        <Button
+                          size={Button.size.MEDIUM}
+                          onClick={goBackCallback}
+                          name="back-button"
+                          icon
+                        >
+                          <div className="w-5 h-5 leading-5 text-2xl theme-text-secondary">&#x3c;</div>
+                        </Button>
+                      </div>
+                    )
+                  }
                   <h1 className="text-4xl font-bold flex-1 font-catamaran min-w-0 overflow-ellipsis overflow-hidden whitespace-nowrap" data-qa-selector="wallet-name-mobile">
                     {title || wallet?.name}
                   </h1>
@@ -192,9 +202,16 @@ export const WalletPageTemplate: React.FC<Props> = ({
                     size={Button.size.MEDIUM}
                     onClick={(): void => {
                       setIsRefreshing(true);
-                      fetchWalletTransactions({ walletId: id, page });
+                      const requests = [];
+                      requests.push(fetchWalletTransactions({ walletId: id, page }));
+                      requests.push(fetchWalletDetails({ id }));
+                      if (!isPublicWallet) {
+                        fetchWalletShareRequests({ walletId: id, page: 1 });
+                      }
                       // @ts-ignore
-                      fetchWalletDetails({ id }).then((): void => { setTimeout((): void => setIsRefreshing(false), 300); });
+                      Promise.all(requests).finally(() => {
+                        setIsRefreshing(false);
+                      });
                     }}
                     name="wallet-refresh"
                     className="float-right shrink-0 flex-[0_auto]"
@@ -206,23 +223,25 @@ export const WalletPageTemplate: React.FC<Props> = ({
                   </Button>
                 </div>
                 {
-                  showActions && (
+                  (showActions && !isPublicWallet) && (
                     <div className="flex space-x-5 mt-8 md:hidden">
                       <Link className="block w-1/2" to={`${generatePath(routes.wallet, { id })}/send`}>
                         <Button size={Button.size.BIG} disabled={sendButtonDisabled} name="button-send" block={isMobile}>
                           <div className="flex space-x-3 items-center">
-                            <IconUp />
-                            {" "}
-                            <span>Send</span>
+                            <div>
+                              Send
+                              <span className="hidden md:inline">
+                                {" "}
+                                / Exchange
+                              </span>
+                            </div>
                           </div>
                         </Button>
                       </Link>
                       <Link className="block w-1/2" to={`${generatePath(routes.wallet, { id })}/receive`}>
                         <Button size={Button.size.BIG} name="button-receive" block={isMobile}>
                           <div className="flex space-x-3 items-center">
-                            <IconDown />
-                            {" "}
-                            <span>Receive</span>
+                            <div>Receive</div>
                           </div>
                         </Button>
                       </Link>
