@@ -7,6 +7,7 @@ import {
 import { ReactComponent as IconUp } from "../arrow-up.svg";
 import { Wallet } from "../../../types";
 import routes from "../../../router/routes";
+import { useAccountType } from "../../../hooks";
 import { WalletPageTemplate } from "../WalletPageTemplate";
 import TransactionForm from "./Send/TransactionForm";
 import walletInstance from "../../../wallet";
@@ -21,6 +22,7 @@ const SendPayment: React.FC<Props> = ({
   wallet,
   walletId,
 }) => {
+  const { features } = useAccountType();
   const navigate = useNavigate();
   const [isExchange, setIsExchange] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
@@ -106,7 +108,7 @@ const SendPayment: React.FC<Props> = ({
           >
             <div className="w-full p-5 md:p-10 m-auto">
               {
-                activeTab === 0 && (
+                (activeTab === 0 && features?.exchange) && (
                   <div className="mb-10 md:mb-8 m-auto md:w-3/4">
                     <Label label="" inline>
                       <div className="text-center md:text-left">

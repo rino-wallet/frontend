@@ -37,12 +37,24 @@ export class ExchangeApi extends Api {
     return this.post<ExchangeOrder, CreateExchangeOrderPayload>("/exchange/orders/", data)
       .then(this.success);
   }
+
+  public getExchangeCurrencies(): Promise<any> {
+    return this.get<any>("/exchange/orders/currencies/")
+      .then(this.success);
+  }
 }
 
 const exchangeApi = new ExchangeApi(apiConfig);
 
 if (process.env.REACT_APP_ENABLE_API_MOCKS === "true") {
   const axiosMockAdapterInstance = new MockAdapter(exchangeApi.axios, { delayResponse: 500 });
+
+  axiosMockAdapterInstance
+    // eslint-disable-next-line
+    .onGet(new RegExp("/exchange/orders/currencies/"))
+    .reply(() => [201, [["xmr", "Monero"], ["btc", "Bitcoin"], ["eth", "Ethereum"], ["sol", "Solana"], ["ada", "Cardano"], ["usdt", "Tether"], ["usdc", "USD Coin"], ["bnb", "Binance Coin"], ["xrp", "Ripple"], ["doge", "Dogecoin"], ["dot", "Polkadot"]],
+    ]);
+
   axiosMockAdapterInstance
     .onGet("/exchange/orders/range/")
     .reply(() => ([200, camelcaseKeys({ max_amount: "162393500900000", min_amount: "31822200000" })]));
@@ -61,7 +73,7 @@ if (process.env.REACT_APP_ENABLE_API_MOCKS === "true") {
     .onGet(new RegExp("/exchange/orders/*/"))
     .reply(() => [201, camelcaseKeys({
       id: "415b1b76-45f8-4949-9322-f0247a4b4cfc",
-      created_by: "sander.taranov@gmail.com",
+      created_by: "test@test.com",
       paid_with: "d0bb4e25-1f7a-435d-84e2-97f578bb342e",
       status: "Pending Payment",
       created_at: "2022-06-09T08:40:03.856265Z",
@@ -87,7 +99,7 @@ if (process.env.REACT_APP_ENABLE_API_MOCKS === "true") {
     .onPost(new RegExp("/exchange/orders/"))
     .reply(() => [201, camelcaseKeys({
       id: "415b1b76-45f8-4949-9322-f0247a4b4cfc",
-      created_by: "sander.taranov@gmail.com",
+      created_by: "test@test.com",
       paid_with: "d0bb4e25-1f7a-435d-84e2-97f578bb342e",
       status: "Pending Payment",
       created_at: "2022-06-09T08:40:03.856265Z",

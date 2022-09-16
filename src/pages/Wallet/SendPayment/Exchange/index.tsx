@@ -3,6 +3,7 @@ import ExchangeForm from "./ExchangeForm";
 import { useSelector, useThunkActionCreator } from "../../../../hooks";
 import {
   getExchangeRange as getExchangeRangeThunk,
+  getExchangeCurrencies as getExchangeCurrenciesThunk,
   getExchangeEstimation as getExchangeEstimationThunk,
   createExchangeOrder as createExchangeOrderThunk,
   selectors as exchangeSelectors,
@@ -23,6 +24,8 @@ interface Props {
 const ExchangeContainer: React.FC<Props> = ({ walletId, setActiveTab, activeTab }) => {
   const exchangeRange = useSelector(exchangeSelectors.getExchangeRange);
   const getExchangeRange = useThunkActionCreator(getExchangeRangeThunk);
+  const getExchangeCurrencies = useThunkActionCreator(getExchangeCurrenciesThunk);
+  const currencies = useSelector(exchangeSelectors.getCurrencies);
   const exchangeEstimation = useSelector(exchangeSelectors.getExchangeEstimation);
   const getExchangeEstimation = useThunkActionCreator(getExchangeEstimationThunk);
   const pendingGetExchangeEstimation = useSelector(exchangeSelectors.pendingGetExchangeEstimation);
@@ -30,10 +33,11 @@ const ExchangeContainer: React.FC<Props> = ({ walletId, setActiveTab, activeTab 
   const walletData = useSelector(walletSelectors.getWallet);
   const walletSubAddress = useSelector(subaddressSelectors.getWalletSubAddress);
   useEffect(() => {
-    getExchangeRange({ platform: "changenow", to_currency: "btc" });
+    getExchangeCurrencies();
   }, []);
   return (
     <ExchangeForm
+      getExchangeRange={getExchangeRange}
       walletSubAddress={walletSubAddress?.address || ""}
       wallet={walletData}
       walletId={walletId}
@@ -41,6 +45,7 @@ const ExchangeContainer: React.FC<Props> = ({ walletId, setActiveTab, activeTab 
       exchangeRange={exchangeRange}
       exchangeEstimation={exchangeEstimation}
       pendingGetExchangeEstimation={pendingGetExchangeEstimation}
+      currencies={currencies}
       createExchangeOrder={createExchangeOrder}
       setActiveTab={setActiveTab}
       activeTab={activeTab}

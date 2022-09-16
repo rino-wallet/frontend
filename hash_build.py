@@ -156,6 +156,8 @@ class BuildHasher:
         app_url = "app.rino.io"
         if project_env == "test":
             app_url = "app.test.rino.io"
+        if project_env == "production":
+            project_env = "master"
         with open("./build-integrity-template.txt", "r") as file_data:
             data = file_data.read()
         data = data.replace("__integrity_hash__", integrity_hash)

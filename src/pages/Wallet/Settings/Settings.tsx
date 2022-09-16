@@ -10,7 +10,7 @@ import {
 } from "../../../types";
 import DeleteWallet from "../DeleteWallet";
 import { enter2FACode } from "../../../modules/2FAModals";
-import { useSelector } from "../../../hooks";
+import { useSelector, useAccountType } from "../../../hooks";
 import { selectors as sessionSelectors } from "../../../store/sessionSlice";
 import { APP_URLS_MAP } from "../../../constants";
 
@@ -35,6 +35,7 @@ interface Props {
 const Settings: React.FC<Props> = ({
   updateWalletDetails, walletId, is2FaEnabled, wallet, canDelete,
 }) => {
+  const { features } = useAccountType();
   const user = useSelector(sessionSelectors.getUser);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [nonFieldErrors, setNonFieldErrors] = useState<{ non_field_errors?: string, message?: string, detail?: string }>({});
@@ -178,53 +179,59 @@ const Settings: React.FC<Props> = ({
                   </div>
                 </Checkbox>
               </div>
-              <h3 className="uppercase font-bold mb-8">Public wallet</h3>
-              <div>
-                <div className="form-field">
-                  <Checkbox
-                    name="is_public"
-                    checked={formik.values.is_public}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>): void | null => { formik.setFieldValue("is_public", e.target.checked); }}
-                  >
-                    <div className="flex items-center">
-                      <span>Make public</span>
-                      <Tooltip
-                        content={(
-                          <p className="text-sm">Make this wallet publicly visible to anyone with the link</p>
-                        )}
-                      >
-                        <div className="text-sm cursor-pointer ml-1" data-qa-selector="cursor-pointer-tx-priority-tooltip">
-                          <Icon name="info" />
-                        </div>
-                      </Tooltip>
+              {
+                features?.publicWallet && (
+                  <>
+                    <h3 className="uppercase font-bold mb-8">Public wallet</h3>
+                    <div>
+                      <div className="form-field">
+                        <Checkbox
+                          name="is_public"
+                          checked={formik.values.is_public}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>): void | null => { formik.setFieldValue("is_public", e.target.checked); }}
+                        >
+                          <div className="flex items-center">
+                            <span>Make public</span>
+                            <Tooltip
+                              content={(
+                                <p className="text-sm">Make this wallet publicly visible to anyone with the link</p>
+                              )}
+                            >
+                              <div className="text-sm cursor-pointer ml-1" data-qa-selector="cursor-pointer-tx-priority-tooltip">
+                                <Icon name="info" />
+                              </div>
+                            </Tooltip>
+                          </div>
+                        </Checkbox>
+                      </div>
+                      <div className="form-field">
+                        <Label label="Wallet identifier">
+                          <Input
+                            type="text"
+                            name="public_slug"
+                            value={formik.values.public_slug}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.errors.public_slug || ""}
+                            disabled={!formik.values.is_public}
+                          />
+                        </Label>
+                      </div>
+                      {wallet?.isPublic && (
+                        <Label label="Wallet URL:">
+                          <div className="break-all text-sm">
+                            <Copy value={`${publicUrl}/public/wallets/${wallet?.publicSlug}`}>
+                              {publicUrl}
+                              /public/wallets/
+                              {wallet?.publicSlug}
+                            </Copy>
+                          </div>
+                        </Label>
+                      )}
                     </div>
-                  </Checkbox>
-                </div>
-                <div className="form-field">
-                  <Label label="Wallet identifier">
-                    <Input
-                      type="text"
-                      name="public_slug"
-                      value={formik.values.public_slug}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      error={formik.errors.public_slug || ""}
-                      disabled={!formik.values.is_public}
-                    />
-                  </Label>
-                </div>
-                {wallet?.isPublic && (
-                  <Label label="Wallet URL:">
-                    <div className="break-all text-sm">
-                      <Copy value={`${publicUrl}/public/wallets/${wallet?.publicSlug}`}>
-                        {publicUrl}
-                        /public/wallets/
-                        {wallet?.publicSlug}
-                      </Copy>
-                    </div>
-                  </Label>
-                )}
-              </div>
+                  </>
+                )
+              }
               <FormErrors fields={["requires_2fa"]} errors={{ ...formik.errors, ...nonFieldErrors }} />
               {canDelete && (
                 <Button

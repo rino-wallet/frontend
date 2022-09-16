@@ -13,6 +13,7 @@ import {
 } from "../../../components";
 import { IconName } from "../../../components/Icon";
 import { enter2FACode } from "../../../modules/2FAModals";
+import { useAccountType } from "../../../hooks";
 
 const getValidationSchema = (member: WalletMember | null = null): ObjectSchema<any> => yup.object().shape({
   password: yup.string().when("access_level", {
@@ -50,6 +51,7 @@ const iconsMap: { [key: string]: string } = {
 const WalletMemberModal: React.FC<Props> = ({
   wallet, member, is2FaEnabled, email, shareWallet, cancel, submit,
 }) => {
+  const { features } = useAccountType();
   const {
     isValid,
     dirty,
@@ -102,7 +104,7 @@ const WalletMemberModal: React.FC<Props> = ({
           <DisableAutofill />
           <Modal.Body>
             <div className="form-field">
-              <p>
+              <p className="break-words">
                 Please select the desired access level for wallet
                 {" "}
                 {"\""}
@@ -141,7 +143,8 @@ const WalletMemberModal: React.FC<Props> = ({
                   </option>
                   {
                     // we temporarily hide "View-only" role, just remove filter to revert it
-                    Object.values(accessLevels).filter((level) => level.value !== "View-only")
+                    Object.values(accessLevels)
+                      .filter((level) => (features.viewOnlyShare ? true : level.value !== "View-only"))
                       .filter((option) => option.code !== accessLevels.owner.code)
                       .map((option) => <option key={option.code} value={option.code}>{option.title}</option>)
                   }

@@ -1,24 +1,19 @@
 {
-  "created_at": "2021-05-25T14:09:27.649Z",
-  "updated_at": "2021-05-25T14:09:27.848Z",
-  "id": "8e3ed05e-b8a5-4eea-9a96-ff475c37ad30",
+  "created_at": "2022-08-24T18:08:59.597Z",
+  "updated_at": "2022-08-24T18:09:00.074Z",
+  "id": "2d26813a-a21b-49a9-9211-3d5c53e38ca9",
   "started_at": "",
-  "completed_at": "2021-05-25T14:09:39.781Z",
+  "completed_at": "2022-08-24T18:09:11.381Z",
   "status": "COMPLETED",
-  "type": 10,
+  "type": "CREATE_WALLET",
   "params": {
-    "id": "9438d1ff-a796-4561-908f-79cd16369b8d",
-    "user_multisig_info": "MultisigV12M5eyihPjFfGx8JzMGcxmH1iknLRHRyRx7VbwUrTySbBiSfBajJ6RWEGMnsNFENKbmhdatnT4Sgz5WCSUSBbkUCjaYte4AwYJmR7ZyHHYV1PiaUTaQaedP2F8TGizCaiTsRBBYradNkUT69XZth28kQ3SsSfeVx3BunvcdN7UyqJrphk",
-    "backup_multisig_info": "MultisigV1C4Q7tzVncjV2FehrcrdubT7fjE9MMogpiATYPaYKZNQSMZreYp1E625dFEuifD8JTaXTMZfDBojrhiN7A8vpWAaEZC98yoByLpk8RCc7gYdCjWGRyVnSPgNZSLHwsiz3XGUQEAhebfwa1VB9NMyv6JEUhW8Jx8ajgw8583Um9LUHPGkP"
+    "id": "b207b633-94e9-4f53-8106-5a48a4e0c786",
+    "user_multisig_info": "MultisigxV2R167rjCwjSUb6adz6BAud3vwcDDAWPLHT2udxnTNR8Rw5YV34diruoEJhhUJd3xU1U8X5QDsLGe3hBA2LXHYVtvrHKXbZjK7X13DsWYdRUDL3wAkScTCWV8XERG78D3G1L55ke5fKQfSsk4BGUNoDVnW6znJ9TqTEttoN9zWhcmFigWZVU",
+    "backup_multisig_info": "MultisigxV2R1bGeG6oZ8HVZVrLs759UTkKgdxAsRDivCrNkzzwqqwuB9DbApZXqmqza5YUbyNTNkyAXSWWys3GUUB5WKFzitTEQi75Jh7cJEVHFcHkF6zKBj1K4paGrH6g6hL3ahPss1i71DDtDGHpQEP5fKLwc37yVrCsP669AWVtzpV5wDQ3QXBEdy"
   },
   "result": {
-    "server_multisig_info": "MultisigV122dJZwVxh5yagDQrayhaZZa3wDFau1dNFDoGmUsVRBcn76G5wND59diTKuEWDq6riuUTc2nDXANeb8ggqWqhnUFnYMv11YqvAi9YedJD1Jpyt8cqFZtpLHeXohP2kbVyhgZA1Hodx15MpygjE5VsYuLZU61sJ6XycQFF8GC5tNXWDpZ4",
-    "server_multisig_xinfo": {
-      "state": {
-        "address": "51sLpF8fWaK111111111111111111111111111111111149ptrTopAM4ijycngodwsSiBuZLKALG6NSeXAdL9sTz3asbxrN",
-        "multisig_hex": "MultisigxV1JxrXZ2yQvdsZBp2UXRrzTNHnYFtDTh1Tq27KL1GKwWNXjH2mGmfZKYgeYWLzWGzSZMg4CbAcfvQK9JXAXxQMAp71Vvz4F6YPc2ANTK2RHmmfKAZWdrWoQHcmR7tg5A9Fu9vEgebSdkzgdop7WtcmcSjHHtN9jLDkFtG51auZnuuSZLHpGub7V17VbWeAipUPrLg7uSKTQuaBbH1ZBNv8jYwNmmKF"
-      }
-    }
+    "server_multisig_info": "MultisigxV2R1NrayenRanYtDUx7gcoTVPf8KcBtCP2hbpUZRzS2bTRh9EKzp8ncKkm6HuRbH4bAXRsbSiXU5Ep7R4Nr8wGJ7nADSGDAirkXsHvicxk1ypSRDzT3nYVkFWZcsx47o9Hpq8ewaQCCgDKVeGpQNHgsjtnwprcJ9C6K8DqD2VF3Ee6PqPHuJ",
+    "server_multisig_xinfo": "MultisigxV2Rn1LUwLUouK1w12vRGSYnJuU6gA3Kevrtd1YZYCyXXixmgPVbpA6T9AmE3djAgWuRrDYTAHSUJFWqzuQVEwEUzKMRHYZUnPQuswBh25Cgs81G8cj6Zg2idLYQGSHB88PmdvESWMPEn1j1oaERUJ82YE498ce9oatjt2B6YyQHLmwCFPJY9SG1rjdfWR3BbmpLn4AWZsbNpApUJVUknk9sX7tBMGit1Evn"
   },
-  "wallet_id": "9438d1ff-a796-4561-908f-79cd16369b8d"
+  "wallet_id": "b207b633-94e9-4f53-8106-5a48a4e0c786"
 }

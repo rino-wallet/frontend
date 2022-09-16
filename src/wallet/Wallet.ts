@@ -46,7 +46,7 @@ class Wallet {
    */
   public makeMultisig = async (peerMultisigHexes: string[], numberOfParticipants: number, walletPassword: string): Promise<Multisig> => {
     const baseXinfo = await this.wallet.makeMultisig(peerMultisigHexes, numberOfParticipants, walletPassword);
-    return baseXinfo.getMultisigHex();
+    return baseXinfo;
   };
 
   /**
@@ -86,7 +86,7 @@ class Wallet {
   /**
    * Export this wallet's multisig info as hex for other participants.
    */
-  public getMultisigHex = async (): Promise<string> => this.wallet.getMultisigHex();
+  public getMultisigHex = async (): Promise<string> => this.wallet.exportMultisigHex();
 
   public getSubaddresses = async (index: number): Promise<any> => {
     const sub = await this.wallet.getSubaddresses(0, index);

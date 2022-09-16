@@ -39,6 +39,7 @@ import {
   RequestWalletSharePayload,
   FetchWalletShareRequestsResponse,
   UpdateSubaddressPayload,
+  FetchRemovedUsersResponse,
 } from "../types";
 
 export class WalletsApi extends Api {
@@ -87,8 +88,8 @@ export class WalletsApi extends Api {
       .then(this.success);
   }
 
-  public persistWallet(data: PersistWalletPayload): Promise<null> {
-    return this.post<null, PersistWalletPayload>(`/wallets/${data.id}/persist/`)
+  public persistWallet(id: string, data: PersistWalletPayload): Promise<null> {
+    return this.post<null, PersistWalletPayload>(`/wallets/${id}/persist/`, data)
       .then(this.success);
   }
 
@@ -159,6 +160,11 @@ export class WalletsApi extends Api {
 
   public updateWalletSubaddresses(id: string, address: string, data: UpdateSubaddressPayload): Promise<SubaddressResponse> {
     return this.put<Subaddress, UpdateSubaddressPayload>(`/wallets/${id}/subaddresses/${address}/`, data)
+      .then(this.success);
+  }
+
+  public fetchRemovedUsers(walletId: string): Promise<FetchRemovedUsersResponse> {
+    return this.get<FetchRemovedUsersResponse>(`/wallets/${walletId}/removed_spenders/`)
       .then(this.success);
   }
 }

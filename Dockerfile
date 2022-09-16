@@ -1,4 +1,4 @@
-FROM node:stretch-slim
+FROM node:16.17-bullseye-slim
 
 EXPOSE 3000
 

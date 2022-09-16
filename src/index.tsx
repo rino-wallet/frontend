@@ -8,6 +8,8 @@ import "./yupSettings";
 import "./assets/fonts/lato.css";
 import "./assets/fonts/catamaran.css";
 import "./assets/styles.css";
+import { LayoutContainer as Layout } from "./modules/Layout";
+import { UnsupportedBrowserSW } from "./pages/UnsupportedBrowser";
 
 const env = process.env.NODE_ENV;
 const INTEGRITY_METADATA = (window as any).INTEGRITY_METADATA;
@@ -25,10 +27,25 @@ function runApp(): void {
   );
 }
 
+function noSWError(): void {
+  ReactDOM.render(
+    <React.StrictMode>
+      <ReduxProvider store={store}>
+        <Layout page="unsupported_browser"><UnsupportedBrowserSW /></Layout>
+      </ReduxProvider>
+    </React.StrictMode>,
+    document.getElementById("root"),
+  );
+}
+
 // We run the application only after we check service_worker.js integrity
 window.addEventListener("load", () => {
   if (env === "development") {
-    runApp();
+    if (!("serviceWorker" in navigator)) {
+      noSWError();
+    } else {
+      runApp();
+    }
   } else {
     fetch(`${process.env.PUBLIC_URL}/service_worker.js`, {
       method: "GET",
@@ -45,9 +62,12 @@ window.addEventListener("load", () => {
             runApp();
             return navigator.serviceWorker.ready;
           }).catch(() => {
+            noSWError();
             // eslint-disable-next-line
             alert("SW registration failed.");
           });
+      } else {
+        noSWError();
       }
     }, () => {
       // eslint-disable-next-line

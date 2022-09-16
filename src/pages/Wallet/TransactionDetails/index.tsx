@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import Decimal from "decimal.js-light";
 import { Transaction } from "../../../types";
 import { Copy, Label, FormatNumber } from "../../../components";
-import { piconeroToMonero, satoshiToBTC } from "../../../utils";
+import { piconeroToMonero, convertAtomicAmount } from "../../../utils";
 import TransactionMemo from "./TransactionMemo";
 import "./styles.css";
 import { ExchangeDetails } from "../SendPayment/Exchange/ExchangeDetails";
@@ -129,7 +129,7 @@ const TransactionDetailsContent: React.FC<Props> = ({ transaction, walletId, isP
               </Label>
               <ExchangeDetails
                 platform={transaction?.order.platform}
-                rate={new Decimal(satoshiToBTC(transaction?.order?.outgoingAmount as number)).div(new Decimal(piconeroToMonero(transaction?.order?.paymentAmount as number))).toNumber()}
+                rate={new Decimal(convertAtomicAmount(transaction?.order?.outgoingAmount as number, transaction?.order.outgoingCurrency)).div(new Decimal(piconeroToMonero(transaction?.order?.paymentAmount as number))).toNumber()}
                 currency={transaction?.order.outgoingCurrency}
                 destinationAddress={transaction?.order.outgoingAddress}
                 exchangeID={transaction?.order.platformOrderId}

@@ -2,8 +2,7 @@ import React from "react";
 import classNames from "classnames";
 import ROUTES from "../../router/routes";
 import { Logo } from "../../components";
-import { PUBLIC_APP_URLS_MAP } from "../../constants";
-import { Env } from "../../types";
+import { useAccountType } from "../../hooks";
 
 const linkElementClassName = "md:ml-10 font-bold uppercase text-base md:text-lg text-right";
 
@@ -14,6 +13,8 @@ interface Props {
 }
 
 const Footer: React.FC<Props> = ({ dark, showDisclaimer, isAuthenticated }) => {
+  const { isEnterprise } = useAccountType();
+  const links = isEnterprise ? ROUTES.static.enterprise : ROUTES.static.consumer;
   const logoElement = dark ? <Logo white /> : <Logo />;
   return (
     <div className={classNames("px-5 pt-10 pb-6", { "text-white footer-dark": dark })}>
@@ -22,13 +23,13 @@ const Footer: React.FC<Props> = ({ dark, showDisclaimer, isAuthenticated }) => {
         data-qa-selector="footer"
       >
         <div className="flex justify-between justify-self-end mb-5">
-          <a href={isAuthenticated ? ROUTES.wallets : PUBLIC_APP_URLS_MAP[process.env.REACT_APP_ENV as Env]}>{logoElement}</a>
+          <a href={isAuthenticated ? ROUTES.wallets : links.landing}>{logoElement}</a>
           <div className="md:py-3 md:block grid md:grid-cols-2 gap-4">
-            <a className={linkElementClassName} href={ROUTES.terms_of_service}>Terms of service</a>
-            <a className={linkElementClassName} href={ROUTES.privacy_policy}>Privacy policy</a>
-            <a className={linkElementClassName} href={ROUTES.cookie_policy}>Cookie policy</a>
-            <a className={linkElementClassName} href={ROUTES.security}>Security</a>
-            <a className={linkElementClassName} href={ROUTES.faq}>FAQ</a>
+            <a className={linkElementClassName} href={links.terms_of_service}>Terms of service</a>
+            <a className={linkElementClassName} href={links.privacy_policy}>Privacy policy</a>
+            <a className={linkElementClassName} href={links.cookie_policy}>Cookie policy</a>
+            <a className={linkElementClassName} href={links.security}>Security</a>
+            <a className={linkElementClassName} href={links.faq}>FAQ</a>
           </div>
         </div>
         <div className={classNames("flex flex-col w-full justify-end md:items-center md:justify-between md:flex-row", { "footer-dark__text": dark, "theme-text-secondary": !dark })}>

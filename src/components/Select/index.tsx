@@ -11,6 +11,7 @@ export enum UI_SIZE {
 }
 
 type Props = {
+  embeded?: boolean;
   value?: string;
   name?: string;
   size?: UI_SIZE;
@@ -29,6 +30,7 @@ const SIZE_MAPS: Record<UI_SIZE, string> = {
 
 export const Select: React.FC<Props> & { size: typeof UI_SIZE; } = (props) => {
   const {
+    embeded = false,
     value = "",
     name = "",
     error = "",
@@ -53,9 +55,11 @@ export const Select: React.FC<Props> & { size: typeof UI_SIZE; } = (props) => {
         onChange={onChange}
         onBlur={onBlur}
         className={classNames(
-          "select w-full inline-flex border border-solid text-lg placeholder-gray-400",
+          "select w-full inline-flex text-lg placeholder-gray-400",
           SIZE_MAPS[size],
           {
+            "bg-transparent": embeded,
+            "border border-solid": !embeded,
             "pl-12": icon,
           },
         )}

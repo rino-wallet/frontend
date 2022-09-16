@@ -5,6 +5,7 @@ import { Label } from "../../../../../components";
 import { ExchangeDetails } from "../ExchangeDetails";
 import {
   CreateUnsignedTransactionResponse,
+  ExchangeCurrencies,
   Destination,
   ExchangeOrder,
   FetchWalletDetailsResponse,
@@ -16,7 +17,7 @@ import {
   Wallet,
 } from "../../../../../types";
 import ConfirmTransaction from "../../Send/ConfirmTransaction/ConfirmTransaction";
-import { piconeroToMonero, satoshiToBTC } from "../../../../../utils";
+import { piconeroToMonero, convertAtomicAmount } from "../../../../../utils";
 import { transactionPriorities } from "../../../../../constants";
 import { enterPasswordModal } from "../../../../../modules/index";
 
@@ -127,7 +128,7 @@ const ExchangePayment: React.FC<Props> = ({
         </Label>
         <ExchangeDetails
           platform={order?.platform || ""}
-          rate={new Decimal(satoshiToBTC(order?.outgoingAmount as number)).div(new Decimal(piconeroToMonero(order?.paymentAmount as number))).toNumber()}
+          rate={new Decimal(convertAtomicAmount(order?.outgoingAmount as number, order?.outgoingCurrency as ExchangeCurrencies)).div(new Decimal(piconeroToMonero(order?.paymentAmount as number))).toNumber()}
           currency={order?.outgoingCurrency || ""}
           destinationAddress={order?.outgoingAddress || ""}
           exchangeID={order?.platformOrderId || ""}

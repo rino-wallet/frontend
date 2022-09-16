@@ -53,7 +53,9 @@ const ExchangeContainer: React.FC<Props> = ({ walletId, onEdit }) => {
       walletId={walletId}
       wallet={walletData}
       onEdit={(): void => {
-        currentWalletCall.abort();
+        if (currentWalletCall) {
+          currentWalletCall.abort();
+        }
         resetPendingTransaction();
         onEdit();
       }}

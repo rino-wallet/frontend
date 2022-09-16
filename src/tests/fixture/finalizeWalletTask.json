@@ -1,0 +1,20 @@
+{
+  "created_at": "2022-08-24T18:09:24.541Z",
+  "updated_at": "2022-08-24T18:09:24.554Z",
+  "id": "d077c0f8-0653-455d-ad5e-d2466df55e92",
+  "started_at": "",
+  "completed_at": "2022-08-24T18:09:49.997Z",
+  "status": "COMPLETED",
+  "type": "FINALIZE_MULTISIG",
+  "params": {
+    "user_multisig_xinfo": "MultisigxV2Rn1LVpcSbGFwN1PREaFACLF92hYR44PZTMdPDruMnhZWoUi6kDhAdHwnu12vRGSYnJuU6gA3Kevrtd1YZYCyXXixmgPVcixRHqpoZgqNh4XDEvCvTmp21vPWjmMHLaZTfeRub6NxqHiwkWZNW2iyASVQn6JiV3rbC4gzmE5GE1aT53ioZEgUxaK51eAPFe3SKz664Xot42pRKsVNE8mWcb8b9DzNN5DFh",
+    "user_multisig_final": "MultisigxV2Rn1WCLrjKfMruaqYwT7PsqhRLudtjaB9RCpAfK7Sn4iQvs4Dy2ahv1xbd7JoHf7G18H5J3JJCyWmGQD3z1Zh333bmwALvywwcqbhZgqNh4XDEvCvTmp21vPWjmMHLaZTfeRub6Nxr1jbcCzesQDrPaJsYGQrEPoTqWZgn53NqtihQkZnrm3Wbi2Hqpdm1Nsft1iofjoBaQExfzQt48LADWXnphbZpeCRG",
+    "backup_multisig_xinfo": "MultisigxV2Rn1LVpcSbGFwN1PREaFACLF92hYR44PZTMdPDruMnhZWoUi6kZ1ncHZpL3djAgWuRrDYTAHSUJFWqzuQVEwEUzKMRHYZUkBuduGySeczRZm96L2U4UpbQnnoiZ5hWNivd5CZBgXAPNZncZEvzGkWmSi1HWz98MhHjD8FunVKLHQXXfZDmNQbPJnZFB4BhCiavaqQmHnGMZRQ8DrtShqARrMBzXf1nVD74",
+    "backup_multisig_final": "MultisigxV2Rn1WCLrjKfMruaqYwT7PsqhRLudtjaB9RCpAfK7Sn4iQvs4Dy2ahv1xbd7JoHf7G18H5J3JJCyWmGQD3z1Zh333bmwALvBxiKUeHzeczRZm96L2U4UpbQnnoiZ5hWNivd5CZBgXANdfdjUW7oZkGsKnd4N4Y9bbjzPd72xMHZAHQBX5H5Ca7tFurBhHvMXF6yzKTvcMU4EBNa3zA1FUgYNe2hsjLGeCLf"
+  },
+  "result": {
+    "server_multisig_final": "MultisigxV2Rn1WCLrjKfMruaqYwT7PsqhRLudtjaB9RCpAfK7Sn4iQvs4Dy2ahv1xbd7JoHf7G18H5J3JJCyWmGQD3z1Zh333bmwALvEADbTJWF25Cgs81G8cj6Zg2idLYQGSHB88PmdvESWMPEZdYdJAS84AhkjGSHnPDDWniSrVFsMRgwHMNxUuwFzaTKjtoR8kVsXmfq3pe2HWBV32KH29uyDEA9HsmhWujTqJ3r",
+    "address": "55vr7cWMTi9Dno4YBeqtTQ1pscvEN1rrCZQG5gvkPnpSCfQC5G86nWgXF39Nd5ZZq6ePkozvD6wxUchdu8xPtD1GRptqYUR"
+  },
+  "wallet_id": "b207b633-94e9-4f53-8106-5a48a4e0c786"
+}

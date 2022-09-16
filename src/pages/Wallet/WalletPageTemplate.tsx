@@ -15,7 +15,7 @@ import {
   fetchWalletDetails as fetchPublicWalletDetailsThunk,
 } from "../../store/publicWalletSlice";
 import {
-  useIsMobile, useQuery, useThunkActionCreator, useSelector,
+  useIsMobile, useQuery, useThunkActionCreator, useSelector, useAccountType,
 } from "../../hooks";
 import { fetchWalletDetails as fetchWalletDetailsThunk } from "../../store/walletSlice";
 import { fetchWalletShareRequests as fetchWalletShareRequestsThunk } from "../../store/walletShareRequestListSlice";
@@ -60,6 +60,7 @@ export const WalletPageTemplate: React.FC<Props> = ({
   isPublicWallet,
   showNameInBox,
 }) => {
+  const { features } = useAccountType();
   const fetchWalletDetails = isPublicWallet ? useThunkActionCreator(fetchPublicWalletDetailsThunk) : useThunkActionCreator(fetchWalletDetailsThunk);
   const fetchWalletTransactions = isPublicWallet ? useThunkActionCreator(fetchPublicWalletTransactionsThunk) : useThunkActionCreator(fetchWalletTransactionsThunk);
   const fetchWalletShareRequests = useThunkActionCreator(fetchWalletShareRequestsThunk);
@@ -114,10 +115,14 @@ export const WalletPageTemplate: React.FC<Props> = ({
                           <div className="flex space-x-3 items-center">
                             <div>
                               Send
-                              <span className="hidden md:inline">
-                                {" "}
-                                / Exchange
-                              </span>
+                              {
+                                features?.exchange && (
+                                  <span className="hidden md:inline">
+                                    {" "}
+                                    / Exchange
+                                  </span>
+                                )
+                              }
                             </div>
                           </div>
                         </Button>
@@ -129,10 +134,14 @@ export const WalletPageTemplate: React.FC<Props> = ({
                         <div className="flex space-x-3 items-center">
                           <div>
                             Send
-                            <span className="hidden md:inline">
-                              {" "}
-                              / Exchange
-                            </span>
+                            {
+                                features?.exchange && (
+                                  <span className="hidden md:inline">
+                                    {" "}
+                                    / Exchange
+                                  </span>
+                                )
+                              }
                           </div>
                         </div>
                       </Button>
@@ -178,13 +187,15 @@ export const WalletPageTemplate: React.FC<Props> = ({
                 </header>
                 <div className="items-end justify-between flex">
                   <div className="items-center justify-between md:flex max-w-full grow min-w-0">
-                    <div className="lg:flex items-end">
+                    <div className="lg:flex items-end max-w-full">
                       <div>
                         <div className="leading-none text-base uppercase mb-4" data-qa-selector="wallet-name">
-                          <div className="flex items-center overflow-hidden whitespace-nowrap overflow-ellipsis">
+                          <div className="flex items-center">
                             {role && <WalletRole small className="mr-1" role={role} />}
                             {" "}
-                            {showNameInBox ? wallet?.name : "Balance"}
+                            <span className="overflow-hidden whitespace-nowrap overflow-ellipsis">
+                              {showNameInBox ? wallet?.name : "Balance"}
+                            </span>
                           </div>
                         </div>
                         <div className="whitespace-nowrap text-xl font-bold md:text-3xl mr-1">

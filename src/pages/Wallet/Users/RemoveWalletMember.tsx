@@ -21,9 +21,12 @@ const RemoveWalletMember: React.FC<Props> = ({ submit, cancel, email }) => (
   >
     <Modal.Body>
       <h2 className="text-xl font-bold mb-5">Are you sure?</h2>
+      <p className="mb-3">
+        The user might be able to retain the user key. They can’t use it on RINO anymore, but the security of this wallet can be considered weakened. For maximum safety, we suggest you create a new wallet and move all funds there.
+      </p>
       <p>
         Please confirm removing this user:
-        {" "}
+        <br />
         <span className="font-bold">{email}</span>
       </p>
     </Modal.Body>

@@ -4,8 +4,8 @@ import { Button, Icon, Label } from "../../../../../components";
 import { CountDown } from "../CountDown";
 import { TimeOutModal as showTimeOutModal } from "../TimeOutModal";
 import { ExchangeDetails } from "../ExchangeDetails";
-import { ExchangeOrder } from "../../../../../types";
-import { piconeroToMonero, satoshiToBTC } from "../../../../../utils";
+import { ExchangeCurrencies, ExchangeOrder } from "../../../../../types";
+import { piconeroToMonero, convertAtomicAmount } from "../../../../../utils";
 
 interface Props {
   setActiveTab: (value: number) => void;
@@ -45,7 +45,7 @@ const ExchangeConfirmation: React.FC<Props> = ({ setActiveTab, onEdit, order }) 
               <div data-qa-selector="amount-you-get">
                 <div className="text-sm uppercase mb-1">amount you get</div>
                 <div className="text-2xl font-bold">
-                  {satoshiToBTC(order?.outgoingAmount || 0)}
+                  {convertAtomicAmount(order?.outgoingAmount || 0, order?.outgoingCurrency as ExchangeCurrencies)}
                   {" "}
                   {order?.outgoingCurrency.toUpperCase()}
                 </div>
@@ -54,7 +54,7 @@ const ExchangeConfirmation: React.FC<Props> = ({ setActiveTab, onEdit, order }) 
           </Label>
         </div>
         <ExchangeDetails
-          rate={new Decimal(satoshiToBTC(order?.outgoingAmount as number)).div(new Decimal(piconeroToMonero(order?.paymentAmount as number))).toNumber()}
+          rate={new Decimal(convertAtomicAmount(order?.outgoingAmount as number, order?.outgoingCurrency as ExchangeCurrencies)).div(new Decimal(piconeroToMonero(order?.paymentAmount as number))).toNumber()}
           currency={order?.outgoingCurrency || ""}
           destinationAddress={order?.outgoingAddress || ""}
           exchangeID={order?.platformOrderId || ""}

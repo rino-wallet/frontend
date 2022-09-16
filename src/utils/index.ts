@@ -17,7 +17,7 @@ import {
 } from "./keypairs";
 import { checkAccessLevel } from "./checkAccessLevel";
 import { setCookie } from "./setCookie";
-import { satoshiToBTC } from "./satoshiToBTC";
+import { convertAtomicAmount } from "./convertAtomicAmount";
 import { btcToSatoshi } from "./btcToSatoshi";
 import { isMobile } from "./isMobile";
 
@@ -46,7 +46,7 @@ export {
   IdleTimer,
   checkAccessLevel,
   setCookie,
-  satoshiToBTC,
+  convertAtomicAmount,
   btcToSatoshi,
   isMobile,
 };

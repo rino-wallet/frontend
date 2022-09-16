@@ -32,6 +32,7 @@ interface WalletMember {
   encryptedKeys: string;
   createdAt: string;
   updatedAt: string
+  deletedAt?: string;
 }
 
 interface TransactionDestination {
@@ -67,6 +68,9 @@ export interface SignUpPayload {
   username: string;
   password: string;
   password_confirmation: string;
+  company_name?: string;
+  company_website?: string;
+  account_type?: string;
 }
 
 export interface SignUpResponse {
@@ -129,10 +133,10 @@ export type CreateWalletResponse = {
 
 // Finalize wallet api interface
 export interface FinalizeWalletPayload {
-  address: string;
   user_multisig_xinfo: string;
   backup_multisig_xinfo: string;
-  encrypted_keys: string;
+  user_multisig_final: string;
+  backup_multisig_final: string;
 }
 
 export interface FinalizeWalletResponse {
@@ -143,6 +147,14 @@ export interface FinalizeWalletResponse {
 export interface UserResponse {
   id: string;
   email: string;
+  accountType: string;
+  companyName: string;
+  companyWebsite: string;
+  extraFeatures: {
+    exchange: boolean;
+    publicWallet: boolean;
+    viewOnlyShare: boolean;
+  };
   is2FaEnabled: boolean;
   isKeypairSet: boolean;
   name: string;
@@ -274,7 +286,7 @@ export interface SyncMultisigResponse {
 }
 
 export interface PersistWalletPayload {
-  id: string;
+  encrypted_keys: string;
 }
 
 export interface RequestWalletSharePayload {
@@ -307,6 +319,14 @@ export interface ShareWalletResponse {
 export interface RemoveWalletAccessPayload {
   walletId: string;
   userId: string;
+}
+
+export interface FetchRemovedUsersThunkPayload {
+  walletId: string;
+}
+
+export interface FetchRemovedUsersResponse extends ListResponse {
+  results: WalletMember[];
 }
 
 export type RemoveWalletAccessResponse = void;

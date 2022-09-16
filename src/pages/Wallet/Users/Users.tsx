@@ -22,7 +22,7 @@ import AddWalletShareRequestModal from "./AddWalletShareRequest";
 import removeWalletMember from "./RemoveWalletMember";
 import routes from "../../../router/routes";
 import { accessLevels } from "../../../constants";
-import WalletMemberModal from "./WalletMember";
+import WalletMemberModal from "./WalletMemberModal";
 
 interface AccessLevelInt {
   isAdmin: () => boolean;
@@ -49,6 +49,7 @@ interface ListMetadata {
 }
 
 interface Props {
+  revokedUsers: WalletMember[];
   wallet: Wallet;
   user: User;
   accessLevel: AccessLevelInt;
@@ -64,7 +65,7 @@ interface Props {
 }
 
 const Users: React.FC<Props> = ({
-  accessLevel, wallet, user, shareWallet, walletShareRequests, shareRequestListMetaData, requestWalletShare, fetchWalletShareRequests, finalizeShareId = null, removeWalletAccess, refresh, loading,
+  revokedUsers, accessLevel, wallet, user, shareWallet, walletShareRequests, shareRequestListMetaData, requestWalletShare, fetchWalletShareRequests, finalizeShareId = null, removeWalletAccess, refresh, loading,
 }) => {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
@@ -154,16 +155,18 @@ const Users: React.FC<Props> = ({
             )
           }
           {
-            wallet?.members.map((member, index) => (
-              <div key={member.id} className={index % 2 !== 0 ? "theme-bg-panel-second bg-opacity-50" : ""}>
+            [...wallet.members, ...revokedUsers].map((member, index) => (
+              <div key={member.user} className={index % 2 !== 0 ? "theme-bg-panel-second bg-opacity-50" : ""}>
                 <WalletMemberLayout
                   role={(
                     <div className="flex items-center">
                       <WalletRole role={member.accessLevel} />
                       {" "}
                       {member.user === user.email && <span className="theme-text ml-1">(you)</span>}
+                      {!!member.deletedAt && <span className="theme-text ml-1">(revoked)</span>}
                     </div>
                   )}
+                  revoked={!!member.deletedAt}
                   email={member.user}
                   action={(
                     <div>

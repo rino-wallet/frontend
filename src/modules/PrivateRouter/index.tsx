@@ -1,12 +1,14 @@
 import React from "react";
 import { Helmet } from "react-helmet";
-import { Route, Navigate, Routes } from "react-router-dom";
+import {
+  Route, Navigate, Routes,
+} from "react-router-dom";
 import ROUTER_CONFIG from "../../router";
 import { LayoutContainer as Layout } from "../Layout";
 import { browserFeatures } from "../../constants";
 import { wasmSupported } from "../../utils";
 import NotFound from "../../pages/NotFound";
-import UnsupportedBrowser from "../../pages/UnsupportedBrowser";
+import { UnsupportedBrowser } from "../../pages/UnsupportedBrowser";
 import ROUTES from "../../router/routes";
 
 const featuresMap = {
@@ -18,6 +20,10 @@ interface Props {
 }
 
 function PrivateRouter({ isAuthenticated }: Props): React.ReactElement {
+  // const navigate = useNavigate();
+  // useEffect(() => {
+  //   navigate(ROUTES.maintenance);
+  // }, []);
   return (
     <Routes>
       {ROUTER_CONFIG.map((route) => {

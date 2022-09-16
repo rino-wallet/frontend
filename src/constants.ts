@@ -34,6 +34,12 @@ export const orderStatuses = {
   FAILED: "Failed",
 };
 
+export const accountType = {
+  CONSUMER: "consumer",
+  ENTERPRISE: "enterprise",
+  PROSUMER: "prosumer",
+};
+
 export const transactionPriorities = {
   Unimportant: "UNIMPORTANT",
   Normal: "NORMAL",
@@ -69,9 +75,30 @@ export const PUBLIC_APP_URLS_MAP = {
   develop: "https://labradoodle.dev.rino.io",
 };
 
+export const PUBLIC_ENTERPRISE_APP_URLS_MAP = {
+  production: "https://enterprise.rino.io",
+  test: "https://enterprisedoodle.test.rino.io",
+  staging: "https://enterprisedoodle.staging.rino.io",
+  develop: "https://enterprisedoodle.dev.rino.io",
+};
+
 export const APP_URLS_MAP = {
   production: "https://app.rino.io",
   test: "https://app.test.rino.io",
   staging: "https://appradoodle.staging.rino.io",
   develop: "https://proxy.dev.rino.io",
+};
+
+export const conversionMapping = {
+  btc: "1e8",
+  xmr: "1e12",
+  eth: "1e18",
+  sol: "1e9",
+  ada: "1e6",
+  usdt: "1",
+  usdc: "1e6",
+  bnb: "1e18",
+  xrp: "1e6",
+  doge: "1e8",
+  dot: "1e10",
 };

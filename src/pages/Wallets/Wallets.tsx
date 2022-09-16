@@ -6,6 +6,7 @@ import {
   FetchWalletListThunkPayload, FetchWalletsResponse, Wallet, User, AccessLevel,
 } from "../../types";
 import routes from "../../router/routes";
+import { useAccountType } from "../../hooks";
 
 interface Props {
   wallets: Wallet[];
@@ -20,6 +21,8 @@ interface Props {
 const WalletsPage: React.FC<Props> = ({
   wallets, loading, pages, hasPreviousPage, hasNextPage, fetchWallets, user,
 }) => {
+  const { isEnterprise } = useAccountType();
+  const links = isEnterprise ? routes.static.enterprise : routes.static.consumer;
   const [page, setPage] = useState<number>(1);
   useEffect(() => {
     function fetchList(): void {
@@ -77,7 +80,7 @@ const WalletsPage: React.FC<Props> = ({
               <div>
                 You don&apos;t have any wallets yet. You need to create one - click on the button above, or see
                 {" "}
-                <a className="theme-link" href={`${routes.faq}#getting_started_full`}>here</a>
+                <a className="theme-link" href={`${links.faq}#getting_started_full`}>here</a>
                 {" "}
                 for instructions.
               </div>

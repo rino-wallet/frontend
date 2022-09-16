@@ -10,15 +10,19 @@ import {
   GetExchangeEstimationResponse,
   GetExchangeOrderResponse,
   Wallet,
+  CurrenciesList,
+  GetExchangeRangeResponse,
+  UseThunkActionCreator,
+  ExchangeCurrencies,
 } from "../../../../types";
 import {
-  DisableAutofill, Label, Input, AmountField, Button, Tooltip, Icon, Spinner,
+  DisableAutofill, Label, Input, AmountField, Button, Tooltip, Icon, Spinner, Select,
 } from "../../../../components";
 import { FormErrors } from "../../../../modules/FormErrors";
 import routes from "../../../../router/routes";
 import { ReactComponent as ChangeNowLogo } from "./change-now.svg";
 import {
-  btcToSatoshi, moneroToPiconero, piconeroToMonero, satoshiToBTC,
+  btcToSatoshi, moneroToPiconero, piconeroToMonero, convertAtomicAmount,
 } from "../../../../utils";
 import ExchangeConfirmation from "./ExchangeConfirmation";
 import ExchangePayment from "./ExchangePayment";
@@ -62,15 +66,21 @@ interface Props {
   exchangeRange: ExchangeRange;
   exchangeEstimation: ExchangeEstimation;
   pendingGetExchangeEstimation: boolean;
+  currencies: CurrenciesList;
   activeTab: number;
   getExchangeEstimation: (data: GetExchangeEstimationPayload) => Promise<GetExchangeEstimationResponse>,
   createExchangeOrder: (data: CreateExchangeOrderPayload) => Promise<GetExchangeOrderResponse>,
   setActiveTab: (value: number) => void;
+  getExchangeRange: (data: {
+    platform: string;
+    to_currency: string;
+  }) => UseThunkActionCreator<GetExchangeRangeResponse>
 }
 
 interface RetreiveEstimation {
-  amount: number,
-  amount_set_in: "from" | "to",
+  amount: number;
+  amount_set_in: "from" | "to";
+  currency: string;
   callback?: (data: GetExchangeEstimationResponse) => void;
 }
 
@@ -80,36 +90,48 @@ const ExchangeForm: React.FC<Props> = ({
   walletId,
   exchangeRange,
   exchangeEstimation,
+  currencies,
   activeTab,
-  // eslint-disable-next-line
   pendingGetExchangeEstimation,
   getExchangeEstimation,
   setActiveTab,
   createExchangeOrder,
+  getExchangeRange,
 }) => {
+  const [firstTimeLoading, setFirstTimeLoading] = useState(true);
   const [rate, setRate] = useState("");
   const navigate = useNavigate();
-  const currency = "btc";
+  const defaultCurrency = "btc";
+  const isExchangeAvailable = !!rate;
+  useEffect(() => {
+    setTimeout(() => {
+      if (firstTimeLoading && !pendingGetExchangeEstimation) {
+        setFirstTimeLoading(false);
+      }
+    }, 500);
+  }, [pendingGetExchangeEstimation]);
   useEffect(() => {
     if (activeTab === 0) {
+      getExchangeRange({ platform: "changenow", to_currency: defaultCurrency });
       getExchangeEstimation({
         platform: "changenow",
-        to_currency: currency,
+        to_currency: defaultCurrency,
         amount_set_in: "from",
         amount: moneroToPiconero(1),
       }).then((resp) => {
-        setRate(satoshiToBTC(resp.toAmount));
+        setRate(convertAtomicAmount(resp.toAmount, defaultCurrency));
       });
     }
   }, [activeTab]);
   async function retreiveEstimation({
     amount,
     amount_set_in,
+    currency,
     callback,
   }: RetreiveEstimation): Promise<void> {
     const resp = await getExchangeEstimation({
       platform: "changenow",
-      to_currency: currency,
+      to_currency: currency.toLowerCase(),
       amount_set_in,
       amount: amount_set_in === "from" ? moneroToPiconero(amount) : btcToSatoshi(amount),
     });
@@ -125,12 +147,13 @@ const ExchangeForm: React.FC<Props> = ({
         amount_to_send: "",
         amount_to_receive: "",
         address: "",
+        currency: defaultCurrency,
       }}
       validationSchema={validationSchema({ ...exchangeRange, balance: parseFloat(piconeroToMonero(wallet ? wallet.unlockedBalance : "0")) })}
       onSubmit={async (values, { setErrors }): Promise<void> => {
         try {
           await createExchangeOrder({
-            to_currency: currency,
+            to_currency: values.currency.toLocaleLowerCase(),
             platform: "changenow",
             wallet: walletId,
             amount_set_in: values.amount_set_in as "from" | "to",
@@ -167,27 +190,42 @@ const ExchangeForm: React.FC<Props> = ({
                 <DisableAutofill />
                 <div className="m-auto md:w-3/4">
                   <div className="mb-4 md:mb-0" data-qa-selector="platform">
-                    <Label labelClassName="md:text-right" label="Exchange platform" inline>
-                      <ChangeNowLogo data-qa-selector="changeNowLogo" style={{ width: "110px" }} />
+                    <Label labelClassName="md:text-right" label="Exchange platform" inline isFormField>
+                      <div className="flex items-center space-x-3 h-8 mt-3">
+                        {firstTimeLoading ? <span><Spinner /></span> : (
+                          isExchangeAvailable ? <Icon name="check" className="theme-text-success" /> : <Icon name="cross" className="theme-text-error" />
+                        )}
+                        <ChangeNowLogo data-qa-selector="changeNowLogo" style={{ width: "110px" }} />
+                      </div>
+                      {
+                        (!isExchangeAvailable && !firstTimeLoading) && (
+                        <div className="theme-text-error">
+                          Exchange platform is not available at the moment.
+                          Please try again later.
+                        </div>
+                        )
+                      }
                     </Label>
                   </div>
                   <div className="mb-4 md:mb-0">
                     <Label labelClassName="md:text-right" label="You Send" isFormField inline>
                       <AmountField
-                        postfix="XMR"
+                        postfix={<div className="pr-6">XMR</div>}
                         name="amount_to_send"
                         value={values.amount_to_send}
                         onChange={(e): void => {
                           retreiveEstimation({
                             amount: parseFloat(e.target.value),
                             amount_set_in: "from",
+                            currency: values.currency,
                             callback: (est: GetExchangeEstimationResponse) => {
-                              setFieldValue("amount_to_receive", e.target.value ? satoshiToBTC(est.toAmount) : 0);
+                              setFieldValue("amount_to_receive", e.target.value ? convertAtomicAmount(est.toAmount, values.currency as ExchangeCurrencies) : 0);
                               setFieldValue("amount_set_in", "from");
                             },
                           });
                           return handleChange(e);
                         }}
+                        disabled={firstTimeLoading || !isExchangeAvailable}
                         onBlur={handleBlur}
                         placeholder="XMR Amount"
                         error={touched.amount_to_send ? errors.amount_to_send || "" : ""}
@@ -202,14 +240,37 @@ const ExchangeForm: React.FC<Props> = ({
                   <div className="mb-4 md:mb-0">
                     <Label labelClassName="md:text-right" label="You Get" isFormField inline>
                       <AmountField
-                        postfix="BTC"
+                        postfix={(
+                          <Select
+                            name="currency"
+                            value={values.currency}
+                            onChange={(e) => {
+                              getExchangeEstimation({
+                                platform: "changenow",
+                                to_currency: e.target.value.toLowerCase(),
+                                amount_set_in: "from",
+                                amount: moneroToPiconero(1),
+                              })
+                                .then((resp) => {
+                                  setRate(convertAtomicAmount(resp.toAmount, e.target.value.toLowerCase() as ExchangeCurrencies));
+                                });
+                              getExchangeRange({ platform: "changenow", to_currency: e.target.value.toLowerCase() });
+                              return handleChange(e);
+                            }}
+                            embeded
+                          >
+                            {currencies.map((c) => <option value={c[0]}>{c[0].toUpperCase()}</option>)}
+                          </Select>
+                        )}
                         name="amount_to_receive"
                         value={values.amount_to_receive}
+                        disabled={firstTimeLoading || !isExchangeAvailable}
                         onChange={(e): void => {
                           setTouched({ amount_to_send: true });
                           retreiveEstimation({
                             amount: parseFloat(e.target.value),
                             amount_set_in: "to",
+                            currency: values.currency,
                             callback: (est: GetExchangeEstimationResponse) => {
                               setFieldValue("amount_to_send", e.target.value ? piconeroToMonero(est.fromAmount) : 0);
                               setFieldValue("amount_set_in", "to");
@@ -218,7 +279,7 @@ const ExchangeForm: React.FC<Props> = ({
                           return handleChange(e);
                         }}
                         onBlur={handleBlur}
-                        placeholder={`${currency.toUpperCase()} Amount`}
+                        placeholder={`${values.currency.toUpperCase()} Amount`}
                         error={touched.amount_to_receive ? errors.amount_to_receive || "" : ""}
                       />
                     </Label>
@@ -233,6 +294,7 @@ const ExchangeForm: React.FC<Props> = ({
                         onChange={handleChange}
                         onBlur={handleBlur}
                         placeholder="Destination Address"
+                        disabled={firstTimeLoading || !isExchangeAvailable}
                         error={touched.address ? errors.address || "" : ""}
                       />
                     </Label>
@@ -261,35 +323,43 @@ const ExchangeForm: React.FC<Props> = ({
                     >
                       <div className="mt-1">
                         {
-                          rate ? (
-                            <span>
-                              1 XMR ≈
-                              {" "}
-                              <span className="text-green-400" data-qa-selector="xmr-to-btc">{rate}</span>
-                              {" "}
-                              {currency.toUpperCase()}
-                            </span>
-                          ) : <span><Spinner /></span>
+                          firstTimeLoading ? <span><Spinner /></span> : (
+                            rate ? (
+                              <span>
+                                1 XMR ≈
+                                {" "}
+                                <span className="text-green-400 inline-flex" data-qa-selector="xmr-to-btc">{rate}</span>
+                                {" "}
+                                {values.currency.toUpperCase()}
+                              </span>
+                            ) : null
+                          )
                         }
                       </div>
                     </Label>
                   </div>
                   <div className="mb-4 md:mb-0" data-qa-selectort="operation-limit">
                     <Label labelClassName="md:text-right" label="Operation Limit" inline>
-                      <div>
-                        from
-                        {" "}
-                        {piconeroToMonero(exchangeRange.minAmount)}
-                        {" "}
-                        XMR to
-                        {" "}
-                        {piconeroToMonero(exchangeRange.maxAmount)}
-                        {" "}
-                        XMR
-                      </div>
+                      {
+                        firstTimeLoading ? <span><Spinner /></span> : (
+                          rate ? (
+                            <div>
+                              from
+                              {" "}
+                              {piconeroToMonero(exchangeRange.minAmount)}
+                              {" "}
+                              XMR to
+                              {" "}
+                              {piconeroToMonero(exchangeRange.maxAmount)}
+                              {" "}
+                              XMR
+                            </div>
+                          ) : null
+                        )
+                      }
                     </Label>
                   </div>
-                  <FormErrors errors={errors} fields={["refund_address"]} />
+                  <FormErrors errors={errors} fields={["refund_address", "rate_id"]} />
                   <div className="mt-10 flex space-x-3 flex justify-end">
                     <Button
                       variant={Button.variant.GRAY}
@@ -305,7 +375,7 @@ const ExchangeForm: React.FC<Props> = ({
                       name="submit-btn"
                       variant={Button.variant.PRIMARY_LIGHT}
                       size={Button.size.BIG}
-                      disabled={!isValid || !parseFloat(wallet?.unlockedBalance || "0")}
+                      disabled={!isValid || !parseFloat(wallet?.unlockedBalance || "0") || isSubmitting}
                       loading={isSubmitting}
                     >
                       Proceed

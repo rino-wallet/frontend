@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { format } from "date-fns";
-import { LocalWalletData, NewWalletPDFData } from "../../types";
+import { LocalWalletData, NewWalletPDFData, PersistWalletThunkPayload } from "../../types";
 import SecurityTab from "./SecurityTab";
 import WalletNameTab from "./WalletNameTab";
 import { PageTemplate } from "../../modules/index";
@@ -9,7 +9,7 @@ import routes from "../../router/routes";
 
 interface Props {
   createMultisigWallet: (data: { name: string }) => Promise<{ userWallet: LocalWalletData; backupWallet: LocalWalletData; walletId: string; walletPassword: string }>;
-  persistWallet: (data: { id: string }) => Promise<void>;
+  persistWallet: (data: PersistWalletThunkPayload) => Promise<void>;
   isKeypairSet: boolean;
   stage: string;
   username: string;

@@ -1,5 +1,7 @@
 import { store } from "../store";
-import { UserKeyPairInfo, KeyPairJsonWrapper, AccessLevel } from "./shared";
+import {
+  UserKeyPairInfo, KeyPairJsonWrapper, AccessLevel, ExchangeCurrencies,
+} from "./shared";
 import { SignUpPayload } from "./api";
 
 export type RootState = ReturnType<typeof store.getState>;
@@ -17,9 +19,10 @@ export interface WalletMember {
   encryptedKeys: string;
   createdAt: string;
   updatedAt: string;
+  deletedAt?: string;
 }
 
-export type Wallet = {
+export interface Wallet {
   id: string;
   name: string;
   maxAmount: number;
@@ -36,7 +39,7 @@ export type Wallet = {
   requires2Fa: boolean;
   isPublic: boolean;
   publicSlug: string;
-};
+}
 
 export interface PublicWallet {
   address: string;
@@ -50,7 +53,7 @@ export interface PublicWallet {
   requires2Fa: boolean;
 }
 
-export type PendingTransaction = {
+export interface PendingTransaction {
   address: string;
   amount: string;
   fee?: number;
@@ -58,9 +61,9 @@ export type PendingTransaction = {
   memo?: string;
   priority?: string;
   orderId?: string;
-};
+}
 
-export type LocalWalletData = {
+export interface LocalWalletData {
   offlineMode: boolean;
   daemonHeight: number | null;
   syncHeight: number | null;
@@ -70,11 +73,23 @@ export type LocalWalletData = {
   base64Key: string;
   balance: string;
   multisigSeed: string,
-};
+}
 
-export type User = {
+export interface ExtraFeatures {
+  exchange: boolean;
+  publicWallet: boolean;
+  viewOnlyShare: boolean;
+}
+
+export type AccountType = "consumer" | "enterprise";
+
+export interface User {
   id: string;
   email: string;
+  accountType: string;
+  companyName: string;
+  companyWebsite: string;
+  extraFeatures: ExtraFeatures;
   is2FaEnabled: boolean;
   isKeypairSet: boolean;
   name: string;
@@ -83,7 +98,7 @@ export type User = {
   signingPublicKey: string;
   encPrivateKey: KeyPairJsonWrapper;
   txNotifications: boolean;
-};
+}
 
 export interface TransactionDestination {
   index: number;
@@ -106,6 +121,10 @@ export interface Transaction {
   memo: string;
   txToSelf: boolean;
   order?: ExchangeOrder;
+}
+
+export interface PersistWalletThunkPayload {
+  id: string;
 }
 
 export interface FetchWalletTransactionsThunkPayload {
@@ -211,7 +230,7 @@ export interface ExchangeOrder {
   refundAddress: string;
   paidAt: string;
   acknowledgedAt: string;
-  outgoingCurrency: string;
+  outgoingCurrency: ExchangeCurrencies;
   outgoingAmount: number;
   outgoingAddress: string;
   outgoingTxid: string;

@@ -59,7 +59,7 @@ export const Input = React.forwardRef<HTMLInputElement, Props>((props, ref) => {
         />
         {
           !!postfix && (
-            <span className="absolute right-5 top-1/2 -translate-y-1/2">{postfix}</span>
+            <span className="absolute right-0 top-1/2 -translate-y-1/2">{postfix}</span>
           )
         }
       </div>

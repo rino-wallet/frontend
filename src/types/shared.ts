@@ -10,6 +10,8 @@ export type WalletTx = {
   getTxSet: () => WalletTxSet;
 };
 
+export type CurrenciesList = [string, string][];
+
 export type WalletRaw = {
   isConnected: () => boolean;
   getBalance: (a: number, b: number) => Promise<number>;
@@ -20,12 +22,12 @@ export type WalletRaw = {
   isMultisig: () => boolean;
   getAddress: (a: number, b: number) => Promise<string>;
   prepareMultisig: () => Promise<string>;
-  makeMultisig: (peerMultisigHexes: string[], numberOfParticipants: number, walletPassword: string) => Promise<{ getMultisigHex: () => string }>;
+  makeMultisig: (peerMultisigHexes: string[], numberOfParticipants: number, walletPassword: string) => Promise<string>;
   exchangeMultisigKeys: (multisigHexes: string[], walletPassword: string) => Promise<ExchangeMultisigKeysResult>;
   close: () => Promise<any>;
   getData: () => Promise<Array<Uint8Array>>;
   importOutputs: (outputsHex: string) => Promise<any>;
-  getMultisigHex: () => Promise<string>;
+  exportMultisigHex: () => Promise<string>;
   importMultisigHex: (multisigHexes: string[]) => Promise<number>;
   getOutputs: (query: Record<string, number | string>) => Promise<number[]>;
   reconstructValidateTx: (txHex: string, config: TransactionConfig) => Promise<WalletTx[]>;
@@ -36,7 +38,8 @@ export type WalletRaw = {
 
 export type ExchangeMultisigKeysResult = {
   state: {
-    address: string;
+    address?: string;
+    multisigHex: string;
   };
 };
 
@@ -65,6 +68,9 @@ export type TransactionConfig = {
   amount?: string,
   fee?: number
 };
+
+export type ExchangeCurrencies = "xmr" | "btc" | "eth" | "sol" | "ada" | "usdt" | "usdc" | "bnb" | "xrp" | "doge" | "dot";
+
 export interface NewWalletPDFData {
   userWalletSeed: string;
   backupWalletSeed: string;

@@ -1,13 +1,21 @@
 {
   "email": "test@test.com",
-  "id": 1,
   "username": "test",
   "is_2fa_enabled": false,
   "is_keypair_set": true,
+  "tx_notifications": true,
   "name": " ",
+  "company_name": "",
+  "company_website": "",
   "keypair": {
-    "encryption_public_key": "lnO4hk1o1BOdD8+4xEYFcQzOjjo4TFAGkLKKN3lrpV8=",
-    "signing_public_key": "hXD6qQqn2zlgJAZycGmAvu6937VObe9uF1Lebppiijk=",
-    "enc_private_key": "{\"version\":1,\"method\":\"symmetric\",\"enc_content\":\"22pqKVd8KTJO61dAIxoUpaw7FUp/ncujLehOB9EadYU3KMsR1PF+gqFCnqngZP6nBfCGC/fSi2zf3ZUsrsI+YKuFzvoCp/pFj22q/ljpni7sCetuDewdBGdMc3yiC4E31CHHDE7e3GQ/BgfRxBeAqcW8\",\"nonce\":\"fRsU5DWPmY/6lHF6/mW1S1rJnATCVDsm\"}"
+    "encryption_public_key": "hH+UbKsYCoh0O1DnI5Fz/gkAN6CSqnQJ4IFQDMpg/go=",
+    "signing_public_key": "sn4M4mTBjBf/zn6E47yzAsOwKBRcvHNpIvwrqZGniBA=",
+    "enc_private_key": "{\"version\":1,\"method\":\"symmetric\",\"enc_content\":\"BjP5DK/OAJXBgfowq4eNzE6wFfb/VEGI3Yzu0IpaOKtTi0vZ5UgXLtDy2FpRDXGJ6zfrw5MqukXklu+gORYQeL50vGYQS5gzctRVQjBNjxyPBArYC+GPoZB+hXmjc6hEmsjX/1pWT85Gubt9jnASGkqn\",\"nonce\":\"UTTZ1bGORA4v6EjEjobmEXzMMnh2SgHS\"}"
+  },
+  "account_type": "consumer",
+  "extra_features": {
+    "exchange": true,
+    "public_wallet": true,
+    "view_only_share": false
   }
 }

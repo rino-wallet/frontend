@@ -8,6 +8,7 @@ import {
   GetExchangeRangeResponse,
   RootState,
   GetExchangeEstimationPayload,
+  CurrenciesList,
 } from "../types";
 import exchangeApi from "../api/exchange";
 
@@ -19,6 +20,19 @@ export const getExchangeRange = createAsyncThunk<GetExchangeRangeResponse, { pla
     try {
       const response = await exchangeApi.getExchangeRange(data);
       dispatch(setRange(response));
+      return response;
+    } catch (err: any) {
+      return rejectWithValue(err?.data);
+    }
+  },
+);
+
+export const getExchangeCurrencies = createAsyncThunk<any>(
+  `${SLICE_NAME}/getExchangeCurrencies`,
+  async (data, { rejectWithValue, dispatch }) => {
+    try {
+      const response = await exchangeApi.getExchangeCurrencies();
+      dispatch(setCurrencies(response.filter((c: [string, string]) => c[0] !== "xmr")));
       return response;
     } catch (err: any) {
       return rejectWithValue(err?.data);
@@ -66,6 +80,7 @@ export const createExchangeOrder = createAsyncThunk<GetExchangeOrderResponse, Cr
 );
 
 export interface State {
+  currencies: CurrenciesList;
   range: {
     minAmount?: number;
     maxAmount?: number;
@@ -82,6 +97,7 @@ export interface State {
 }
 
 export const initialState: State = {
+  currencies: [],
   range: {},
   estimation: {},
   order: undefined,
@@ -102,6 +118,9 @@ export const exchangeSlice = createSlice({
     setOrderData(state, action: PayloadAction<ExchangeOrder>): void {
       state.order = action.payload;
     },
+    setCurrencies(state, action: PayloadAction<CurrenciesList>): void {
+      state.currencies = action.payload;
+    },
     reset(state): void {
       state.range = {};
       state.estimation = {};
@@ -120,6 +139,7 @@ export const selectors = {
   getExchangeRange: (state: RootState): { minAmount: number, maxAmount: number } => state[SLICE_NAME].range,
   getExchangeEstimation: (state: RootState): { fromAmount: number, toAmount: number, rateId: string, validUntil: string } => state[SLICE_NAME].estimation,
   getExchangeOrder: (state: RootState): ExchangeOrder => state[SLICE_NAME].order,
+  getCurrencies: (state: RootState): CurrenciesList => state[SLICE_NAME].currencies,
   // thunk statuses
   pendingGetExchangeRange: createLoadingSelector(SLICE_NAME, getExchangeRange.pending.toString()),
   pendingGetExchangeEstimation: createLoadingSelector(SLICE_NAME, getExchangeEstimation.pending.toString()),
@@ -130,5 +150,6 @@ export const {
   setRange,
   setEstimation,
   setOrderData,
+  setCurrencies,
   reset,
 } = exchangeSlice.actions;

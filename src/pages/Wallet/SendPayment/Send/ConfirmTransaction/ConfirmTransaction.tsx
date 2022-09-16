@@ -117,7 +117,7 @@ const ConfirmTransaction: React.FC<Props> = ({
         errors,
       }): React.ReactElement => (
         <form className="m-auto md:w-3/4" name="form-sendPayment" onSubmit={handleSubmit}>
-          {!inProgress && !isSubmitting && <Navigate to={`${generatePath(routes.wallet, { id: walletId })}/transactions`} />}
+          {!inProgress && !isSubmitting && !Object.values(errors).length && <Navigate to={`${generatePath(routes.wallet, { id: walletId })}/transactions`} />}
           <Prompt
             when={isSubmitting}
             title="Transaction creation in progress."

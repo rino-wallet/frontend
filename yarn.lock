@@ -1400,14 +1400,14 @@
     redux-thunk "^2.4.1"
     reselect "^4.1.5"
 
-"@rino-wallet/monero-javascript@0.0.30":
-  version "0.0.30"
-  resolved "https://registry.yarnpkg.com/@rino-wallet/monero-javascript/-/monero-javascript-0.0.30.tgz#b5352926765608b5fd441ebb49eb5bbc2a31055c"
-  integrity sha512-hqV98u54UZcvmGg9Kw6x56wrbvOfDHY2tr65PIjVOBgRvwxnGgwapF82F78dJ1lpBEdhO0vcydzb/rme/Ns6Bw==
+"@rino-wallet/monero-javascript@0.0.31":
+  version "0.0.31"
+  resolved "https://registry.yarnpkg.com/@rino-wallet/monero-javascript/-/monero-javascript-0.0.31.tgz#5556bb2fb8ae85d0a8421a3e0c2e039c0084f004"
+  integrity sha512-PBE2QJZT5BOJoCiBvK//g1V03D0yvgzV5AP6ofhu3NhwnNglnkc/zN26t7e9b2FZZTSREKDOlIgjIIArQBGK0g==
   dependencies:
     "@babel/core" "^7.14.6"
     ajv "^6.12.6"
-    async "2.6.1"
+    async "2.6.4"
     crypto-js "^4.0.0"
     html5-fs "0.1.1"
     net "^1.0.2"
@@ -1417,7 +1417,6 @@
     serialize-javascript "^3.1.0"
     text-encoding "^0.7.0"
     tls "0.0.1"
-    uuid "3.3.2"
     web-worker "^1.0.0"
 
 "@rollup/plugin-babel@^5.2.0":
@@ -2668,12 +2667,12 @@ async@0.9.x:
   resolved "https://registry.yarnpkg.com/async/-/async-0.9.2.tgz#aea74d5e61c1f899613bf64bda66d4c78f2fd17d"
   integrity sha1-rqdNXmHB+JlhO/ZL2mbUx48v0X0=
 
-async@2.6.1:
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/async/-/async-2.6.1.tgz#b245a23ca71930044ec53fa46aa00a3e87c6a610"
-  integrity sha512-fNEiL2+AZt6AlAw/29Cr0UDe4sRAHCpEHh54WMz+Bb7QfNcFw4h3loofyJpLeQs4Yx7yuqu/2dLgM5hKOs6HlQ==
+async@2.6.4:
+  version "2.6.4"
+  resolved "https://registry.yarnpkg.com/async/-/async-2.6.4.tgz#706b7ff6084664cd7eae713f6f965433b5504221"
+  integrity sha512-mzo5dfJYwAn29PeiJ0zvwTo04zj8HDJj0Mn8TD7sno7q12prdbnasKJHhkm2c1LgrhlJ0teaea8860oxi51mGA==
   dependencies:
-    lodash "^4.17.10"
+    lodash "^4.17.14"
 
 async@^2.6.2:
   version "2.6.3"
@@ -6670,7 +6669,7 @@ lodash.uniq@^4.5.0:
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
   integrity sha1-0CJTc662Uq3BvILklFM5qEJ1R3M=
 
-lodash@^4.17.10, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.20, lodash@^4.17.21, lodash@^4.7.0:
+lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.20, lodash@^4.17.21, lodash@^4.7.0:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
@@ -9691,11 +9690,6 @@ utrie@^1.0.2:
   integrity sha512-1MLa5ouZiOmQzUbjbu9VmjLzn1QLXBhwpUa7kdLUQK+KQ5KA9I1vk5U4YHe/X2Ch7PYnJfWuWT+VbuxbGwljhw==
   dependencies:
     base64-arraybuffer "^1.0.2"
-
-uuid@3.3.2:
-  version "3.3.2"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
-  integrity sha512-yXJmeNaw3DnnKAOKJE51sL/ZaYfWJRl1pK9dr19YFCu0ObS231AB1/LbqTKRAQ5kw8A90rA6fr4riOUpTZvQZA==
 
 uuid@^3.3.2:
   version "3.4.0"

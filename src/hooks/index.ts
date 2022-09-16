@@ -7,6 +7,7 @@ import { useIsMobile } from "./useIsMobile";
 import { useQuery } from "./useQuery";
 import { usePrompt } from "./usePrompt";
 import { useSortErrors } from "./useSortErrors";
+import { useAccountType } from "./useAccountType";
 
 export {
   useSelector,
@@ -18,4 +19,5 @@ export {
   useQuery,
   usePrompt,
   useSortErrors,
+  useAccountType,
 };

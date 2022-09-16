@@ -73,6 +73,11 @@ const Logout = Loadable({
   loading: Loading,
 });
 
+const Maintenance = Loadable({
+  loader: () => import("../pages/Maintenance" /* webpackChunkName: "Maintenance" */),
+  loading: Loading,
+});
+
 const defaultTitle = "RINO - Enterprise-Grade Monero Wallet";
 const defaultDescription = "RINO is a new type of Monero wallet. We are a non-custodial, enterprise-grade, multisig wallet.";
 const defaultMetaKeywords = "RINO, Monero, Wallet, Enterprise-Grade, Multisig, Convenient, Secure, Non-custodial";
@@ -246,6 +251,16 @@ const ROUTER_CONFIG: RouteType[] = [
     component: (props: any): ReactElement => <Logout {...props} />,
     isPrivate: false,
     key: "logout",
+  },
+  {
+    path: ROUTES.maintenance,
+    metaTitle: defaultTitle,
+    metaDescription: defaultDescription,
+    metaKeywords: defaultMetaKeywords,
+    metaOgImage: defaultMetaOgImage,
+    component: (props: any): ReactElement => <Maintenance {...props} />,
+    isPrivate: false,
+    key: "maintenance",
   },
 ];
 

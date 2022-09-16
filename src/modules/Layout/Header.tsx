@@ -3,8 +3,7 @@ import { NavLink } from "react-router-dom";
 import classNames from "classnames";
 import routes from "../../router/routes";
 import { Logo, Icon } from "../../components";
-import { PUBLIC_APP_URLS_MAP } from "../../constants";
-import { Env } from "../../types";
+import { useAccountType } from "../../hooks";
 
 interface Props {
   signOut: () => Promise<void>;
@@ -13,19 +12,21 @@ interface Props {
 }
 
 export const Header: React.FC<Props> = ({ signOut, isAuthenticated, landing }) => {
+  const { isEnterprise } = useAccountType();
+  const links = isEnterprise ? routes.static.enterprise : routes.static.consumer;
   const logoElement = landing ? <Logo white /> : <Logo />;
   const linkClassNames = classNames("block inline-block px-5 text-2xl md:text-lg cursor-pointer text-gray-500");
   const activeLinkClassNames = classNames("block inline-block px-5 text-2xl md:text-lg cursor-pointer font-bold theme-text-primary");
   return (
     <header className={classNames("px-4 py-6 font-catamaran md:px-16 text-lg uppercase flex relative z-10")}>
-      <a href={isAuthenticated ? routes.wallets : PUBLIC_APP_URLS_MAP[process.env.REACT_APP_ENV as Env]} className="d-block">
+      <a href={isAuthenticated ? routes.wallets : links.landing} className="d-block">
         {logoElement}
       </a>
       <div className="text-center flex items-center flex-1 justify-end">
         <a
           id="nav-link-faq"
           className={linkClassNames}
-          href={routes.faq}
+          href={links.faq}
         >
           <span className="hidden md:inline">FAQ</span>
           {" "}
