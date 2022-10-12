@@ -35,15 +35,15 @@ export async function createPDF(config: PdfDocumentConfig, data: NewWalletPDFDat
     self.addTitle2("What is this document?", self.leftOffset, 139);
     self.addText("This backup document contains important information which can be used to recover the Moneroj from your wallet in case of any reason you can't or don't want to access RINO service. Each RINO wallet has its own, unique backup document.", self.leftOffset, 146);
     self.addText("Each wallet has its own recovery document, so if you have created multiple wallets, you should retain the backup documents for each of them.", self.leftOffset, 155);
-    self.addTitle2("What should I do with it?", self.leftOffset, 174);
-    self.addText("You should print this document and/or save the PDF to an offline storage device like a USB stick. The print-out or USB stick should be kept in a safe place, such as a bank vault or home safe. It's a good idea to keep a second copy in a different location.", self.leftOffset, 181);
-    self.addTitle2("What should I do if I lose it?", self.leftOffset, 200);
-    self.addText("If you have lost or damaged all copies of your backup document, your Moneroj are still safe, but this Wallet should be considered at risk for loss. As soon as is convenient, you should use RINO Wallet Platform to empty the wallet into a new RINO wallet (and discontinue use of the old wallet).", self.leftOffset, 205);
+    self.addTitle2("What should I do with it?", self.leftOffset, 172);
+    self.addText("You should print this document and/or save the PDF to an offline storage device like a USB stick. The print-out or USB stick should be kept in a safe place, such as a bank vault or home safe. It's a good idea to keep a second copy in a different location.", self.leftOffset, 179);
+    self.addTitle2("What should I do if I lose it?", self.leftOffset, 198);
+    self.addText("If you have lost or damaged all copies of your backup document, you can still access your Moneroj the normal way - through the RINO platform. However without this document you won’t have any way to recover your funds if you lose access to RINO. So if your backup document for any given wallet is lost or damaged, we recommend you access that wallet through the RINO platform, and empty that wallet into a new RINO wallet (that you set up through RINO, and for which you have an undamaged backup document).", self.leftOffset, 203);
     self.addTitle2("What if someone sees my backup document?", self.leftOffset, 229);
     self.addText("That's a problem! Owning this document is equivalent to owning the funds! It is essential to store it safely.", self.leftOffset, 236);
     self.addText("If your backup document does get exposed or copied in a way that makes you uncomfortable, the best course of action is to empty the compromised wallet as soon as possible into another RINO wallet and discontinue use of the old wallet.", self.leftOffset, 241);
-    self.addTitle2("What if RINO becomes inaccessible for an extended period?", self.leftOffset, 261);
-    self.addText("Of course we work very hard to make sure that doesn't happen. But if it does, that's precisely what this document is for. You can use the official Monero software to recover your wallet from this file. See below for instructions.", self.leftOffset, 268);
+    self.addTitle2("What if RINO becomes inaccessible for an extended period?", self.leftOffset, 259);
+    self.addText("Of course we work very hard to make sure that doesn't happen. But if it does, that's precisely what this document is for. You can use the official Monero software to recover your wallet from this file. See below for instructions.", self.leftOffset, 266);
   });
   await pdf.addPage((self: PdfDocument) => {
     self.addTitle2("Recovering the wallet", self.leftOffset, 35);
@@ -54,9 +54,9 @@ export async function createPDF(config: PdfDocumentConfig, data: NewWalletPDFDat
     self.addText("2. Restore the multisig wallet from its seed. With command line wallet for example:", self.leftOffset, 85);
     self.addCommand(`./monero-wallet-cli ${networkType === "stagenet" ? "--stagenet" : ""} --restore-multisig-wallet`, self.leftOffset + 5, 90);
     self.addText("3. You will be prompted for a seed offset passphase. There isn't one", self.leftOffset, 95);
-    self.addText(`4. When the wallet asks for a restoration date, provide a resonable date back. Example: ${data.date}`, self.leftOffset, 100);
+    self.addText(`4. When the wallet asks for a restoration date, provide a reasonable date back. Example: ${data.date}`, self.leftOffset, 100);
     self.addTitle2("Sending Moneroj from the recovered wallet", self.leftOffset, 115);
-    self.addText("The wallet you have just created is a multisignature wallet. To access the funds, it is necessary to use both parts from this document. So you start with recovering both wallets (see above). Once you have both ready, you can spend the funds with these steps in the command line wallet:", self.leftOffset, 123);
+    self.addText("The wallet you have just created is a multisignature wallet. To access the funds, it is necessary to use both parts from this document. So you start by recovering both wallets (see above). Once you have both ready, you can spend the funds with these steps in the command line wallet:", self.leftOffset, 123);
     self.addText("1. In the user wallet, run this command:", self.leftOffset, 140);
     self.addCommand("export_multisig_info multisig_info_user", self.leftOffset + 5, 145);
     self.addText("This command creates a new file in the current folder, called multisig_info_user.", self.leftOffset + 4, 150);

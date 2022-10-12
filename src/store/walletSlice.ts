@@ -29,7 +29,6 @@ import {
   generateExtraReducer, createLoadingSelector, getEncryptedKeys, deriveUserKeys, decryptKeys,
 } from "../utils";
 import { accessLevels, createNewWalletSteps, createTransactionSteps } from "../constants";
-import { decryptWalletKeys, encryptWalletKeys } from "../wallet/WalletService";
 import modals from "../modules/2FAModals";
 import { PersistWalletThunkPayload, RequestWalletShareThunkPayload } from "../types/store";
 
@@ -147,6 +146,27 @@ export const createNewWallet = createAsyncThunk<any, { name: string, signal: any
   },
 );
 
+export const persistWallet = createAsyncThunk<void, PersistWalletThunkPayload>(
+  `${SLICE_NAME}/PersistWallet`,
+  async (data, { rejectWithValue, getState }) => {
+    try {
+      const { encryptionPublicKey } = (getState() as any).session.user;
+      // at this stage the wallet is still in memory
+      const encryptedWalletKeys = await walletInstance.encryptUserWalletKeys(Uint8Array.from(Buffer.from(encryptionPublicKey, "base64")));
+      walletInstance.closeWallet();
+      await walletsApi.persistWallet(data.id, {
+        encrypted_keys: JSON.stringify({
+          version: 1,
+          method: "asymmetric",
+          enc_content: Buffer.from(encryptedWalletKeys).toString("base64"),
+        }),
+      });
+    } catch (err: any) {
+      return rejectWithValue(err?.data);
+    }
+  },
+);
+
 export const openWallet = createAsyncThunk<LocalWalletData, { wallet: Wallet, loginPassword: string }>(
   `${SLICE_NAME}/openWallet`,
   async ({ wallet, loginPassword }, { rejectWithValue, dispatch, getState }) => {
@@ -163,7 +183,7 @@ export const openWallet = createAsyncThunk<LocalWalletData, { wallet: Wallet, lo
         Uint8Array.from(Buffer.from(encPrivateKey.nonce, "base64")),
         encryptionKey,
       );
-      const { walletKeys, walletPassword } = await decryptWalletKeys(
+      const { walletKeys, walletPassword } = await walletInstance.decryptWalletKeys(
         Uint8Array.from(Buffer.from(encryptedWalletKeys, "base64")),
         Uint8Array.from(Buffer.from(encryptionPublicKey, "base64")),
         encryptionPrivateKey,
@@ -241,6 +261,7 @@ export const syncMultisig = createAsyncThunk<LocalWalletData | undefined, string
     }
   },
 );
+
 export const prepareTransaction = createAsyncThunk<CreateUnsignedTransactionResponse, { id: string, body: Destination, memo: string, priority: string, orderId?: string }>(
   `${SLICE_NAME}/prepareTransaction`,
   async (data, { rejectWithValue, dispatch }) => {
@@ -295,7 +316,7 @@ export const createTransaction = createAsyncThunk<CreateUnsignedTransactionRespo
     try {
       const pendingTransaction = (getState() as any).wallet.pendingTransaction;
       const { userWallet } = walletInstance;
-      const txHex = await userWallet?.reconstructAndValidateTransaction(pendingTransaction.txsHex, {
+      const txsHex = await userWallet?.reconstructAndValidateTransaction(pendingTransaction.txsHex, {
         address: pendingTransaction.address,
         amount: pendingTransaction.amount,
       });
@@ -303,7 +324,7 @@ export const createTransaction = createAsyncThunk<CreateUnsignedTransactionRespo
       const submitTransactionResponse = await walletsApi.submitTransaction(
         data.id,
         {
-          tx_hex: txHex || "",
+          tx_hex: txsHex || "",
           memo: pendingTransaction.memo,
           ...(pendingTransaction.orderId ? { order_id: pendingTransaction.orderId } : {}),
         },
@@ -335,27 +356,6 @@ export const pollCreateTransactionTask = createAsyncThunk<CreateUnsignedTransact
       return resp;
     } catch (err: any) {
       dispatch(setStage(""));
-      return rejectWithValue(err?.data);
-    }
-  },
-);
-
-export const persistWallet = createAsyncThunk<void, PersistWalletThunkPayload>(
-  `${SLICE_NAME}/PersistWallet`,
-  async (data, { rejectWithValue, getState }) => {
-    try {
-      const { encryptionPublicKey } = (getState() as any).session.user;
-      // at this stage the wallet is still in memory
-      const encryptedWalletKeys = await walletInstance.encryptWalletKeys(Uint8Array.from(Buffer.from(encryptionPublicKey, "base64")));
-      walletInstance.closeWallet();
-      await walletsApi.persistWallet(data.id, {
-        encrypted_keys: JSON.stringify({
-          version: 1,
-          method: "asymmetric",
-          enc_content: Buffer.from(encryptedWalletKeys).toString("base64"),
-        }),
-      });
-    } catch (err: any) {
       return rejectWithValue(err?.data);
     }
   },
@@ -401,6 +401,7 @@ export const deleteWallet = createAsyncThunk<DeleteWalletResponse, DeleteWalletP
     }
   },
 );
+
 export const requestWalletShare = createAsyncThunk<void, RequestWalletShareThunkPayload>(
   `${SLICE_NAME}/walletShareRequest`,
   async (data, { rejectWithValue }) => {
@@ -412,6 +413,7 @@ export const requestWalletShare = createAsyncThunk<void, RequestWalletShareThunk
     }
   },
 );
+
 export const shareWallet = createAsyncThunk<void, ShareWalletThunkPayload>(
   `${SLICE_NAME}/shareWallet`,
   async (data, { rejectWithValue, getState, dispatch }) => {
@@ -434,12 +436,12 @@ export const shareWallet = createAsyncThunk<void, ShareWalletThunkPayload>(
         if (!publicKeys.length) {
           return;
         }
-        const { walletKeys, walletPassword } = await decryptWalletKeys(
+        const { walletKeys, walletPassword } = await walletInstance.decryptWalletKeys(
           Uint8Array.from(Buffer.from(encryptedWalletKeys, "base64")),
           Uint8Array.from(Buffer.from(encryptionPublicKey, "base64")),
           encryptionPrivateKey,
         );
-        const reEncWalletKeys = await encryptWalletKeys(Uint8Array.from(Buffer.from(publicKeys[0].encryptionPublicKey, "base64")), walletKeys, walletPassword);
+        const reEncWalletKeys = await walletInstance.encryptWalletKeys(Uint8Array.from(Buffer.from(publicKeys[0].encryptionPublicKey, "base64")), walletKeys, walletPassword);
         requestBody.encrypted_keys = JSON.stringify({
           version: 1,
           method: "asymmetric",

@@ -1,5 +1,5 @@
 import monerojs from "@rino-wallet/monero-javascript";
-import WalletService, { decryptWalletKeys, encryptWalletKeys, generateWalletPassword } from "../../wallet/WalletService";
+import WalletService, { generateWalletPassword } from "../../wallet/WalletService";
 import { generateUserKeyPair } from "../../utils/keypairs";
 import Wallet from "../../wallet/Wallet";
 
@@ -48,8 +48,8 @@ describe("WalletService", function() {
     const walletKeys = walletData[0]; 
     const { encryption } = await generateUserKeyPair();
     const password = await generateWalletPassword();
-    const encryptedWalletData = await encryptWalletKeys(encryption.publicKey, walletKeys, password);
-    const decryptedWalletData = await decryptWalletKeys(
+    const encryptedWalletData = await walletService.encryptWalletKeys(encryption.publicKey, walletKeys, password);
+    const decryptedWalletData = await walletService.decryptWalletKeys(
       encryptedWalletData,
       encryption.publicKey,
       encryption.privateKey,

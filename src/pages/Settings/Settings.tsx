@@ -10,6 +10,7 @@ interface Props {
   user: User;
   pendingUpdateUser: boolean;
   updateUser: (payload: UpdateUserPayload) => Promise<UserResponse>
+  signOutAll: () => Promise<void>
 }
 
 function hideEmail(email: string): string {
@@ -18,7 +19,12 @@ function hideEmail(email: string): string {
   return email.replace(part1, part1.split("").reduce((a) => `${a}*`, ""));
 }
 
-const SettingsPage: React.FC<Props> = ({ user, updateUser, pendingUpdateUser }) => {
+const SettingsPage: React.FC<Props> = ({
+  user,
+  updateUser,
+  signOutAll,
+  pendingUpdateUser,
+}) => {
   const [showEmail, setShowEmail] = useState(false);
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -37,7 +43,7 @@ const SettingsPage: React.FC<Props> = ({ user, updateUser, pendingUpdateUser }) 
         <h2 className="text-base uppercase font-bold mb-6 flex items-center">
           general
         </h2>
-        <div className="md:grid grid-cols-2 gap-4">
+        <div className="">
           <div>
             <div className="mb-5">
               <Label label="Username:" inline>
@@ -68,13 +74,13 @@ const SettingsPage: React.FC<Props> = ({ user, updateUser, pendingUpdateUser }) 
               </Label>
             </div>
           </div>
-          <div className="md:flex items-start justify-end">
+          <div className="md:flex items-start justify-start">
             <div className="flex space-x-3">
               <Button
                 name="change-email-btn"
                 type="button"
                 onClick={(): void => setShowEmailModal(true)}
-                size={Button.size.SMALL}
+                size={Button.size.MEDIUM}
               >
                 Change email
               </Button>
@@ -82,9 +88,17 @@ const SettingsPage: React.FC<Props> = ({ user, updateUser, pendingUpdateUser }) 
                 name="change-password-btn"
                 type="button"
                 onClick={(): void => setShowPasswordModal(true)}
-                size={Button.size.SMALL}
+                size={Button.size.MEDIUM}
               >
                 Change password
+              </Button>
+              <Button
+                name="logout-all-btn"
+                type="button"
+                onClick={signOutAll}
+                size={Button.size.MEDIUM}
+              >
+                Logout from all sessions
               </Button>
             </div>
           </div>

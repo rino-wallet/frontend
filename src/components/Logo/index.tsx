@@ -41,10 +41,10 @@ export const Logo: React.FC<Props> = ({ className, small, white }) => {
       }
       {/* enterprise logos */}
       {
-        (!small && !white && !stagenet && isEnterprise) && <img src={LogoBigEnterprise} alt="logo" />
+        (!small && !white && !stagenet && isEnterprise) && <img src={LogoBigEnterprise} alt="logo" data-qa-selector="enterprise-logo" />
       }
       {
-        (!small && !white && stagenet && isEnterprise) && <img src={LogoBigStagenetEnterprise} alt="logo" />
+        (!small && !white && stagenet && isEnterprise) && <img src={LogoBigStagenetEnterprise} alt="logo" data-qa-selector="enterprise-logo" />
       }
     </div>
   );

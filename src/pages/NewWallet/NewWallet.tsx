@@ -8,6 +8,7 @@ import { Tabs } from "../../components";
 import routes from "../../router/routes";
 
 interface Props {
+  onLeavePage: () => void;
   createMultisigWallet: (data: { name: string }) => Promise<{ userWallet: LocalWalletData; backupWallet: LocalWalletData; walletId: string; walletPassword: string }>;
   persistWallet: (data: PersistWalletThunkPayload) => Promise<void>;
   isKeypairSet: boolean;
@@ -17,7 +18,7 @@ interface Props {
 }
 
 const NewWalletContainer: React.FC<Props> = ({
-  createMultisigWallet, username, persistWallet, isKeypairSet, stage, isWalletCreating,
+  onLeavePage, createMultisigWallet, username, persistWallet, isKeypairSet, stage, isWalletCreating,
 }) => {
   const [pdfData, setPdfData] = useState<NewWalletPDFData | null>(null);
   const [walletId, setWalletId] = useState<string>("");
@@ -69,9 +70,19 @@ const NewWalletContainer: React.FC<Props> = ({
             <div className="w-full p-10 m-auto">
               {
                 pdfData ? (
-                  <SecurityTab pdfData={pdfData} walletId={walletId} persistWallet={persistWallet} />
+                  <SecurityTab
+                    pdfData={pdfData}
+                    walletId={walletId}
+                    persistWallet={persistWallet}
+                  />
                 ) : (
-                  <WalletNameTab isKeypairSet={isKeypairSet} createNewWallet={createNewWallet} isWalletCreating={isWalletCreating} stage={stage} />
+                  <WalletNameTab
+                    onLeavePage={onLeavePage}
+                    isKeypairSet={isKeypairSet}
+                    createNewWallet={createNewWallet}
+                    isWalletCreating={isWalletCreating}
+                    stage={stage}
+                  />
                 )
               }
             </div>

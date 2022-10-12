@@ -15,7 +15,6 @@ import {
 import walletApi from "../../api/wallets";
 import fetchSubaddressesResponse from "../fixture/fetchSubaddresses.json";
   import createSubAddressResp from "../fixture/createSubaddress.json";
-import { Subaddress } from "../../types";
 
 jest.mock("../../api/wallets", () => {
   return {

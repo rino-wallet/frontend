@@ -99,7 +99,7 @@ class Wallet {
   public importMultisigHex = async (multisigHexes: string[]): Promise<number> => this.wallet.importMultisigHex(multisigHexes);
 
   /**
-   * Reconstruct and validate the transaction
+   * Reconstruct and validate the transaction, returns txHex
    */
   public reconstructAndValidateTransaction = async (txHex: string, config: TransactionConfig): Promise<string> => {
     try {

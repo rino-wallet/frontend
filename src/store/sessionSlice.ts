@@ -96,6 +96,25 @@ export const signOut = createAsyncThunk<void, void>(
   },
 );
 
+export const signOutAll = createAsyncThunk<void, void>(
+  "session/signOutAll",
+  async (_, { rejectWithValue, dispatch }) => {
+    try {
+      const response = await sessionApi.signOutAll();
+      try {
+        localStorage.removeItem("sessionToken");
+      } catch {
+        // eslint-disable-next-line
+        console.error("localStorage is not available");
+      }
+      dispatch(fullReset());
+      return response;
+    } catch (err: any) {
+      return rejectWithValue(err?.data);
+    }
+  },
+);
+
 export const setupKeyPair = createAsyncThunk<SetUpKeyPairResponse, SetUpKeyPairThunkPayload>(
   "session/setupKeyPair",
   async (payload, { rejectWithValue, dispatch }) => {
@@ -260,6 +279,7 @@ export const sessionSlice = createSlice({
     ...generateExtraReducer(signUp),
     ...generateExtraReducer(signIn),
     ...generateExtraReducer(signOut),
+    ...generateExtraReducer(signOutAll),
     ...generateExtraReducer(setupKeyPair),
     ...generateExtraReducer(
       getCurrentUser,
@@ -281,6 +301,7 @@ export const selectors = {
   pendingSignUp: createLoadingSelector(SLICE_NAME, signUp.pending.toString()),
   pendingSignIn: createLoadingSelector(SLICE_NAME, signIn.pending.toString()),
   pendingSignOut: createLoadingSelector(SLICE_NAME, signOut.pending.toString()),
+  pendingSignOutAll: createLoadingSelector(SLICE_NAME, signOutAll.pending.toString()),
   pendingSetupKeyPair: createLoadingSelector(SLICE_NAME, setupKeyPair.pending.toString()),
   pendingGetCurrentUser: createLoadingSelector(SLICE_NAME, getCurrentUser.pending.toString()),
   pendingResetPasswordConfirm: createLoadingSelector(SLICE_NAME, resetPasswordConfirm.pending.toString()),

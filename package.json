@@ -41,7 +41,7 @@
     "build:staging": "yarn copy:wasm && GENERATE_SOURCEMAP=false REACT_APP_ENV=staging INLINE_RUNTIME_CHUNK=false yarn build",
     "build:test": "yarn copy:wasm && GENERATE_SOURCEMAP=false REACT_APP_ENV=test INLINE_RUNTIME_CHUNK=false yarn build",
     "build:master": "yarn copy:wasm && GENERATE_SOURCEMAP=false REACT_APP_ENV=production INLINE_RUNTIME_CHUNK=false yarn build",
-    "test": "craco test --silent",
+    "test": "craco test",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "eject": "craco eject",
     "buildandrun": "yarn build:develop && cd build && python -m SimpleHTTPServer 3000"

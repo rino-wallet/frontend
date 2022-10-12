@@ -1,0 +1,20 @@
+{
+  "createdAt": "2022-10-05T11:38:49.495Z",
+  "updatedAt": "2022-10-05T11:38:49.509Z",
+  "id": "b345389f-0748-4691-b541-75e8d673b467",
+  "startedAt": "",
+  "completedAt": "2022-10-05T11:39:16.342Z",
+  "status": "COMPLETED",
+  "type": "FINALIZE_MULTISIG",
+  "params": {
+    "userMultisigXinfo": "MultisigxV2Rn1LWdHVtVssJeoBSXNEG8kTP133GdLxvx51TYoeiMqa6LQQ4We8AYanbQtxdJdG4NfdX5h3LSc6ZiUc47vVHaWvRBKCJsqBrkvbQ2RTwCPKzyKejHhsjZJdYCiCdPVjPbA4dzUPdTfmUwHeZAGH8k1mPXSgf7wXJE1S7Tp4xdPjNFp7WmeyWtBuBfcN8P9biQhTFh4DEzVKMzc3y6p8GVPeyXxuF71Te",
+    "userMultisigFinal": "MultisigxV2Rn1WBucLcBdB3DFgjRvLSWJKb77RSEBZAMYJ38oudHeM3c71gWMcMK2D9gJfx1TuAmCT6NKjfNdjsoo7QNZWWsPVby2nkbtw4FAzz2RTwCPKzyKejHhsjZJdYCiCdPVjPbA4dzUPdsPzrz1YJPPW4DtyCUVY6Nq187cSiMA9hEFG2BUMnwHjiKqMnuc9zH3NcDQeqcE4MKDbgReLXeULjBNT2pPxF4Gyz",
+    "backupMultisigXinfo": "MultisigxV2Rn1LWdHVtVssJeoBSXNEG8kTP133GdLxvx51TYoeiMqa6LQQ3H1T7x7fq89AQCUC9LRQ7fuB4cEGUYf4uTwmMgfGtD6B3AxHed5rMRRiNt5LvcPKhNjRyMDiwM1SWgqbnD4JaFTBUz3Ax7HDMioaWtKRruYoN7GSAb2FNRZDg32tvAyMJCXxD967kP3CsRbCWsj3bRxmKFXNrsVcVwAQbpJUW3mfSS5sV",
+    "backupMultisigFinal": "MultisigxV2Rn1WBucLcBdB3DFgjRvLSWJKb77RSEBZAMYJ38oudHeM3c71gWMcMK2D9gJfx1TuAmCT6NKjfNdjsoo7QNZWWsPVby2njqqvVBwJDRRiNt5LvcPKhNjRyMDiwM1SWgqbnD4JaFTBVg14ysw4wf3wjYpDbrZU31sZrjeffmsT6HcckdZFKMhenthRK58twCdsp9sMHBDCftAcbaiCr9d4ywyXNZKb7T29S"
+  },
+  "result": {
+    "serverMultisigFinal": "MultisigxV2Rn1WBucLcBdB3DFgjRvLSWJKb77RSEBZAMYJ38oudHeM3c71gWMcMK2D9gJfx1TuAmCT6NKjfNdjsoo7QNZWWsPVby2nkPu75GUtgF6M5GQHhXPYXdAH5wgz9uwSWVdub2cV8rKDGbV21jFHQ1ENqXLv1oTfc14Rj8eLMNgDvTDiAtjLp33gJxps5FonnZsg5eBwtKUo4wSkQW5SyiHYzM7ub7R4c671h",
+    "address": "541QbMRw3jEC1Miu49rshkfeeP5Ve8aDadfsuReJZT2JhL9bGKm67VsjH59KvvtnuV4u2vMj9c1sTD2NutBe22idM2x5j8a"
+  },
+  "walletId": "68fb5eaf-b21c-4ecf-b9fc-f13614cb6726"
+}

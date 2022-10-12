@@ -14,6 +14,7 @@ const validationSchema = yup.object().shape({
 });
 
 interface Props {
+  onLeavePage: () => void;
   isKeypairSet: boolean;
   createNewWallet: (name: string) => Promise<void>;
   isWalletCreating: boolean;
@@ -21,7 +22,7 @@ interface Props {
 }
 
 const WalletNameTab: React.FC<Props> = ({
-  isKeypairSet, createNewWallet, isWalletCreating, stage,
+  onLeavePage, isKeypairSet, createNewWallet, isWalletCreating, stage,
 }) => (
   <Formik
     initialValues={{
@@ -57,6 +58,7 @@ const WalletNameTab: React.FC<Props> = ({
           when={!!values.name && !Object.keys(errors).length}
           title="Wallet creation in progress."
           message="If you interrupt the wallet creation process, no wallet is created."
+          onLeave={onLeavePage}
         />
         <form onSubmit={handleSubmit}>
           <div className="form-field">

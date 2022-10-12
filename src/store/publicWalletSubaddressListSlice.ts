@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
   FetchSubaddressResponse, Subaddress, FetchSubaddressesThunkPayload, RootState, FetchWalletSubaddressThunkPayload,
 } from "../types";
@@ -68,11 +68,6 @@ export const publicWalletSubaddressListSlice = createSlice({
     setAddress(state, action: { payload: Subaddress }): void {
       state.walletSubAddress = action.payload;
     },
-    markValidAddress(state, action: PayloadAction<number>): void {
-      if (!state.validated.includes(action.payload)) {
-        state.validated.push(action.payload);
-      }
-    },
     reset(state): void {
       state.count = initialState.count;
       state.pages = initialState.pages;
@@ -115,5 +110,4 @@ export const selectors = {
 export const {
   reset,
   setAddress,
-  markValidAddress,
 } = publicWalletSubaddressListSlice.actions;

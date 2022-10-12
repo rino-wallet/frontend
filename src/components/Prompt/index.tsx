@@ -4,9 +4,15 @@ interface Props {
   when: boolean;
   title: string;
   message: string;
+  onLeave?: () => void;
 }
 
-export const Prompt: React.FC<Props> = ({ title, message, when }) => {
-  usePrompt(title, message, when);
+export const Prompt: React.FC<Props> = ({
+  title,
+  message,
+  when,
+  onLeave,
+}) => {
+  usePrompt(title, message, when, onLeave);
   return null;
 };

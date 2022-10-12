@@ -42,7 +42,7 @@ function noSWError(): void {
 window.addEventListener("load", () => {
   if (env === "development") {
     if (!("serviceWorker" in navigator)) {
-      noSWError();
+      runApp();
     } else {
       runApp();
     }

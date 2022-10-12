@@ -1,0 +1,19 @@
+{
+  "createdAt": "2022-10-05T11:38:35.026Z",
+  "updatedAt": "2022-10-05T11:38:35.477Z",
+  "id": "3494eee3-7a94-453d-9de1-d84daedf48a7",
+  "startedAt": "",
+  "completedAt": "2022-10-05T11:38:41.016Z",
+  "status": "COMPLETED",
+  "type": "CREATE_WALLET",
+  "params": {
+    "id": "68fb5eaf-b21c-4ecf-b9fc-f13614cb6726",
+    "userMultisigInfo": "MultisigxV2R1C49iHWDhwBXGVo5pyAUuMFhJdy1AgXg3Kf7G7ppAzCkccqkitxKgfL35E3GL2NeXowc3FcrG1QHRUivjGD4BVPnQRHnizKC11ZP9eokCxHeamDPDMXqjJZc3JZYQook3NXgt4RuN6mMLYuc3AweQULYk4iVdi5Sv89HGj8gaHiDMjuPg",
+    "backupMultisigInfo": "MultisigxV2R1W6CV3BsLK7RANHRKH2V6LqEWD6LwQspdeKVgJ6oX14dFN3Z7zyYwMtBXuPgKQAgpMwJympevYfSnHMrh239GHy1wf3ne54sQycGFdmyVXbku82QEFCeMtb8ytYLbc5dJtepdTLouWyovyMBBWG4CvXzRjeihhwD7wufhDemrRcnEFaoM"
+  },
+  "result": {
+    "serverMultisigInfo": "MultisigxV2R1XVkscooshR8VLhmMRfWU5jZ72m1u5bWhCdQsQ9aKxN1wYp2v4BkAaqdJaixqHuZFLGgT4NBjR9gELHjFkof7ChVJfFHE4Rqx3pHa36uHWcXgDmPm8jYNyXUa5ZrbQkYV5b26ACbcPDFWKsHGJCe7gkBpwSBMtdTLpKC1aKSMucKKpJUC",
+    "serverMultisigXinfo": "MultisigxV2Rn1LW26aWuzmuQtxdJdG4NfdX5h3LSc6ZiUc47vVHaWvRBKCH5bvnMXEb89AQCUC9LRQ7fuB4cEGUYf4uTwmMgfGtD6B3j1UEhdSpF6M5GQHhXPYXdAH5wgz9uwSWVdub2cV8rKDJMLYpMvhzNPy3xgwtFxZiJfQ4mHmvL64vebqCgmxE2HEJZtFLrLK4KRPfFnqWSy1S1aD9h17FYNbXrUDcVq3REB8B"
+  },
+  "walletId": "68fb5eaf-b21c-4ecf-b9fc-f13614cb6726"
+}

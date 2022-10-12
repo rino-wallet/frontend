@@ -29,8 +29,6 @@ export function convertAtomicAmount(amount: number, currency: ExchangeCurrencies
 
   const decimalAmount = new Decimal(amount);
   const output = decimalAmount.div(factor);
-  // TODO: This needs to be reviewed. We're rounding and then using toFixed.
-  // We should make sure it does what we want.
-  const rounded = output.times(roundingFactor).floor().div(roundingFactor).toFixed(decimals);
-  return keepTrailingZeros ? rounded : rounded.replace(/^0+(\d)|(\d)0+$/gm, "$1$2");
+  const rounded = output.mul(roundingFactor).floor().div(roundingFactor).toFixed(decimals);
+  return keepTrailingZeros ? rounded : rounded.replace(/([0-9]+(\.[0-9]+[1-9])?)(\.?0+$)/, "$1");
 }

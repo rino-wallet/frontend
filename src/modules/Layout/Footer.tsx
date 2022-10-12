@@ -32,7 +32,7 @@ const Footer: React.FC<Props> = ({ dark, showDisclaimer, isAuthenticated }) => {
             <a className={linkElementClassName} href={links.faq}>FAQ</a>
           </div>
         </div>
-        <div className={classNames("flex flex-col w-full justify-end md:items-center md:justify-between md:flex-row", { "footer-dark__text": dark, "theme-text-secondary": !dark })}>
+        <div className={classNames("mb-6 flex flex-col w-full justify-end md:items-center md:flex-row", { "footer-dark__text": dark, "theme-text-secondary": !dark })}>
           <div className="text-right text-lg md:order-2 md:flex md:space-x-10">
             <div className={classNames({ "text-white": dark })}>
               Contact us via email:
@@ -44,9 +44,14 @@ const Footer: React.FC<Props> = ({ dark, showDisclaimer, isAuthenticated }) => {
               {" "}
               <a className="font-bold text-blue-500" target="_blank" href="https://twitter.com/RINOwallet" rel="noreferrer">@RINOwallet</a>
             </div>
+            <div className={classNames({ "text-white": dark })}>
+              Follow us on Reddit:
+              {" "}
+              <a className="font-bold theme-text-primary" target="_blank" href="https://www.reddit.com/user/RINOwallet/" rel="noreferrer">@RINOwallet</a>
+            </div>
           </div>
-          <div className="text-sm mt-5 md:mt-0 md:order-1">Copyright © 2022 RINO. All Rights Reserved.</div>
         </div>
+        <div className="text-sm mt-5 md:mt-0 md:order-1">Copyright © 2022 RINO. All Rights Reserved.</div>
         {
           showDisclaimer && (
             <>

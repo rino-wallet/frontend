@@ -207,9 +207,13 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
                 </div>
                 <FormErrors errors={{ ...errors, ...nonFieldErrors }} />
                 <div className="theme-text">
-                  By clicking “Create Account” you confirm that you agree with the
+                  By clicking “Create Account” you confirm that you agree with our
                   {" "}
-                  <a id="link-tos" className="theme-link" href={links.terms_of_service}>Terms of Service.</a>
+                  <a id="link-tos" className="theme-link" href={links.terms_of_service}>Terms of Service</a>
+                  {" "}
+                  and
+                  {" "}
+                  <a id="link-privacy-policy" className="theme-link" href={links.privacy_policy}>Privacy Policy.</a>
                 </div>
                 <div className="form-field mt-10 mb-3">
                   <Button

@@ -28,17 +28,16 @@ const NewWalletContainer: React.FC = () => {
   const dispatch = useDispatch();
   const [walletCreatePromise, setWalletCreatePromise] = useState<Promise<AppDispatch> | any>(null);
   const valueRef: { current: Promise<AppDispatch> | any } = useRef();
-
-  useEffect(() => (): void => {
+  function onLeavePage() {
     dispatch(changeLocation());
     abortController.abort();
-  }, []);
-
+  }
   useEffect(() => {
     valueRef.current = walletCreatePromise;
   }, [walletCreatePromise]);
   return (
     <NewWallet
+      onLeavePage={onLeavePage}
       isKeypairSet={!!user?.isKeypairSet}
       createMultisigWallet={createMultisigWallet}
       stage={stage}

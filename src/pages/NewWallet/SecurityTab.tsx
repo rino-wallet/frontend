@@ -6,7 +6,7 @@ import {
 } from "../../components";
 import { createPDF } from "./createPDF";
 import routes from "../../router/routes";
-import { isMobile as isMobileClient } from "../../utils";
+// import { isMobile as isMobileClient } from "../../utils";
 
 interface Props {
   persistWallet: (data: { id: string }) => Promise<void>;
@@ -15,7 +15,7 @@ interface Props {
 }
 
 const SecurityTab: React.FC<Props> = ({ persistWallet, pdfData, walletId }) => {
-  const isMobile = isMobileClient();
+  // const isMobile = isMobileClient();
   const filename = `RINO Wallet Recovery Document - ${pdfData.walletName}`;
   const [errorMessage, setErrorMessage] = useState("");
   const [infoChecked, setInfoChecked] = useState(false);
@@ -34,12 +34,12 @@ const SecurityTab: React.FC<Props> = ({ persistWallet, pdfData, walletId }) => {
       }
     });
   };
-  function createWalletRecoveryDocument({ downloadFile }: { downloadFile?: boolean }): Promise<void> {
+  function createWalletRecoveryDocument(): Promise<void> {
     return createPDF({
       title: "Wallet Recovery Document",
       filename,
       totalPages: 4,
-      downloadFile,
+      downloadFile: true,
     }, pdfData)
       .then(() => {
         setPdfDownloaded(true);
@@ -102,7 +102,7 @@ const SecurityTab: React.FC<Props> = ({ persistWallet, pdfData, walletId }) => {
               name="download-pdf"
               type="button"
               onClick={(): void => {
-                createWalletRecoveryDocument({ downloadFile: !isMobile });
+                createWalletRecoveryDocument();
               }}
               block
             >

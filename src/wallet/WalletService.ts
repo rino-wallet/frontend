@@ -13,46 +13,46 @@ export async function generateWalletPassword(): Promise<Uint8Array> {
   return sodium.randombytes_buf(16);
 }
 
-/**
- * Encrypt wallet keys with the public key
- */
-export async function encryptWalletKeys(
-  publicKey: Uint8Array,
-  walletKeys: Uint8Array,
-  walletPassword: Uint8Array,
-): Promise<Uint8Array> {
-  await _sodium.ready;
-  const sodium = _sodium;
-  const message = new Uint8Array(walletPassword.length + walletKeys.length);
-  message.set(walletPassword);
-  message.set(walletKeys, walletPassword.length);
-  return sodium.crypto_box_seal(message, publicKey);
-}
-
-/**
- * Decrypt wallet keys with user's encryption keys
- */
-export async function decryptWalletKeys(
-  encryptedWalletKeys: Uint8Array,
-  publicKey: Uint8Array,
-  privateKey: Uint8Array,
-): Promise<{ walletKeys: Uint8Array; walletPassword: Uint8Array }> {
-  try {
-    await _sodium.ready;
-    const sodium = _sodium;
-    const decryptedMessage = sodium
-      .crypto_box_seal_open(encryptedWalletKeys, publicKey, privateKey);
-    return {
-      walletKeys: decryptedMessage.slice(16),
-      walletPassword: decryptedMessage.slice(0, 16),
-    };
-  } catch (error) {
-    throw ({ password: "Wallet keys decryption failed." });
-  }
-}
-
 /** Class that handle all multisig wallets creation steps */
 export default class WalletService {
+  /**
+   * Encrypt wallet keys with the public key
+   */
+  encryptWalletKeys = async (
+    publicKey: Uint8Array,
+    walletKeys: Uint8Array,
+    walletPassword: Uint8Array,
+  ): Promise<Uint8Array> => {
+    await _sodium.ready;
+    const sodium = _sodium;
+    const message = new Uint8Array(walletPassword.length + walletKeys.length);
+    message.set(walletPassword);
+    message.set(walletKeys, walletPassword.length);
+    return sodium.crypto_box_seal(message, publicKey);
+  };
+
+  /**
+   * Decrypt wallet keys with user's encryption keys
+   */
+  decryptWalletKeys = async (
+    encryptedWalletKeys: Uint8Array,
+    publicKey: Uint8Array,
+    privateKey: Uint8Array,
+  ): Promise<{ walletKeys: Uint8Array; walletPassword: Uint8Array }> => {
+    try {
+      await _sodium.ready;
+      const sodium = _sodium;
+      const decryptedMessage = sodium
+        .crypto_box_seal_open(encryptedWalletKeys, publicKey, privateKey);
+      return {
+        walletKeys: decryptedMessage.slice(16),
+        walletPassword: decryptedMessage.slice(0, 16),
+      };
+    } catch (error) {
+      throw ({ password: "Wallet keys decryption failed." });
+    }
+  };
+
   userWallet: InstanceType<typeof Wallet> | null;
 
   backupWallet: InstanceType<typeof Wallet> | null;
@@ -137,13 +137,13 @@ export default class WalletService {
   /**
    * Encrypt wallet keys and wallet password with the public key
    */
-  encryptWalletKeys = async (publicKey: Uint8Array): Promise<Uint8Array> => {
+  encryptUserWalletKeys = async (publicKey: Uint8Array): Promise<Uint8Array> => {
     const walletData = await this.userWallet?.getData();
     if (!walletData) {
       return new Uint8Array();
     }
     const keys = walletData[0];
-    return encryptWalletKeys(publicKey, keys, this.walletPassword);
+    return this.encryptWalletKeys(publicKey, keys, this.walletPassword);
   };
 
   /**

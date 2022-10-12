@@ -1,0 +1,14 @@
+{
+  "userResult": {
+    "state": {
+      "address": "541QbMRw3jEC1Miu49rshkfeeP5Ve8aDadfsuReJZT2JhL9bGKm67VsjH59KvvtnuV4u2vMj9c1sTD2NutBe22idM2x5j8a",
+      "multisigHex": "MultisigxV2Rn1WBucLcBdB3DFgjRvLSWJKb77RSEBZAMYJ38oudHeM3c71gWMcMK2D9gJfx1TuAmCT6NKjfNdjsoo7QNZWWsPVby2nkbtw4FAzz2RTwCPKzyKejHhsjZJdYCiCdPVjPbA4dzUPe4zRHku6hAuE35mWbLvFeqgBzvJtEkzGb3JdKTvg4a31i71ebRM5phrqP9fhhc2BHY74m1e2n22FRNdxpTj54MHfs"
+    }
+  },
+  "backupResult": {
+    "state": {
+      "address": "541QbMRw3jEC1Miu49rshkfeeP5Ve8aDadfsuReJZT2JhL9bGKm67VsjH59KvvtnuV4u2vMj9c1sTD2NutBe22idM2x5j8a",
+      "multisigHex": "MultisigxV2Rn1WBucLcBdB3DFgjRvLSWJKb77RSEBZAMYJ38oudHeM3c71gWMcMK2D9gJfx1TuAmCT6NKjfNdjsoo7QNZWWsPVby2njqqvVBwJDRRiNt5LvcPKhNjRyMDiwM1SWgqbnD4JaFTBVTaZdrWsL5oRYFD44Zi64FruxNuAHMSGqXRkavVbpSW7XDRHXYNcBfzCBYH871qb35MtHhY4bFAF7tPKVMak79EKV"
+    }
+  }
+}

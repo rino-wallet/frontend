@@ -58,6 +58,10 @@ export class SessionApi extends Api {
     return this.post<void, void>("/auth/logout/").then(this.success);
   }
 
+  public signOutAll(): Promise<void> {
+    return this.post<void, void>("/auth/logoutall/").then(this.success);
+  }
+
   public resetPasswordRequest(
     data: ResetPasswordRequestPayload,
   ): Promise<void> {

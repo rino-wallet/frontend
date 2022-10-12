@@ -5,6 +5,8 @@ import {
   getExchangeEstimation,
   getExchangeOrder,
   getExchangeRange,
+  getExchangeCurrencies,
+  createExchangeOrder,
   initialState,
   reset,
   selectors,
@@ -16,6 +18,8 @@ jest.mock("../../api/exchange", () => {
     getExchangeRange: jest.fn(),
     getExchangeEstimation: jest.fn(),
     getExchangeOrder: jest.fn(),
+    createExchangeOrder: jest.fn(),
+    getExchangeCurrencies: jest.fn(),
     setToken: jest.fn(),
   }
 });
@@ -46,5 +50,25 @@ describe("exchangeSlice", () => {
     (exchangeApi.getExchangeOrder as any).mockResolvedValue(camelcaseKeys({id: "123222"}));
     unwrapResult(await store.dispatch(getExchangeOrder({ id: "123333" })) as any);
     expect(store.getState().exchange.order.id).toEqual("123222")
+  });
+  it("Create exchange order", async () => {
+    (exchangeApi.createExchangeOrder as any).mockResolvedValue({ id: "1" });
+    unwrapResult(await store.dispatch(createExchangeOrder({
+      to_currency: "BTC",
+      platform: "exchange_now",
+      wallet: "wallet id",
+      amount_set_in: "from",
+      amount: 1,
+      address: "address",
+      refund_address: "refund_address",
+      rate_id: "0.1"
+    })) as any);
+    expect(store.getState().exchange.order.id).toEqual("1")
+  });
+  it("Get exchange currencies", async () => {
+    const response = [["xmr", "Monero"], ["btc", "Bitcoin"], ["eth", "Ethereum"], ["sol", "Solana"], ["ada", "Cardano"], ["usdt", "Tether"], ["usdc", "USD Coin"], ["bnb", "Binance Coin"], ["xrp", "Ripple"], ["doge", "Dogecoin"], ["dot", "Polkadot"]];
+    (exchangeApi.getExchangeCurrencies as any).mockResolvedValue(response);
+    unwrapResult(await store.dispatch(getExchangeCurrencies()) as any);
+    expect(store.getState().exchange.currencies.length).toEqual(response.filter((c) => c[0] !== "xmr").length);
   });
 });

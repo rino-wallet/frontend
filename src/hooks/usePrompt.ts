@@ -34,10 +34,13 @@ export function useBlocker(blocker: Blocker, when = true): void {
   }, [navigator, blocker, when]);
 }
 
-export function usePrompt(title: string, message: string, when = true): void {
+export function usePrompt(title: string, message: string, when = true, onLeave?: () => void): void {
   const blocker = useCallback(async (tx: Transition) => {
     const response = await showPreventNavigationModal({ title, message });
     if (response) {
+      if (typeof onLeave === "function") {
+        onLeave();
+      }
       tx.retry();
     }
   }, []);
