@@ -39,7 +39,7 @@ import {
   RequestWalletSharePayload,
   FetchWalletShareRequestsResponse,
   UpdateSubaddressPayload,
-  FetchRemovedUsersResponse,
+  FetchWalletMembersResponse,
 } from "../types";
 
 export class WalletsApi extends Api {
@@ -163,8 +163,13 @@ export class WalletsApi extends Api {
       .then(this.success);
   }
 
-  public fetchRemovedUsers(walletId: string): Promise<FetchRemovedUsersResponse> {
-    return this.get<FetchRemovedUsersResponse>(`/wallets/${walletId}/removed_spenders/`)
+  public fetchRevokedMembers(walletId: string, params: ListRequestParams): Promise<FetchWalletMembersResponse> {
+    return this.get<FetchWalletMembersResponse>(`/wallets/${walletId}/removed_spenders/`, { params })
+      .then(this.success);
+  }
+
+  public fetchWalletMembers(walletId: string, params: ListRequestParams): Promise<FetchWalletMembersResponse> {
+    return this.get<FetchWalletMembersResponse>(`/wallets/${walletId}/members/`, { params })
       .then(this.success);
   }
 }

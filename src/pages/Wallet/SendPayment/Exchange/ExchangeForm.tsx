@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect, useState,
+} from "react";
 import { generatePath, useNavigate } from "react-router-dom";
 import { Formik } from "formik";
 import * as yup from "yup";
@@ -20,10 +22,11 @@ import {
 } from "../../../../components";
 import { FormErrors } from "../../../../modules/FormErrors";
 import routes from "../../../../router/routes";
-import { ReactComponent as ChangeNowLogo } from "./change-now.svg";
 import {
+  debouncePromise,
   btcToSatoshi, moneroToPiconero, piconeroToMonero, convertAtomicAmount,
 } from "../../../../utils";
+import { ReactComponent as ChangeNowLogo } from "./change-now.svg";
 import ExchangeConfirmation from "./ExchangeConfirmation";
 import ExchangePayment from "./ExchangePayment";
 
@@ -51,7 +54,7 @@ const validationSchema = (limits: { minAmount: number; maxAmount: number; balanc
     .test(maxAmountSchema(parseFloat(piconeroToMonero(limits.maxAmount))))
     .test(
       "test-balance",
-      limits.balance > 0 ? `You can only transfer less than ${limits.balance}.` : "You don't have any unlocked funds to transfer.",
+      limits.balance > 0 ? `You can only transfer less than the full unlocked balance (${limits.balance}). - it's necessary to account for the network fee.` : "You don't have any unlocked funds to transfer.",
       (value) => parseFloat(value || "0") < limits.balance,
     )
     .required("This field is required."),
@@ -59,13 +62,14 @@ const validationSchema = (limits: { minAmount: number; maxAmount: number; balanc
   address: yup.string().required("This field is required."),
 });
 
+const debounceRequest = debouncePromise((requestFn: any) => requestFn(), 500);
+
 interface Props {
   walletSubAddress: string;
   wallet: Wallet | null;
   walletId: string;
   exchangeRange: ExchangeRange;
   exchangeEstimation: ExchangeEstimation;
-  pendingGetExchangeEstimation: boolean;
   currencies: CurrenciesList;
   activeTab: number;
   getExchangeEstimation: (data: GetExchangeEstimationPayload) => Promise<GetExchangeEstimationResponse>,
@@ -75,6 +79,12 @@ interface Props {
     platform: string;
     to_currency: string;
   }) => UseThunkActionCreator<GetExchangeRangeResponse>
+}
+
+enum ExchangePlatformState {
+  pending,
+  available,
+  not_available,
 }
 
 interface RetreiveEstimation {
@@ -92,28 +102,36 @@ const ExchangeForm: React.FC<Props> = ({
   exchangeEstimation,
   currencies,
   activeTab,
-  pendingGetExchangeEstimation,
   getExchangeEstimation,
   setActiveTab,
   createExchangeOrder,
   getExchangeRange,
 }) => {
-  const [firstTimeLoading, setFirstTimeLoading] = useState(true);
+  const [exchangePlatformState, setExchangePlatformState] = useState<ExchangePlatformState>(ExchangePlatformState.available);
   const [rate, setRate] = useState("");
   const navigate = useNavigate();
   const defaultCurrency = "btc";
-  const isExchangeAvailable = !!rate;
-  useEffect(() => {
-    setTimeout(() => {
-      if (firstTimeLoading && !pendingGetExchangeEstimation) {
-        setFirstTimeLoading(false);
-      }
-    }, 500);
-  }, [pendingGetExchangeEstimation]);
+  const inputDisabled = exchangePlatformState === ExchangePlatformState.pending || exchangePlatformState === ExchangePlatformState.not_available;
+  async function fetchRate(data: {
+    platform: string,
+    to_currency: string,
+    amount_set_in: "from" | "to",
+    amount: number,
+  }) {
+    try {
+      setExchangePlatformState(ExchangePlatformState.pending);
+      const response = await getExchangeEstimation(data);
+      setExchangePlatformState(ExchangePlatformState.available);
+      return response;
+    } catch (err) {
+      setExchangePlatformState(ExchangePlatformState.not_available);
+      throw err;
+    }
+  }
   useEffect(() => {
     if (activeTab === 0) {
       getExchangeRange({ platform: "changenow", to_currency: defaultCurrency });
-      getExchangeEstimation({
+      fetchRate({
         platform: "changenow",
         to_currency: defaultCurrency,
         amount_set_in: "from",
@@ -129,14 +147,19 @@ const ExchangeForm: React.FC<Props> = ({
     currency,
     callback,
   }: RetreiveEstimation): Promise<void> {
-    const resp = await getExchangeEstimation({
-      platform: "changenow",
-      to_currency: currency.toLowerCase(),
-      amount_set_in,
-      amount: amount_set_in === "from" ? moneroToPiconero(amount) : btcToSatoshi(amount),
-    });
-    if (typeof callback === "function") {
-      callback(resp);
+    try {
+      const resp = await debounceRequest(() => fetchRate({
+        platform: "changenow",
+        to_currency: currency.toLowerCase(),
+        amount_set_in,
+        amount: amount_set_in === "from" ? moneroToPiconero(amount) : btcToSatoshi(amount),
+      }));
+      if (typeof callback === "function") {
+        callback(resp as any);
+      }
+    } catch (err) {
+      // eslint-disable-next-line
+      console.error(err);
     }
   }
   return (
@@ -192,13 +215,19 @@ const ExchangeForm: React.FC<Props> = ({
                   <div className="mb-4 md:mb-0" data-qa-selector="platform">
                     <Label labelClassName="md:text-right" label="Exchange platform" inline isFormField>
                       <div className="flex items-center space-x-3 h-8 mt-3">
-                        {firstTimeLoading ? <span><Spinner /></span> : (
-                          isExchangeAvailable ? <Icon name="check" className="theme-text-success" /> : <Icon name="cross" className="theme-text-error" />
-                        )}
+                        {
+                          exchangePlatformState === ExchangePlatformState.available && <Icon name="check" className="theme-text-success" />
+                        }
+                        {
+                          exchangePlatformState === ExchangePlatformState.not_available && <Icon name="cross" className="theme-text-error" />
+                        }
+                        {
+                          exchangePlatformState === ExchangePlatformState.pending && <span><Spinner /></span>
+                        }
                         <ChangeNowLogo data-qa-selector="changeNowLogo" style={{ width: "110px" }} />
                       </div>
                       {
-                        (!isExchangeAvailable && !firstTimeLoading) && (
+                        (exchangePlatformState === ExchangePlatformState.not_available) && (
                         <div className="theme-text-error">
                           Exchange platform is not available at the moment.
                           Please try again later.
@@ -225,7 +254,7 @@ const ExchangeForm: React.FC<Props> = ({
                           });
                           return handleChange(e);
                         }}
-                        disabled={firstTimeLoading || !isExchangeAvailable}
+                        disabled={inputDisabled}
                         onBlur={handleBlur}
                         placeholder="XMR Amount"
                         error={touched.amount_to_send ? errors.amount_to_send || "" : ""}
@@ -259,12 +288,12 @@ const ExchangeForm: React.FC<Props> = ({
                             }}
                             embeded
                           >
-                            {currencies.map((c) => <option value={c[0]}>{c[0].toUpperCase()}</option>)}
+                            {currencies.map((c) => <option key={c[0]} value={c[0]}>{c[0].toUpperCase()}</option>)}
                           </Select>
                         )}
                         name="amount_to_receive"
                         value={values.amount_to_receive}
-                        disabled={firstTimeLoading || !isExchangeAvailable}
+                        disabled={inputDisabled}
                         onChange={(e): void => {
                           setTouched({ amount_to_send: true });
                           retreiveEstimation({
@@ -294,7 +323,7 @@ const ExchangeForm: React.FC<Props> = ({
                         onChange={handleChange}
                         onBlur={handleBlur}
                         placeholder="Destination Address"
-                        disabled={firstTimeLoading || !isExchangeAvailable}
+                        disabled={inputDisabled}
                         error={touched.address ? errors.address || "" : ""}
                       />
                     </Label>
@@ -323,7 +352,7 @@ const ExchangeForm: React.FC<Props> = ({
                     >
                       <div className="mt-1">
                         {
-                          firstTimeLoading ? <span><Spinner /></span> : (
+                          exchangePlatformState === ExchangePlatformState.pending ? <span><Spinner /></span> : (
                             rate ? (
                               <span>
                                 1 XMR ≈
@@ -341,7 +370,7 @@ const ExchangeForm: React.FC<Props> = ({
                   <div className="mb-4 md:mb-0" data-qa-selectort="operation-limit">
                     <Label labelClassName="md:text-right" label="Operation Limit" inline>
                       {
-                        firstTimeLoading ? <span><Spinner /></span> : (
+                        exchangePlatformState === ExchangePlatformState.pending ? <span><Spinner /></span> : (
                           rate ? (
                             <div>
                               from

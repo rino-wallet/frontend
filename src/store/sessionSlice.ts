@@ -53,21 +53,12 @@ export const signUp = createAsyncThunk<SignUpResponse, SignUpThunkPayload>(
 export const signIn = createAsyncThunk<SignInResponse, SignInPayload>(
   "session/signIn",
   async (credentials: SignInPayload, { rejectWithValue, dispatch }) => {
-    let twoFACancelled = false;
     try {
-      let response = await sessionApi.signIn(credentials);
+      const response = await sessionApi.signIn({ password: credentials.password, username: credentials.username }, credentials.code ? {
+        headers: { "X-RINO-2FA": credentials.code },
+      } : undefined);
       if (response.status === 202) {
-        const code = await modals.enter2FACode().catch(
-          () => {
-            twoFACancelled = true;
-          },
-        );
-        if (twoFACancelled) {
-          return rejectWithValue({ "2fa": "Two-factor Authentication code is missing." });
-        }
-        response = await sessionApi.signIn(credentials, {
-          headers: { "X-RINO-2FA": code },
-        });
+        return rejectWithValue({ required_2fa: true });
       }
       dispatch(setToken(response.data.token));
       return response.data;

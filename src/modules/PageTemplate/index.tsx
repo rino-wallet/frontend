@@ -48,7 +48,7 @@ export const PageTemplate: React.FC<Props> = ({
             </div>
           )
         }
-      <h1 className="text-4xl font-bold flex-1 font-catamaran min-w-0 md:overflow-ellipsis md:overflow-hidden md:whitespace-nowrap">{title}</h1>
+      <h1 className="text-5xl font-bold flex-1 font-catamaran min-w-0 md:overflow-ellipsis md:overflow-hidden md:whitespace-nowrap">{title}</h1>
     </header>
     {children}
   </section>

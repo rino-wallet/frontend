@@ -6,6 +6,9 @@ import { useDispatch, useThunkActionCreator } from "../../hooks";
 import {
   fetchWalletDetails as fetchWalletDetailsThunk,
 } from "../../store/walletSlice";
+import {
+  fetchWalletMembers as fetchWalletMembersThunk,
+} from "../../store/walletMembersListSlice";
 import { fetchWalletSubaddress as fetchWalletSubaddressThunk } from "../../store/subaddressListSlice";
 import { fetchWalletShareRequests as fetchWalletShareRequestsThunk } from "../../store/walletShareRequestListSlice";
 import routes from "../../router/routes";
@@ -33,6 +36,7 @@ const WalletPageContainer: React.FC<Props> = () => {
   const fetchWalletDetails = useThunkActionCreator(fetchWalletDetailsThunk);
   const fetchWalletSubaddress = useThunkActionCreator(fetchWalletSubaddressThunk);
   const fetchWalletShareRequests = useThunkActionCreator(fetchWalletShareRequestsThunk);
+  const fetchWalletUsers = useThunkActionCreator(fetchWalletMembersThunk);
   const refresh = async (): Promise<void> => {
     await fetchWalletDetails({ id: walletId })
       .catch(() => {
@@ -40,6 +44,7 @@ const WalletPageContainer: React.FC<Props> = () => {
       });
     fetchWalletSubaddress({ walletId });
     fetchWalletShareRequests({ walletId, page: 1 });
+    fetchWalletUsers({ walletId, page: 1 });
   };
 
   const dispatch = useDispatch();

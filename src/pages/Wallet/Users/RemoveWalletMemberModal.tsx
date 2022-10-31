@@ -9,7 +9,7 @@ interface Props {
   email: string;
 }
 
-const RemoveWalletMember: React.FC<Props> = ({ submit, cancel, email }) => (
+const RemoveWalletMemberModal: React.FC<Props> = ({ submit, cancel, email }) => (
   <Modal
     showCloseIcon
     title={(
@@ -45,4 +45,4 @@ const RemoveWalletMember: React.FC<Props> = ({ submit, cancel, email }) => (
   </Modal>
 );
 
-export default createModal(RemoveWalletMember);
+export default createModal(RemoveWalletMemberModal);

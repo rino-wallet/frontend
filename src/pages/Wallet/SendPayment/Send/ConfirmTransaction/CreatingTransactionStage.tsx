@@ -8,11 +8,12 @@ interface Props {
   priority: React.ReactChild;
   stage: React.ReactChild;
   fee: React.ReactChild;
+  total: React.ReactChild;
   loading?: boolean
 }
 
 const CreatingTransactionStage: React.FC<Props> = ({
-  amount, address, memo, priority, fee, stage, loading,
+  amount, address, memo, priority, fee, stage, loading, total,
 }) => (
   <div className="m-auto p-5">
     {
@@ -95,6 +96,16 @@ const CreatingTransactionStage: React.FC<Props> = ({
           data-qa-selector="transaction-fee"
         >
           {fee}
+        </span>
+      </Label>
+    </div>
+    <div className="mb-4 md:mb-0">
+      <Label labelClassName="md:text-right" label="Total" inline>
+        <span
+          className="break-all"
+          data-qa-selector="transaction-total"
+        >
+          {total}
         </span>
       </Label>
     </div>

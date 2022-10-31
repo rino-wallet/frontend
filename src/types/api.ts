@@ -27,7 +27,9 @@ interface Wallet {
 }
 interface WalletMember {
   id: string;
-  user: string;
+  user: {
+    email: string;
+  } | string;
   accessLevel: AccessLevel;
   encryptedKeys: string;
   createdAt: string;
@@ -55,6 +57,7 @@ interface Transaction {
 export interface SignInPayload {
   username: string;
   password: string;
+  code?: string;
 }
 
 export interface SignInResponse {
@@ -321,11 +324,12 @@ export interface RemoveWalletAccessPayload {
   userId: string;
 }
 
-export interface FetchRemovedUsersThunkPayload {
+export interface FetchWalletMembersThunkPayload {
   walletId: string;
+  page: number;
 }
 
-export interface FetchRemovedUsersResponse extends ListResponse {
+export interface FetchWalletMembersResponse extends ListResponse {
   results: WalletMember[];
 }
 

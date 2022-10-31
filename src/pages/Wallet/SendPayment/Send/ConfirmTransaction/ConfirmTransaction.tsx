@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { generatePath, Navigate } from "react-router-dom";
 import { Formik, FormikErrors } from "formik";
+import Decimal from "decimal.js-light";
 import {
   CreateUnsignedTransactionResponse,
   FetchWalletDetailsResponse,
@@ -147,6 +148,7 @@ const ConfirmTransaction: React.FC<Props> = ({
                     % of transaction amount)
                   </span>
                 ) : (loading ? <Loading /> : "-")}
+                total={pendingTransaction?.fee ? <FormatNumber value={new Decimal(transactionData?.amount || 0).plus(parseFloat(piconeroToMonero(pendingTransaction?.fee || 0))).toString()} /> : <Loading />}
                 loading={loading}
               />
               <FormErrors errors={errors} />

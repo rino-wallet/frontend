@@ -1,5 +1,6 @@
 import React from "react";
-import { FormatNumber, Prompt } from "../../../../../components";
+import Decimal from "decimal.js-light";
+import { FormatNumber, Loading, Prompt } from "../../../../../components";
 import CreatingTransactionStage from "./CreatingTransactionStage";
 
 interface Props {
@@ -29,11 +30,12 @@ const CreatingTransaction: React.FC<Props> = ({
           {" "}
           XMR
         </span>
-)}
+      )}
       address={address}
       priority={priority}
       stage={stage}
       fee={<FormatNumber value={fee} />}
+      total={fee ? <FormatNumber value={new Decimal(amount).plus(fee).toString()} /> : <Loading />}
       loading
     />
   </div>

@@ -144,3 +144,10 @@ export interface UserKeyPairInfo {
   signature: Uint8Array;
   clean: () => void;
 }
+
+export interface ListMetadata {
+  pages: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+  count: number;
+}

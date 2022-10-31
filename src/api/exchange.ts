@@ -47,7 +47,7 @@ export class ExchangeApi extends Api {
 const exchangeApi = new ExchangeApi(apiConfig);
 
 if (process.env.REACT_APP_ENABLE_API_MOCKS === "true") {
-  const axiosMockAdapterInstance = new MockAdapter(exchangeApi.axios, { delayResponse: 500 });
+  const axiosMockAdapterInstance = new MockAdapter(exchangeApi.axios, { delayResponse: 1000 });
 
   axiosMockAdapterInstance
     // eslint-disable-next-line

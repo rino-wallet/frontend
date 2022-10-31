@@ -27,13 +27,12 @@ const settingsValidationSchema = yup.object().shape({
 interface Props {
   walletId: string;
   wallet: Wallet;
-  is2FaEnabled: boolean;
   canDelete: boolean;
   updateWalletDetails: (data: UpdateWalletDetailsPayload) => Promise<UpdateWalletDetailsResponse>;
 }
 
 const Settings: React.FC<Props> = ({
-  updateWalletDetails, walletId, is2FaEnabled, wallet, canDelete,
+  updateWalletDetails, walletId, wallet, canDelete,
 }) => {
   const { features } = useAccountType();
   const user = useSelector(sessionSelectors.getUser);
@@ -50,23 +49,33 @@ const Settings: React.FC<Props> = ({
     },
     onSubmit: async (values, { setErrors, resetForm }): Promise<UpdateWalletDetailsResponse | void> => {
       try {
-        let code = "";
-        if (is2FaEnabled) {
-          code = await enter2FACode();
-        }
-        await updateWalletDetails({
+        const payload = {
           id: walletId,
           requires_2fa: values.requires_2fa,
-          code,
           // it checks if is_public or public_slug changed,
           // and adds public_slug value to payload only if is_public equal to true
-          ...((values.is_public !== wallet.isPublic || values.public_slug !== wallet.publicSlug) ? {
+          ...(((values.is_public !== wallet.isPublic || values.public_slug !== wallet.publicSlug) && features?.publicWallet) ? {
             is_public: values.is_public,
             ...(values.is_public ? { public_slug: values.public_slug } : {}),
           } : {}),
           ...(values.name !== wallet.name ? { name: values.name } : {}), // TODO remove this workaround after BE fix
-        });
-        resetForm();
+        };
+        if (wallet.requires2Fa && !values.requires_2fa) {
+          await enter2FACode({
+            asyncCallback: async (code: string) => {
+              await updateWalletDetails({
+                ...payload,
+                code,
+              });
+            },
+            confirmCancel: () => {
+              resetForm();
+            },
+          });
+        } else {
+          await updateWalletDetails(payload);
+          resetForm();
+        }
       } catch (err: any) {
         const {
           non_field_errors, message, detail, ...formErrors

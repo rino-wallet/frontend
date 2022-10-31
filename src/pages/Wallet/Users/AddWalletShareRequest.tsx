@@ -83,7 +83,7 @@ const AddWalletShareRequest: React.FC<Props> = ({
                   <Tooltip
                     content={(
                       <div className="md:w-76 text-sm text-center normal-case" data-qa-selector="tx-priority-tooltip">
-                        Address of the user you are inviting.
+                        Address of the user you are inviting. You can only invite users that have a RINO account already.
                       </div>
                     )}
                   >

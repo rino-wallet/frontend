@@ -18,8 +18,6 @@ import {
   PendingTransaction,
   ShareWalletThunkPayload,
   ShareWalletResponse,
-  FetchRemovedUsersThunkPayload,
-  FetchRemovedUsersResponse,
 } from "../types";
 import walletsApi from "../api/wallets";
 import publicKeysApi from "../api/publicKeys";
@@ -479,20 +477,6 @@ export const removeWalletAccess = createAsyncThunk<RemoveWalletAccessResponse, R
     }
   },
 );
-
-export const fetchRemovedUsers = createAsyncThunk<FetchRemovedUsersResponse, FetchRemovedUsersThunkPayload>(
-  `${SLICE_NAME}/fetchRemovedUsers`,
-  async (data, { rejectWithValue, dispatch }) => {
-    try {
-      const response = await walletsApi.fetchRemovedUsers(data.walletId);
-      dispatch(setRevokedUsers(response.results));
-      return response;
-    } catch (err: any) {
-      return rejectWithValue(err?.data);
-    }
-  },
-);
-
 export interface State {
   data: Wallet | null;
   revokedUsers: WalletMember[];

@@ -15,6 +15,7 @@ import { publicWalletTransactionListSlice } from "./publicWalletTransactionListS
 import { publicWalletSubaddressListSlice } from "./publicWalletSubaddressListSlice";
 import { walletShareRequestListSlice } from "./walletShareRequestListSlice";
 import { exchangeSlice } from "./exchangeSlice";
+import { walletMembersListSlice } from "./walletMembersListSlice";
 import { changeLocation, fullReset } from "./actions";
 import walletInstance from "../wallet";
 
@@ -32,6 +33,7 @@ const combinedReducer = combineReducers({
   publicWalletSubaddressList: publicWalletSubaddressListSlice.reducer,
   walletShareRequestList: walletShareRequestListSlice.reducer,
   exchange: exchangeSlice.reducer,
+  walletMembersList: walletMembersListSlice.reducer,
 });
 
 /**

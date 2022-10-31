@@ -24,7 +24,7 @@ const generateValidationSchema = (balance: number): yup.AnyObjectSchema => yup.o
     .required("This field is required.")
     .test(
       "test-balance",
-      balance > 0 ? `You can only transfer less than ${balance}.` : "You don't have any unlocked funds to transfer.",
+      balance > 0 ? `You can only transfer less than the full unlocked balance (${balance}). - it's necessary to account for the network fee.` : "You don't have any unlocked funds to transfer.",
       (value) => parseFloat(value || "0") < balance,
     )
     .test(

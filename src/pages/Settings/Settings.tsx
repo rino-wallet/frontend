@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { User, UpdateUserPayload, UserResponse } from "../../types";
-import { Button, Label, Switch } from "../../components";
+import { Button, Icon, Switch } from "../../components";
 import { enable2FA, disable2FA, info2FA } from "../../modules/2FAModals";
 import { PageTemplate, showSuccessModal } from "../../modules/index";
 import ChangeEmail from "./ChangeEmail";
@@ -39,39 +39,43 @@ const SettingsPage: React.FC<Props> = ({
     <PageTemplate title="Settings">
       {showEmailModal && <ChangeEmail goBackCallback={(): void => { setShowEmailModal(false); }} />}
       {showPasswordModal && <ChangePassword goBackCallback={(): void => { setShowPasswordModal(false); }} />}
-      <section className="py-3">
-        <h2 className="text-base uppercase font-bold mb-6 flex items-center">
-          general
+      <section className="py-8">
+        <h2 className="text-3xl text-base font-bold mb-6 flex items-center">
+          Account
         </h2>
         <div className="">
           <div>
             <div className="mb-5">
-              <Label label="Username:" inline>
-                <div className="flex items-center break-all">
-                  {user.username}
-                </div>
-              </Label>
+              <div className="flex items-center break-all">
+                USERNAME:
+                {" "}
+                {user.username}
+              </div>
             </div>
             <div className="mb-5">
-              <Label label="Email:" inline>
-                <div className="flex items-center break-all">
-                  {
-                    showEmail ? (
-                      <div>
-                        {user.email}
-                        {" "}
-                        <button type="button" className="theme-text-primary" data-qa-selector="show-email-btn" onClick={(): void => setShowEmail(false)}>Hide</button>
+              EMAIL:
+              {" "}
+              <div className="inline-flex items-center break-all">
+                {
+                  showEmail ? (
+                    <div>
+                      {user.email}
+                      {" "}
+                      <div data-qa-selector="show-email-btn" className="inline-flex">
+                        <Button size={Button.size.SMALL} onClick={(): void => setShowEmail(false)}>Hide</Button>
                       </div>
-                    ) : (
-                      <div>
-                        {hideEmail(user.email)}
-                        {" "}
-                        <button type="button" className="theme-text-primary" data-qa-selector="show-email-btn" onClick={(): void => setShowEmail(true)}>Reveal</button>
+                    </div>
+                  ) : (
+                    <div>
+                      {hideEmail(user.email)}
+                      {" "}
+                      <div data-qa-selector="show-email-btn" className="inline-flex">
+                        <Button size={Button.size.SMALL} onClick={(): void => setShowEmail(true)}>Reveal</Button>
                       </div>
-                    )
-                  }
-                </div>
-              </Label>
+                    </div>
+                  )
+                }
+              </div>
             </div>
           </div>
           <div className="md:flex items-start justify-start">
@@ -104,16 +108,29 @@ const SettingsPage: React.FC<Props> = ({
           </div>
         </div>
       </section>
-      <div className="border-b theme-border my-5 -mx-5" />
-      <section className="py-3">
-        <h2 className="text-base uppercase font-bold mb-6 flex items-center">
-          Two-factor Authentication &nbsp;
+      <section className="py-8">
+        <h2 className="text-base text-3xl font-bold mb-6 flex items-center">
+          Two-factor Authentication
+        </h2>
+        <div className="mb-6">
           {
             user.is2FaEnabled
-              ? <span className="uppercase text-green-500" data-qa-selector="two-fa-status">Enabled</span>
-              : <span className="uppercase theme-text-red" data-qa-selector="two-fa-status">Disabled</span>
+              ? (
+                <div className="text-green-500">
+                  <Icon name="security-on" />
+                  {" "}
+                  <span className="uppercase text-lg font-bold" data-qa-selector="two-fa-status">Enabled</span>
+                </div>
+              )
+              : (
+                <div className="text-red-500">
+                  <Icon name="security-off" />
+                  {" "}
+                  <span className="uppercase text-lg font-bold" data-qa-selector="two-fa-status">Disabled</span>
+                </div>
+              )
           }
-        </h2>
+        </div>
         {
           user.is2FaEnabled ? (
             <Button
@@ -149,6 +166,7 @@ const SettingsPage: React.FC<Props> = ({
                   });
               }}
               name="disable2FA"
+              size={Button.size.MEDIUM}
             >
               Disable 2fa
             </Button>
@@ -158,17 +176,16 @@ const SettingsPage: React.FC<Props> = ({
               type="button"
               variant={Button.variant.GREEN}
               onClick={onClickEnable2FA}
-              size={Button.size.SMALL}
+              size={Button.size.MEDIUM}
             >
               Enable 2fa
             </Button>
           )
         }
       </section>
-      <div className="border-b theme-border my-5 -mx-5" />
-      <section className="py-3">
-        <h2 className="text-base uppercase font-bold mb-6 flex items-center">
-          transactions
+      <section className="py-8">
+        <h2 className="text-3xl font-bold mb-6 flex items-center">
+          Notifications
         </h2>
         <Switch
           disabled={pendingUpdateUser}
@@ -176,10 +193,9 @@ const SettingsPage: React.FC<Props> = ({
           id="tx-notifications"
           onChange={(e): void => { updateUser({ tx_notifications: e.target.checked }); }}
         >
-          Email notifications for incoming transactions
+          <span className="text-base">Email notifications for incoming transactions</span>
         </Switch>
       </section>
-      <div className="border-b theme-border my-5 -mx-5" />
     </PageTemplate>
   );
 };

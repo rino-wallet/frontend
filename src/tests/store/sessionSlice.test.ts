@@ -73,18 +73,14 @@ describe("SessionSlice", () => {
   });
   it("signIn asyncThunk changes token (with 2fa)", async() => {
     store.dispatch(reset());
-    // add 202 response status code, wich means that 2fa is required
-    (sessionApi.signIn as any).mockResolvedValue({ data: camelcaseKeys(signInResponse, { deep: true }), status: 202 });
-    // mock the module for entering 2fa code
-    (modals.enter2FACode as any).mockResolvedValue(123456);
+    (sessionApi.signIn as any).mockResolvedValue({ data: camelcaseKeys(signInResponse, { deep: true }) });
     // dispatch login action
-    unwrapResult(await store.dispatch(signIn({ username: "new@test.com", password: "password" })) as any);
+    unwrapResult(await store.dispatch(signIn({ username: "new@test.com", password: "password", code: "123456" })) as any);
     // make sure that 2fa header is added to request
 
     expect((sessionApi.signIn as any).mock.calls[0][0]).toEqual({ username: "new@test.com", password: "password" });
-    expect((sessionApi.signIn as any).mock.calls[1][0]).toEqual({ username: "new@test.com", password: "password" });
-    expect((sessionApi.signIn as any).mock.calls[1][1]).toEqual({ headers: { "X-RINO-2FA": 123456 }});
-    expect((sessionApi.signIn as any).mock.calls.length).toEqual(2);
+    expect((sessionApi.signIn as any).mock.calls[0][1]).toEqual({ headers: { "X-RINO-2FA": "123456" }});
+    expect((sessionApi.signIn as any).mock.calls.length).toEqual(1);
     expect(store.getState().session.token).toEqual(signInResponse.token);
   });
   it("signOut removes token", async() => {

@@ -20,7 +20,14 @@ const LoginPageContainer: React.FC = () => {
   }, []);
   return token
     ? <Navigate to={routes.wallets} />
-    : <Login setSigningPublicKey={setSigningPublicKey} login={signIn} setPassword={setPassword} getCurrentUser={getCurrentUser} />;
+    : (
+      <Login
+        setSigningPublicKey={setSigningPublicKey}
+        login={signIn}
+        setPassword={setPassword}
+        getCurrentUser={getCurrentUser}
+      />
+    );
 };
 
 export default LoginPageContainer;

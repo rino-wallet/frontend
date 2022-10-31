@@ -76,7 +76,7 @@ export const walletShareRequestListSlice = createSlice({
       (data) => ({
         entities: data?.results || [],
         count: data?.count || 0,
-        pages: data ? Math.ceil(data?.count || 0 / ITEMS_PER_PAGE) : 0,
+        pages: data ? Math.ceil(data.count / ITEMS_PER_PAGE) : 0,
         hasPreviousPage: !!data?.previous,
         hasNextPage: !!data?.next,
       }),

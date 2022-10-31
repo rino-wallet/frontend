@@ -1,11 +1,11 @@
 import React from "react";
 import { LayoutLanding } from "./LayoutLanding";
-import { LayoutStatic } from "./LayoutStatic";
 import { LayoutAuth } from "./LayoutAuth";
 import { LayoutDefault } from "./LayoutDefault";
 import { LayoutClear } from "./LayoutClear";
 import { LayoutMessage } from "./LayoutMessage";
 import { LayoutPublicWallet } from "./LayoutPublicWallet";
+import { BannerContainer } from "./Banner";
 
 interface Props {
   signOut: () => Promise<void>;
@@ -18,22 +18,23 @@ export const Layout: React.FC<Props> = ({
 }) => {
   switch (page) {
     case "landing": {
-      return <LayoutLanding signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutLanding>;
-    }
-    case "cookie_policy":
-    case "privacy_policy":
-    case "terms_of_service":
-    case "security":
-    case "security_pgp_key":
-    case "acknowledgments":
-    case "faq": {
-      return <LayoutStatic signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutStatic>;
+      return (
+        <div>
+          <BannerContainer />
+          <LayoutLanding signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutLanding>
+        </div>
+      );
     }
     case "login":
     case "register":
     case "resendActivationEmail":
     case "resetPassword": {
-      return <LayoutAuth signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutAuth>;
+      return (
+        <div>
+          <BannerContainer />
+          <LayoutAuth signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutAuth>
+        </div>
+      );
     }
     case "404":
     case "maintenance":
@@ -41,13 +42,28 @@ export const Layout: React.FC<Props> = ({
       return <LayoutMessage>{children}</LayoutMessage>;
     }
     case "keypair": {
-      return <LayoutClear>{children}</LayoutClear>;
+      return (
+        <div>
+          <BannerContainer />
+          <LayoutClear>{children}</LayoutClear>
+        </div>
+      );
     }
     case "publicWallet": {
-      return <LayoutPublicWallet signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutPublicWallet>;
+      return (
+        <div>
+          <BannerContainer isPublic />
+          <LayoutPublicWallet signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutPublicWallet>
+        </div>
+      );
     }
     default: {
-      return <LayoutDefault signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutDefault>;
+      return (
+        <div>
+          <BannerContainer />
+          <LayoutDefault signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutDefault>
+        </div>
+      );
     }
   }
 };

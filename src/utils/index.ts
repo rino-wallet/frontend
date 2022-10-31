@@ -20,6 +20,7 @@ import { setCookie } from "./setCookie";
 import { convertAtomicAmount } from "./convertAtomicAmount";
 import { btcToSatoshi } from "./btcToSatoshi";
 import { isMobile } from "./isMobile";
+import { debouncePromise } from "./debouncePromise";
 
 export {
   generateExtraReducer,
@@ -49,4 +50,5 @@ export {
   convertAtomicAmount,
   btcToSatoshi,
   isMobile,
+  debouncePromise,
 };

@@ -7,6 +7,7 @@ import { SignInPayload, SignInResponse, UserResponse } from "../../types";
 import { deriveUserKeys, getSigningKeys } from "../../utils";
 import { useSortErrors } from "../../hooks";
 import { FormErrors } from "../../modules/index";
+import { enter2FACode } from "../../modules/2FAModals";
 import {
   Label, Input, Button, Panel, Logo,
 } from "../../components";
@@ -59,13 +60,30 @@ const LoginPage: React.FC<Props> = ({
             { setErrors },
           ): Promise<SignInResponse | undefined> => {
             localStorage.removeItem("_expiredTime");
+            const { authKey, encryptionKey, clean } = await deriveUserKeys(values.password, values.username);
+            const password = Buffer.from(authKey).toString("hex");
             try {
-              const { authKey, encryptionKey, clean } = await deriveUserKeys(values.password, values.username);
-              const password = Buffer.from(authKey).toString("hex");
-              const loginResponse = await login({
-                username: values.username,
-                password,
-              });
+              let loginResponse;
+              try {
+                loginResponse = await login({
+                  username: values.username,
+                  password,
+                });
+              } catch (err: any) {
+                if (err.required_2fa) {
+                  await enter2FACode({
+                    asyncCallback: async (code: string) => {
+                      loginResponse = await login({
+                        username: values.username,
+                        password,
+                        code,
+                      });
+                    },
+                  });
+                } else {
+                  throw err;
+                }
+              }
               const user = await getCurrentUser();
               if (!user?.isKeypairSet) {
                 setPassword(values.password);

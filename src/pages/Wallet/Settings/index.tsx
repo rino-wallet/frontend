@@ -18,7 +18,7 @@ const SettingsContainer: React.FC<Props> = ({ walletId }) => {
   const updateWalletDetails = useThunkActionCreator(updateWalletDetailsThunk);
   return (
     <WalletLayout viewOnly={accessLevel.isViewOnly()} tab="settings" wallet={wallet} id={walletId}>
-      <Settings canDelete={accessLevel.isOwner()} walletId={walletId} wallet={wallet} updateWalletDetails={updateWalletDetails} is2FaEnabled={user?.is2FaEnabled} />
+      <Settings canDelete={accessLevel.isOwner()} walletId={walletId} wallet={wallet} updateWalletDetails={updateWalletDetails} />
     </WalletLayout>
   );
 };

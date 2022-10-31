@@ -28,6 +28,7 @@ import { Icon } from "./Icon";
 import { Prompt } from "./Prompt";
 import { DisableAutofill } from "./DisableAutofill";
 import { WalletRole } from "./WalletRole";
+import { PlaceholderController } from "./PlaceholderController";
 
 export {
   Loading,
@@ -60,4 +61,5 @@ export {
   Prompt,
   DisableAutofill,
   WalletRole,
+  PlaceholderController,
 };

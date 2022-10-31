@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Formik } from "formik";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import routes from "../../router/routes";
 import { SignUpResponse, SignUpThunkPayload } from "../../types";
@@ -48,6 +48,7 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
     nonFieldErrors,
     sortErrors,
   } = useSortErrors(["non_field_errors", "detail"]);
+  const navigate = useNavigate();
   return (
     successMessage ? (
       <Panel title="Account created">
@@ -232,14 +233,22 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
                     isEnterprise ? (
                       <div className="theme-text flex justify-center mb-1">
                         Not an enterprise user?
-                        <a id="link-login" className="theme-link ml-1" href={routes.register}>
+                        <button
+                          type="button"
+                          id="link-sign-up-not-enterprise"
+                          className="theme-link ml-1"
+                          onClick={() => {
+                            sessionStorage.setItem("enterprice", "false");
+                            navigate(routes.register);
+                          }}
+                        >
                           Sign up here
-                        </a>
+                        </button>
                       </div>
                     ) : (
                       <div className="theme-text flex justify-center mb-1">
                         Enterprise user?
-                        <a id="link-login" className="theme-link ml-1" href={`${routes.register}?business=true`}>
+                        <a id="link-sign-up-enterprise" className="theme-link ml-1" href={`${routes.register}?business=true`}>
                           Sign up here
                         </a>
                       </div>

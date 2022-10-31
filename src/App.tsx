@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { ModalContainer } from "promodal";
 import {
+  useLocation,
   useNavigate,
 } from "react-router-dom";
 import { PrivateRouter, showWarningModal } from "./modules/index";
@@ -12,6 +13,7 @@ import routes from "./router/routes";
 
 const App: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const token = useSelector((state) => state.session.token);
   const user = useSelector((state) => state.session.user);
   const password = useSelector((state) => state.session.password);
@@ -48,6 +50,11 @@ const App: React.FC = () => {
       navigate(routes.keypair);
     }
   }, [user]);
+  useEffect(() => {
+    if (location.search.includes("business=true")) {
+      sessionStorage.setItem("enterprice", "true");
+    }
+  }, []);
   return (
     <div className="app">
       <IsMobileProvider value={windowSize}>
