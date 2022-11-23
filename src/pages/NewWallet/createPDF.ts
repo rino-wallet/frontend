@@ -106,8 +106,9 @@ async function createWalletSeedPage(pdf: PdfDocument, seed: string, isBackup?: b
     ? "This is the third, backup wallet's seed. RINO Wallet Platform does not use it, but you need it in order to recover your funds."
     : "This is the seed of the wallet you use at RINO platform.";
   pdf.addText(description, pdf.doc.internal.pageSize.getWidth() / 2, 42, { align: "center" });
+  pdf.addText("Please note that when you copy and paste the seed from this PDF file, the data might include spaces or newline characters. Please remove them using Notepad or some similar text editing software. Follow this procedure: copy the seed from this PDF, paste to Notepad, remove newlines, copy from Notepad, and finally paste to the Monero wallet.", pdf.leftOffset, 50);
 
-  pdf.addCommand(seed, pdf.leftOffset, 62);
+  pdf.addCommand(seed, pdf.leftOffset, 70);
 
   const qrCode = await createQRCodeImage(seed);
   const leftOffset = pdf.leftOffset + 20;

@@ -81,7 +81,7 @@ export const Button: React.FC<Props> & { variant: typeof Variant; size: typeof U
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       className={classNames(
-        "relative inline-flex items-center justify-center font-bold uppercase font-medium whitespace-no-wrap border border-solid",
+        "relative inline-flex items-center justify-center uppercase font-bold whitespace-no-wrap border border-solid",
         className,
         VARIANT_MAPS[disabled ? Variant.DISABLED : variant],
         icon ? ICON_SIZE_MAPS[size] : SIZE_MAPS[size],

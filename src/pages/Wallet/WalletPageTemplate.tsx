@@ -198,15 +198,17 @@ export const WalletPageTemplate: React.FC<Props> = ({
                             </span>
                           </div>
                         </div>
-                        <div className="whitespace-nowrap text-xl font-bold md:text-3xl mr-1">
-                          <span data-qa-selector="wallet-balance">
-                            {wallet?.balance ? <FormatNumber value={piconeroToMonero(wallet?.balance || 0)} /> : "0.0"}
-                          </span>
-                          {" "}
-                          XMR
+                        <div className="md:flex items-center">
+                          <div className="whitespace-nowrap text-xl font-bold md:text-3xl mr-3">
+                            <span data-qa-selector="wallet-balance">
+                              {wallet?.balance ? <FormatNumber value={piconeroToMonero(wallet?.balance || 0)} /> : "0.0"}
+                            </span>
+                            {" "}
+                            XMR
+                          </div>
+                          {wallet?.unlockedBalance !== wallet?.balance && <BalanceDetails wallet={wallet} />}
                         </div>
                       </div>
-                      {wallet?.unlockedBalance !== wallet?.balance && <BalanceDetails wallet={wallet} />}
                     </div>
                   </div>
                   <Button

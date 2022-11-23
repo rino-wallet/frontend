@@ -63,7 +63,7 @@ const ReceivePayment: React.FC<Props> = ({
   useEffect(() => {
     fetchSubaddresses({ walletId, page });
   }, [page]);
-  async function validateAddress(subaddress: Subaddress): Promise<void> {
+  async function validateAddress(subaddress: Subaddress, required: boolean): Promise<void> {
     if (typeof openWallet === "function" && typeof validateSubAddress === "function") {
       await enterPasswordModal({
         callback: async (password: string) => {
@@ -73,6 +73,10 @@ const ReceivePayment: React.FC<Props> = ({
             walletId, address: subaddress.address, index: subaddress.index, loginPassword: password,
           });
         },
+        ...(!required ? {
+          title: "Subaddress validation",
+          text: "Enter your account password to validate newly created subaddress, or click cancel to skip this step.",
+        } : {}),
       });
     }
   }
@@ -137,7 +141,8 @@ const ReceivePayment: React.FC<Props> = ({
                 onClick={(): void => {
                   if (typeof createSubaddress === "function") {
                     createSubaddress({ walletId })
-                      .then(() => {
+                      .then((subaddress) => {
+                        validateAddress(subaddress, false);
                         fetchSubaddresses({ walletId, page });
                       });
                   }

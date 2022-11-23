@@ -8,7 +8,7 @@ import { ValidateButton } from "./ValidateButton";
 interface Props {
   subaddress: Subaddress;
   walletId: string;
-  validateAddress: (subaddress: Subaddress) => Promise<void>;
+  validateAddress: (subaddress: Subaddress, required: boolean) => Promise<void>;
 }
 
 export const SubaddressItem: React.FC<Props> = ({ subaddress, walletId, validateAddress }) => (

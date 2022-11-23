@@ -51,6 +51,9 @@ const rootReducer = (state, action): any => {
   if (action.type === fullReset.toString()) {
     // eslint-disable-next-line
     state = undefined;
+    if (typeof sessionStorage !== "undefined") {
+      sessionStorage.clear();
+    }
   }
   return combinedReducer(state, action);
 };

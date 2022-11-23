@@ -1,16 +1,24 @@
-import React, { ReactChild, useEffect, useRef } from "react";
+import React, { ReactNode, useEffect, useRef } from "react";
 import classNames from "classnames";
 import { BindHotKeys, Panel, Icon } from "../../components";
+import { UI_SIZE } from "../../components/Button";
 
+const SIZE_MAPS: Record<UI_SIZE, string> = {
+  [UI_SIZE.BIG]: "md:max-w-2xl",
+  [UI_SIZE.MEDIUM]: "md:max-w-xl",
+  [UI_SIZE.SMALL]: "md:max-w-lg",
+  [UI_SIZE.TINY]: "md:max-w-md",
+};
 interface Props {
-  title: ReactChild | string;
+  title: ReactNode | string;
   onClose?: (value?: any) => void;
   className?: string;
   showCloseIcon?: boolean;
+  size?: UI_SIZE;
 }
 
-const Modal: React.FC<Props> & { Actions: typeof Actions; Body: typeof Body } = ({
-  children, title, onClose, className = "", showCloseIcon,
+const Modal: React.FC<Props> & { Actions: typeof Actions; Body: typeof Body; size: typeof UI_SIZE; } = ({
+  children, title, onClose, className = "", showCloseIcon, size = UI_SIZE.SMALL,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const refOverlay = useRef<HTMLDivElement>(null);
@@ -29,7 +37,7 @@ const Modal: React.FC<Props> & { Actions: typeof Actions; Body: typeof Body } = 
   return (
     <BindHotKeys callback={(): void => undefined} rejectCallback={handleClose}>
       <div ref={refOverlay} className={classNames("fixed w-full h-full theme-bg-overlay inset-0 z-20 flex items-center", className)}>
-        <div ref={ref} className="container mx-auto p-5 mt:p-0 md:max-w-lg md:rounded-3xl">
+        <div ref={ref} className={classNames("container mx-auto p-5 mt:p-0 md:rounded-3xl", SIZE_MAPS[size])}>
           <Panel className="relative" title={<div className="mt-3">{title}</div>}>
             {
               showCloseIcon && (
@@ -45,6 +53,8 @@ const Modal: React.FC<Props> & { Actions: typeof Actions; Body: typeof Body } = 
     </BindHotKeys>
   );
 };
+
+Modal.size = UI_SIZE;
 
 export const Actions: React.FC = ({ children }) => (
   <Panel.Actions>

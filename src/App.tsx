@@ -52,6 +52,7 @@ const App: React.FC = () => {
   }, [user]);
   useEffect(() => {
     if (location.search.includes("business=true")) {
+      navigate(location.pathname.replace("business=true", ""), { replace: true });
       sessionStorage.setItem("enterprice", "true");
     }
   }, []);

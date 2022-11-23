@@ -12,7 +12,7 @@ import {
   FetchWalletMembersThunkPayload,
 } from "../../../types";
 import {
-  Button, Icon, WalletRole, PlaceholderController,
+  Button, Icon, WalletRole, PlaceholderController, EmptyList,
 } from "../../../components";
 import { Pagination, showSuccessModal } from "../../../modules/index";
 import WalletMemberLayout from "./WalletMemberLayout";
@@ -104,7 +104,7 @@ const UserList: React.FC<Props> = ({
         <div>
           {
             members.map((member, index) => (
-              <div key={member.user} className={index % 2 !== 0 ? "theme-bg-panel-second bg-opacity-50" : ""}>
+              <div key={member.user} className={index % 2 !== 0 ? "theme-bg-panel-second bg-opacity-50 mb-3 last:mb-0" : "mb-3 last:mb-0"}>
                 <WalletMemberLayout
                   role={(
                     <div className="flex items-center">
@@ -186,6 +186,9 @@ const UserList: React.FC<Props> = ({
                 />
               </div>
             ))
+          }
+          {
+            (members.length === 0 && !loading) && <EmptyList message="There are no revoked users." />
           }
           {
             membersListMetaData.pages > 1 && (

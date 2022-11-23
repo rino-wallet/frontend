@@ -1,5 +1,4 @@
 import React from "react";
-import { LayoutLanding } from "./LayoutLanding";
 import { LayoutAuth } from "./LayoutAuth";
 import { LayoutDefault } from "./LayoutDefault";
 import { LayoutClear } from "./LayoutClear";
@@ -17,14 +16,6 @@ export const Layout: React.FC<Props> = ({
   children, signOut, isAuthenticated, page,
 }) => {
   switch (page) {
-    case "landing": {
-      return (
-        <div>
-          <BannerContainer />
-          <LayoutLanding signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutLanding>
-        </div>
-      );
-    }
     case "login":
     case "register":
     case "resendActivationEmail":

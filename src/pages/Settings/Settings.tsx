@@ -47,21 +47,19 @@ const SettingsPage: React.FC<Props> = ({
           <div>
             <div className="mb-5">
               <div className="flex items-center break-all">
-                USERNAME:
-                {" "}
-                {user.username}
+                <div className="w-24 theme-text-secondary text-sm">USERNAME</div>
+                <div className="font-bold">{user.username}</div>
               </div>
             </div>
-            <div className="mb-5">
-              EMAIL:
-              {" "}
-              <div className="inline-flex items-center break-all">
+            <div className="mb-5 flex items-center break-all">
+              <div className="w-24 theme-text-secondary text-sm">EMAIL</div>
+              <div className="inline-flex items-center break-all font-bold">
                 {
                   showEmail ? (
                     <div>
                       {user.email}
                       {" "}
-                      <div data-qa-selector="show-email-btn" className="inline-flex">
+                      <div data-qa-selector="show-email-btn" className="inline-flex ml-3">
                         <Button size={Button.size.SMALL} onClick={(): void => setShowEmail(false)}>Hide</Button>
                       </div>
                     </div>
@@ -69,7 +67,7 @@ const SettingsPage: React.FC<Props> = ({
                     <div>
                       {hideEmail(user.email)}
                       {" "}
-                      <div data-qa-selector="show-email-btn" className="inline-flex">
+                      <div data-qa-selector="show-email-btn" className="inline-flex ml-3">
                         <Button size={Button.size.SMALL} onClick={(): void => setShowEmail(true)}>Reveal</Button>
                       </div>
                     </div>
@@ -79,28 +77,31 @@ const SettingsPage: React.FC<Props> = ({
             </div>
           </div>
           <div className="md:flex items-start justify-start">
-            <div className="flex space-x-3">
+            <div className="sm:flex sm:space-x-3">
               <Button
+                className="block w-full mb-3 sm:w-auto sm:mb-0"
                 name="change-email-btn"
                 type="button"
                 onClick={(): void => setShowEmailModal(true)}
-                size={Button.size.MEDIUM}
+                size={Button.size.SMALL}
               >
                 Change email
               </Button>
               <Button
+                className="block w-full mb-3 sm:w-auto sm:mb-0"
                 name="change-password-btn"
                 type="button"
                 onClick={(): void => setShowPasswordModal(true)}
-                size={Button.size.MEDIUM}
+                size={Button.size.SMALL}
               >
                 Change password
               </Button>
               <Button
+                className="block w-full mb-3 sm:w-auto sm:mb-0"
                 name="logout-all-btn"
                 type="button"
                 onClick={signOutAll}
-                size={Button.size.MEDIUM}
+                size={Button.size.SMALL}
               >
                 Logout from all sessions
               </Button>
@@ -166,7 +167,7 @@ const SettingsPage: React.FC<Props> = ({
                   });
               }}
               name="disable2FA"
-              size={Button.size.MEDIUM}
+              size={Button.size.SMALL}
             >
               Disable 2fa
             </Button>
@@ -176,7 +177,7 @@ const SettingsPage: React.FC<Props> = ({
               type="button"
               variant={Button.variant.GREEN}
               onClick={onClickEnable2FA}
-              size={Button.size.MEDIUM}
+              size={Button.size.SMALL}
             >
               Enable 2fa
             </Button>

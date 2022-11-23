@@ -16,7 +16,7 @@ export function useAccountType(): {
   return {
     isAuthenticated: !!token,
     isConsumer: user?.accountType === accountType.CONSUMER,
-    isEnterprise: user?.accountType === accountType.ENTERPRISE || enterpriseSession,
+    isEnterprise: user?.accountType === accountType.ENTERPRISE || (!user && enterpriseSession),
     isProsumer: user?.accountType === accountType.PROSUMER,
     features: user?.extraFeatures,
   };

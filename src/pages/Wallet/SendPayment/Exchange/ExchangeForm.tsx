@@ -123,8 +123,12 @@ const ExchangeForm: React.FC<Props> = ({
       const response = await getExchangeEstimation(data);
       setExchangePlatformState(ExchangePlatformState.available);
       return response;
-    } catch (err) {
-      setExchangePlatformState(ExchangePlatformState.not_available);
+    } catch (err: any) {
+      if (err?.status >= 500) {
+        setExchangePlatformState(ExchangePlatformState.not_available);
+      } else {
+        setExchangePlatformState(ExchangePlatformState.available);
+      }
       throw err;
     }
   }

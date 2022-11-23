@@ -119,27 +119,33 @@ const ConfirmTransaction: React.FC<Props> = ({
       }): React.ReactElement => (
         <form className="m-auto md:w-3/4" name="form-sendPayment" onSubmit={handleSubmit}>
           {!inProgress && !isSubmitting && !Object.values(errors).length && <Navigate to={`${generatePath(routes.wallet, { id: walletId })}/transactions`} />}
-          <Prompt
-            when={isSubmitting}
-            title="Transaction creation in progress."
-            message="If you interrupt the transaction creation process, no transaction is created."
-          />
+          {
+            isSubmitting && (
+              <Prompt
+                when={inProgress || isSubmitting}
+                title="Transaction creation in progress."
+                message="If you interrupt the transaction creation process now, the transaction might fail. If that happens, the transaction wouldn't appear in the list later."
+              />
+            )
+          }
+          {
+            !isSubmitting && (
+              <Prompt
+                when={inProgress || isSubmitting}
+                title="Transaction creation in progress."
+                message="If you interrupt the transaction creation process, no transaction is created."
+              />
+            )
+          }
           {!isSubmitting ? (
             <div>
               <CreatingTransactionStage
-                amount={(
-                  <span>
-                    {transactionData?.amount}
-                    {" "}
-                    XMR
-                  </span>
-                )}
                 address={transactionData?.address}
                 memo={transactionData?.memo}
                 priority={transformPriorityText(transactionData?.priority)}
                 stage={stage}
                 fee={pendingTransaction?.fee ? (
-                  <span>
+                  <span className="font-bold">
                     <FormatNumber value={piconeroToMonero(pendingTransaction.fee)} />
                     {" "}
                     XMR
@@ -148,15 +154,17 @@ const ConfirmTransaction: React.FC<Props> = ({
                     % of transaction amount)
                   </span>
                 ) : (loading ? <Loading /> : "-")}
-                total={pendingTransaction?.fee ? <FormatNumber value={new Decimal(transactionData?.amount || 0).plus(parseFloat(piconeroToMonero(pendingTransaction?.fee || 0))).toString()} /> : <Loading />}
+                total={pendingTransaction?.fee ? <span className="font-bold text-2xl"><FormatNumber value={new Decimal(transactionData?.amount || 0).plus(parseFloat(piconeroToMonero(pendingTransaction?.fee || 0))).toString()} /></span> : <Loading />}
                 loading={loading}
               />
               <FormErrors errors={errors} />
               <FormErrors fields={["address", "amount", "password", "memo"]} errors={step1Errors} />
               <div className="flex justify-end space-x-3 mt-5 mb-16">
-                <Button onClick={(): void => {
-                  onEdit(transactionData);
-                }}
+                <Button
+                  size={Button.size.BIG}
+                  onClick={(): void => {
+                    onEdit(transactionData);
+                  }}
                 >
                   Edit
                 </Button>

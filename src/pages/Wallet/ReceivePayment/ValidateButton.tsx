@@ -4,7 +4,7 @@ import { Subaddress } from "../../../types";
 
 interface Props {
   subaddress: Subaddress;
-  validateAddress: (subaddress: Subaddress) => Promise<void>;
+  validateAddress: (subaddress: Subaddress, required: boolean) => Promise<void>;
 }
 
 export const ValidateButton: React.FC<Props> = ({ subaddress, validateAddress }) => {
@@ -17,7 +17,7 @@ export const ValidateButton: React.FC<Props> = ({ subaddress, validateAddress })
       onClick={(): void => {
         if (!subaddress.isValid) {
           setLoading(true);
-          validateAddress(subaddress)
+          validateAddress(subaddress, true)
             .finally(() => {
               setTimeout(() => { setLoading(false); }, 300);
             });

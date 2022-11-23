@@ -2,7 +2,6 @@ import React from "react";
 import { Spinner, Label } from "../../../../../components";
 
 interface Props {
-  amount: React.ReactChild;
   address: React.ReactChild;
   memo?: React.ReactChild;
   priority: React.ReactChild;
@@ -13,7 +12,7 @@ interface Props {
 }
 
 const CreatingTransactionStage: React.FC<Props> = ({
-  amount, address, memo, priority, fee, stage, loading, total,
+  address, memo, priority, fee, stage, loading, total,
 }) => (
   <div className="m-auto p-5">
     {
@@ -43,22 +42,33 @@ const CreatingTransactionStage: React.FC<Props> = ({
     }
     <div className="mb-4 md:mb-0">
       <Label labelClassName="md:text-right" label="" inline>
-        <div className="text-2xl font-bold mb-4">Transaction In Progress:</div>
+        <div className="text-2xl font-bold mb-4">Transaction Details:</div>
       </Label>
     </div>
     <div className="mb-4 md:mb-0">
-      <Label labelClassName="md:text-right" label="amount" inline>
+      <Label labelClassName="md:text-right" label={<span className="text-base">Total Amount</span>} inline>
         <span
-          data-qa-selector="transaction-amount"
+          className="break-all"
+          data-qa-selector="transaction-total"
         >
-          {amount}
+          {total}
         </span>
       </Label>
     </div>
     <div className="mb-4 md:mb-0">
-      <Label labelClassName="md:text-right" label="destination address" inline>
+      <Label labelClassName="md:text-right" label="Including Fee" inline>
         <span
-          className="theme-text-primary break-all"
+          className="break-all"
+          data-qa-selector="transaction-fee"
+        >
+          {fee}
+        </span>
+      </Label>
+    </div>
+    <div className="mb-4 md:mb-0">
+      <Label labelClassName="md:text-right whitespace-nowrap" label="destination address" inline>
+        <span
+          className="theme-text-primary break-all text-base"
           data-qa-selector="transaction-dest-address"
         >
           {address}
@@ -86,26 +96,6 @@ const CreatingTransactionStage: React.FC<Props> = ({
           data-qa-selector="transaction-priority"
         >
           {priority}
-        </span>
-      </Label>
-    </div>
-    <div className="mb-4 md:mb-0">
-      <Label labelClassName="md:text-right" label="fee" inline>
-        <span
-          className="break-all"
-          data-qa-selector="transaction-fee"
-        >
-          {fee}
-        </span>
-      </Label>
-    </div>
-    <div className="mb-4 md:mb-0">
-      <Label labelClassName="md:text-right" label="Total" inline>
-        <span
-          className="break-all"
-          data-qa-selector="transaction-total"
-        >
-          {total}
         </span>
       </Label>
     </div>

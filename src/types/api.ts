@@ -497,3 +497,8 @@ export interface GetExchangeOrderResponse {
   outgoingAddress: string;
   outgoingTxid: string;
 }
+
+export interface CreateZammadTicketPayload {
+  title: string;
+  message: string;
+}

@@ -20,15 +20,16 @@ export const TextArea: React.FC<Props> = (props) => {
   return (
     <div>
       <textarea
+        rows={4}
         value={value}
         onChange={onChange}
         placeholder={placeholder}
         name={name}
         className={classNames(
-          "font-lato inline-flex px-6 py-3.75 text-lg rounded rounded-medium theme-placeholder-color border-solid border appearance-none theme-text",
+          "w-full resize-none font-lato inline-flex px-6 py-3.75 text-lg rounded rounded-medium theme-placeholder-color border-solid border appearance-none theme-text",
           {
             "theme-control-border": !error,
-            "theme-border-red": !!error,
+            "theme-border-error": !!error,
           },
         )}
       />

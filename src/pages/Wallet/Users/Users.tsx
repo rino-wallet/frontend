@@ -118,20 +118,22 @@ const Users: React.FC<Props> = ({
     <div>
       <Panel
         title={(
-          <div className="flex w-full items-center justify-between">
-            <span>Users</span>
-            <div className="flex space-x-6">
-              <Switch
-                id="show-revoked-users"
-                checked={showRevokedUsers}
-                onChange={() => { setShowRevokedUsers(!showRevokedUsers); }}
-              >
-                <span className="text-base">Show revoked users</span>
-              </Switch>
-              {
-                canShare && <Button onClick={onAddUserClick}>Add User</Button>
-              }
+          <div className="flex w-full items-center justify-between mb-6 md:mb-0">
+            <div className="md:flex flex-1 items-center mr-6">
+              <div className="flex-1">Users</div>
+              <div className="absolute mt-3 md:mt-0 md:static">
+                <Switch
+                  id="show-revoked-users"
+                  checked={showRevokedUsers}
+                  onChange={() => { setShowRevokedUsers(!showRevokedUsers); }}
+                >
+                  <span className="text-base">Show revoked users</span>
+                </Switch>
+              </div>
             </div>
+            {
+              canShare && <Button onClick={onAddUserClick}>Add User</Button>
+            }
           </div>
         )}
       >

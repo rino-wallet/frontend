@@ -28,7 +28,7 @@ export const Label: React.FC<Props> = (props) => {
         },
       )}
       >
-        {label}
+        <span className="font-bold">{label}</span>
         <br />
         {subtitle ? (
           <span className="theme-text-secondary">

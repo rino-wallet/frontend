@@ -29,6 +29,7 @@ import { Prompt } from "./Prompt";
 import { DisableAutofill } from "./DisableAutofill";
 import { WalletRole } from "./WalletRole";
 import { PlaceholderController } from "./PlaceholderController";
+import { UploadFile } from "./UploadFile";
 
 export {
   Loading,
@@ -62,4 +63,5 @@ export {
   DisableAutofill,
   WalletRole,
   PlaceholderController,
+  UploadFile,
 };

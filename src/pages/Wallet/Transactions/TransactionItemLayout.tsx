@@ -24,7 +24,7 @@ const TransactionItemLayout: React.FC<Props> = ({
     <div className="w-1/2 order-3 md:w-4/12 md:px-2 md:order-2">
       {timestamp}
     </div>
-    <div className="w-1/2 order-4 text-right md:w-2/12 md:order-3 md:text-left md:px-2">
+    <div className="w-1/2 order-4 flex-1 text-right md:w-2/12 md:order-3 md:text-left md:px-2">
       {status}
     </div>
   </div>

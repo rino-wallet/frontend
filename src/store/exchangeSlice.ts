@@ -48,7 +48,7 @@ export const getExchangeEstimation = createAsyncThunk<GetExchangeEstimationRespo
       dispatch(setEstimation(response));
       return response;
     } catch (err: any) {
-      return rejectWithValue(err?.data);
+      return rejectWithValue(err);
     }
   },
 );

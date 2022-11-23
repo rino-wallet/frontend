@@ -4,6 +4,7 @@ import tasksApi from "../api/tasks";
 import publicKeysApi from "../api/publicKeys";
 import otpApi from "../api/otp";
 import exchangeApi from "../api/exchange";
+import zammadApi from "../api/zammad";
 import { setCookie } from "../utils";
 
 export function setApiToken(token: string): void {
@@ -13,6 +14,7 @@ export function setApiToken(token: string): void {
   publicKeysApi.setToken(token);
   otpApi.setToken(token);
   exchangeApi.setToken(token);
+  zammadApi.setToken(token);
   setCookie("loggedIn", token ? "true" : "false", 0.5, ".rino.io");
 }
 

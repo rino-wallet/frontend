@@ -1,4 +1,6 @@
-import React, { useEffect, useRef } from "react";
+import React, {
+  ReactNode, useEffect, useRef,
+} from "react";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import { createModal } from "promodal";
@@ -15,9 +17,13 @@ interface Props {
   submit: (password: string) => void;
   callback: (password: string) => Promise<void>;
   cancel: () => void;
+  title?: ReactNode;
+  text?: ReactNode;
 }
 
-const EnterPasswordModal: React.FC<Props> = ({ submit, callback, cancel }) => {
+const EnterPasswordModal: React.FC<Props> = ({
+  submit, callback, cancel, title, text,
+}) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const {
     isValid,
@@ -56,12 +62,19 @@ const EnterPasswordModal: React.FC<Props> = ({ submit, callback, cancel }) => {
   return (
     <BindHotKeys callback={handleSubmit} rejectCallback={cancel}>
       <Modal
-        title="Enter account password"
+        title={title}
         onClose={cancel}
         className="z-50"
       >
         <form onSubmit={handleSubmit}>
           <Modal.Body>
+            {
+              text && (
+                <div className="form-field">
+                  {text}
+                </div>
+              )
+            }
             <div className="form-field">
               <Label label="Enter your account password">
                 <Input
@@ -105,6 +118,20 @@ const EnterPasswordModal: React.FC<Props> = ({ submit, callback, cancel }) => {
   );
 };
 
-const enterPasswordModal = createModal(({ submit, cancel, callback }: Props) => <EnterPasswordModal callback={callback} submit={submit} cancel={cancel} />);
+const enterPasswordModal = createModal(({
+  submit,
+  cancel,
+  callback,
+  title = "Enter your account password",
+  text = "",
+}: Props) => (
+  <EnterPasswordModal
+    callback={callback}
+    submit={submit}
+    cancel={cancel}
+    title={title}
+    text={text}
+  />
+));
 
 export { enterPasswordModal };
