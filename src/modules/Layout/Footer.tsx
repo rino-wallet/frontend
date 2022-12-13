@@ -51,7 +51,12 @@ const Footer: React.FC<Props> = ({ dark, showDisclaimer, isAuthenticated }) => {
             </div>
           </div>
         </div>
-        <div className="text-sm mt-5 md:mt-0 md:order-1">Copyright © 2022 RINO. All Rights Reserved.</div>
+        <div className={classNames("text-lg md:flex justify-between md:order-1", { "footer-dark__text": dark, "theme-text-secondary": !dark })}>
+          <div className="">Copyright © 2022 RINO. All Rights Reserved.</div>
+          <div>
+            <a target="_blank" rel="noreferrer" href="https://integrity.rino.io/">https://integrity.rino.io/</a>
+          </div>
+        </div>
         {
           showDisclaimer && (
             <>
