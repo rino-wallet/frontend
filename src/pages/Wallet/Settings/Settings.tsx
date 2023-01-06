@@ -1,15 +1,16 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import {
-  Button, Label, Input, Checkbox, Panel, Tooltip, Copy, Icon,
+  Button, Label, Input, Panel, Tooltip, Copy, Icon, Switch,
 } from "../../../components";
 import { FormErrors, CopyArea } from "../../../modules/index";
 import {
   Env, UpdateWalletDetailsPayload, UpdateWalletDetailsResponse, Wallet,
 } from "../../../types";
 import DeleteWallet from "../DeleteWallet";
-import { enter2FACode } from "../../../modules/2FAModals";
+import { enter2FACode, enable2FA } from "../../../modules/2FAModals";
 import { useSelector, useAccountType } from "../../../hooks";
 import { selectors as sessionSelectors } from "../../../store/sessionSlice";
 import { APP_URLS_MAP } from "../../../constants";
@@ -38,6 +39,7 @@ const Settings: React.FC<Props> = ({
   const user = useSelector(sessionSelectors.getUser);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [nonFieldErrors, setNonFieldErrors] = useState<{ non_field_errors?: string, message?: string, detail?: string }>({});
+  const navigate = useNavigate();
   const formik = useFormik({
     enableReinitialize: true,
     validationSchema: settingsValidationSchema,
@@ -85,6 +87,12 @@ const Settings: React.FC<Props> = ({
       }
     },
   });
+
+  function goToSettings(): void{
+    navigate("/settings");
+    enable2FA();
+  }
+
   const publicUrl = APP_URLS_MAP[process.env.REACT_APP_ENV as Env];
   return (
     <Panel title={(
@@ -160,33 +168,41 @@ const Settings: React.FC<Props> = ({
                 </Label>
               </div>
               <div className="form-field">
-                <Checkbox
-                  name="requires_2fa"
+                <Switch
+                  id="requires_2fa"
                   checked={formik.values.requires_2fa}
                   disabled={!user?.is2FaEnabled}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>): void | null => { formik.setFieldValue("requires_2fa", e.target.checked); }}
                 >
-                  <div className="flex items-center">
-                    Require 2FA for spending.
-                    {!user?.is2FaEnabled ? (
-                      <Tooltip
-                        content={(
-                          <div className="md:w-48 text-sm" data-qa-selector="tx-priority-tooltip">
-                            Activate Account 2FA to
-                            {" "}
-                            {formik.values.requires_2fa ? "disable" : "enable"}
-                            {" "}
-                            this option.
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center">
+                      Require 2FA for spending.
+                      {!user?.is2FaEnabled ? (
+                        <Tooltip
+                          content={(
+                            <div className="md:w-48 text-sm" data-qa-selector="tx-priority-tooltip">
+                              Activate Account 2FA to
+                              {" "}
+                              {formik.values.requires_2fa ? "disable" : "enable"}
+                              {" "}
+                              this option.
+                            </div>
+                          )}
+                        >
+                          <div className="text-sm cursor-pointer ml-1" data-qa-selector="cursor-pointer-tx-priority-tooltip">
+                            <Icon name="info" />
                           </div>
-                        )}
-                      >
-                        <div className="text-sm cursor-pointer ml-1" data-qa-selector="cursor-pointer-tx-priority-tooltip">
-                          <Icon name="info" />
-                        </div>
-                      </Tooltip>
-                    ) : null}
+                        </Tooltip>
+                      ) : null}
+                    </div>
+
+                    {!user?.is2FaEnabled && (
+                      <Button onClick={():void => goToSettings()} className="w-fit text-sm border px-2 py-1 border-gray-300 rounded-lg">
+                        <p className="text-gray-700">SET UP 2FA</p>
+                      </Button>
+                    )}
                   </div>
-                </Checkbox>
+                </Switch>
               </div>
               {
                 features?.publicWallet && (
@@ -194,8 +210,8 @@ const Settings: React.FC<Props> = ({
                     <h3 className="uppercase font-bold mb-8">Public wallet</h3>
                     <div>
                       <div className="form-field">
-                        <Checkbox
-                          name="is_public"
+                        <Switch
+                          id="is_public"
                           checked={formik.values.is_public}
                           onChange={(e: React.ChangeEvent<HTMLInputElement>): void | null => { formik.setFieldValue("is_public", e.target.checked); }}
                         >
@@ -211,18 +227,26 @@ const Settings: React.FC<Props> = ({
                               </div>
                             </Tooltip>
                           </div>
-                        </Checkbox>
+                        </Switch>
                       </div>
                       <div className="form-field">
-                        <Label label="Wallet identifier">
+                        <Label label={
+                            (
+                              <div>
+                                Wallet identifier
+                                <span className="ml-1 theme-text-secondary font-semibold text-sm">(REQUIRED)</span>
+                              </div>
+                            )
+                          }
+                        >
                           <Input
                             type="text"
                             name="public_slug"
                             value={formik.values.public_slug}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            error={formik.errors.public_slug || ""}
                             disabled={!formik.values.is_public}
+                            error={formik.errors.public_slug || ""}
                           />
                         </Label>
                       </div>

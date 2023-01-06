@@ -42,9 +42,8 @@ export const BalanceDetails: React.FC<Props> = ({ wallet }) => {
     >
       <div className="min-w-0">
         <div
-          className="text-base items-end theme-text-secondary md:text-2xl"
+          className="text-base items-end md:text-base theme-text-secondary font-bold"
         >
-          (
           <span data-qa-selector="wallet-unlocked-balance">
             <FormatNumber
               value={piconeroToMonero(wallet?.unlockedBalance || 0)}
@@ -68,7 +67,6 @@ export const BalanceDetails: React.FC<Props> = ({ wallet }) => {
               mins
             </span>
           ) : <span>locked</span>}
-          )
         </div>
       </div>
     </Tooltip>

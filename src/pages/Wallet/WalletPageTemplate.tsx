@@ -185,7 +185,7 @@ export const WalletPageTemplate: React.FC<Props> = ({
                     {title || wallet?.name}
                   </h1>
                 </header>
-                <div className="items-end justify-between flex">
+                <div className="items-center justify-between flex">
                   <div className="items-center justify-between md:flex max-w-full grow min-w-0">
                     <div className="lg:flex items-end max-w-full">
                       <div>
@@ -198,7 +198,7 @@ export const WalletPageTemplate: React.FC<Props> = ({
                             </span>
                           </div>
                         </div>
-                        <div className="md:flex items-center">
+                        <div className="md:flex items-start flex-col">
                           <div className="whitespace-nowrap text-xl font-bold md:text-3xl mr-3">
                             <span data-qa-selector="wallet-balance">
                               {wallet?.balance ? <FormatNumber value={piconeroToMonero(wallet?.balance || 0)} /> : "0.0"}
