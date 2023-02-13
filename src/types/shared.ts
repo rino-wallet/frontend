@@ -146,6 +146,7 @@ export interface UserKeyPairInfo {
 }
 
 export interface ListMetadata {
+  page?: number;
   pages: number;
   hasPreviousPage: boolean;
   hasNextPage: boolean;

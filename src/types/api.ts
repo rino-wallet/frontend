@@ -1,4 +1,4 @@
-import { Subaddress } from "./store";
+import { Promotion, Referral, Subaddress } from "./store";
 import { AccessLevel } from "./shared";
 
 interface ListResponse {
@@ -74,6 +74,7 @@ export interface SignUpPayload {
   company_name?: string;
   company_website?: string;
   account_type?: string;
+  referral_code?: string;
 }
 
 export interface SignUpResponse {
@@ -331,6 +332,14 @@ export interface FetchWalletMembersThunkPayload {
 
 export interface FetchWalletMembersResponse extends ListResponse {
   results: WalletMember[];
+}
+
+export interface FetchReferralsResponse extends ListResponse {
+  results: Referral[];
+}
+
+export interface FetchPromotionsResponse extends ListResponse {
+  results: Promotion[];
 }
 
 export type RemoveWalletAccessResponse = void;

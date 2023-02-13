@@ -21,6 +21,7 @@ interface Props {
 const TransactionDetailsContent: React.FC<Props> = ({ transaction, walletId, isPublicWallet }) => {
   const timestamp = transaction?.timestamp ? transaction?.timestamp : transaction?.createdAt;
   const loading = !transaction;
+  const confirmations = typeof transaction?.confirmations === "number" && transaction?.confirmations > 100 ? "100+" : transaction?.confirmations;
   return (
     <div className="px-10 pt-3 pb-7 transaction-details bg-cover md:bg-auto">
       <div className="mb-8 md:mb-0">
@@ -96,7 +97,7 @@ const TransactionDetailsContent: React.FC<Props> = ({ transaction, walletId, isP
           labelClassName="md:text-right"
           valueClassName=""
         >
-          <div data-qa-selector="transaction-confirmations">{transaction?.confirmations}</div>
+          <div data-qa-selector="transaction-confirmations">{confirmations}</div>
         </Label>
       </div>
       <div className="mb-8 md:mb-0">

@@ -3,7 +3,7 @@ import React, {
 } from "react";
 import * as yup from "yup";
 import { useFormik } from "formik";
-import { createModal } from "promodal";
+import { createModal } from "../ModalFactory";
 import {
   BindHotKeys, Input, Button, Label,
 } from "../../components";

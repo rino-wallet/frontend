@@ -22,6 +22,7 @@ export default {
   keypair: "/keypair",
   not_found: "/404",
   logout: "/logout",
+  rewards: "/rewards/:type",
   static: {
     consumer: {
       security: `${publicUrl}/security`,

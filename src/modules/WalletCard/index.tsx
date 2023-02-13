@@ -4,6 +4,11 @@ import { piconeroToMonero, getWalletColor } from "../../utils";
 import { Placeholder, FormatNumber, WalletRole } from "../../components";
 import { AccessLevel } from "../../types";
 
+export enum Variant {
+  LIGHT,
+  DEFAULT,
+}
+
 const WalletPlaceholder: React.FC = () => (
   <div className="flex-1 min-w-0 text-left">
     <div className="w-1/4 mb-3 mt-3">
@@ -15,6 +20,7 @@ const WalletPlaceholder: React.FC = () => (
   </div>
 );
 interface Props {
+  variant?: Variant;
   balance?: string;
   unlocked?: string;
   name?: string;
@@ -22,17 +28,22 @@ interface Props {
   role?: AccessLevel;
 }
 
-export const WalletCard: React.FC<Props> = ({
+export const WalletCard: React.FC<Props> & { variant: typeof Variant } = ({
   balance = "",
   unlocked = "",
   name = "",
   loading = false,
+  variant = Variant.DEFAULT,
   role,
 }) => {
   const gradient = getWalletColor();
   return (
     <div className={classNames("theme-bg-panel theme-border border rounded-large rounded-tr-none h-36 flex items-stretch", gradient.light)}>
-      <div className={classNames("-my-px -mx-px flex-shrink-0 rounded-large rounded-tr-none w-10 md:w-16", gradient.main)} />
+      <div className={classNames("-my-px -mx-px flex-shrink-0 rounded-large rounded-tr-none w-10 md:w-16", gradient.main, {
+        "w-10 md:w-16": variant === Variant.DEFAULT,
+        "w-10 md:w-10": variant === Variant.LIGHT,
+      })}
+      />
       <div className="flex flex-1 min-w-0 px-5 py-9 items-stretch md:px-10">
         {
           loading ? <WalletPlaceholder /> : (
@@ -82,3 +93,5 @@ export const WalletCard: React.FC<Props> = ({
     </div>
   );
 };
+
+WalletCard.variant = Variant;

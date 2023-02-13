@@ -1,5 +1,5 @@
 import React, { ReactChild } from "react";
-import { createModal } from "promodal";
+import { createModal } from "../ModalFactory";
 import { Modal } from "../Modal";
 import { Button, Check } from "../../components";
 

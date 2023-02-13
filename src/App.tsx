@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
-import { ModalContainer } from "promodal";
 import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
+import { ModalContainer } from "./modules/ModalFactory";
 import { PrivateRouter, showWarningModal } from "./modules/index";
 import { useSelector, useThunkActionCreator, useWindowSize } from "./hooks";
 import { IsMobileProvider } from "./hooks/useIsMobile";
@@ -59,10 +59,10 @@ const App: React.FC = () => {
   return (
     <div className="app">
       <IsMobileProvider value={windowSize}>
-        <div className="relative">
+        <PrivateRouter isAuthenticated={!!token} />
+        <div className="relative z-50">
           <ModalContainer />
         </div>
-        <PrivateRouter isAuthenticated={!!token} />
       </IsMobileProvider>
     </div>
   );

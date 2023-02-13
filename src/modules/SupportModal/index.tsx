@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import * as yup from "yup";
 import { format } from "date-fns";
-import { createModal } from "promodal";
 import { useFormik } from "formik";
+import { createModal } from "../ModalFactory";
 import { useSelector, useSortErrors } from "../../hooks";
 import { selectors as sessionSelectors } from "../../store/sessionSlice";
 import { Modal } from "../Modal";
+import { SuccessModal } from "../index";
 import {
   Button, TextArea, Label,
 } from "../../components";
@@ -32,6 +33,8 @@ interface Props {
 export const SupportModal: React.FC<Props> = ({ cancel, submit }) => {
   // const [files, setFiles] = useState<File[]>([]);
   const user = useSelector(sessionSelectors.getUser);
+  const [isFinished, setIsFinished] = useState(false);
+
   const {
     nonFieldErrors,
     sortErrors,
@@ -60,13 +63,20 @@ export const SupportModal: React.FC<Props> = ({ cancel, submit }) => {
           title: formValues.title,
           message: formValues.message,
         });
-        submit();
+        setIsFinished(true);
       } catch (error: any) {
         if (error?.data) setErrors(sortErrors(error.data).fieldErrors);
       }
     },
   });
-  return (
+
+  return isFinished ? (
+    <SuccessModal
+      title="Issue Submitted"
+      message="Thank you, we have successfully received your inquiry. You should receive an e-mail confirmation as well and we will get back to you as soon as we can!"
+      goBackCallback={() => submit()}
+    />
+  ) : (
     <Modal size={Modal.size.BIG} title="RINO Customer Service">
       <form onSubmit={handleSubmit}>
         <Modal.Body>

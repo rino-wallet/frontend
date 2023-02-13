@@ -2,7 +2,7 @@ import React from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { format } from "date-fns";
-import { createModal } from "promodal";
+import { createModal } from "../../../modules/ModalFactory";
 import { Subaddress, UpdateSubaddressThunkPayload } from "../../../types";
 import { FormErrors, Modal } from "../../../modules/index";
 import { Button, Label, Input } from "../../../components";

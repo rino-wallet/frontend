@@ -25,6 +25,8 @@ const registerValidationSchema = (isEnterprise: boolean) => yup.object().shape({
     .string()
     .required("This field is required."),
   password: passwordValidationSchema,
+  referral_code: yup
+    .string(),
   re_password: yup
     .string()
     .required("This field is required.")
@@ -86,6 +88,7 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
               password: "",
               password_confirmation: "",
               re_password: "",
+              referral_code: "",
               ...(isEnterprise ? { company_name: "", company_website: "", account_type: "" } : {}),
               non_field_errors: "",
             }}
@@ -95,6 +98,7 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
               username: values.username,
               password: values.password,
               password_confirmation: values.password_confirmation,
+              referral_code: values.referral_code,
               ...(isEnterprise ? { company_name: values.company_name, company_website: values.company_website, account_type: accountType.ENTERPRISE } : {}),
             })
               .then(() => {
@@ -203,6 +207,19 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
                       onBlur={handleBlur}
                       placeholder="Password"
                       error={touched.re_password ? errors.re_password : ""}
+                    />
+                  </Label>
+                </div>
+                <div className="form-field">
+                  <Label label="Referral code">
+                    <Input
+                      name="referral_code"
+                      type="text"
+                      value={values.referral_code}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      placeholder="Code"
+                      error={touched.referral_code ? errors.referral_code : ""}
                     />
                   </Label>
                 </div>

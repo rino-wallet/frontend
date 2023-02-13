@@ -1,10 +1,16 @@
 import React, { useState } from "react";
+import { Link, generatePath } from "react-router-dom";
 import { User, UpdateUserPayload, UserResponse } from "../../types";
-import { Button, Icon, Switch } from "../../components";
+import {
+  Button, Icon, Panel, Switch,
+} from "../../components";
 import { enable2FA, disable2FA, info2FA } from "../../modules/2FAModals";
 import { PageTemplate, showSuccessModal } from "../../modules/index";
 import ChangeEmail from "./ChangeEmail";
 import ChangePassword from "./ChangePassword";
+import { ReactComponent as RewardsIcon } from "./rewardsIcon.svg";
+import routes from "../../router/routes";
+import { useAccountType } from "../../hooks";
 
 interface Props {
   user: User;
@@ -25,6 +31,7 @@ const SettingsPage: React.FC<Props> = ({
   signOutAll,
   pendingUpdateUser,
 }) => {
+  const { isEnterprise } = useAccountType();
   const [showEmail, setShowEmail] = useState(false);
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -39,6 +46,27 @@ const SettingsPage: React.FC<Props> = ({
     <PageTemplate title="Settings">
       {showEmailModal && <ChangeEmail goBackCallback={(): void => { setShowEmailModal(false); }} />}
       {showPasswordModal && <ChangePassword goBackCallback={(): void => { setShowPasswordModal(false); }} />}
+      <div>
+        {
+          !isEnterprise && (
+            <Link to={generatePath(routes.rewards, { type: "referrals" })}>
+              <Panel className="mt-10">
+                <div className="flex items-center py-6 px-8">
+                  <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center">
+                    <RewardsIcon />
+                  </div>
+                  <div className="flex-1 pl-6">
+                    <span className="text-4xl font-bold font-lato">Start earning rewards!</span>
+                  </div>
+                  <div className="flex flex-col justify-center w-6 text-4xl font-semibold ">
+                    &#x3e;
+                  </div>
+                </div>
+              </Panel>
+            </Link>
+          )
+        }
+      </div>
       <section className="py-8">
         <h2 className="text-3xl text-base font-bold mb-6 flex items-center">
           Account

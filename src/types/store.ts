@@ -98,6 +98,7 @@ export interface User {
   signingPublicKey: string;
   encPrivateKey: KeyPairJsonWrapper;
   txNotifications: boolean;
+  referralCode?: string;
 }
 
 export interface TransactionDestination {
@@ -152,6 +153,14 @@ export interface CreateSubaddressThunkPayload {
 }
 
 export interface FetchWalletListThunkPayload {
+  page: number;
+}
+
+export interface FetchPromotionListThunkPayload {
+  page: number;
+}
+
+export interface FetchReferralListThunkPayload {
   page: number;
 }
 
@@ -234,4 +243,32 @@ export interface ExchangeOrder {
   outgoingAmount: number;
   outgoingAddress: string;
   outgoingTxid: string;
+}
+
+export interface Referral {
+  id: string;
+  referee: string;
+  referrer: string;
+  refereeStatus: string;
+  referrerStatus: string;
+  refereeAddr: string;
+  reward: number;
+  threshold: number;
+}
+
+export interface Promotion {
+  address: string;
+  amount: number;
+  created_at: string;
+  id: string;
+  promotion: {
+    created_at: string;
+    name: string;
+    reward: number;
+    threshold: number;
+    updated_at: string;
+  }
+  status: string;
+  txid: string;
+  updated_at: string;
 }

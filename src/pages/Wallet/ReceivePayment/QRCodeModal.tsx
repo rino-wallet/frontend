@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { createModal } from "promodal";
+import { createModal } from "../../../modules/ModalFactory";
 import { Button } from "../../../components";
 import { createQRCodeImage } from "../../../utils";
 import { Modal } from "../../../modules/index";

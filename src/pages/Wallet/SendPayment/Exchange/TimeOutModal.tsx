@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { createModal } from "promodal";
+import { createModal } from "../../../../modules/ModalFactory";
 import { Modal } from "../../../../modules/index";
 import { Button, BindHotKeys } from "../../../../components";
 

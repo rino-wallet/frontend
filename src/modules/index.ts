@@ -12,6 +12,8 @@ import { showWarningModal } from "./WarningModal";
 import { showConfirmationModal } from "./ConfirmationModal";
 import PrivateRouter from "./PrivateRouter";
 import { showPreventNavigationModal } from "./PreventNavigationModal";
+import { WalletList } from "./WalletList";
+import { showSupportModal } from "./SupportModal";
 
 export {
   PageTemplate,
@@ -29,4 +31,6 @@ export {
   showConfirmationModal,
   showPreventNavigationModal,
   PrivateRouter,
+  WalletList,
+  showSupportModal,
 };

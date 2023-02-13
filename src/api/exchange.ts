@@ -42,6 +42,11 @@ export class ExchangeApi extends Api {
     return this.get<any>("/exchange/orders/currencies/")
       .then(this.success);
   }
+
+  public getOrdersStats(): Promise<any> {
+    return this.get<any>("/exchange/orders/stats/")
+      .then(this.success);
+  }
 }
 
 const exchangeApi = new ExchangeApi(apiConfig);
@@ -53,6 +58,14 @@ if (process.env.REACT_APP_ENABLE_API_MOCKS === "true") {
     // eslint-disable-next-line
     .onGet(new RegExp("/exchange/orders/currencies/"))
     .reply(() => [201, [["xmr", "Monero"], ["btc", "Bitcoin"], ["eth", "Ethereum"], ["sol", "Solana"], ["ada", "Cardano"], ["usdt", "Tether"], ["usdc", "USD Coin"], ["bnb", "Binance Coin"], ["xrp", "Ripple"], ["doge", "Dogecoin"], ["dot", "Polkadot"]],
+    ]);
+
+  axiosMockAdapterInstance
+    // eslint-disable-next-line
+    .onGet(new RegExp("/exchange/orders/stats/"))
+    .reply(() => [201, camelcaseKeys({
+      user_total: 328,
+    }),
     ]);
 
   axiosMockAdapterInstance

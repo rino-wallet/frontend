@@ -1,8 +1,8 @@
 import { useFormik } from "formik";
 import React from "react";
 import * as yup from "yup";
-import { createModal } from "promodal";
 import { ObjectSchema } from "yup";
+import { createModal } from "../../../modules/ModalFactory";
 import {
   ShareWalletThunkPayload, ShareWalletResponse, Wallet, WalletMember,
 } from "../../../types";
@@ -99,7 +99,7 @@ const WalletMemberModal: React.FC<Props> = ({
   });
   return (
     <BindHotKeys callback={handleSubmit} rejectCallback={cancel}>
-      <Modal title={member ? "Change wallet access" : "Confirm Sharing"} onClose={cancel} showCloseIcon>
+      <Modal className="!z-10" title={member ? "Change wallet access" : "Confirm Sharing"} onClose={cancel} showCloseIcon>
         <form onSubmit={handleSubmit}>
           <DisableAutofill />
           <Modal.Body>

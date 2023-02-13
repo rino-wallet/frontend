@@ -1,5 +1,5 @@
 import React from "react";
-import { createModal } from "promodal";
+import { createModal } from "../../ModalFactory";
 import { useSelector } from "../../../hooks";
 import Info2FA from "./Info2FA";
 import { selectors } from "../../../store/otpSlice";

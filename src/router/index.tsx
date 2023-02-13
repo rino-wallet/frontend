@@ -78,6 +78,11 @@ const Maintenance = Loadable({
   loading: Loading,
 });
 
+const Rewards = Loadable({
+  loader: () => import("../pages/Rewards" /* webpackChunkName: "Rewards" */),
+  loading: Loading,
+});
+
 const defaultTitle = "RINO - Enterprise-Grade Monero Wallet";
 const defaultDescription = "RINO is a new type of Monero wallet. We are a non-custodial, enterprise-grade, multisig wallet.";
 const defaultMetaKeywords = "RINO, Monero, Wallet, Enterprise-Grade, Multisig, Convenient, Secure, Non-custodial";
@@ -210,6 +215,16 @@ const ROUTER_CONFIG: RouteType[] = [
     isPrivate: true,
     key: "wallet details",
     requiredFeatures: [browserFeatures.webassembly],
+  },
+  {
+    path: ROUTES.rewards,
+    metaTitle: defaultTitle,
+    metaDescription: defaultDescription,
+    metaKeywords: defaultMetaKeywords,
+    metaOgImage: defaultMetaOgImage,
+    component: (props: any): ReactElement => <Rewards {...props} />,
+    isPrivate: true,
+    key: "rewards",
   },
   {
     path: ROUTES.publicWallet,

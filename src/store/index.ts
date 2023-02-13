@@ -16,6 +16,9 @@ import { publicWalletSubaddressListSlice } from "./publicWalletSubaddressListSli
 import { walletShareRequestListSlice } from "./walletShareRequestListSlice";
 import { exchangeSlice } from "./exchangeSlice";
 import { walletMembersListSlice } from "./walletMembersListSlice";
+import { rewardsSlice } from "./rewardsSlice";
+import { referralListSlice } from "./referralListSlice";
+import { promotionListSlice } from "./promotionListSlice";
 import { changeLocation, fullReset } from "./actions";
 import walletInstance from "../wallet";
 
@@ -34,6 +37,9 @@ const combinedReducer = combineReducers({
   walletShareRequestList: walletShareRequestListSlice.reducer,
   exchange: exchangeSlice.reducer,
   walletMembersList: walletMembersListSlice.reducer,
+  rewards: rewardsSlice.reducer,
+  referralList: referralListSlice.reducer,
+  promotionList: promotionListSlice.reducer,
 });
 
 /**

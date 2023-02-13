@@ -7968,11 +7968,6 @@ promise@^8.1.0:
   dependencies:
     asap "~2.0.6"
 
-promodal@^1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/promodal/-/promodal-1.0.6.tgz#aed19108fabde66d1f20b96efdd8ae4482b063c7"
-  integrity sha512-HqLi2NuXZYLEuyc6c4YdWv7eT57FOt6d1yVelcggbUs5+nhx+B06GpFOkkgonplLglkQ06UojzQkQdDmfWocaw==
-
 prompts@^2.0.1, prompts@^2.4.2:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/prompts/-/prompts-2.4.2.tgz#7b57e73b3a48029ad10ebd44f74b01722a4cb069"

@@ -1,5 +1,5 @@
 import React, { RefObject, useRef } from "react";
-import { createModal } from "promodal";
+import { createModal } from "../ModalFactory";
 import { Modal } from "../Modal";
 import { Button } from "../../components";
 import { Warning } from "../../components/Warning";

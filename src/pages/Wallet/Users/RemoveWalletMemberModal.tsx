@@ -1,5 +1,5 @@
 import React from "react";
-import { createModal } from "promodal";
+import { createModal } from "../../../modules/ModalFactory";
 import { Modal } from "../../../modules/index";
 import { Button } from "../../../components";
 
@@ -17,6 +17,7 @@ const RemoveWalletMemberModal: React.FC<Props> = ({ submit, cancel, email }) => 
         Remove User
       </div>
       )}
+    className="!z-10"
     onClose={cancel}
   >
     <Modal.Body>

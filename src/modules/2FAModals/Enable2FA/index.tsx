@@ -1,5 +1,5 @@
 import React from "react";
-import { createModal } from "promodal";
+import { createModal } from "../../ModalFactory";
 import { useSelector, useThunkActionCreator } from "../../../hooks";
 import Enable2FA from "./Enable2FA";
 import { create2FA as create2FaAction, enable2FA as enable2FaAction, selectors } from "../../../store/otpSlice";
