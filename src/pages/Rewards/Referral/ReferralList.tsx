@@ -1,8 +1,6 @@
 import React from "react";
 import { ReactComponent as EmptyListIcon } from "./empty-list-icon.svg";
-import { Button } from "../../../components";
 import { Referral } from "../../../types";
-import { showSupportModal } from "../../../modules/index";
 import { ReferralItem } from "./ReferralItem";
 
 interface Props {
@@ -13,7 +11,7 @@ interface Props {
 
 export const ReferralList = ({ referrals, claimReward, loading }: Props) => (
   <div>
-    <ul className="mb-10">
+    <ul className="">
       {
         referrals.length === 0 && !loading && (
         <div className="flex flex-col items-center theme-text-secondary py-3">
@@ -32,15 +30,5 @@ export const ReferralList = ({ referrals, claimReward, loading }: Props) => (
           ))
         }
     </ul>
-    <div className="flex justify-between space-x-3 items-center">
-      <div className="theme-text-secondary min-w-0">
-        If you want to invite more than 10 friends contact us.
-      </div>
-      <div>
-        <Button variant={Button.variant.PRIMARY_LIGHT} onClick={showSupportModal}>
-          <span className="whitespace-nowrap">Contact us</span>
-        </Button>
-      </div>
-    </div>
   </div>
 );

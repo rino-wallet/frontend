@@ -48,7 +48,7 @@ export const PromotionList = ({ promotions, claimReward, loading }: Props) => {
                       {piconeroToMonero(promotion.amount)}
                     </p>
                     {
-                      promotion.status.toLowerCase() === "ready" && !promotion.address ? (
+                      promotion.status.toLowerCase() === "ready" && !promotion.claimed ? (
                         <Button
                           className="h-10"
                           size={Button.size.MEDIUM}

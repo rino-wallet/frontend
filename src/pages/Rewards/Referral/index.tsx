@@ -12,6 +12,7 @@ import { ReactComponent as Step3Icon } from "./step-3-icon.svg";
 import { useCopy } from "../../../hooks/useCopy";
 import { ReferralList } from "./ReferralList";
 import { ReferralItem } from "./ReferralItem";
+import { showSupportModal } from "../../../modules/index";
 import { useSelector, useThunkActionCreator } from "../../../hooks";
 import {
   selectors as rewardSelectors,
@@ -205,8 +206,9 @@ const ReferralPage: React.FC<Props> = ({
               <h2 className="flex space-x-3 items-center">
                 <span className="text-2xl font-bold flex items-center mb-4">Invited Friends</span>
                 <span className="theme-text-secondary">
-                  {referrals.length}
-                  /10
+                  {listMetaData.count}
+                  /
+                  {user.referralMax}
                 </span>
               </h2>
               <ReferralList claimReward={onClaimRewards} referrals={referrals} />
@@ -222,6 +224,16 @@ const ReferralPage: React.FC<Props> = ({
                   />
                 )
               }
+              <div className="flex justify-between space-x-3 items-center mt-10">
+                <div className="theme-text-secondary min-w-0">
+                  If you want to invite more than 10 friends contact us.
+                </div>
+                <div>
+                  <Button variant={Button.variant.PRIMARY_LIGHT} onClick={showSupportModal}>
+                    <span className="whitespace-nowrap">Contact us</span>
+                  </Button>
+                </div>
+              </div>
             </section>
           </div>
         )

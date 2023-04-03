@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@reduxjs/toolkit": "^1.7.1",
-    "@rino-wallet/monero-javascript": "0.0.32",
+    "@rino-wallet/monero-javascript": "^0.0.32",
     "assert": "^2.0.0",
     "axios": "^0.25.0",
     "bignumber.js": "^9.0.2",

@@ -99,6 +99,7 @@ export interface User {
   encPrivateKey: KeyPairJsonWrapper;
   txNotifications: boolean;
   referralCode?: string;
+  referralMax?: number;
 }
 
 export interface TransactionDestination {
@@ -254,6 +255,8 @@ export interface Referral {
   refereeAddr: string;
   reward: number;
   threshold: number;
+  refereeClaimed: boolean;
+  referrerClaimed: boolean;
 }
 
 export interface Promotion {
@@ -271,4 +274,5 @@ export interface Promotion {
   status: string;
   txid: string;
   updated_at: string;
+  claimed: boolean;
 }

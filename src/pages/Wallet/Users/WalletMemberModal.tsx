@@ -146,6 +146,12 @@ const WalletMemberModal: React.FC<Props> = ({
                     Object.values(accessLevels)
                       .filter((level) => (features.viewOnlyShare ? true : level.value !== "View-only"))
                       .filter((option) => option.code !== accessLevels.owner.code)
+                      .filter((option) => {
+                        if (member) {
+                          return option.code !== accessLevels.viewOnly.code && member.accessLevel !== option.value;
+                        }
+                        return true;
+                      })
                       .map((option) => <option key={option.code} value={option.code}>{option.title}</option>)
                   }
                 </Select>

@@ -12,7 +12,9 @@ interface Props {
 }
 
 export const ReferralItem = ({ referral, isOwnRefferal, claimReward }: Props) => {
-  const canRedeem = (isOwnRefferal ? referral.refereeStatus.toLowerCase() === "ready" : referral.referrerStatus.toLowerCase() === "ready") && !referral.refereeAddr;
+  const isReady = isOwnRefferal ? referral.refereeStatus.toLowerCase() === "ready" : referral.referrerStatus.toLowerCase() === "ready";
+  const isClaimed = isOwnRefferal ? referral.refereeClaimed : referral.referrerClaimed;
+  const canRedeem = isReady && !isClaimed;
   function onRedeem() {
     showChooseWalletModal({ asyncCallback: (address: string) => claimReward({ id: referral.id, address }) })
       .then(() => {
