@@ -25,6 +25,7 @@ const wallet = {
   name: "",
   maxAmount: 0,
   minApprovals: 0,
+  maxDailyAmount: 0,
   members: [
     {
       id: "",

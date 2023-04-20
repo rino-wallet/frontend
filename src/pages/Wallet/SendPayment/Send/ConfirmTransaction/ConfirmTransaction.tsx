@@ -9,7 +9,7 @@ import {
   PendingTransaction,
   Wallet,
 } from "../../../../../types";
-import { getOutputs } from "../../../../../store/walletSlice";
+import { getOutputs, selectors as walletSelectors } from "../../../../../store/walletSlice";
 import routes from "../../../../../router/routes";
 import { FormatNumber } from "../../../../../components/FormatNumber";
 import { piconeroToMonero } from "../../../../../utils";
@@ -21,6 +21,7 @@ import { enter2FACode } from "../../../../../modules/2FAModals";
 import { showConfirmationModal } from "../../../../../modules/ConfirmationModal";
 import { Prompt } from "../../../../../components";
 import CreatingTransactionStage from "./CreatingTransactionStage";
+import { useSelector } from "../../../../../hooks";
 
 const transformPriorityText = (priority: (string | undefined)): string => (priority ? priority.charAt(0) + priority.slice(1).toLowerCase() : "");
 
@@ -66,6 +67,7 @@ const ConfirmTransaction: React.FC<Props> = ({
   useEffect(() => {
     if (!feeValue && pendingTransaction.fee) setFeeValue(pendingTransaction.fee);
   }, [pendingTransaction]);
+  const currentWallet = useSelector(walletSelectors.getWallet);
   return (
     <Formik
       initialValues={{}}
@@ -88,16 +90,24 @@ const ConfirmTransaction: React.FC<Props> = ({
                   code: c,
                 }),
               });
-              await pollCreateTransactionTask({ taskId: resp.taskId });
+              // polling task is required only for transactions without approvals
+              if (resp.taskId) {
+                await pollCreateTransactionTask({ taskId: resp.taskId });
+                await getOutputs({ id: wallet.id });
+                await syncMultisig(wallet.id);
+              }
             } else {
               const resp = await createTransaction({
                 id: wallet.id,
                 code: "",
               });
-              await pollCreateTransactionTask({ taskId: resp.taskId });
+              // polling task is required only for transactions without approvals
+              if (resp.taskId) {
+                await pollCreateTransactionTask({ taskId: resp.taskId });
+                await getOutputs({ id: wallet.id });
+                await syncMultisig(wallet.id);
+              }
             }
-            await getOutputs({ id: wallet.id });
-            await syncMultisig(wallet.id);
             fetchWalletDetails({ id: wallet.id }).then(() => null);
             resetForm();
             setInProgress(false);
@@ -118,7 +128,7 @@ const ConfirmTransaction: React.FC<Props> = ({
         errors,
       }): React.ReactElement => (
         <form className="m-auto md:w-3/4" name="form-sendPayment" onSubmit={handleSubmit}>
-          {!inProgress && !isSubmitting && !Object.values(errors).length && <Navigate to={`${generatePath(routes.wallet, { id: walletId })}/transactions`} />}
+          {!inProgress && !isSubmitting && !Object.values(errors).length && <Navigate to={currentWallet.minApprovals > 0 ? `${generatePath(routes.wallet, { id: walletId })}/approvals` : `${generatePath(routes.wallet, { id: walletId })}/transactions`} />}
           {
             isSubmitting && (
               <Prompt

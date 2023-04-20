@@ -1,7 +1,7 @@
 import React, { ReactChild } from "react";
 import classNames from "classnames";
 
-type InputType = "email" | "text" | "password";
+type InputType = "email" | "text" | "password" | "number";
 
 type Props = {
   postfix?: ReactChild;

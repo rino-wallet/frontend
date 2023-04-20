@@ -70,6 +70,12 @@
   .theme-bg-overlay {
     background-color: rgba(246, 246, 249, 0.7);
   }
+  .theme-bg-red {
+    background-color: rgba(249, 68, 33, 1);
+  }
+  .theme-bg-indigo {
+    background-color: rgba(94, 94, 245, 1);
+  }
 }
 
 .white-text-shadow {

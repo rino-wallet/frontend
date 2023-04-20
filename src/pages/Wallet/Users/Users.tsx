@@ -18,6 +18,7 @@ import AddWalletShareRequestModal from "./AddWalletShareRequest";
 import routes from "../../../router/routes";
 import WalletMemberModal from "./WalletMemberModal";
 import ShareRequests from "./ShareRquests";
+import { useAccountType } from "../../../hooks";
 
 interface AccessLevelInt {
   isAdmin: () => boolean;
@@ -60,6 +61,7 @@ const Users: React.FC<Props> = ({
 }) => {
   const navigate = useNavigate();
   const canShare = accessLevel.isAdmin() || accessLevel.isOwner();
+  const { isEnterprise } = useAccountType();
   const showWalletShareRequestModal = (shareRequest: WalletShareRequest): void => WalletMemberModal({
     wallet, is2FaEnabled: user.is2FaEnabled, email: shareRequest.email, shareWallet,
   })
@@ -81,7 +83,9 @@ const Users: React.FC<Props> = ({
       }
     });
   async function onAddUserClick(): Promise<void> {
-    AddWalletShareRequestModal({ wallet, is2FaEnabled: user.is2FaEnabled, requestWalletShare })
+    AddWalletShareRequestModal({
+      wallet, is2FaEnabled: user.is2FaEnabled, isEnterprise, requestWalletShare,
+    })
       .then(async ({ email }: { email: string; password: string; accessLevel: number }) => {
         showSuccessModal({
           goBackCallback: () => {

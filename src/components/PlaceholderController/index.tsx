@@ -1,8 +1,10 @@
-import React, { ReactElement, useEffect, useState } from "react";
+import React, {
+  useEffect, useState,
+} from "react";
 
 interface Props {
   loading: boolean;
-  placeholder: ReactElement;
+  placeholder: React.FC;
   numberOfRows?: number;
   minTimeout?: number;
 }
@@ -10,7 +12,7 @@ interface Props {
 export const PlaceholderController: React.FC<Props> = ({
   loading,
   numberOfRows = 1,
-  placeholder,
+  placeholder: Placeholder,
   minTimeout = 500,
   children,
 }) => {
@@ -27,7 +29,7 @@ export const PlaceholderController: React.FC<Props> = ({
   return (
     <div>
       {
-        showPlaceholder ? [...new Array(numberOfRows)].map(() => placeholder) : children
+        showPlaceholder ? [...new Array(numberOfRows)].map((_, index) => index).map((index) => <Placeholder key={index} />) : children
     }
     </div>
   );

@@ -26,11 +26,19 @@ interface AccessLevelInt {
   isAdmin: () => boolean;
   isOwner: () => boolean;
   isViewOnly: () => boolean;
+  isApprover: () => boolean;
+  isSpender: () => boolean;
 }
 
 function showDeleteButton(currentUserAccess: AccessLevelInt, walletMember: WalletMember): boolean {
   switch (walletMember.accessLevel) {
     case accessLevels.viewOnly.value: {
+      return currentUserAccess.isAdmin() || currentUserAccess.isOwner();
+    }
+    case accessLevels.approver.value: {
+      return currentUserAccess.isAdmin() || currentUserAccess.isOwner();
+    }
+    case accessLevels.spender.value: {
       return currentUserAccess.isAdmin() || currentUserAccess.isOwner();
     }
     case accessLevels.admin.value: {
@@ -97,7 +105,7 @@ const UserList: React.FC<Props> = ({
         />
       </div>
       <PlaceholderController
-        placeholder={<WalletMemberPlaceholder />}
+        placeholder={WalletMemberPlaceholder}
         loading={loading}
         numberOfRows={5}
       >
@@ -119,13 +127,13 @@ const UserList: React.FC<Props> = ({
                   action={(
                     <div>
                       {
-                        ![accessLevels.admin.title, accessLevels.owner.title].includes(member.accessLevel) && !accessLevel.isViewOnly() ? (
+                        ![accessLevels.admin.title, accessLevels.owner.title].includes(member.accessLevel) && !accessLevel.isViewOnly() && !accessLevel.isApprover() && !accessLevel.isSpender() ? (
                           <Button
                             name="share-wallet"
                             loading={false}
                             onClick={(): void => {
                               WalletMemberModal({
-                                wallet, member, is2FaEnabled: user.is2FaEnabled, email: member.user, shareWallet,
+                                wallet, member, is2FaEnabled: user.is2FaEnabled, email: member.user, shareWallet, refresh,
                               })
                                 .then(async ({ email }: { email: string; password: string; accessLevel: number }) => {
                                   showSuccessModal({

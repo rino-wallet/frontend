@@ -10,6 +10,8 @@ enum Variant {
   PRIMARY,
   PRIMARY_LIGHT,
   DISABLED,
+  BRIGHT_RED,
+  INDIGO
 }
 
 type Props = {
@@ -57,6 +59,8 @@ const VARIANT_MAPS: Record<Variant, string> = {
   [Variant.PRIMARY]: "theme-control-primary-gradient text-white border-transparent",
   [Variant.PRIMARY_LIGHT]: "theme-control-primary-gradient-light text-white border-transparent",
   [Variant.DISABLED]: "bg-white text-disabled border-disabled",
+  [Variant.BRIGHT_RED]: "theme-bg-red text-white theme-border-error",
+  [Variant.INDIGO]: "theme-bg-indigo text-white",
 };
 
 export const Button: React.FC<Props> & { variant: typeof Variant; size: typeof UI_SIZE; } = (props) => {
@@ -82,8 +86,8 @@ export const Button: React.FC<Props> & { variant: typeof Variant; size: typeof U
       onMouseLeave={onMouseLeave}
       className={classNames(
         "relative inline-flex items-center justify-center uppercase font-bold whitespace-no-wrap border border-solid",
-        className,
         VARIANT_MAPS[disabled ? Variant.DISABLED : variant],
+        className,
         icon ? ICON_SIZE_MAPS[size] : SIZE_MAPS[size],
         {
           "cursor-default": disabled,

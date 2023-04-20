@@ -27,6 +27,7 @@ export interface Wallet {
   name: string;
   maxAmount: number;
   minApprovals: number;
+  maxDailyAmount: number;
   members: WalletMember[];
   createdAt: string;
   updatedAt: string;
@@ -79,6 +80,8 @@ export interface ExtraFeatures {
   exchange: boolean;
   publicWallet: boolean;
   viewOnlyShare: boolean;
+  limits: boolean;
+  approvals: boolean;
 }
 
 export type AccountType = "consumer" | "enterprise";
@@ -275,4 +278,25 @@ export interface Promotion {
   txid: string;
   updated_at: string;
   claimed: boolean;
+}
+
+export interface PendingTransfer {
+  id: string;
+  status: number;
+  creator: string;
+  rejectedBy: string
+  address: string;
+  amount: number;
+  memo: string;
+  min_approvals: number;
+  signedMultisigTx: string;
+  approvals: { user: string, createdAt: string }[];
+  createdAt: string;
+  updatedAt: string;
+  submittedAt: string;
+}
+
+export interface FetchPendingTransfersThunkPayload {
+  walletId: string;
+  page: number;
 }

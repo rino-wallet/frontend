@@ -19,7 +19,7 @@ export const fetchWalletShareRequests = createAsyncThunk<FetchWalletShareRequest
     const wallet = state.wallet.data;
     const user = state.session.user;
     const accessLevel = checkAccessLevel(user, wallet);
-    if (accessLevel.isViewOnly()) {
+    if (accessLevel.isViewOnly() || accessLevel.isApprover()) {
       return new Promise<FetchWalletShareRequestsResponse>((resolve) => {
         resolve({
           results: [],

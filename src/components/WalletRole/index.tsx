@@ -37,6 +37,13 @@ roles.set(
     icon: "settings",
   },
 );
+roles.set(
+  "Approver",
+  {
+    title: "Approver",
+    icon: "security-on",
+  },
+);
 
 const WalletRole: React.FC<Props> = ({ role, className, small }) => {
   const r = roles.get(role);

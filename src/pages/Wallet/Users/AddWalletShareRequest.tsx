@@ -22,13 +22,14 @@ const validationSchema = yup.object().shape({
 interface Props {
   wallet: Wallet;
   is2FaEnabled: boolean;
+  isEnterprise: boolean;
   submit: (data: { email: string }) => Promise<void>;
   cancel: () => void;
   requestWalletShare: (data: RequestWalletShareThunkPayload) => Promise<Record<string, never>>;
 }
 
 const AddWalletShareRequest: React.FC<Props> = ({
-  wallet, is2FaEnabled, requestWalletShare, cancel, submit,
+  wallet, is2FaEnabled, isEnterprise, requestWalletShare, cancel, submit,
 }) => {
   const {
     isValid,
@@ -75,6 +76,15 @@ const AddWalletShareRequest: React.FC<Props> = ({
           <DisableAutofill />
           <Modal.Body>
             <div className="form-field">
+              <p>
+                You can only invite users that already have a RINO
+                {" "}
+                {isEnterprise ? "enterprise" : "community"}
+                {" "}
+                account.
+              </p>
+            </div>
+            <div className="form-field">
               <p>You can pick a role for the invited user once they accept.</p>
             </div>
             <div className="form-field">
@@ -83,7 +93,7 @@ const AddWalletShareRequest: React.FC<Props> = ({
                   <Tooltip
                     content={(
                       <div className="md:w-76 text-sm text-center normal-case" data-qa-selector="tx-priority-tooltip">
-                        Address of the user you are inviting. You can only invite users that have a RINO account already.
+                        Address of the user you are inviting.
                       </div>
                     )}
                   >

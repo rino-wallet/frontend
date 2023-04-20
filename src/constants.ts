@@ -16,10 +16,16 @@ export const accessLevels = {
     value: "Admin",
     title: "Admin",
   },
-  // approver: {
-  //   code: 30,
-  //   title: "Approver",
-  // },
+  spender: {
+    code: 30,
+    value: "Spender",
+    title: "Spender",
+  },
+  approver: {
+    code: 35,
+    value: "Approver",
+    title: "Approver",
+  },
   viewOnly: {
     code: 40,
     value: "View-only",
@@ -32,6 +38,7 @@ export const orderStatuses = {
   PENDING_EXECUTION: "Pending Execution",
   COMPLETE: "Complete",
   FAILED: "Failed",
+  CANCELED: "Canceled",
 };
 
 export const accountType = {
@@ -102,3 +109,10 @@ export const conversionMapping = {
   doge: "1e8",
   dot: "1e10",
 };
+
+export enum TRANSACTION_STATUS_CODE {
+  PENDING = 10,
+  CANCELED = 20,
+  REJECTED = 30,
+  COMPLETED = 50,
+}

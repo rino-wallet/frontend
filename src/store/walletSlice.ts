@@ -417,7 +417,7 @@ export const shareWallet = createAsyncThunk<void, ShareWalletThunkPayload>(
   async (data, { rejectWithValue, getState, dispatch }) => {
     const requestBody = { access_level: data.accessLevel, email: data.email, encrypted_keys: "" };
     try {
-      if (data.accessLevel === accessLevels.admin.code) {
+      if (data.accessLevel === accessLevels.admin.code || data.accessLevel === accessLevels.spender.code) {
         const {
           encryptionPublicKey, email, username, encPrivateKey,
         } = (getState() as any).session.user;
@@ -455,6 +455,10 @@ export const shareWallet = createAsyncThunk<void, ShareWalletThunkPayload>(
           const response = await walletsApi.shareWallet(data.wallet.id, requestBody, data.code ? { headers: { "X-RINO-2FA": data.code } } : undefined);
           dispatch(addMember(updateShareWalletResponse(response)));
         }
+      } else if (data.update && data.member) {
+        const response = await walletsApi.updateWalletAccess(data.wallet.id, data.member.id, requestBody, data.code ? { headers: { "X-RINO-2FA": data.code } } : undefined);
+        await dispatch(removeMember(data.member.id));
+        dispatch(addMember(updateShareWalletResponse(response)));
       } else {
         const response = await walletsApi.shareWallet(data.wallet.id, requestBody, data.code ? { headers: { "X-RINO-2FA": data.code } } : undefined);
         dispatch(addMember(updateShareWalletResponse(response)));

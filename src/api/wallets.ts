@@ -40,6 +40,8 @@ import {
   FetchWalletShareRequestsResponse,
   UpdateSubaddressPayload,
   FetchWalletMembersResponse,
+  FetchPendingTranfersResponse,
+  PendingTransferApprovalPayload,
 } from "../types";
 
 export class WalletsApi extends Api {
@@ -170,6 +172,26 @@ export class WalletsApi extends Api {
 
   public fetchWalletMembers(walletId: string, params: ListRequestParams): Promise<FetchWalletMembersResponse> {
     return this.get<FetchWalletMembersResponse>(`/wallets/${walletId}/members/`, { params })
+      .then(this.success);
+  }
+
+  public fetchPendingTransfers(walletId: string, params: ListRequestParams & { status__in?: number[], status?: number }): Promise<FetchPendingTranfersResponse> {
+    return this.get<FetchPendingTranfersResponse>(`/wallets/${walletId}/pending_transfers/`, { params })
+      .then(this.success);
+  }
+
+  public approvePendingTransfer(data: PendingTransferApprovalPayload): Promise<FinalizeWalletResponse> {
+    return this.post<FinalizeWalletResponse, PendingTransferApprovalPayload>(`/wallets/${data.walletId}/pending_transfers/${data.transactionId}/approve/`)
+      .then(this.success);
+  }
+
+  public rejectPendingTransfer(data: PendingTransferApprovalPayload): Promise<FinalizeWalletResponse> {
+    return this.post<FinalizeWalletResponse, PendingTransferApprovalPayload>(`/wallets/${data.walletId}/pending_transfers/${data.transactionId}/reject/`)
+      .then(this.success);
+  }
+
+  public cancelPendingTransfer(data: PendingTransferApprovalPayload): Promise<FinalizeWalletResponse> {
+    return this.post<FinalizeWalletResponse, PendingTransferApprovalPayload>(`/wallets/${data.walletId}/pending_transfers/${data.transactionId}/cancel/`)
       .then(this.success);
   }
 }

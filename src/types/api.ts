@@ -1,4 +1,6 @@
-import { Promotion, Referral, Subaddress } from "./store";
+import {
+  PendingTransfer, Promotion, Referral, Subaddress,
+} from "./store";
 import { AccessLevel } from "./shared";
 
 interface ListResponse {
@@ -16,6 +18,7 @@ interface Wallet {
   name: string;
   maxAmount: null;
   minApprovals: null;
+  maxDailyAmount: null;
   members: WalletMember[]
   createdAt: string;
   updatedAt: string;
@@ -158,6 +161,8 @@ export interface UserResponse {
     exchange: boolean;
     publicWallet: boolean;
     viewOnlyShare: boolean;
+    limits: boolean;
+    approvals: boolean;
   };
   is2FaEnabled: boolean;
   isKeypairSet: boolean;
@@ -210,6 +215,9 @@ export interface UpdateWalletDetailsPayload {
   code?: string;
   is_public?: boolean;
   public_slug?: string | null;
+  max_daily_amount?: number | null;
+  max_amount?: number | null;
+  min_approvals?: number | null;
 }
 
 export type UpdateWalletDetailsResponse = Wallet;
@@ -510,4 +518,13 @@ export interface GetExchangeOrderResponse {
 export interface CreateZammadTicketPayload {
   title: string;
   message: string;
+}
+
+export interface FetchPendingTranfersResponse extends ListResponse {
+  results: PendingTransfer[];
+}
+
+export interface PendingTransferApprovalPayload {
+  walletId: string;
+  transactionId: string;
 }

@@ -19,12 +19,13 @@ import Users from "./Users";
 import SendPayment from "./SendPayment";
 import ReceivePayment from "./ReceivePayment";
 import Settings from "./Settings";
+import Approvals from "./Approvals";
 
 interface Props {
   match: {
     params: {
       id: string;
-      tab: "transactions" | "users" | "settings";
+      tab: "transactions" | "users" | "settings" | "approvals";
     };
   };
 }
@@ -69,6 +70,7 @@ const WalletPageContainer: React.FC<Props> = () => {
       <Route path="receive" element={<ReceivePayment walletId={walletId} />} />
       <Route path="users" element={<Users walletId={walletId} refresh={refresh} />} />
       <Route path="users/:shareId/finalize-share/" element={<Users walletId={walletId} refresh={refresh} />} />
+      <Route path="approvals" element={<Approvals walletId={walletId} />} />
     </Routes>
   );
 };

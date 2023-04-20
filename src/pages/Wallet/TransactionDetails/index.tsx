@@ -1,7 +1,7 @@
 import React from "react";
 import { format } from "date-fns";
 import Decimal from "decimal.js-light";
-import { Transaction } from "../../../types";
+import { PendingTransfer, Transaction } from "../../../types";
 import { Copy, Label, FormatNumber } from "../../../components";
 import { piconeroToMonero, convertAtomicAmount } from "../../../utils";
 import TransactionMemo from "./TransactionMemo";
@@ -16,13 +16,16 @@ interface Props {
   transaction?: Transaction;
   walletId: string;
   isPublicWallet?: boolean;
+  pendingTransfer?: PendingTransfer;
 }
 
-const TransactionDetailsContent: React.FC<Props> = ({ transaction, walletId, isPublicWallet }) => {
+const TransactionDetailsContent: React.FC<Props> = ({
+  transaction, walletId, isPublicWallet, pendingTransfer,
+}) => {
   const timestamp = transaction?.timestamp ? transaction?.timestamp : transaction?.createdAt;
-  const loading = !transaction;
+  const loading = !transaction && !pendingTransfer;
   const confirmations = typeof transaction?.confirmations === "number" && transaction?.confirmations > 100 ? "100+" : transaction?.confirmations;
-  return (
+  return (!pendingTransfer ? (
     <div className="px-10 pt-3 pb-7 transaction-details bg-cover md:bg-auto">
       <div className="mb-8 md:mb-0">
         <Label
@@ -140,6 +143,101 @@ const TransactionDetailsContent: React.FC<Props> = ({ transaction, walletId, isP
           )
         }
     </div>
+  )
+    : (
+      <div className="px-10 pt-3 pb-7 transaction-details bg-cover md:bg-auto">
+        <div className="mb-8 md:mb-0">
+          <Label
+            inline
+            loading={loading}
+            label="Destination address"
+            labelClassName="md:text-right"
+            valueClassName="whitespace-nowrap"
+          >
+            <div className="flex">
+              <Copy key={pendingTransfer.address} value={pendingTransfer.address}>
+                <div className="w-full whitespace-normal">
+                  {" "}
+                  <div data-qa-selector="transaction-address" className="!break-all w-full">
+                    {pendingTransfer?.address}
+                  </div>
+                </div>
+              </Copy>
+            </div>
+          </Label>
+        </div>
+        {pendingTransfer.approvals.length > 0
+          ? (
+            <div className="mb-8 md:mb-0">
+              <Label
+                inline
+                loading={loading}
+                label="Approved By"
+                labelClassName="md:text-right"
+                valueClassName=""
+              >
+                {pendingTransfer?.approvals.map((transfer, index) => (
+                  <span key={transfer.user}>
+                    {transfer.user}
+                    {" "}
+                    {`(${format(new Date(transfer?.createdAt || ""), "dd MMM yyyy HH:mm")})`}
+                    {index !== pendingTransfer.approvals.length - 1 ? ", " : ""}
+                  </span>
+                ))}
+              </Label>
+            </div>
+          )
+          : (
+            <Label
+              inline
+              loading={loading}
+              label="Approved By"
+              labelClassName="md:text-right"
+              valueClassName=""
+            >
+              No approvals
+            </Label>
+          )}
+        {pendingTransfer.rejectedBy && (
+        <div className="mb-8 md:mb-0">
+          <Label
+            inline
+            loading={loading}
+            label="Rejected By"
+            labelClassName="md:text-right"
+            valueClassName=""
+          >
+            {pendingTransfer.rejectedBy}
+          </Label>
+        </div>
+        )}
+        {pendingTransfer?.memo
+          ? (
+            <div className="mb-8 md:mb-0">
+              <Label
+                inline
+                loading={loading}
+                label="Memo"
+                labelClassName="md:text-right"
+                valueClassName=""
+              >
+                {pendingTransfer.memo}
+              </Label>
+            </div>
+          )
+          : (
+            <Label
+              inline
+              loading={loading}
+              label="Memo"
+              labelClassName="md:text-right"
+              valueClassName=""
+            >
+              No memo
+            </Label>
+          )}
+      </div>
+    )
   );
 };
 

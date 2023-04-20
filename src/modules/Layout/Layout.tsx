@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { LayoutAuth } from "./LayoutAuth";
 import { LayoutDefault } from "./LayoutDefault";
 import { LayoutClear } from "./LayoutClear";
@@ -15,6 +15,7 @@ interface Props {
 export const Layout: React.FC<Props> = ({
   children, signOut, isAuthenticated, page,
 }) => {
+  const [toggleBanner, setToggleBanner] = useState(true);
   switch (page) {
     case "login":
     case "register":
@@ -51,8 +52,8 @@ export const Layout: React.FC<Props> = ({
     default: {
       return (
         <div>
-          <BannerContainer />
-          <LayoutDefault signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutDefault>
+          <BannerContainer toggleBanner={toggleBanner} setToggleBanner={setToggleBanner} />
+          <LayoutDefault toggleCSS={toggleBanner} signOut={signOut} isAuthenticated={isAuthenticated}>{children}</LayoutDefault>
         </div>
       );
     }

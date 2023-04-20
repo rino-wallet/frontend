@@ -39,7 +39,7 @@ const ReceivePaymentContainer: React.FC<Props> = ({ walletId }) => {
       pages={pages}
       hasPreviousPage={hasPreviousPage}
       hasNextPage={hasNextPage}
-      viewOnly={accessLevel.isViewOnly()}
+      viewOnly={accessLevel.isViewOnly() || accessLevel.isApprover()}
       fetchSubaddresses={fetchSubaddresses}
       createSubaddress={createSubaddress}
       openWallet={openWallet}

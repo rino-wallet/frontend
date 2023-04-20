@@ -21,6 +21,8 @@ import { referralListSlice } from "./referralListSlice";
 import { promotionListSlice } from "./promotionListSlice";
 import { changeLocation, fullReset } from "./actions";
 import walletInstance from "../wallet";
+import { pendingTransfersListSlice } from "./pendingTransfersSlice";
+import { historyTransfersListSlice } from "./historyTransfersSlice";
 
 const combinedReducer = combineReducers({
   session: sessionSlice.reducer,
@@ -40,6 +42,8 @@ const combinedReducer = combineReducers({
   rewards: rewardsSlice.reducer,
   referralList: referralListSlice.reducer,
   promotionList: promotionListSlice.reducer,
+  pendingTransfers: pendingTransfersListSlice.reducer,
+  historyTransfers: historyTransfersListSlice.reducer,
 });
 
 /**

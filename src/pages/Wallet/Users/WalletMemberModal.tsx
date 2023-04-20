@@ -39,17 +39,19 @@ interface Props {
   cancel: () => void;
   email: string;
   shareWallet: (data: ShareWalletThunkPayload) => Promise<ShareWalletResponse>;
+  refresh: () => Promise<void>;
 }
 
 const iconsMap: { [key: string]: string } = {
   10: "account",
   20: "settings",
   30: "arrow-down-bold",
+  35: "security-on",
   40: "eye",
 };
 
 const WalletMemberModal: React.FC<Props> = ({
-  wallet, member, is2FaEnabled, email, shareWallet, cancel, submit,
+  wallet, member, is2FaEnabled, email, shareWallet, cancel, submit, refresh,
 }) => {
   const { features } = useAccountType();
   const {
@@ -90,6 +92,7 @@ const WalletMemberModal: React.FC<Props> = ({
           email,
           accessLevel: accessLevels.admin.code,
         });
+        refresh();
       } catch (err: any) {
         if (err) {
           setErrors(err);
@@ -144,11 +147,11 @@ const WalletMemberModal: React.FC<Props> = ({
                   {
                     // we temporarily hide "View-only" role, just remove filter to revert it
                     Object.values(accessLevels)
-                      .filter((level) => (features.viewOnlyShare ? true : level.value !== "View-only"))
+                      .filter((level) => (features.viewOnlyShare ? true : !["View-only", "Approver", "Spender"].includes(level.value)))
                       .filter((option) => option.code !== accessLevels.owner.code)
                       .filter((option) => {
                         if (member) {
-                          return option.code !== accessLevels.viewOnly.code && member.accessLevel !== option.value;
+                          return member.accessLevel !== option.value;
                         }
                         return true;
                       })
@@ -158,7 +161,7 @@ const WalletMemberModal: React.FC<Props> = ({
               </Label>
             </div>
             {
-              parseInt(values.access_level, 10) === accessLevels.admin.code && (
+              (parseInt(values.access_level, 10) === accessLevels.admin.code || parseInt(values.access_level, 10) === accessLevels.spender.code) && (
                 <div className="form-field">
                   <Label label={(
                     <div>

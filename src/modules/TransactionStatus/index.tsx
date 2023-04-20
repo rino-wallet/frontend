@@ -1,13 +1,14 @@
 import React from "react";
 import { Status, Tooltip } from "../../components";
 import { orderStatuses } from "../../constants";
-import { ExchangeOrder } from "../../types";
+import { ExchangeOrder, PendingTransfer, Wallet } from "../../types";
 
 const orderStatusVariants = {
   [orderStatuses.PENDING_PAYMENT]: Status.variant.YELLOW,
   [orderStatuses.PENDING_EXECUTION]: Status.variant.BLUE,
   [orderStatuses.COMPLETE]: Status.variant.GREEN,
   [orderStatuses.FAILED]: Status.variant.RED,
+  [orderStatuses.CANCELED]: Status.variant.GRAY,
 };
 
 const Wrapper: React.FC<{ isLocked: boolean; blocksToUnlock: number }> = ({ children, isLocked, blocksToUnlock }) => (isLocked ? (
@@ -63,5 +64,58 @@ export const TransactionStatus: React.FC<Props> = ({ numConfirmations, order }) 
         }
       </Status>
     </Wrapper>
+  );
+};
+
+interface ApprovedTransactionProps {
+  transaction: PendingTransfer;
+  wallet: Wallet;
+}
+
+const TRANSACTION_STATUS = {
+  PENDING: { value: 10, variant: Status.variant.YELLOW },
+  CANCELED: { value: 20, variant: Status.variant.GRAY },
+  REJECTED: { value: 30, variant: Status.variant.RED },
+  TIMED_OUT: { value: 40, variant: Status.variant.RED },
+  COMPLETED: { value: 50, variant: Status.variant.GREEN },
+} as const;
+
+export const ApprovedTransactionStatus: React.FC<ApprovedTransactionProps> = ({
+  transaction,
+  wallet,
+}) => {
+  const status = transaction.status;
+  let statusText = "";
+  let variant = Status.variant.RED;
+
+  switch (status) {
+    case TRANSACTION_STATUS.PENDING.value:
+      statusText = `PENDING ${transaction.approvals.length}/${wallet.minApprovals}`;
+      variant = TRANSACTION_STATUS.PENDING.variant;
+      break;
+    case TRANSACTION_STATUS.CANCELED.value:
+      statusText = "CANCELED";
+      variant = TRANSACTION_STATUS.CANCELED.variant;
+      break;
+    case TRANSACTION_STATUS.REJECTED.value:
+      statusText = "REJECTED";
+      variant = TRANSACTION_STATUS.REJECTED.variant;
+      break;
+    case TRANSACTION_STATUS.COMPLETED.value:
+      statusText = "COMPLETE";
+      variant = TRANSACTION_STATUS.COMPLETED.variant;
+      break;
+    case TRANSACTION_STATUS.TIMED_OUT.value:
+      statusText = "TIMED OUT";
+      variant = TRANSACTION_STATUS.TIMED_OUT.variant;
+      break;
+    default:
+      break;
+  }
+
+  return (
+    <Status variant={variant}>
+      {statusText}
+    </Status>
   );
 };

@@ -5,11 +5,14 @@ import Footer from "./Footer";
 interface Props {
   signOut: () => Promise<void>;
   isAuthenticated: boolean;
+  toggleCSS: boolean;
 }
 
-export const LayoutDefault: React.FC<Props> = ({ children, signOut, isAuthenticated }) => (
+export const LayoutDefault: React.FC<Props> = ({
+  children, signOut, isAuthenticated, toggleCSS,
+}) => (
   <div>
-    <div className="min-h-screen flex flex-col md:bg-center md:bg-cover">
+    <div className={`min-h-screen flex flex-col md:bg-center md:bg-cover ${toggleCSS ? "mb-32" : ""}`}>
       <div className="md:mb-10">
         <Header signOut={signOut} isAuthenticated={isAuthenticated} />
       </div>

@@ -23,6 +23,7 @@ import { selectors } from "../../store/sessionSlice";
 import { fetchWalletTransactions as fetchWalletTransactionsThunk } from "../../store/transactionListSlice";
 import { fetchWalletTransactions as fetchPublicWalletTransactionsThunk } from "../../store/publicWalletTransactionListSlice";
 import { BalanceDetails } from "./WalletPageBalanceDetails";
+import { accessLevels } from "../../constants";
 
 const WalletPlaceholder: React.FC = () => (
   <div className="flex-1 min-w-0 text-left">
@@ -251,13 +252,25 @@ export const WalletPageTemplate: React.FC<Props> = ({
                           </div>
                         </Button>
                       </Link>
-                      <Link className="block w-1/2" to={`${generatePath(routes.wallet, { id })}/receive`}>
-                        <Button size={Button.size.BIG} name="button-receive" block={isMobile}>
-                          <div className="flex space-x-3 items-center">
-                            <div>Receive</div>
+                      {role !== accessLevels.approver.value
+                        ? (
+                          <Link className="block w-1/2" to={`${generatePath(routes.wallet, { id })}/receive`}>
+                            <Button size={Button.size.BIG} name="button-receive" block={isMobile}>
+                              <div className="flex space-x-3 items-center">
+                                <div>Receive</div>
+                              </div>
+                            </Button>
+                          </Link>
+                        )
+                        : (
+                          <div className="block w-1/2">
+                            <Button disabled size={Button.size.BIG} name="button-receive" block={isMobile}>
+                              <div className="flex space-x-3 items-center">
+                                <div>Receive</div>
+                              </div>
+                            </Button>
                           </div>
-                        </Button>
-                      </Link>
+                        )}
                     </div>
                   )
                 }
