@@ -1,6 +1,7 @@
 import React, { ReactNode, useState } from "react";
 import { generatePath, Link } from "react-router-dom";
 import classNames from "classnames";
+import { useTranslation } from "react-i18next";
 import { piconeroToMonero, getWalletColor } from "../../utils";
 import routes from "../../router/routes";
 import {
@@ -22,6 +23,9 @@ import { fetchWalletShareRequests as fetchWalletShareRequestsThunk } from "../..
 import { selectors } from "../../store/sessionSlice";
 import { fetchWalletTransactions as fetchWalletTransactionsThunk } from "../../store/transactionListSlice";
 import { fetchWalletTransactions as fetchPublicWalletTransactionsThunk } from "../../store/publicWalletTransactionListSlice";
+import {
+  selectors as pendingTransfersSelectors,
+} from "../../store/pendingTransfersSlice";
 import { BalanceDetails } from "./WalletPageBalanceDetails";
 import { accessLevels } from "../../constants";
 
@@ -61,10 +65,12 @@ export const WalletPageTemplate: React.FC<Props> = ({
   isPublicWallet,
   showNameInBox,
 }) => {
+  const { t } = useTranslation();
   const { features } = useAccountType();
   const fetchWalletDetails = isPublicWallet ? useThunkActionCreator(fetchPublicWalletDetailsThunk) : useThunkActionCreator(fetchWalletDetailsThunk);
   const fetchWalletTransactions = isPublicWallet ? useThunkActionCreator(fetchPublicWalletTransactionsThunk) : useThunkActionCreator(fetchWalletTransactionsThunk);
   const fetchWalletShareRequests = useThunkActionCreator(fetchWalletShareRequestsThunk);
+  const pendingTransfers = useSelector(pendingTransfersSelectors.getEntities);
   const user = useSelector(selectors.getUser);
   const query = useQuery();
   const page = parseInt(query.get("page"), 10) || 1;
@@ -115,12 +121,14 @@ export const WalletPageTemplate: React.FC<Props> = ({
                         <Button size={Button.size.BIG} disabled={sendButtonDisabled} name="button-send">
                           <div className="flex space-x-3 items-center">
                             <div>
-                              Send
+                              {t("common.send")}
                               {
                                 features?.exchange && (
                                   <span className="hidden md:inline">
                                     {" "}
-                                    / Exchange
+                                    /
+                                    {" "}
+                                    {t("common.exchange")}
                                   </span>
                                 )
                               }
@@ -134,12 +142,14 @@ export const WalletPageTemplate: React.FC<Props> = ({
                       <Button size={Button.size.BIG} name="button-send">
                         <div className="flex space-x-3 items-center">
                           <div>
-                            Send
+                            {t("common.send")}
                             {
                                 features?.exchange && (
                                   <span className="hidden md:inline">
                                     {" "}
-                                    / Exchange
+                                    /
+                                    {" "}
+                                    {t("common.exchange")}
                                   </span>
                                 )
                               }
@@ -152,7 +162,7 @@ export const WalletPageTemplate: React.FC<Props> = ({
                 <Link to={`${generatePath(isPublicWallet ? routes.publicWallet : routes.wallet, { id })}/receive`}>
                   <Button size={Button.size.BIG} name="button-receive">
                     <div className="flex space-x-3 items-center">
-                      <span>Receive</span>
+                      <span>{t("common.receive")}</span>
                     </div>
                   </Button>
                 </Link>
@@ -195,7 +205,7 @@ export const WalletPageTemplate: React.FC<Props> = ({
                             {role && <WalletRole small className="mr-1" role={role} />}
                             {" "}
                             <span className="overflow-hidden whitespace-nowrap overflow-ellipsis">
-                              {showNameInBox ? wallet?.name : "Balance"}
+                              {showNameInBox ? wallet?.name : t("common.balance")}
                             </span>
                           </div>
                         </div>
@@ -212,6 +222,17 @@ export const WalletPageTemplate: React.FC<Props> = ({
                       </div>
                     </div>
                   </div>
+                  {
+                    pendingTransfers.length > 0 && (
+                      <Link to={`${generatePath(routes.wallet, { id })}/approvals`}>
+                        <Button className="mr-4 hidden md:block">
+                          {pendingTransfers.length}
+                          {" "}
+                          {t("wallet.pending.transactions", { count: pendingTransfers.length })}
+                        </Button>
+                      </Link>
+                    )
+                  }
                   <Button
                     size={Button.size.MEDIUM}
                     onClick={(): void => {
@@ -243,10 +264,12 @@ export const WalletPageTemplate: React.FC<Props> = ({
                         <Button size={Button.size.BIG} disabled={sendButtonDisabled} name="button-send" block={isMobile}>
                           <div className="flex space-x-3 items-center">
                             <div>
-                              Send
+                              {t("common.send")}
                               <span className="hidden md:inline">
                                 {" "}
-                                / Exchange
+                                /
+                                {" "}
+                                {t("common.exchange")}
                               </span>
                             </div>
                           </div>
@@ -257,7 +280,7 @@ export const WalletPageTemplate: React.FC<Props> = ({
                           <Link className="block w-1/2" to={`${generatePath(routes.wallet, { id })}/receive`}>
                             <Button size={Button.size.BIG} name="button-receive" block={isMobile}>
                               <div className="flex space-x-3 items-center">
-                                <div>Receive</div>
+                                <div>{t("common.receive")}</div>
                               </div>
                             </Button>
                           </Link>
@@ -266,7 +289,7 @@ export const WalletPageTemplate: React.FC<Props> = ({
                           <div className="block w-1/2">
                             <Button disabled size={Button.size.BIG} name="button-receive" block={isMobile}>
                               <div className="flex space-x-3 items-center">
-                                <div>Receive</div>
+                                <div>{t("common.receive")}</div>
                               </div>
                             </Button>
                           </div>

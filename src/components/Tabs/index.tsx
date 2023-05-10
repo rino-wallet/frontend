@@ -1,9 +1,12 @@
 import React, { ReactNode } from "react";
 import classNames from "classnames";
+import { Icon, IconName } from "../Icon";
 
 type Tab = {
   value: number;
   text: ReactNode;
+  icon?: IconName;
+  notification?: number;
 };
 
 type Props = {
@@ -11,12 +14,11 @@ type Props = {
   activeTab?: number;
   onChange?: (tab: number) => void;
   children?: ReactNode;
-  tabsWithNotification?: number[];
 };
 
 export const Tabs: React.FC<Props> = (props) => {
   const {
-    tabs, activeTab, children, onChange, tabsWithNotification,
+    tabs, activeTab, children, onChange,
   } = props;
   return (
     <div className="w-full">
@@ -43,10 +45,16 @@ export const Tabs: React.FC<Props> = (props) => {
                 },
               )}
             >
+              {tab.icon ? <Icon className="theme-text-red mr-2" name={tab.icon} /> : ""}
               {tab.text}
               {" "}
-              {tabsWithNotification?.includes(tab.value)
-                ? <span className="inline-block w-2 h-2 mr-2 bg-red-600 rounded-full ml-1" data-qa-selector="pending_share_red_dot" /> : null}
+              {
+                !!tab.notification && (
+                  <div className="inline-flex items-center justify-center text-white w-6 h-6 mr-2 theme-control-primary-gradient rounded-full ml-1" data-qa-selector="pending_share_red_dot">
+                    {tab.notification}
+                  </div>
+                )
+              }
             </button>
           ))
         }

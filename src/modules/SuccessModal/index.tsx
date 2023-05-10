@@ -1,4 +1,4 @@
-import React, { ReactChild } from "react";
+import React, { ReactChild, ReactNode } from "react";
 import { createModal } from "../ModalFactory";
 import { Modal } from "../Modal";
 import { Button, Check } from "../../components";
@@ -6,8 +6,8 @@ import { Button, Check } from "../../components";
 type MessageFunc = (close: () => void) => ReactChild;
 interface Props {
   goBackCallback: () => void;
-  title: string;
-  message: ReactChild | MessageFunc;
+  title: ReactNode;
+  message: ReactNode | MessageFunc;
   buttonText?: string;
 }
 

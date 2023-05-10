@@ -1,5 +1,6 @@
 import React from "react";
 import Decimal from "decimal.js-light";
+import { useTranslation } from "react-i18next";
 import { Button, Icon, Label } from "../../../../../components";
 import { CountDown } from "../CountDown";
 import { TimeOutModal as showTimeOutModal } from "../TimeOutModal";
@@ -14,6 +15,7 @@ interface Props {
 }
 
 const ExchangeConfirmation: React.FC<Props> = ({ setActiveTab, onEdit, order }) => {
+  const { t } = useTranslation();
   async function onRecheck(): Promise<void> {
     await showTimeOutModal({
       recheckRequest: () => new Promise((r) => { setTimeout(r, 1000); }),
@@ -32,7 +34,7 @@ const ExchangeConfirmation: React.FC<Props> = ({ setActiveTab, onEdit, order }) 
           <Label label="" inline>
             <div className="flex whitespace-nowrap">
               <div data-qa-selector="amount-you-send">
-                <div className="text-sm uppercase mb-1">amount you send</div>
+                <div className="text-sm uppercase mb-1">{t("wallet.send.amount.you.send")}</div>
                 <div className="text-2xl font-bold">
                   {piconeroToMonero(order?.paymentAmount || 0)}
                   {" "}
@@ -43,7 +45,7 @@ const ExchangeConfirmation: React.FC<Props> = ({ setActiveTab, onEdit, order }) 
                 <Icon name="arrow_right" />
               </div>
               <div data-qa-selector="amount-you-get">
-                <div className="text-sm uppercase mb-1">amount you get</div>
+                <div className="text-sm uppercase mb-1">{t("wallet.send.amount.you.get")}</div>
                 <div className="text-2xl font-bold">
                   {convertAtomicAmount(order?.outgoingAmount || 0, order?.outgoingCurrency as ExchangeCurrencies)}
                   {" "}
@@ -62,7 +64,7 @@ const ExchangeConfirmation: React.FC<Props> = ({ setActiveTab, onEdit, order }) 
         />
         <div className="mt-5" data-qa-selector="confirmation-timer">
           <Label label="" inline>
-            Please confirm your payment in
+            {t("wallet.send.please.confirm.payment")}
             {" "}
             <span className="text-red-600">
               <CountDown
@@ -79,7 +81,7 @@ const ExchangeConfirmation: React.FC<Props> = ({ setActiveTab, onEdit, order }) 
             name="cancel-btn"
             onClick={onEdit}
           >
-            Edit
+            {t("wallet.send.edit")}
           </Button>
           <Button
             type="submit"
@@ -90,7 +92,7 @@ const ExchangeConfirmation: React.FC<Props> = ({ setActiveTab, onEdit, order }) 
               setActiveTab(2);
             }}
           >
-            Confirm Payment
+            {t("wallet.send.confirm.payment")}
           </Button>
         </div>
       </div>

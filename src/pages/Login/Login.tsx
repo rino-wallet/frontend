@@ -1,6 +1,7 @@
 import React from "react";
 import { Formik } from "formik";
 import * as yup from "yup";
+import { useTranslation, Trans } from "react-i18next";
 import { Link, useNavigate, generatePath } from "react-router-dom";
 import ROUTES from "../../router/routes";
 import { SignInPayload, SignInResponse, UserResponse } from "../../types";
@@ -15,8 +16,8 @@ import {
 const loginValidationSchema = yup.object().shape({
   username: yup
     .string()
-    .required("This field is required."),
-  password: yup.string().required("This field is required."),
+    .required("errors.required"),
+  password: yup.string().required("errors.required"),
 });
 
 interface Props {
@@ -28,6 +29,7 @@ interface Props {
 const LoginPage: React.FC<Props> = ({
   login, setPassword, getCurrentUser, setSigningPublicKey,
 }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const {
     nonFieldErrors,
@@ -40,7 +42,7 @@ const LoginPage: React.FC<Props> = ({
           <Logo small />
           {" "}
           <span>
-            Welcome to
+            {t("auth.title")}
             {" "}
             <span className="font-bold">rino</span>
           </span>
@@ -112,28 +114,28 @@ const LoginPage: React.FC<Props> = ({
           }): React.ReactElement => (
             <form name="form-login" onSubmit={handleSubmit}>
               <div className="form-field">
-                <Label label="Username">
+                <Label label={t("auth.username.label")}>
                   <Input
                     type="text"
                     name="username"
                     value={values.username}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    placeholder="Username"
-                    error={touched.username ? errors.username : ""}
+                    placeholder={t("auth.username.label") as string}
+                    error={touched.username ? t(errors.username as string) as string : ""}
                   />
                 </Label>
               </div>
               <div className="form-field">
-                <Label label="Account Password">
+                <Label label={t("auth.password.label") as string}>
                   <Input
                     type="password"
                     name="password"
                     value={values.password}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    placeholder="Password"
-                    error={touched.password ? errors.password : ""}
+                    placeholder={t("auth.password.label") as string}
+                    error={touched.password ? t(errors.password as string) as string : ""}
                   />
                 </Label>
               </div>
@@ -144,7 +146,7 @@ const LoginPage: React.FC<Props> = ({
                     id="forgot-password"
                     to={generatePath(ROUTES.resetPassword, { "*": "reset" })}
                   >
-                    I forgot my password
+                    {t("auth.forgot.password.link")}
                   </Link>
                 </p>
                 <p>
@@ -153,7 +155,7 @@ const LoginPage: React.FC<Props> = ({
                     id="forgot-password"
                     to={ROUTES.resendActivationEmail}
                   >
-                    I did not receive my activation email
+                    {t("auth.didnt.receive.password")}
                   </Link>
                 </p>
               </div>
@@ -168,15 +170,15 @@ const LoginPage: React.FC<Props> = ({
                   size={Button.size.BIG}
                   block
                 >
-                  Login
+                  {t("auth.login")}
                 </Button>
               </div>
-              <div className="theme-text flex justify-center mb-3">
+              <Trans i18nKey="auth.dont.have.account" className="theme-text flex justify-center mb-3">
                 Don&apos;t have an account?
                 <Link id="link-login" className="theme-link ml-1" to={ROUTES.register}>
                   Create account
                 </Link>
-              </div>
+              </Trans>
             </form>
           )}
         </Formik>

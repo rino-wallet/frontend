@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Formik } from "formik";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
+import { useTranslation, Trans } from "react-i18next";
 import { ResetPasswordRequestPayload } from "../../../types";
 import { FormErrors } from "../../../modules/index";
 import {
@@ -12,8 +13,8 @@ import routes from "../../../router/routes";
 const forgotPasswordRequestValidationSchema = yup.object().shape({
   email: yup
     .string()
-    .email("Please enter a valid email address.")
-    .required("This field is required."),
+    .email("errors.invalid.email")
+    .required("errors.required"),
 });
 
 interface Props {
@@ -21,6 +22,7 @@ interface Props {
 }
 
 const ResetPasswordRequestPage: React.FC<Props> = ({ onSubmit }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [hasSubmitCompleted, setHasSubmitCompleted] = useState(false);
   return (
@@ -53,15 +55,15 @@ const ResetPasswordRequestPage: React.FC<Props> = ({ onSubmit }) => {
         <form name="form-reset-password-request" onSubmit={handleSubmit} className="card">
           {
             hasSubmitCompleted ? (
-              <Panel title="Forgot Password">
+              <Panel title={t("auth.forgot.password.title")}>
                 <Panel.Body>
-                  <p>
+                  <Trans i18nKey="auth.sent.reset.instructions">
                     We sent an email to
                     {" "}
                     <span className="text-primary font-bold break-words">{values.email}</span>
                     {" "}
                     with instructions to reset your password.
-                  </p>
+                  </Trans>
                 </Panel.Body>
                 <Panel.Actions>
                   <Button
@@ -71,7 +73,7 @@ const ResetPasswordRequestPage: React.FC<Props> = ({ onSubmit }) => {
                     type="button"
                     name="submit-btn"
                   >
-                    Ok
+                    {t("common.ok")}
                   </Button>
                 </Panel.Actions>
               </Panel>
@@ -79,7 +81,7 @@ const ResetPasswordRequestPage: React.FC<Props> = ({ onSubmit }) => {
               <Panel title="Forgot Password">
                 <Panel.Body>
                   <div className="form-field">
-                    <Label label="email">
+                    <Label label={t("auth.email.label")}>
                       <Input
                         autoComplete="off"
                         type="email"
@@ -87,8 +89,8 @@ const ResetPasswordRequestPage: React.FC<Props> = ({ onSubmit }) => {
                         value={values.email}
                         onChange={handleChange}
                         onBlur={handleBlur}
-                        placeholder="Your email"
-                        error={touched.email ? errors.email : ""}
+                        placeholder={t("auth.email.placeholder") as string}
+                        error={touched.email ? t(errors.email as string) as string : ""}
                       />
                     </Label>
                   </div>
@@ -102,7 +104,7 @@ const ResetPasswordRequestPage: React.FC<Props> = ({ onSubmit }) => {
                     name="cancel-btn"
                     onClick={(): void => { navigate(routes.login); }}
                   >
-                    Cancel
+                    {t("common.cancel")}
                   </Button>
                   <Button
                     size={Button.size.BIG}
@@ -112,7 +114,7 @@ const ResetPasswordRequestPage: React.FC<Props> = ({ onSubmit }) => {
                     name="submit-btn"
                     loading={isSubmitting}
                   >
-                    Send
+                    {t("common.send")}
                   </Button>
                 </Panel.Actions>
               </Panel>

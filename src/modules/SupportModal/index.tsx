@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import * as yup from "yup";
 import { format } from "date-fns";
 import { useFormik } from "formik";
+import { useTranslation } from "react-i18next";
 import { createModal } from "../ModalFactory";
 import { useSelector, useSortErrors } from "../../hooks";
 import { selectors as sessionSelectors } from "../../store/sessionSlice";
@@ -14,8 +15,8 @@ import zammadApi from "../../api/zammad";
 import { FormErrors } from "../FormErrors";
 
 const validationSchema = yup.object().shape({
-  title: yup.string().required("This field is required."),
-  message: yup.string().required("This field is required."),
+  title: yup.string().required("errors.required"),
+  message: yup.string().required("errors.required"),
 });
 
 // const toDataURL = (file: File) => new Promise((resolve, reject) => {
@@ -32,6 +33,7 @@ interface Props {
 
 export const SupportModal: React.FC<Props> = ({ cancel, submit }) => {
   // const [files, setFiles] = useState<File[]>([]);
+  const { t } = useTranslation();
   const user = useSelector(sessionSelectors.getUser);
   const [isFinished, setIsFinished] = useState(false);
 
@@ -77,21 +79,21 @@ export const SupportModal: React.FC<Props> = ({ cancel, submit }) => {
       goBackCallback={() => submit()}
     />
   ) : (
-    <Modal size={Modal.size.BIG} title="RINO Customer Service">
+    <Modal size={Modal.size.BIG} title={t("layout.customer.service.title")}>
       <form onSubmit={handleSubmit}>
         <Modal.Body>
           <div>
             <p className="mb-5">
-              RINO team is happy to help with any issue you might encounter. Just type your inquiry below and we&apos;ll do our best to get back to you in 24 hours.
+              {t("layout.customer.service.message")}
             </p>
             <div className="form-field">
-              <Label label="Message">
+              <Label label={t("layout.customer.service.label") as string}>
                 <TextArea
-                  placeholder="Please describe your problem with RINO"
+                  placeholder={t("layout.customer.service.placeholder") as string}
                   onChange={handleChange}
                   name="message"
                   value={values.message}
-                  error={touched.message ? errors.message : ""}
+                  error={touched.message ? t(errors.message || "") || "" : ""}
                 />
               </Label>
             </div>
@@ -106,14 +108,14 @@ export const SupportModal: React.FC<Props> = ({ cancel, submit }) => {
             onClick={() => cancel()}
             name="cancel-btn"
           >
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Button
             name="submit-btn"
             type="submit"
             variant={Button.variant.PRIMARY_LIGHT}
           >
-            Submit issue
+            {t("layout.customer.service.submit")}
           </Button>
         </Modal.Actions>
       </form>

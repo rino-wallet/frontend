@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { generatePath, Navigate } from "react-router-dom";
 import { Formik, FormikErrors } from "formik";
 import Decimal from "decimal.js-light";
+import { useTranslation } from "react-i18next";
 import {
   CreateUnsignedTransactionResponse,
   FetchWalletDetailsResponse,
@@ -62,6 +63,7 @@ const ConfirmTransaction: React.FC<Props> = ({
   onEdit,
   errors: step1Errors,
 }) => {
+  const { t } = useTranslation();
   const [feeValue, setFeeValue] = useState<null | number>(null);
   const [inProgress, setInProgress] = useState(true);
   useEffect(() => {
@@ -79,9 +81,9 @@ const ConfirmTransaction: React.FC<Props> = ({
                 confirmCancel: (onConfirm: () => void, onGoBack: () => void): void => {
                   showConfirmationModal(
                     {
-                      title: "Cancel transaction",
-                      message: "Cancelling transaction cannot be undone.",
-                      buttonText: "cancel transaction",
+                      title: t("wallet.send.cancel.transaction.label"),
+                      message: t("wallet.send.cancel.transaction.message"),
+                      buttonText: t("wallet.send.cancel.transaction.label"),
                     },
                   ).then(onConfirm, onGoBack);
                 },
@@ -133,8 +135,8 @@ const ConfirmTransaction: React.FC<Props> = ({
             isSubmitting && (
               <Prompt
                 when={inProgress || isSubmitting}
-                title="Transaction creation in progress."
-                message="If you interrupt the transaction creation process now, the transaction might fail. If that happens, the transaction wouldn't appear in the list later."
+                title={t("wallet.send.transaction.inprogress.title")}
+                message={t("wallet.send.transaction.inprogress.message1")}
               />
             )
           }
@@ -142,8 +144,8 @@ const ConfirmTransaction: React.FC<Props> = ({
             !isSubmitting && (
               <Prompt
                 when={inProgress || isSubmitting}
-                title="Transaction creation in progress."
-                message="If you interrupt the transaction creation process, no transaction is created."
+                title={t("wallet.send.transaction.inprogress.title")}
+                message={t("wallet.send.transaction.inprogress.message2")}
               />
             )
           }
@@ -161,7 +163,8 @@ const ConfirmTransaction: React.FC<Props> = ({
                     XMR
                     (
                     {((parseFloat(piconeroToMonero(pendingTransaction.fee)) * 100) / parseFloat(transactionData?.amount)).toFixed(2)}
-                    % of transaction amount)
+                    {t("wallet.send.percent.of.amount")}
+                    )
                   </span>
                 ) : (loading ? <Loading /> : "-")}
                 total={pendingTransaction?.fee ? <span className="font-bold text-2xl"><FormatNumber value={new Decimal(transactionData?.amount || 0).plus(parseFloat(piconeroToMonero(pendingTransaction?.fee || 0))).toString()} /></span> : <Loading />}
@@ -176,7 +179,7 @@ const ConfirmTransaction: React.FC<Props> = ({
                     onEdit(transactionData);
                   }}
                 >
-                  Edit
+                  {t("wallet.send.edit")}
                 </Button>
                 <Button
                   type="submit"
@@ -186,7 +189,7 @@ const ConfirmTransaction: React.FC<Props> = ({
                   disabled={!pendingTransaction?.fee || loading || Object.keys(errors).length > 0}
                   loading={loading}
                 >
-                  Confirm Payment
+                  {t("wallet.send.confirm.payment")}
                 </Button>
               </div>
             </div>

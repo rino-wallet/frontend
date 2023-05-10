@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
+import { useTranslation } from "react-i18next";
 import { generatePath, Link } from "react-router-dom";
 import * as yup from "yup";
 import { ChangeEmailRequestPayload } from "../../../types";
@@ -10,8 +11,8 @@ import ChangeEmailInstructions from "./ChangeEmailInstructions";
 import routes from "../../../router/routes";
 
 const validationSchema = yup.object().shape({
-  new_email: yup.string().email("Please enter valid email").required("This field is required."),
-  current_password: yup.string().required("This field is required."),
+  new_email: yup.string().email("errors.invalid.email").required("errors.required"),
+  current_password: yup.string().required("errors.required"),
 });
 
 interface Props {
@@ -21,6 +22,7 @@ interface Props {
 }
 
 const ChangeEmail: React.FC<Props> = ({ onSubmit, goBackCallback, username }) => {
+  const { t } = useTranslation();
   const [submited, setSubmited] = useState(false);
   const {
     isValid,
@@ -57,30 +59,27 @@ const ChangeEmail: React.FC<Props> = ({ onSubmit, goBackCallback, username }) =>
       onClose={goBackCallback}
     />
   ) : (
-    <Modal title="Change email" onClose={goBackCallback}>
+    <Modal title={t("settings.change-email-modal.title")} onClose={goBackCallback}>
       <form onSubmit={handleSubmit}>
         <Modal.Body>
           <p className="mb-6">
-            We will send a validation message to your new email address.
-            {" "}
-            <br />
-            Please follow instructions in the message.
+            {t("settings.change-email-modal.message")}
           </p>
           <div className="form-field">
-            <Label label="New email">
+            <Label label={t("settings.change-email-modal.new-email")}>
               <Input
                 type="email"
                 name="new_email"
                 value={values.new_email}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                placeholder="New email"
-                error={touched.new_email ? errors.new_email : ""}
+                placeholder={t("settings.change-email-modal.new-email") as string}
+                error={touched.new_email ? t(errors.new_email || "") || "" : ""}
               />
             </Label>
           </div>
           <div className="mb-1">
-            <Label label="Account password">
+            <Label label={t("settings.change-email-modal.account-password")}>
               <Input
                 autoComplete="current-password"
                 type="password"
@@ -88,8 +87,8 @@ const ChangeEmail: React.FC<Props> = ({ onSubmit, goBackCallback, username }) =>
                 value={values.current_password}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                placeholder="Account password"
-                error={touched.current_password ? errors.current_password : ""}
+                placeholder={t("settings.change-email-modal.account-password") as string}
+                error={touched.current_password ? t(errors.current_password || "") || "" : ""}
               />
             </Label>
           </div>
@@ -99,7 +98,7 @@ const ChangeEmail: React.FC<Props> = ({ onSubmit, goBackCallback, username }) =>
               id="forgot-password"
               to={generatePath(routes.resetPassword, { "*": "reset" })}
             >
-              I forgot my password
+              {t("settings.change-email-modal.forgot-link") as string}
             </Link>
           </div>
           <FormErrors errors={errors} />
@@ -112,7 +111,7 @@ const ChangeEmail: React.FC<Props> = ({ onSubmit, goBackCallback, username }) =>
               name="cancel-btn"
               onClick={goBackCallback}
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button
               disabled={!isValid || !dirty || isSubmitting}
@@ -120,7 +119,7 @@ const ChangeEmail: React.FC<Props> = ({ onSubmit, goBackCallback, username }) =>
               name="submit-btn"
               loading={isSubmitting}
             >
-              Update email
+              {t("settings.change-email-modal.update-email") as string}
             </Button>
           </div>
         </Modal.Actions>

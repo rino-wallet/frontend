@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation, Trans } from "react-i18next";
 import {
   RemoveWalletAccessPayload,
   RemoveWalletAccessResponse,
@@ -78,6 +79,7 @@ const UserList: React.FC<Props> = ({
   fetchWalletMembers,
   showRevokedUsers,
 }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const onPage = (pageNumber: number): void => {
@@ -99,8 +101,8 @@ const UserList: React.FC<Props> = ({
     <div className="pb-5">
       <div className="hidden theme-bg-panel-second md:block">
         <WalletMemberLayout
-          role={<span className="text-sm uppercase">Role</span>}
-          email={<span className="text-sm uppercase">Email</span>}
+          role={<span className="text-sm uppercase">{t("wallet.users.list.th.role")}</span>}
+          email={<span className="text-sm uppercase">{t("wallet.users.list.th.email")}</span>}
           action=""
         />
       </div>
@@ -118,8 +120,20 @@ const UserList: React.FC<Props> = ({
                     <div className="flex items-center">
                       <WalletRole role={member.accessLevel} />
                       {" "}
-                      {member.user === user.email && <span className="theme-text ml-1">(you)</span>}
-                      {!!member.deletedAt && <span className="theme-text ml-1">(revoked)</span>}
+                      {member.user === user.email && (
+                      <span className="theme-text ml-1">
+                        (
+                        {t("wallet.users.list.you")}
+                        )
+                      </span>
+                      )}
+                      {!!member.deletedAt && (
+                      <span className="theme-text ml-1">
+                        (
+                        {t("wallet.users.list.revoked")}
+                        )
+                      </span>
+                      )}
                     </div>
                   )}
                   revoked={!!member.deletedAt}
@@ -136,35 +150,30 @@ const UserList: React.FC<Props> = ({
                                 wallet, member, is2FaEnabled: user.is2FaEnabled, email: member.user, shareWallet, refresh,
                               })
                                 .then(async ({ email }: { email: string; password: string; accessLevel: number }) => {
+                                  const name = wallet.name;
                                   showSuccessModal({
                                     goBackCallback: () => {
                                       // eslint-disable-next-line
                                       console.log("User added.");
                                       refresh();
                                     },
-                                    title: "Wallet access changed.",
+                                    title: t("wallet.users.access.changed"),
                                     message: (
                                       <div>
-                                        <p className="mb-3">
-                                          Access level to
-                                          {" "}
-                                          {wallet.name}
-                                          {" "}
-                                          was changed for
-                                          {" "}
-                                          {email}
-                                          .
-                                        </p>
+                                        <Trans i18nKey="wallet.users.access.changed.message" className="mb-3">
+                                          {/* eslint-disable-next-line */}
+                                          Access level to {{ name }} was changed for {{ email }}
+                                        </Trans>
                                       </div>
                                     ),
-                                    buttonText: "OK",
+                                    buttonText: t("common.ok"),
                                   });
                                 });
                             }}
                             variant={Button.variant.PRIMARY}
                             size={Button.size.SMALL}
                           >
-                            Change
+                            {t("wallet.users.change.button")}
                           </Button>
                         ) : null
                       }
@@ -196,7 +205,7 @@ const UserList: React.FC<Props> = ({
             ))
           }
           {
-            (members.length === 0 && !loading) && <EmptyList message="There are no revoked users." />
+            (members.length === 0 && !loading) && <EmptyList message={t("wallet.users.list.no.users") as string} />
           }
           {
             membersListMetaData.pages > 1 && (

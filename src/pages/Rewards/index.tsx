@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import {
   generatePath, useParams, useNavigate,
@@ -18,19 +19,20 @@ const RewardsPageContainer: React.FC = () => {
   const { type } = useParams();
   const navigate = useNavigate();
   const user = useSelector(sessionSelectors.getUser);
+  const { t } = useTranslation();
   return (
-    <PageTemplate title="Rewards">
+    <PageTemplate title={t("rewards.title")}>
       <Tabs
         activeTab={tabs.indexOf(type as string)}
         onChange={(index) => { navigate(generatePath(routes.rewards, { type: tabs[index] })); }}
         tabs={[
           {
             value: 0,
-            text: "Referral Code",
+            text: t("rewards.tabs.referrals"),
           },
           {
             value: 1,
-            text: "Promotions",
+            text: t("rewards.tabs.promotions"),
           },
         ]}
       />

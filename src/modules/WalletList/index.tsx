@@ -1,5 +1,6 @@
 import React, { useState, useEffect, SyntheticEvent } from "react";
 import { generatePath, Link } from "react-router-dom";
+import { Trans } from "react-i18next";
 import { EmptyList } from "../../components";
 import { WalletCard } from "../WalletCard";
 import { Pagination } from "../Pagination";
@@ -46,13 +47,13 @@ export const WalletList: React.FC<Props> = ({
           <EmptyList
             loading={loading}
             message={(
-              <div>
+              <Trans i18nKey="wallets.no.wallets">
                 You don&apos;t have any wallets yet. You need to create one - click on the button above, or see
                 {" "}
                 <a className="theme-link" href={`${links.faq}#getting_started_full`}>here</a>
                 {" "}
                 for instructions.
-              </div>
+              </Trans>
             )}
           />
         )

@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector, useThunkActionCreator } from "../../hooks";
 import {
   confirmEmailChanging as confirmEmailChangingThunk,
@@ -12,6 +13,7 @@ import { Spinner } from "../../components";
 import routes from "../../router/routes";
 
 const ChangeEmailConfirmPageContainer: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { token } = useParams();
   const authToken = useSelector((state) => state.session.token);
@@ -38,7 +40,7 @@ const ChangeEmailConfirmPageContainer: React.FC = () => {
       {
       succeeded && (
         <SuccessModal
-          title="Email Address Updated"
+          title={t("auth.email.address.updated") as string}
           message="We have successfully updated your email address."
           goBackCallback={(): void => navigate(routes.settings)}
         />

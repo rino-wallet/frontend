@@ -1,12 +1,13 @@
 import React from "react";
 import * as yup from "yup";
 import { useFormik } from "formik";
+import { useTranslation } from "react-i18next";
 import { createModal } from "../../modules/ModalFactory";
 import { Button, Input, Label } from "../../components";
 import { FormErrors, Modal } from "../../modules/index";
 
 const validationSchema = yup.object().shape({
-  address: yup.string().required("This field is required."),
+  address: yup.string().required("errors.required"),
 });
 
 interface Props {
@@ -18,6 +19,7 @@ interface Props {
 const ChooseWalletModal = ({
   cancel, submit, asyncCallback,
 }: Props) => {
+  const { t } = useTranslation();
   const {
     isValid,
     dirty,
@@ -44,21 +46,21 @@ const ChooseWalletModal = ({
     },
   });
   return (
-    <Modal size={Modal.size.MEDIUM} title="Choose your wallet" showCloseIcon>
+    <Modal size={Modal.size.MEDIUM} title={t("rewards.choose.wallet.title")} showCloseIcon>
       <form onSubmit={handleSubmit}>
         <Modal.Body>
           <p className="mb-10">
-            Choose the wallet you want to transfer your reward into it.
+            {t("rewards.choose.wallet.message")}
           </p>
           <div className="overflow-y-auto pr-4 mb-4">
-            <Label label="Enter your wallet address">
+            <Label label={t("rewards.enter.wallet.address")}>
               <Input
                 type="text"
                 name="address"
                 value={values.address}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                error={touched.address ? errors.address : ""}
+                error={touched.address ? t(errors.address as string) || "" : ""}
               />
             </Label>
           </div>
@@ -69,7 +71,7 @@ const ChooseWalletModal = ({
             onClick={cancel}
             name="return-btn"
           >
-            cancel
+            {t("common.cancel")}
           </Button>
           <Button
             variant={Button.variant.PRIMARY_LIGHT}
@@ -78,7 +80,7 @@ const ChooseWalletModal = ({
             loading={isSubmitting}
             disabled={dirty && !isValid}
           >
-            continue
+            {t("common.continue")}
           </Button>
         </Modal.Actions>
       </form>

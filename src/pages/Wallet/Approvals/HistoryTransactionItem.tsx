@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { format } from "date-fns";
 import classNames from "classnames";
+import { useTranslation } from "react-i18next";
 import { PendingTransfer } from "../../../types";
 import { piconeroToMonero } from "../../../utils";
 import {
@@ -23,7 +24,7 @@ const HistoryTransactionItem: React.FC<Props> = ({
   const [open, setOpen] = useState(false);
   const timestamp = transaction.createdAt;
   const currentWallet = useSelector(walletSelectors.getWallet);
-
+  const { t } = useTranslation();
   return (
     <div>
       <TransactionItemLayout
@@ -38,7 +39,7 @@ const HistoryTransactionItem: React.FC<Props> = ({
           <div className="flex gap-4">
             <Button size={Button.size.SMALL} onClick={(): void => { setOpen((value) => !value); }} name="tx-details-btn" className="w-full">
               <span className={classNames("whitespace-nowrap relative", { "text-transparent": open })}>
-                Details
+                {t("wallet.approvals.details")}
                 {" "}
                 {open && <div className="absolute inset-0 flex justify-center items-center text-black"><Icon name="checvron_up" /></div>}
               </span>

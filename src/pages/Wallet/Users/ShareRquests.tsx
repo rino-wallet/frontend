@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Wallet,
   WalletShareRequest,
@@ -32,6 +33,7 @@ const ShareRequests: React.FC<Props> = ({
   showWalletShareRequestModal,
   loading,
 }) => {
+  const { t } = useTranslation();
   const [shareRequestPage, setShareRequestPage] = useState(1);
   const changePage = (pageNumber: number): void => {
     fetchWalletShareRequests({ walletId: wallet.id, page: pageNumber });
@@ -40,13 +42,13 @@ const ShareRequests: React.FC<Props> = ({
   return walletShareRequests.length > 0 ? (
     <div>
       <h2 className="mx-10 my-4 text-xl font-bold flex items-center overflow-ellipsis overflow-hidden whitespace-nowrap">
-        Pending Shares
+        {t("wallet.users.pending.shares")}
         <span className="inline-block w-2 h-2 mr-2 bg-red-600 rounded-full ml-1" />
       </h2>
       <div className="pb-5">
         <div className="hidden theme-bg-panel-second md:block">
           <WalletMemberLayout
-            email={<span className="text-sm uppercase">Email</span>}
+            email={<span className="text-sm uppercase">{t("common.email")}</span>}
             action=""
           />
         </div>
@@ -63,7 +65,7 @@ const ShareRequests: React.FC<Props> = ({
                     variant={Button.variant.PRIMARY}
                     size={Button.size.SMALL}
                   >
-                    Share
+                    {t("wallet.users.share.btn")}
                   </Button>
                 )}
               />

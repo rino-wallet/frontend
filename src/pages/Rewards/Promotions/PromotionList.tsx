@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { RewardStatus } from "../RewardStatus";
 import { ReactComponent as EmptyListIcon } from "./empty-list-icon.svg";
@@ -23,6 +24,8 @@ export const PromotionList = ({ promotions, claimReward, loading }: Props) => {
         });
       });
   }
+
+  const { t } = useTranslation();
   return (
     <div>
       <ul className="mb-10">
@@ -32,7 +35,7 @@ export const PromotionList = ({ promotions, claimReward, loading }: Props) => {
               <div className="text-2xl mb-3">
                 <EmptyListIcon />
               </div>
-              <div>Your haven’t any promotions yet.</div>
+              <div>{t("rewards.promotions.no.promotions")}</div>
             </div>
           )
         }
@@ -55,7 +58,7 @@ export const PromotionList = ({ promotions, claimReward, loading }: Props) => {
                           variant={Button.variant.PRIMARY_LIGHT}
                           onClick={() => { onRedeem(promotion); }}
                         >
-                          Redeem
+                          {t("rewards.promotions.redeem")}
                         </Button>
                       ) : (
                         <RewardStatus status={promotion.status.toLowerCase() as "pending" | "ready" | "paid"} isPromotion />
@@ -63,11 +66,7 @@ export const PromotionList = ({ promotions, claimReward, loading }: Props) => {
                     }
                   </div>
                   <div className="py-1">
-                    Exchange more than
-                    {" "}
-                    {promotion.promotion.threshold / 100}
-                    {" "}
-                    EUR
+                    {t("rewards.promotions.redeem", { threshold: promotion.promotion.threshold / 100 })}
                   </div>
                 </div>
               </Panel>

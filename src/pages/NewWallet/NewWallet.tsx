@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { format } from "date-fns";
+import { useTranslation } from "react-i18next";
 import { LocalWalletData, NewWalletPDFData, PersistWalletThunkPayload } from "../../types";
 import SecurityTab from "./SecurityTab";
 import WalletNameTab from "./WalletNameTab";
@@ -20,6 +21,7 @@ interface Props {
 const NewWalletContainer: React.FC<Props> = ({
   onLeavePage, createMultisigWallet, username, persistWallet, isKeypairSet, stage, isWalletCreating,
 }) => {
+  const { t } = useTranslation();
   const [pdfData, setPdfData] = useState<NewWalletPDFData | null>(null);
   const [walletId, setWalletId] = useState<string>("");
   const isWalletCreated = !!pdfData;
@@ -43,7 +45,7 @@ const NewWalletContainer: React.FC<Props> = ({
       });
   }
   return (
-    <PageTemplate title={isWalletCreated ? `New Wallet: ${pdfData?.walletName}` : "New Wallet"} backButtonRoute={!isWalletCreated ? routes.wallets : ""}>
+    <PageTemplate title={isWalletCreated ? `${t("new.wallet.title")}: ${pdfData?.walletName}` : t("new.wallet.title")} backButtonRoute={!isWalletCreated ? routes.wallets : ""}>
       <div className="w-full">
         <div className="flex mb-5 m-auto">
           <Tabs
@@ -52,7 +54,7 @@ const NewWalletContainer: React.FC<Props> = ({
                 value: 0,
                 text: (
                   <div className="text-center">
-                    <div className="text-2xl font-bold normal-case">1. Create Wallet</div>
+                    <div className="text-2xl font-bold normal-case">{t("new.wallet.tab.create")}</div>
                   </div>
                 ),
               },
@@ -60,7 +62,7 @@ const NewWalletContainer: React.FC<Props> = ({
                 value: 1,
                 text: (
                   <div className="text-center">
-                    <div className="text-2xl font-bold normal-case">2. Download and Store Wallet Recovery Document</div>
+                    <div className="text-2xl font-bold normal-case">{t("new.wallet.tab.download")}</div>
                   </div>
                 ),
               },

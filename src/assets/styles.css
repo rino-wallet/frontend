@@ -76,6 +76,9 @@
   .theme-bg-indigo {
     background-color: rgba(94, 94, 245, 1);
   }
+  .theme-bg-banner-yellow {
+    background-color: rgba(252, 243, 228, 1);
+  }
 }
 
 .white-text-shadow {

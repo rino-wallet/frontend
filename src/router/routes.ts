@@ -15,6 +15,7 @@ export default {
   wallets: "/wallets",
   acceptWalletShare: "wallets/:walletId/accept-share/:shareId/",
   wallet: "/wallets/:id/*",
+  walletSettings: "/wallets/:id/settings",
   publicWallet: "/public/wallets/:id/*",
   newWallet: "/new-wallet",
   changeEmail: "/change-email/:token",

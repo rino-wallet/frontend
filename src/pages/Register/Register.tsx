@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Formik } from "formik";
 import { Link, useNavigate } from "react-router-dom";
 import * as yup from "yup";
+import { useTranslation, Trans } from "react-i18next";
 import routes from "../../router/routes";
 import { SignUpResponse, SignUpThunkPayload } from "../../types";
 import { accountType } from "../../constants";
@@ -16,44 +17,48 @@ interface Props {
   signUp: (data: SignUpThunkPayload) => Promise<SignUpResponse>;
 }
 
-const registerValidationSchema = (isEnterprise: boolean) => yup.object().shape({
-  email: yup
-    .string()
-    .email("Please enter valid email")
-    .required("This field is required."),
-  username: yup
-    .string()
-    .required("This field is required."),
-  password: passwordValidationSchema,
-  referral_code: yup
-    .string(),
-  re_password: yup
-    .string()
-    .required("This field is required.")
-    .oneOf([yup.ref("password")], "Passwords must match."),
-  ...(isEnterprise ? {
-    company_name: yup
-      .string()
-      .required("This field is required."),
-    company_website: yup
-      .string()
-      .required("This field is required."),
-  } : {}),
-});
-
 const RegistrationPage: React.FC<Props> = ({ signUp }) => {
+  const { t } = useTranslation();
   const { isEnterprise } = useAccountType();
   const [successMessage, setSuccessMessage] = useState("");
   const links = isEnterprise ? routes.static.enterprise : routes.static.consumer;
-
   const {
     nonFieldErrors,
     sortErrors,
   } = useSortErrors(["non_field_errors", "detail"]);
   const navigate = useNavigate();
+
+  const registerValidationSchema = useMemo(() => yup.object().shape({
+    email: yup
+      .string()
+      .email(t("errors.invalid.email") || "errors.invalid.email")
+      .required(t("errors.required") || "errors.required"),
+    username: yup
+      .string()
+      .required(t("errors.required") || "errors.required"),
+    password: passwordValidationSchema,
+    referral_code: yup
+      .string(),
+    re_password: yup
+      .string()
+      .required(t("errors.required") || "errors.required")
+      .oneOf(
+        [yup.ref("password")],
+        t("errors.match.password") || "errors.match.password",
+      ),
+    ...(isEnterprise ? {
+      company_name: yup
+        .string()
+        .required(t("errors.required") || "errors.required"),
+      company_website: yup
+        .string()
+        .required(t("errors.required") || "errors.required"),
+    } : {}),
+  }), [t, isEnterprise]);
+
   return (
     successMessage ? (
-      <Panel title="Account created">
+      <Panel title={t("auth.account.created.title")}>
         <Panel.Body>
           <div className="flex space-x-6">
             <div className="flex justify-center">
@@ -65,7 +70,7 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
           </div>
         </Panel.Body>
         <Panel.Actions>
-          <Link to={routes.wallet}><Button name="ok-button">OK</Button></Link>
+          <Link to={routes.wallet}><Button name="ok-button">{t("common.ok")}</Button></Link>
         </Panel.Actions>
       </Panel>
     ) : (
@@ -75,7 +80,7 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
             <Logo small />
             {" "}
             <span>
-              Welcome to
+              {t("auth.title")}
               {" "}
               <span className="font-bold">rino</span>
             </span>
@@ -102,7 +107,7 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
               ...(isEnterprise ? { company_name: values.company_name, company_website: values.company_website, account_type: accountType.ENTERPRISE } : {}),
             })
               .then(() => {
-                setSuccessMessage("You have registered successfully. Please check your email for further instructions.");
+                setSuccessMessage(t("auth.account.created.message") as string);
               })
               .catch((error: any) => {
                 setErrors(sortErrors(error || {}).fieldErrors);
@@ -121,7 +126,7 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
             }): React.ReactElement => (
               <form name="form-registration" onSubmit={handleSubmit}>
                 <div className="form-field">
-                  <Label label="Username">
+                  <Label label={t("auth.username.label")}>
                     <Input
                       autoComplete="off"
                       name="username"
@@ -129,17 +134,21 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
                       value={values.username}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      placeholder="Your unique username"
+                      placeholder={t("auth.username.placeholder") as string}
                       error={touched.username ? errors.username : ""}
                     />
                   </Label>
-                  <div className="mt-1">You won’t be able to change it again, choose carefully 😉</div>
+                  <div className="mt-1">
+                    {t("auth.username.hint")}
+                    {" "}
+                    😉
+                  </div>
                 </div>
                 {
                     isEnterprise && (
                       <>
                         <div className="form-field">
-                          <Label label="Company name">
+                          <Label label={t("auth.company.name.label")}>
                             <Input
                               autoComplete="off"
                               name="company_name"
@@ -147,13 +156,13 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
                               value={values.company_name}
                               onChange={handleChange}
                               onBlur={handleBlur}
-                              placeholder="Your company name"
+                              placeholder={t("auth.company.name.placeholder") as string}
                               error={touched.company_name ? errors.company_name : ""}
                             />
                           </Label>
                         </div>
                         <div className="form-field">
-                          <Label label="Company website">
+                          <Label label={t("auth.company.website.label")}>
                             <Input
                               autoComplete="off"
                               name="company_website"
@@ -161,7 +170,7 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
                               value={values.company_website}
                               onChange={handleChange}
                               onBlur={handleBlur}
-                              placeholder="Your company website"
+                              placeholder={t("auth.company.placeholder") as string}
                               error={touched.company_website ? errors.company_website : ""}
                             />
                           </Label>
@@ -170,20 +179,20 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
                     )
                 }
                 <div className="form-field">
-                  <Label label="email">
+                  <Label label={t("auth.email.label")}>
                     <Input
                       name="email"
                       type="email"
                       value={values.email}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      placeholder="Your email"
+                      placeholder={t("auth.email.placeholder") as string}
                       error={touched.email ? errors.email : ""}
                     />
                   </Label>
                 </div>
                 <div className="form-field">
-                  <Label label="Account Password">
+                  <Label label={t("auth.password.label")}>
                     <Input
                       autoComplete="new-password"
                       name="password"
@@ -191,13 +200,13 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
                       value={values.password}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      placeholder="Password"
+                      placeholder={t("auth.password.placeholder") as string}
                       error={touched.password ? errors.password : ""}
                     />
                   </Label>
                 </div>
                 <div className="form-field">
-                  <Label label="Account Password Confirmation">
+                  <Label label={t("auth.passwordconfirmation.label")}>
                     <Input
                       autoComplete="new-password"
                       name="re_password"
@@ -205,26 +214,26 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
                       value={values.re_password}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      placeholder="Password"
+                      placeholder={t("auth.password.placeholder") as string}
                       error={touched.re_password ? errors.re_password : ""}
                     />
                   </Label>
                 </div>
                 <div className="form-field">
-                  <Label label="Referral code">
+                  <Label label={t("auth.code.label")}>
                     <Input
                       name="referral_code"
                       type="text"
                       value={values.referral_code}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      placeholder="Code"
+                      placeholder={t("auth.code.placeholder") as string}
                       error={touched.referral_code ? errors.referral_code : ""}
                     />
                   </Label>
                 </div>
                 <FormErrors errors={{ ...errors, ...nonFieldErrors }} />
-                <div className="theme-text">
+                <Trans i18nKey="auth.confirmation.message" className="theme-text">
                   By clicking “Create Account” you confirm that you agree with our
                   {" "}
                   <a id="link-tos" className="theme-link" href={links.terms_of_service}>Terms of Service</a>
@@ -232,7 +241,7 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
                   and
                   {" "}
                   <a id="link-privacy-policy" className="theme-link" href={links.privacy_policy}>Privacy Policy.</a>
-                </div>
+                </Trans>
                 <div className="form-field mt-10 mb-3">
                   <Button
                     variant={Button.variant.PRIMARY_LIGHT}
@@ -243,12 +252,13 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
                     loading={isSubmitting}
                     block
                   >
-                    Create Account
+                    {t("auth.create.account")}
                   </Button>
                 </div>
                 {
-                    isEnterprise ? (
-                      <div className="theme-text flex justify-center mb-1">
+                  isEnterprise ? (
+                    process.env.REACT_APP_ENV !== "test" && (
+                      <Trans i18nKey="auth.not.enterprise.user" className="theme-text flex justify-center mb-1">
                         Not an enterprise user?
                         <button
                           type="button"
@@ -261,15 +271,16 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
                         >
                           Sign up here
                         </button>
-                      </div>
-                    ) : (
-                      <div className="theme-text flex justify-center mb-1">
-                        Enterprise user?
-                        <a id="link-sign-up-enterprise" className="theme-link ml-1" href={`${routes.register}?business=true`}>
-                          Sign up here
-                        </a>
-                      </div>
+                      </Trans>
                     )
+                  ) : (
+                    <Trans i18nKey="auth.enterprise.user" className="theme-text flex justify-center mb-1">
+                      Enterprise user?
+                      <a id="link-sign-up-enterprise" className="theme-link ml-1" href={`${routes.register}?business=true`}>
+                        Sign up here
+                      </a>
+                    </Trans>
+                  )
                 }
               </form>
             )}

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import * as yup from "yup";
 import { useFormik } from "formik";
@@ -5,7 +6,7 @@ import { Button, Input } from "../../../components";
 import { FormErrors } from "../../../modules/index";
 
 const validationSchema = yup.object().shape({
-  code: yup.string().required("This field is required."),
+  code: yup.string().required("errors.required"),
 });
 
 interface Props {
@@ -37,6 +38,7 @@ export const PromotionForm = ({ onSubmit, disabled }: Props) => {
       }
     },
   });
+  const { t } = useTranslation();
   return (
     <form onSubmit={handleSubmit}>
       <div className="flex space-x-3 mb-4">
@@ -47,7 +49,7 @@ export const PromotionForm = ({ onSubmit, disabled }: Props) => {
             value={values.code}
             onChange={handleChange}
             onBlur={handleBlur}
-            error={touched.code ? errors.code : ""}
+            error={touched.code ? t(errors.code as string) || "" : ""}
             disabled={disabled}
           />
         </div>
@@ -58,7 +60,7 @@ export const PromotionForm = ({ onSubmit, disabled }: Props) => {
             loading={isSubmitting}
             variant={Button.variant.PRIMARY_LIGHT}
           >
-            Apply
+            {t("rewards.promotions.buttons.apply")}
           </Button>
         </div>
       </div>

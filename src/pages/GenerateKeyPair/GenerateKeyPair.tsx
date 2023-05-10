@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useTranslation, Trans } from "react-i18next";
 import { SetUpKeyPairThunkPayload, SetUpKeyPairResponse, User } from "../../types";
 import { Spinner, Button, Checkbox } from "../../components";
 import routes from "../../router/routes";
@@ -15,6 +16,7 @@ interface Props {
 }
 
 const RenderSuccess: React.FC<{ recoveryKey: string, username: string }> = ({ recoveryKey, username }) => {
+  const { t } = useTranslation();
   const [errorMessage, setErrorMessage] = useState("");
   const [infoChecked, setInfoChecked] = useState(false);
   const [pdfDownloaded, setPdfDownloaded] = useState(false);
@@ -22,8 +24,8 @@ const RenderSuccess: React.FC<{ recoveryKey: string, username: string }> = ({ re
     createPDF({
       totalPages: 1,
       filename: "RINO Account Recovery Document.pdf",
-      title: "Account Recovery Document",
-    }, { recoveryKey, username })
+      title: t("account.pdf.title"),
+    }, { recoveryKey, username }, t)
       .then(() => setPdfDownloaded(true))
       .catch((error: any) => {
         setErrorMessage(error.message);
@@ -43,35 +45,34 @@ const RenderSuccess: React.FC<{ recoveryKey: string, username: string }> = ({ re
     };
   }, [pdfDownloaded]);
   return (
-    <PageTemplate title="Download and Store Account Recovery Document">
+    <PageTemplate title={t("keypair.page.title")}>
       <div className="w-full">
         <div className="flex mb-5 m-auto">
           <div className="w-full p-10 m-auto">
             <p className="mb-4 font-normal">
-              Before you start using your account, you need to download and
-              safely store your Account Recovery Document.
+              {t("keypair.instruction.row1")}
             </p>
             <p className="mb-4 font-normal">
-              IMPORTANT - Read and understand the following three points before continuing.
+              {t("keypair.instruction.row2")}
             </p>
             <ol className="list-disc">
               <li className="ml-8 mb-4 ">
-                <p className="mb-4 font-normal">
+                <Trans i18nKey="keypair.instruction.row3" className="mb-4 font-normal">
                   This document is the
                   {" "}
                   <b>only</b>
                   {" "}
                   way to recover your account if you lose or forget your password.
+                </Trans>
+              </li>
+              <li className="ml-8 mb-4 ">
+                <p className="mb-4 font-normal">
+                  {t("keypair.instruction.row4")}
                 </p>
               </li>
               <li className="ml-8 mb-4 ">
                 <p className="mb-4 font-normal">
-                  You should print this document and store it offline in a safe place that only you can access.
-                </p>
-              </li>
-              <li className="ml-8 mb-4 ">
-                <p className="mb-4 font-normal">
-                  Anyone with this document (and access to your email) could get access to your account
+                  {t("keypair.instruction.row5")}
                 </p>
               </li>
             </ol>
@@ -81,15 +82,14 @@ const RenderSuccess: React.FC<{ recoveryKey: string, username: string }> = ({ re
                 checked={infoChecked}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>): void | null => (e.target.checked ? setInfoChecked(true) : null)}
               >
-                I understand the above three points. Please go ahead and generate my Account Recovery Document.
+                {t("keypair.checkbox.label")}
               </Checkbox>
             </div>
             {
               infoChecked ? (
                 <div className="text-center">
                   <p className="mb-4 font-normal">
-                    Success! Your recovery secret and your PDF file have now been generated.
-                    (This all happened in your browser. RINO has no access to the information in this document).
+                    {t("keypair.success.message")}
                   </p>
                   <Button
                     name="download-pdf"
@@ -98,7 +98,7 @@ const RenderSuccess: React.FC<{ recoveryKey: string, username: string }> = ({ re
                     disabled={!infoChecked}
                     onClick={createAndDownloadPdf}
                   >
-                    DOWNLOAD ACCOUNT RECOVERY DOCUMENT AS PDF
+                    {t("keypair.download.pdf")}
                   </Button>
                 </div>
               ) : null
@@ -112,7 +112,7 @@ const RenderSuccess: React.FC<{ recoveryKey: string, username: string }> = ({ re
                     type="button"
                     variant={Button.variant.PRIMARY_LIGHT}
                   >
-                    DONE - I HAVE SAFELY STORED MY ACCOUNT RECOVERY DOCUMENT
+                    {t("keypair.done")}
                   </Button>
                 </Link>
               ) : null
@@ -133,10 +133,10 @@ const RenderSuccess: React.FC<{ recoveryKey: string, username: string }> = ({ re
 
 const RenderPending: React.FC<{ error: string }> = ({ error }) => (
   <PageTemplate title="Download and Store Account Recovery Document">
-    <div className="mb-10">
+    <Trans i18nKey="keypair.pending.message" className="mb-10">
       <p className="mb-4">We are creating your Account Recovery Document. It only takes a few seconds.</p>
       <p>Please do not close the browser window now, or we would need to start over the next time you log in.</p>
-    </div>
+    </Trans>
     {
       error ? <div className="theme-text-error">{error}</div> : (
         <div className="flex justify-center mb-8">

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   FetchPendingTranfersResponse, FetchPendingTransfersThunkPayload, PendingTransfer, ListMetadata,
 } from "../../../types";
@@ -29,6 +30,7 @@ const PendingList: React.FC<Props> = ({
   callback,
   isPublicWallet,
 }) => {
+  const { t } = useTranslation();
   const [listLoading, setListLoading] = useState(true);
   const [isFirstLoading, setIsFirstLoading] = useState(true);
   const navigate = useNavigate();
@@ -64,13 +66,13 @@ const PendingList: React.FC<Props> = ({
     navigate(`${location.pathname}?page_pending=${p}`);
   }
   return (
-    <Panel title="Pending Approvals" className="border-none">
+    <Panel title={t("wallet.approvals.pendinglist.title")} className="border-none">
       <div>
         <div className="hidden theme-bg-panel-second md:block">
           <TransactionItemLayout
-            amount={(<span className="text-sm uppercase">Amount</span>)}
-            timestamp={(<span className="text-sm uppercase">Date</span>)}
-            submitedBy={(<span className="text-sm uppercase">Submited By</span>)}
+            amount={(<span className="text-sm uppercase">{t("wallet.approvals.amount")}</span>)}
+            timestamp={(<span className="text-sm uppercase">{t("wallet.approvals.date")}</span>)}
+            submitedBy={(<span className="text-sm uppercase">{t("wallet.approvals.submitedby")}</span>)}
             action={(<span className="text-sm uppercase" />)}
           />
         </div>
@@ -89,7 +91,7 @@ const PendingList: React.FC<Props> = ({
             <div>
               {
                   (!entities?.length && !listLoading) && (
-                    <EmptyList message="No pending transfers yet." />
+                    <EmptyList message={t("wallet.approvals.empty.pending.list") as string} />
                   )
               }
               {

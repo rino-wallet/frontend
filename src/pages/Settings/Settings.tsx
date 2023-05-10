@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, generatePath } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { User, UpdateUserPayload, UserResponse } from "../../types";
 import {
   Button, Icon, Panel, Switch,
@@ -31,6 +32,7 @@ const SettingsPage: React.FC<Props> = ({
   signOutAll,
   pendingUpdateUser,
 }) => {
+  const { t } = useTranslation();
   const { isEnterprise } = useAccountType();
   const [showEmail, setShowEmail] = useState(false);
   const [showEmailModal, setShowEmailModal] = useState(false);
@@ -43,7 +45,7 @@ const SettingsPage: React.FC<Props> = ({
       }, (err: any) => { console.log(err); });
   }
   return (
-    <PageTemplate title="Settings">
+    <PageTemplate title={t("settings.title")}>
       {showEmailModal && <ChangeEmail goBackCallback={(): void => { setShowEmailModal(false); }} />}
       {showPasswordModal && <ChangePassword goBackCallback={(): void => { setShowPasswordModal(false); }} />}
       <div>
@@ -56,7 +58,7 @@ const SettingsPage: React.FC<Props> = ({
                     <RewardsIcon />
                   </div>
                   <div className="flex-1 pl-6">
-                    <span className="text-4xl font-bold font-lato">Start earning rewards!</span>
+                    <span className="text-4xl font-bold font-lato">{t("settings.start.rewards")}</span>
                   </div>
                   <div className="flex flex-col justify-center w-6 text-4xl font-semibold ">
                     &#x3e;
@@ -75,12 +77,12 @@ const SettingsPage: React.FC<Props> = ({
           <div>
             <div className="mb-5">
               <div className="flex items-center break-all">
-                <div className="w-24 theme-text-secondary text-sm">USERNAME</div>
+                <div className="w-24 theme-text-secondary text-sm">{t("settings.username")}</div>
                 <div className="font-bold">{user.username}</div>
               </div>
             </div>
             <div className="mb-5 flex items-center break-all">
-              <div className="w-24 theme-text-secondary text-sm">EMAIL</div>
+              <div className="w-24 theme-text-secondary text-sm">{t("settings.useremail")}</div>
               <div className="inline-flex items-center break-all font-bold">
                 {
                   showEmail ? (
@@ -88,7 +90,7 @@ const SettingsPage: React.FC<Props> = ({
                       {user.email}
                       {" "}
                       <div data-qa-selector="show-email-btn" className="inline-flex ml-3">
-                        <Button size={Button.size.SMALL} onClick={(): void => setShowEmail(false)}>Hide</Button>
+                        <Button size={Button.size.SMALL} onClick={(): void => setShowEmail(false)}>{t("settings.hide")}</Button>
                       </div>
                     </div>
                   ) : (
@@ -96,7 +98,7 @@ const SettingsPage: React.FC<Props> = ({
                       {hideEmail(user.email)}
                       {" "}
                       <div data-qa-selector="show-email-btn" className="inline-flex ml-3">
-                        <Button size={Button.size.SMALL} onClick={(): void => setShowEmail(true)}>Reveal</Button>
+                        <Button size={Button.size.SMALL} onClick={(): void => setShowEmail(true)}>{t("settings.reveal")}</Button>
                       </div>
                     </div>
                   )
@@ -113,7 +115,7 @@ const SettingsPage: React.FC<Props> = ({
                 onClick={(): void => setShowEmailModal(true)}
                 size={Button.size.SMALL}
               >
-                Change email
+                {t("settings.change.email")}
               </Button>
               <Button
                 className="block w-full mb-3 sm:w-auto sm:mb-0"
@@ -122,7 +124,7 @@ const SettingsPage: React.FC<Props> = ({
                 onClick={(): void => setShowPasswordModal(true)}
                 size={Button.size.SMALL}
               >
-                Change password
+                {t("settings.change.password")}
               </Button>
               <Button
                 className="block w-full mb-3 sm:w-auto sm:mb-0"
@@ -131,7 +133,7 @@ const SettingsPage: React.FC<Props> = ({
                 onClick={signOutAll}
                 size={Button.size.SMALL}
               >
-                Logout from all sessions
+                {t("settings.logout.all")}
               </Button>
             </div>
           </div>
@@ -139,7 +141,7 @@ const SettingsPage: React.FC<Props> = ({
       </section>
       <section className="py-8">
         <h2 className="text-base text-3xl font-bold mb-6 flex items-center">
-          Two-factor Authentication
+          {t("settings.two.factor.auth")}
         </h2>
         <div className="mb-6">
           {
@@ -148,14 +150,14 @@ const SettingsPage: React.FC<Props> = ({
                 <div className="text-green-500">
                   <Icon name="security-on" />
                   {" "}
-                  <span className="uppercase text-lg font-bold" data-qa-selector="two-fa-status">Enabled</span>
+                  <span className="uppercase text-lg font-bold" data-qa-selector="two-fa-status">{t("settings.enabled")}</span>
                 </div>
               )
               : (
                 <div className="text-red-500">
                   <Icon name="security-off" />
                   {" "}
-                  <span className="uppercase text-lg font-bold" data-qa-selector="two-fa-status">Disabled</span>
+                  <span className="uppercase text-lg font-bold" data-qa-selector="two-fa-status">{t("settings.disabled")}</span>
                 </div>
               )
           }
@@ -169,12 +171,16 @@ const SettingsPage: React.FC<Props> = ({
                 disable2FA()
                   .then(() => {
                     showSuccessModal({
-                      title: "2FA Disabled",
+                      title: t("settings.modal.2fa.disabled.title"),
                       // eslint-disable-next-line
                       message: (close: () => void) => (
                         <div>
-                          <p className="mb-3">You have successfully disabled Two-factor Authentication.</p>
-                          <p className="mb-3">But your account is now less secure :&#40;</p>
+                          <p className="mb-3">{t("settings.modal.2fa.disabled.row1")}</p>
+                          <p className="mb-3">
+                            {t("settings.modal.2fa.disabled.row2")}
+                            {" "}
+                            &#40;
+                          </p>
                           <button
                             className="theme-text-primary"
                             type="button"
@@ -184,7 +190,7 @@ const SettingsPage: React.FC<Props> = ({
                               setTimeout(onClickEnable2FA, 0);
                             }}
                           >
-                            Set up 2FA again
+                            {t("settings.modal.2fa.disabled.setup")}
                           </button>
                         </div>
                       ),
@@ -197,7 +203,7 @@ const SettingsPage: React.FC<Props> = ({
               name="disable2FA"
               size={Button.size.SMALL}
             >
-              Disable 2fa
+              {t("settings.disable.2fa")}
             </Button>
           ) : (
             <Button
@@ -207,14 +213,14 @@ const SettingsPage: React.FC<Props> = ({
               onClick={onClickEnable2FA}
               size={Button.size.SMALL}
             >
-              Enable 2fa
+              {t("settings.enable.2fa")}
             </Button>
           )
         }
       </section>
       <section className="py-8">
         <h2 className="text-3xl font-bold mb-6 flex items-center">
-          Notifications
+          {t("settings.notifications")}
         </h2>
         <Switch
           disabled={pendingUpdateUser}
@@ -222,7 +228,7 @@ const SettingsPage: React.FC<Props> = ({
           id="tx-notifications"
           onChange={(e): void => { updateUser({ tx_notifications: e.target.checked }); }}
         >
-          <span className="text-base">Email notifications for incoming transactions</span>
+          <span className="text-base">{t("settings.email.notifications")}</span>
         </Switch>
       </section>
     </PageTemplate>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { generatePath, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { createQRCodeImage } from "../../../utils";
 import { CopyArea, Pagination, enterPasswordModal } from "../../../modules/index";
 import {
@@ -49,21 +50,22 @@ const ReceivePayment: React.FC<Props> = ({
   walletSubAddress,
   isPublicWallet,
 }) => {
+  const { t } = useTranslation();
   const [page, setPage] = useState<number>(1);
   const navigate = useNavigate();
   const [image, setImage] = useState("");
-  useEffect(() => {
-    if (walletSubAddress) {
-      createQRCodeImage(walletSubAddress?.address, { errorCorrectionLevel: "H", width: 265 })
-        .then((b64String) => {
-          setImage(b64String);
-        }, () => { setImage(""); });
-    }
-  }, [walletSubAddress]);
-  useEffect(() => {
-    fetchSubaddresses({ walletId, page });
-  }, [page]);
-  async function validateAddress(subaddress: Subaddress, required: boolean): Promise<void> {
+  async function validateAddress(subaddress: Subaddress, mode: "new" | "first" | "prompt"): Promise<void> {
+    const modalContent = {
+      new: {
+        title: t("wallet.receive.subaddress.validation.title"),
+        text: t("wallet.receive.newsubaddress.validation.message"),
+      },
+      first: {
+        title: t("wallet.receive.subaddress.validation.title"),
+        text: t("wallet.receive.firstsubaddress.validation.message"),
+      },
+      prompt: {},
+    };
     if (typeof openWallet === "function" && typeof validateSubAddress === "function") {
       await enterPasswordModal({
         callback: async (password: string) => {
@@ -73,17 +75,30 @@ const ReceivePayment: React.FC<Props> = ({
             walletId, address: subaddress.address, index: subaddress.index, loginPassword: password,
           });
         },
-        ...(!required ? {
-          title: "Subaddress validation",
-          text: "Enter your account password to validate newly created subaddress, or click cancel to skip this step.",
-        } : {}),
+        ...(modalContent[mode]),
       });
     }
   }
+  useEffect(() => {
+    if (walletSubAddress) {
+      createQRCodeImage(walletSubAddress?.address, { errorCorrectionLevel: "H", width: 265 })
+        .then((b64String) => {
+          setImage(b64String);
+        }, () => { setImage(""); });
+    }
+  }, [walletSubAddress?.address]);
+  useEffect(() => {
+    if (walletSubAddress && !walletSubAddress.isValid && walletSubAddress.index === 1) {
+      validateAddress(walletSubAddress, "first");
+    }
+  }, [walletSubAddress?.index]);
+  useEffect(() => {
+    fetchSubaddresses({ walletId, page });
+  }, [page]);
   return (
     <WalletPageTemplate
       showNameInBox
-      title="Receive"
+      title={t("wallet.receive.receive") as string}
       goBackCallback={(): void => { navigate(`${generatePath(isPublicWallet ? routes.publicWallet : routes.wallet, { id: walletId })}/transactions`); }}
       id={walletId}
       wallet={wallet}
@@ -99,7 +114,7 @@ const ReceivePayment: React.FC<Props> = ({
           <div className="min-w-0 order-1 w-full md:mr-6">
             <Label label={(
               <div className="flex items-center" data-qa-selector="validate-current-address">
-                <span className="mr-3">Current address</span>
+                <span className="mr-3">{t("wallet.receive.current.address")}</span>
                 {
                   walletSubAddress && (
                     <ValidateButton
@@ -115,14 +130,21 @@ const ReceivePayment: React.FC<Props> = ({
                 <EditLabelForm id={walletId} address={walletSubAddress?.address || ""} label={walletSubAddress?.label || ""} block />
                 {walletSubAddress?.address}
                 {" "}
-                {walletSubAddress?.isUsed ? <span className="theme-text-secondary font-bold"> (Used)</span> : ""}
+                {walletSubAddress?.isUsed ? (
+                  <span className="theme-text-secondary font-bold">
+                    {" "}
+                    (
+                    {t("wallet.receive.used")}
+                    )
+                  </span>
+                ) : ""}
               </CopyArea>
             </Label>
             {viewOnly || isPublicWallet ? (
               <Tooltip
                 className="w-full"
                 content={(
-                  <div className="md:w-48">This functionality is not available in read-only wallets.</div>
+                  <div className="md:w-48">{t("wallet.receive.readonly.tooltip")}</div>
               )}
               >
                 <Button
@@ -131,7 +153,7 @@ const ReceivePayment: React.FC<Props> = ({
                   disabled
                   block
                 >
-                  Generate New Address
+                  {t("wallet.receive.generate.address")}
                 </Button>
               </Tooltip>
             ) : (
@@ -142,7 +164,7 @@ const ReceivePayment: React.FC<Props> = ({
                   if (typeof createSubaddress === "function") {
                     createSubaddress({ walletId })
                       .then((subaddress) => {
-                        validateAddress(subaddress, false);
+                        validateAddress(subaddress, "new");
                         fetchSubaddresses({ walletId, page });
                       });
                   }
@@ -151,17 +173,17 @@ const ReceivePayment: React.FC<Props> = ({
                 loading={subaddressCreating}
                 block
               >
-                Generate New Address
+                {t("wallet.receive.generate.address")}
               </Button>
             )}
           </div>
         </div>
         <div>
-          <h2 className="font-catamaran uppercase text-2xl font-bold mb-8">Previous addresses</h2>
+          <h2 className="font-catamaran uppercase text-2xl font-bold mb-8">{t("wallet.receive.previous.addresses")}</h2>
           <ul>
             {
               (!subaddresses.length && !listLoading) && (
-                <EmptyList message="No previous addresses yet." />
+                <EmptyList message={t("wallet.receive.no.addresses") as string} />
               )
             }
             {

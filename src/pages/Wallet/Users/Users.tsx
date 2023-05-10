@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { generatePath, useNavigate } from "react-router-dom";
+import { useTranslation, Trans } from "react-i18next";
 import {
   FetchWalletShareRequestsResponse,
   FetchWalletShareRequestsThunkPayload,
@@ -59,6 +60,7 @@ const Users: React.FC<Props> = ({
   setShowRevokedUsers,
 
 }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const canShare = accessLevel.isAdmin() || accessLevel.isOwner();
   const { isEnterprise } = useAccountType();
@@ -69,13 +71,16 @@ const Users: React.FC<Props> = ({
       showSuccessModal({
         // eslint-disable-next-line
         goBackCallback: () => { console.log("User added."); },
-        title: "User added",
+        title: t("wallet.users.user.added.modal.title"),
         message: (
           <div>
-            <p className="mb-3">{`User ${email} was added to the wallet.`}</p>
+            <Trans i18nKey="wallet.users.user.added.modal.message" className="mb-3">
+              {/* eslint-disable-next-line */}
+              User {{ email }} was added to the wallet.
+            </Trans>
           </div>
         ),
-        buttonText: "OK",
+        buttonText: t("common.ok"),
       });
       await refresh();
       if (finalizeShareId) {
@@ -83,6 +88,7 @@ const Users: React.FC<Props> = ({
       }
     });
   async function onAddUserClick(): Promise<void> {
+    const walletName = wallet.name;
     AddWalletShareRequestModal({
       wallet, is2FaEnabled: user.is2FaEnabled, isEnterprise, requestWalletShare,
     })
@@ -93,20 +99,18 @@ const Users: React.FC<Props> = ({
             console.log("Share request created.");
             refresh();
           },
-          title: "Invite Sent",
+          title: t("wallet.users.invite.sent.modal.title"),
           message: (
             <div>
-              <p className="mb-3">
-                We have sent an invitation to share access to
-                {" "}
-                {wallet.name}
-                {" "}
-                to this user:
-              </p>
+              <Trans i18nKey="wallet.users.invite.sent.modal.message" className="mb-3">
+                {/* eslint-disable-next-line */}
+                We have sent an invitation to share access to {{ walletName }} to this user:
+              </Trans>
+              {" "}
               <span className="font-bold">{email}</span>
             </div>
           ),
-          buttonText: "OK",
+          buttonText: t("common.ok"),
         });
       });
   }
@@ -124,19 +128,19 @@ const Users: React.FC<Props> = ({
         title={(
           <div className="flex w-full items-center justify-between mb-6 md:mb-0">
             <div className="md:flex flex-1 items-center mr-6">
-              <div className="flex-1">Users</div>
+              <div className="flex-1">{t("wallet.users.title")}</div>
               <div className="absolute mt-3 md:mt-0 md:static">
                 <Switch
                   id="show-revoked-users"
                   checked={showRevokedUsers}
                   onChange={() => { setShowRevokedUsers(!showRevokedUsers); }}
                 >
-                  <span className="text-base">Show revoked users</span>
+                  <span className="text-base">{t("wallet.users.show.revoked")}</span>
                 </Switch>
               </div>
             </div>
             {
-              canShare && <Button onClick={onAddUserClick}>Add User</Button>
+              canShare && <Button onClick={onAddUserClick}>{t("wallet.users.add")}</Button>
             }
           </div>
         )}

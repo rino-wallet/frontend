@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Provider as ReduxProvider } from "react-redux";
@@ -10,6 +10,7 @@ import "./assets/fonts/catamaran.css";
 import "./assets/styles.css";
 import { LayoutContainer as Layout } from "./modules/Layout";
 import { UnsupportedBrowserSW } from "./pages/UnsupportedBrowser";
+import "./localizationSettings";
 
 const env = process.env.NODE_ENV;
 const INTEGRITY_METADATA = (window as any).INTEGRITY_METADATA;
@@ -19,7 +20,9 @@ function runApp(): void {
     <React.StrictMode>
       <ReduxProvider store={store}>
         <Router>
-          <App />
+          <Suspense fallback="loading">
+            <App />
+          </Suspense>
         </Router>
       </ReduxProvider>
     </React.StrictMode>,

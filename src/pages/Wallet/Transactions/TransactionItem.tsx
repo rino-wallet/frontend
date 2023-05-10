@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { format } from "date-fns";
 import classNames from "classnames";
+import { useTranslation } from "react-i18next";
 import { Transaction } from "../../../types";
 import { piconeroToMonero } from "../../../utils";
 import {
@@ -17,6 +18,7 @@ interface Props {
 }
 
 const TransactionItem: React.FC<Props> = ({ transaction, walletId, isPublicWallet }) => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const timestamp = transaction.timestamp ? transaction.timestamp : transaction.createdAt;
   return (
@@ -38,7 +40,7 @@ const TransactionItem: React.FC<Props> = ({ transaction, walletId, isPublicWalle
             {
               transaction.txToSelf ? (
                 <div>
-                  <Tooltip content={<div className="p-1">Transaction sent back to the same wallet.</div>}>
+                  <Tooltip content={<div className="p-1">{t("wallet.transaction.sent.back")}</div>}>
                     <div>
                       <span className="text-xl">&#8635;</span>
                       {" "}
@@ -61,7 +63,7 @@ const TransactionItem: React.FC<Props> = ({ transaction, walletId, isPublicWalle
         action={(
           <Button size={Button.size.SMALL} onClick={(): void => { setOpen((value) => !value); }} name="tx-details-btn">
             <span className={classNames("whitespace-nowrap relative", { "text-transparent": open })}>
-              Details
+              {t("wallet.transaction.details")}
               {" "}
               {open && <div className="absolute inset-0 flex justify-center items-center text-black"><Icon name="checvron_up" /></div>}
             </span>

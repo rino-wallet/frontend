@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { createModal } from "../../../../modules/ModalFactory";
 import { Modal } from "../../../../modules/index";
 import { Button, BindHotKeys } from "../../../../components";
@@ -10,6 +11,7 @@ interface Props {
 }
 
 const TimeOutModalComponent: React.FC<Props> = ({ recheckRequest, cancel, submit }) => {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   async function onRecheck(): Promise<void> {
     setIsLoading(true);
@@ -24,11 +26,11 @@ const TimeOutModalComponent: React.FC<Props> = ({ recheckRequest, cancel, submit
   }
   return (
     <BindHotKeys callback={onRecheck} rejectCallback={cancel}>
-      <Modal title="Exchange timed out" onClose={cancel}>
+      <Modal title={t("wallet.send.exchange.timed.out")} onClose={cancel}>
         <Modal.Body>
-          {isLoading && <p>Loading...</p>}
+          {isLoading && <p>{t("common.loading")}</p>}
           <p>
-            Please recheck your exchange. Exchange rate may differ.
+            {t("wallet.send.recheck.exchange")}
           </p>
         </Modal.Body>
         <Modal.Actions>
@@ -37,7 +39,7 @@ const TimeOutModalComponent: React.FC<Props> = ({ recheckRequest, cancel, submit
             name="cancel-btn"
             onClick={cancel}
           >
-            Edit
+            {t("common.edit")}
           </Button>
         </Modal.Actions>
       </Modal>

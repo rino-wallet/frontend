@@ -8,6 +8,7 @@ import { useQuery } from "./useQuery";
 import { usePrompt } from "./usePrompt";
 import { useSortErrors } from "./useSortErrors";
 import { useAccountType } from "./useAccountType";
+import { useRequireApprovers } from "./useRequireApprovers";
 
 export {
   useSelector,
@@ -20,4 +21,5 @@ export {
   usePrompt,
   useSortErrors,
   useAccountType,
+  useRequireApprovers,
 };

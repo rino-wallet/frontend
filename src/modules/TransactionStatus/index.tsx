@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation, Trans } from "react-i18next";
 import { Status, Tooltip } from "../../components";
 import { orderStatuses } from "../../constants";
 import { ExchangeOrder, PendingTransfer, Wallet } from "../../types";
@@ -11,24 +12,27 @@ const orderStatusVariants = {
   [orderStatuses.CANCELED]: Status.variant.GRAY,
 };
 
-const Wrapper: React.FC<{ isLocked: boolean; blocksToUnlock: number }> = ({ children, isLocked, blocksToUnlock }) => (isLocked ? (
-  <Tooltip content={(
-    <div className="text-sm">
-      Confirmed, but funds cannot be used yet.
-      {" "}
-      {blocksToUnlock}
-      {" "}
-      blocks to unlock, which takes usually
-      {" "}
-      {2 * blocksToUnlock}
-      {" "}
-      minutes.
-    </div>
+const Wrapper: React.FC<{ isLocked: boolean; blocksToUnlock: number }> = ({ children, isLocked, blocksToUnlock }) => {
+  const time = 2 * blocksToUnlock;
+  return (isLocked ? (
+    <Tooltip content={(
+      <Trans i18nKey="wallet.confirmed.tooltip" className="text-sm">
+        Confirmed, but funds cannot be used yet.
+        {" "}
+        {{ blocksToUnlock }}
+        {" "}
+        blocks to unlock, which takes usually
+        {" "}
+        {{ time }}
+        {" "}
+        minutes.
+      </Trans>
     )}
-  >
-    {children}
-  </Tooltip>
-) : <div>{children}</div>);
+    >
+      {children}
+    </Tooltip>
+  ) : <div>{children}</div>);
+};
 
 interface Props {
   numConfirmations: number;
@@ -36,6 +40,7 @@ interface Props {
 }
 
 export const TransactionStatus: React.FC<Props> = ({ numConfirmations, order }) => {
+  const { t } = useTranslation();
   const isUnconfirmed = numConfirmations === 0;
   const isLocked = numConfirmations > 0 && numConfirmations < 10;
   const isConfirmed = numConfirmations > 9;
@@ -52,15 +57,21 @@ export const TransactionStatus: React.FC<Props> = ({ numConfirmations, order }) 
         variant={numConfirmations > 0 ? Status.variant.GREEN : Status.variant.GRAY}
       >
         {
-          isUnconfirmed && "UNCONFIRMED"
+          isUnconfirmed && <span className="uppercase">{t("wallet.transaction.status.unconfirmed")}</span>
         }
         {
           isLocked && (
-            `LOCKED (${blocksToUnlock})`
+            <span className="uppercase">
+              {t("wallet.transaction.status.locked")}
+              {" "}
+              (
+              {blocksToUnlock}
+              )
+            </span>
           )
         }
         {
-          isConfirmed && "CONFIRMED"
+          isConfirmed && <span className="uppercase">{t("wallet.transaction.status.confirmed")}</span>
         }
       </Status>
     </Wrapper>

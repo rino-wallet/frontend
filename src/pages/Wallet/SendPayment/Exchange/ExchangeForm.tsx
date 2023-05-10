@@ -4,6 +4,7 @@ import React, {
 import { generatePath, useNavigate } from "react-router-dom";
 import { Formik } from "formik";
 import * as yup from "yup";
+import { useTranslation } from "react-i18next";
 import {
   CreateExchangeOrderPayload,
   ExchangeEstimation,
@@ -47,19 +48,23 @@ const maxAmountSchema = (maxValue: number): AmountSchema => ({
   test: (value: string): boolean => parseFloat(value) <= maxValue,
 });
 
-const validationSchema = (limits: { minAmount: number; maxAmount: number; balance: number }): any => yup.object().shape({
+const validationSchema = (limits: { minAmount: number; maxAmount: number; balance: number }, t: (key: string) => string): any => yup.object().shape({
   amount_to_send: yup
     .string()
     .test(minAmountSchema(parseFloat(piconeroToMonero(limits.minAmount))))
     .test(maxAmountSchema(parseFloat(piconeroToMonero(limits.maxAmount))))
     .test(
       "test-balance",
-      limits.balance > 0 ? `You can only transfer less than the full unlocked balance (${limits.balance}). - it's necessary to account for the network fee.` : "You don't have any unlocked funds to transfer.",
+      limits.balance > 0 ? t("wallet.send.error.max").replace("{balance}", `${limits.balance}`) : t("wallet.send.error.nofunds"),
       (value) => parseFloat(value || "0") < limits.balance,
     )
-    .required("This field is required."),
-  amount_to_receive: yup.string().required("This field is required."),
-  address: yup.string().required("This field is required."),
+    .test(
+      "test-balance",
+      t("wallet.send.error.morethen0"),
+      (value) => parseFloat(value || "0") > 0,
+    ),
+  amount_to_receive: yup.string().required("errors.required"),
+  address: yup.string().required("errors.required"),
 });
 
 const debounceRequest = debouncePromise((requestFn: any) => requestFn(), 500);
@@ -107,6 +112,7 @@ const ExchangeForm: React.FC<Props> = ({
   createExchangeOrder,
   getExchangeRange,
 }) => {
+  const { t } = useTranslation();
   const [exchangePlatformState, setExchangePlatformState] = useState<ExchangePlatformState>(ExchangePlatformState.available);
   const [rate, setRate] = useState("");
   const navigate = useNavigate();
@@ -176,7 +182,7 @@ const ExchangeForm: React.FC<Props> = ({
         address: "",
         currency: defaultCurrency,
       }}
-      validationSchema={validationSchema({ ...exchangeRange, balance: parseFloat(piconeroToMonero(wallet ? wallet.unlockedBalance : "0")) })}
+      validationSchema={validationSchema({ ...exchangeRange, balance: parseFloat(piconeroToMonero(wallet ? wallet.unlockedBalance : "0")) }, t)}
       onSubmit={async (values, { setErrors }): Promise<void> => {
         try {
           await createExchangeOrder({
@@ -217,7 +223,7 @@ const ExchangeForm: React.FC<Props> = ({
                 <DisableAutofill />
                 <div className="m-auto md:w-3/4">
                   <div className="mb-4 md:mb-0" data-qa-selector="platform">
-                    <Label labelClassName="md:text-right" label="Exchange platform" inline isFormField>
+                    <Label labelClassName="md:text-right" label={t("wallet.exchange.platform")} inline isFormField>
                       <div className="flex items-center space-x-3 h-8 mt-3">
                         {
                           exchangePlatformState === ExchangePlatformState.available && <Icon name="check" className="theme-text-success" />
@@ -233,15 +239,14 @@ const ExchangeForm: React.FC<Props> = ({
                       {
                         (exchangePlatformState === ExchangePlatformState.not_available) && (
                         <div className="theme-text-error">
-                          Exchange platform is not available at the moment.
-                          Please try again later.
+                          {t("wallet.send.exchange.not.available")}
                         </div>
                         )
                       }
                     </Label>
                   </div>
                   <div className="mb-4 md:mb-0">
-                    <Label labelClassName="md:text-right" label="You Send" isFormField inline>
+                    <Label labelClassName="md:text-right" label={t("wallet.send.you.send")} isFormField inline>
                       <AmountField
                         postfix={<div className="pr-6">XMR</div>}
                         name="amount_to_send"
@@ -260,8 +265,8 @@ const ExchangeForm: React.FC<Props> = ({
                         }}
                         disabled={inputDisabled}
                         onBlur={handleBlur}
-                        placeholder="XMR Amount"
-                        error={touched.amount_to_send ? errors.amount_to_send || "" : ""}
+                        placeholder={`XMR ${t("wallet.send.amount")}`}
+                        error={touched.amount_to_send ? t(errors.amount_to_send as string) || "" : ""}
                       />
                     </Label>
                   </div>
@@ -271,7 +276,7 @@ const ExchangeForm: React.FC<Props> = ({
                     </Label>
                   </div>
                   <div className="mb-4 md:mb-0">
-                    <Label labelClassName="md:text-right" label="You Get" isFormField inline>
+                    <Label labelClassName="md:text-right" label={t("wallet.send.you.get")} isFormField inline>
                       <AmountField
                         postfix={(
                           <Select
@@ -313,12 +318,12 @@ const ExchangeForm: React.FC<Props> = ({
                         }}
                         onBlur={handleBlur}
                         placeholder={`${values.currency.toUpperCase()} Amount`}
-                        error={touched.amount_to_receive ? errors.amount_to_receive || "" : ""}
+                        error={touched.amount_to_receive ? t(errors.amount_to_receive as string) || "" : ""}
                       />
                     </Label>
                   </div>
                   <div className="mb-4 md:mb-0">
-                    <Label labelClassName="md:text-right" label="Destination Address" isFormField inline>
+                    <Label labelClassName="md:text-right" label={t("wallet.send.destination.address")} isFormField inline>
                       <Input
                         autoComplete="off"
                         type="text"
@@ -326,9 +331,9 @@ const ExchangeForm: React.FC<Props> = ({
                         value={values.address}
                         onChange={handleChange}
                         onBlur={handleBlur}
-                        placeholder="Destination Address"
+                        placeholder={t("wallet.send.destination.address") as string}
                         disabled={inputDisabled}
-                        error={touched.address ? errors.address || "" : ""}
+                        error={touched.address ? t(errors.address as string) || "" : ""}
                       />
                     </Label>
                   </div>
@@ -337,13 +342,12 @@ const ExchangeForm: React.FC<Props> = ({
                       labelClassName="md:text-right -mb-3"
                       label={(
                         <div className="flex items-center md:justify-end">
-                          Estimated rate
+                          {t("wallet.send.estimated.rate.title")}
                           <div className="inline ml-1">
                             <Tooltip
                               content={(
                                 <div className="md:w-64 text-sm normal-case text-left" data-qa-selector="exchange-rate-tooltip">
-                                  The actual exchange rate can still change (a tiny bit).
-                                  Make sure to verify the numbers at the next step.
+                                  {t("wallet.send.estimated.rate.tooltip")}
                                 </div>
                               )}
                             >
@@ -401,7 +405,7 @@ const ExchangeForm: React.FC<Props> = ({
                       disabled={isSubmitting}
                       onClick={(): void => navigate(`${generatePath(routes.wallet, { id: walletId })}/transactions`)}
                     >
-                      Cancel
+                      {t("common.cancel")}
                     </Button>
                     <Button
                       type="submit"
@@ -411,7 +415,7 @@ const ExchangeForm: React.FC<Props> = ({
                       disabled={!isValid || !parseFloat(wallet?.unlockedBalance || "0") || isSubmitting}
                       loading={isSubmitting}
                     >
-                      Proceed
+                      {t("common.proceed")}
                     </Button>
                   </div>
 

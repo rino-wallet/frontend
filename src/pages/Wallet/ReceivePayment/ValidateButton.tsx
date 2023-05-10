@@ -1,13 +1,15 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "../../../components";
 import { Subaddress } from "../../../types";
 
 interface Props {
   subaddress: Subaddress;
-  validateAddress: (subaddress: Subaddress, required: boolean) => Promise<void>;
+  validateAddress: (subaddress: Subaddress, mode: "prompt" | "new" | "first") => Promise<void>;
 }
 
 export const ValidateButton: React.FC<Props> = ({ subaddress, validateAddress }) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   return (
     <Button
@@ -17,7 +19,7 @@ export const ValidateButton: React.FC<Props> = ({ subaddress, validateAddress })
       onClick={(): void => {
         if (!subaddress.isValid) {
           setLoading(true);
-          validateAddress(subaddress, true)
+          validateAddress(subaddress, "prompt")
             .finally(() => {
               setTimeout(() => { setLoading(false); }, 300);
             });
@@ -25,7 +27,7 @@ export const ValidateButton: React.FC<Props> = ({ subaddress, validateAddress })
       }}
       className="whitespace-nowrap"
     >
-      {subaddress.isValid ? "Validated" : "Validate"}
+      {subaddress.isValid ? t("wallet.receive.validated") : t("wallet.receive.validate")}
     </Button>
   );
 };

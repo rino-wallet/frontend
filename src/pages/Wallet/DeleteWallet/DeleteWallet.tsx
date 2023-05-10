@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation, Trans } from "react-i18next";
 import { Modal, FormErrors } from "../../../modules/index";
 import { Button, Input } from "../../../components";
 import { piconeroToMonero } from "../../../utils";
@@ -18,6 +19,7 @@ const controlString = "permanently delete";
 const DeleteWallet: React.FC<Props> = ({
   deleteWallet, goBackCallback, balance, loading,
 }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const [confirmationString, setConfirmation] = useState("");
@@ -35,17 +37,17 @@ const DeleteWallet: React.FC<Props> = ({
     <Modal
       title={(
         <div className="theme-text-red">
-          Delete Wallet
+          {t("wallet.deletemodal.delete.wallet")}
         </div>
       )}
       onClose={goBackCallback}
     >
       <Modal.Body>
-        <h2 className="text-xl mb-5">Are you sure?</h2>
+        <h2 className="text-xl mb-5">{t("wallet.deletemodal.sure")}</h2>
         {
           (balance && balance !== "0") && (
             <p>
-              <span className="block mb-2">
+              <Trans i18nKey="wallet.deletemodal.balance.message" className="block mb-2">
                 This wallet has
                 {" "}
                 <span className="font-bold">
@@ -55,19 +57,21 @@ const DeleteWallet: React.FC<Props> = ({
                 </span>
                 {" "}
                 left.
-              </span>
+              </Trans>
             </p>
           )
         }
         <div className="mt-4">
-          A deleted wallet cannot be restored!
+          {t("wallet.deletemodal.warning")}
         </div>
         <div className="mt-4">
-          <p className="mb-3">
-            Please confirm deleting the wallet by typing &quot;
-            <span className="theme-text-red">permanently delete</span>
-            &quot; in the field below.
-          </p>
+          <div className="mb-3">
+            <Trans i18nKey="wallet.deletemodal.confirm.message">
+              Please confirm deleting the wallet by typing &quot;
+              <span className="theme-text-red">permanently delete</span>
+              &quot; in the field below.
+            </Trans>
+          </div>
           <Input
             type="text"
             name="confirmation"
@@ -81,7 +85,7 @@ const DeleteWallet: React.FC<Props> = ({
       </Modal.Body>
       <Modal.Actions>
         <div className="flex justify-end space-x-3">
-          <Button name="delete-wallet-cancel-btn" onClick={goBackCallback}>Cancel</Button>
+          <Button name="delete-wallet-cancel-btn" onClick={goBackCallback}>{t("common.cancel")}</Button>
           <Button
             name="delete-wallet-submit-btn"
             variant={Button.variant.PRIMARY}
@@ -89,7 +93,7 @@ const DeleteWallet: React.FC<Props> = ({
             onClick={onClickDelete}
             loading={loading}
           >
-            Delete Wallet
+            {t("wallet.deletemodal.delete.wallet")}
           </Button>
         </div>
       </Modal.Actions>

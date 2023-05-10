@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React, { useEffect } from "react";
 import { User } from "../../../types";
 import { RewardPanel } from "../RewardPanel";
@@ -47,18 +48,19 @@ const PromotionsPage: React.FC<Props> = () => {
     getPromotionsStats();
     getPromotions({ page: 1 });
   }, []);
+  const { t } = useTranslation();
   const canAddNewPromotion = (promotions.filter((promotion) => ["pending", "ready"].includes(promotion.status.toLowerCase()))).length === 0;
   return (
     <div className="font-catamaran">
       <RewardPanel amount={piconeroToMonero(promotionsStats)} />
       <section className="my-8">
         <h2 className="text-2xl font-bold mb-6 flex items-center">
-          Earn More with promotion code rewards!
+          {t("rewards.promotions.title")}
         </h2>
         <div className="mb-10">
-          <p>Check our promo codes to see what works best for you.</p>
+          <p>{t("rewards.promotions.check.promo.codes")}</p>
           <p>
-            For more info check our FAQ page:
+            {t("rewards.promotions.check.faq.page")}
             {" "}
             <a className="text-primary font-bold" href="https://rino.io/rewards/promotions">rino.io/rewards/promotions</a>
           </p>
@@ -66,13 +68,13 @@ const PromotionsPage: React.FC<Props> = () => {
       </section>
       <section className="py-8">
         <h2 className="text-2xl font-bold flex items-center mb-4">
-          Your promotion code
+          {t("rewards.promotions.your.promotion.code")}
         </h2>
         <PromotionForm disabled={!canAddNewPromotion} onSubmit={onAddPromotion} />
       </section>
       <section className="py-8">
         <h2 className="flex space-x-3 items-center">
-          <span className="text-2xl font-bold flex items-center mb-4">Promotions</span>
+          <span className="text-2xl font-bold flex items-center mb-4">{t("rewards.promotions.promotions")}</span>
         </h2>
         <PromotionList promotions={promotions} claimReward={onClaimPromotion} loading={pendingGetPromotions} />
         {

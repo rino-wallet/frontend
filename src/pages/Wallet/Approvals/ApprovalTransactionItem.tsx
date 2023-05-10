@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { format } from "date-fns";
 import classNames from "classnames";
+import { useTranslation } from "react-i18next";
 import { PendingTransfer, PendingTransferApprovalPayload } from "../../../types";
 import { piconeroToMonero } from "../../../utils";
 import {
@@ -22,6 +23,7 @@ interface Props {
 const TransactionItem: React.FC<Props> = ({
   transaction, walletId, updateTransfers,
 }) => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const timestamp = transaction.createdAt;
   const currentWallet = useSelector(walletSelectors.getWallet);
@@ -86,18 +88,16 @@ const TransactionItem: React.FC<Props> = ({
                 <>
                   <Button onClick={handleReject} size={Button.size.SMALL} name="tx-reject-btn" variant={Button.variant.BRIGHT_RED} className="w-full">
                     <span className="whitespace-nowrap relative">
-                      Reject
-                      {" "}
+                      {t("wallet.approvals.reject")}
                     </span>
                   </Button>
                   <Button onClick={handleApprove} size={Button.size.SMALL} name="tx-approve-btn" variant={Button.variant.INDIGO} className="w-full">
                     <span className="whitespace-nowrap relative">
-                      Approve
+                      {t("wallet.approvals.approve")}
                       {" "}
                       {transaction.approvals.length || 0}
                       /
                       {currentWallet.minApprovals}
-                      {" "}
                     </span>
                   </Button>
                 </>
@@ -105,14 +105,14 @@ const TransactionItem: React.FC<Props> = ({
               : (
                 <Button onClick={handleCancel} size={Button.size.SMALL} name="tx-reject-btn" variant={Button.variant.BRIGHT_RED} className="w-full">
                   <span className="whitespace-nowrap relative">
-                    Cancel
+                    {t("common.cancel")}
                     {" "}
                   </span>
                 </Button>
               )}
             <Button size={Button.size.SMALL} onClick={(): void => { setOpen((value) => !value); }} name="tx-details-btn" className="w-full">
               <span className={classNames("whitespace-nowrap relative", { "text-transparent": open })}>
-                Details
+                {t("wallet.approvals.details")}
                 {" "}
                 {open && <div className="absolute inset-0 flex justify-center items-center text-black"><Icon name="checvron_up" /></div>}
               </span>

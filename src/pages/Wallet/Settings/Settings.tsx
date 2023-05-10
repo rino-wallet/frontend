@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import { Trans, useTranslation } from "react-i18next";
 import {
   Button, Label, Input, Panel, Tooltip, Copy, Icon, Switch, Select,
 } from "../../../components";
@@ -20,10 +21,10 @@ import { moneroToPiconero, piconeroToMonero } from "../../../utils";
 const settingsValidationSchema = yup.object().shape({
   name: yup
     .string()
-    .required("This field is required."),
+    .required("errors.required"),
   public_slug: yup.string().when("is_public", {
     is: (access_level: boolean) => access_level,
-    then: yup.string().required("This field is required."),
+    then: yup.string().required("errors.required"),
   }),
 });
 
@@ -38,6 +39,7 @@ interface Props {
 const Settings: React.FC<Props> = ({
   updateWalletDetails, walletId, wallet, canDelete, canUpdateSettings,
 }) => {
+  const { t } = useTranslation();
   const { features } = useAccountType();
   const data = useAccountType();
   const user = useSelector(sessionSelectors.getUser);
@@ -127,13 +129,13 @@ const Settings: React.FC<Props> = ({
     navigate("/settings");
     enable2FA();
   }
-
+  const status2fa = formik.values.requires_2fa ? t("wallet.settings.disable") : t("wallet.settings.enable");
   const publicUrl = APP_URLS_MAP[process.env.REACT_APP_ENV as Env];
   return (
     <Panel title={(
       <div className="flex w-full justify-between items-center">
         <div className="overflow-ellipsis overflow-hidden whitespace-nowrap">
-          Settings for
+          {t("wallet.settings.settings.for")}
           {" "}
           {wallet?.name}
         </div>
@@ -149,7 +151,7 @@ const Settings: React.FC<Props> = ({
                 }}
                 name="cancel-btn"
               >
-                Cancel
+                {t("common.cancel")}
               </Button>
             )
           }
@@ -164,7 +166,7 @@ const Settings: React.FC<Props> = ({
             name="submit-btn"
             loading={formik.isSubmitting}
           >
-            Save Changes
+            {t("common.savechanges")}
           </Button>
         </div>
       </div>
@@ -181,10 +183,10 @@ const Settings: React.FC<Props> = ({
       <section className="border-t theme-border">
         <Panel.Body>
           <div>
-            <h3 className="uppercase font-bold mb-8">General</h3>
+            <h3 className="uppercase font-bold mb-8">{t("wallet.settings.general")}</h3>
             <form className="md:w-1/2" name="form-wallet-settings" onSubmit={formik.handleSubmit}>
               <div className="form-field">
-                <Label label="Wallet name">
+                <Label label={t("wallet.settings.wallet.name")}>
                   <Input
                     disabled={!canUpdateSettings}
                     type="text"
@@ -192,12 +194,12 @@ const Settings: React.FC<Props> = ({
                     value={formik.values.name}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    error={formik.touched.name ? formik.errors.name || "" : ""}
+                    error={formik.touched.name ? t(formik.errors.name as string) || "" : ""}
                   />
                 </Label>
               </div>
               <div className="form-field">
-                <Label label="WALLET PRIMARY ADDRESS">
+                <Label label={t("wallet.settings.wallet.address")}>
                   <CopyArea value={wallet?.address || ""} qaSelector="wallet-address">
                     {wallet?.address}
                   </CopyArea>
@@ -215,10 +217,10 @@ const Settings: React.FC<Props> = ({
                           onChange={(e: React.ChangeEvent<HTMLInputElement>): void | null => { formik.setFieldValue("is_public", e.target.checked); }}
                         >
                           <div className="flex items-center">
-                            <span>Make public</span>
+                            <span>{t("wallet.settings.make.public.label")}</span>
                             <Tooltip
                               content={(
-                                <p className="text-sm">Make this wallet publicly visible to anyone with the link</p>
+                                <p className="text-sm">{t("wallet.settings.make.public.message")}</p>
                               )}
                             >
                               <div className="text-sm cursor-pointer ml-1" data-qa-selector="cursor-pointer-tx-priority-tooltip">
@@ -232,8 +234,12 @@ const Settings: React.FC<Props> = ({
                         <Label label={
                             (
                               <div>
-                                Wallet identifier
-                                <span className="ml-1 theme-text-secondary font-semibold text-sm">(REQUIRED)</span>
+                                {t("wallet.settings.wallet.identifier")}
+                                <span className="ml-1 theme-text-secondary font-semibold text-sm">
+                                  (
+                                  {t("wallet.settings.required")}
+                                  )
+                                </span>
                               </div>
                             )
                           }
@@ -245,7 +251,7 @@ const Settings: React.FC<Props> = ({
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             disabled={!formik.values.is_public}
-                            error={formik.errors.public_slug || ""}
+                            error={t(formik.errors.public_slug as string) || ""}
                           />
                         </Label>
                       </div>
@@ -272,7 +278,7 @@ const Settings: React.FC<Props> = ({
                   onClick={(): void => setDeleteModalOpen(true)}
                   variant={Button.variant.RED}
                 >
-                  Delete Wallet
+                  {t("wallet.settings.delete.wallet")}
                 </Button>
               )}
               <hr className="border-t theme-border my-10 -mx-10 md:hidden" />
@@ -288,7 +294,7 @@ const Settings: React.FC<Props> = ({
                       }}
                       name="cancel-btn"
                     >
-                      Cancel
+                      {t("common.cancel")}
                     </Button>
                   )
                 }
@@ -303,7 +309,7 @@ const Settings: React.FC<Props> = ({
                   name="submit-btn"
                   loading={formik.isSubmitting}
                 >
-                  Save Changes
+                  {t("common.savechanges")}
                 </Button>
               </div>
             </form>
@@ -314,7 +320,7 @@ const Settings: React.FC<Props> = ({
                   onClick={(): void => setDeleteModalOpen(true)}
                   variant={Button.variant.RED}
                 >
-                  Delete Wallet
+                  {t("wallet.settings.delete.wallet")}
                 </Button>
                 <hr className="border-t theme-border my-10 -mx-10" />
               </div>
@@ -371,17 +377,17 @@ const Settings: React.FC<Props> = ({
               >
                 <div className="flex items-center gap-4">
                   <div className="flex items-center">
-                    Require 2FA for spending.
+                    {t("wallet.settings.require.2fa")}
                     {!user?.is2FaEnabled ? (
                       <Tooltip
                         content={(
-                          <div className="md:w-48 text-sm" data-qa-selector="tx-priority-tooltip">
+                          <Trans i18nKey="wallet.settings.activate.account" className="md:w-48 text-sm" data-qa-selector="tx-priority-tooltip">
                             Activate Account 2FA to
                             {" "}
-                            {formik.values.requires_2fa ? "disable" : "enable"}
+                            {{ status2fa }}
                             {" "}
                             this option.
-                          </div>
+                          </Trans>
                           )}
                       >
                         <div className="text-sm cursor-pointer ml-1" data-qa-selector="cursor-pointer-tx-priority-tooltip">
@@ -393,43 +399,48 @@ const Settings: React.FC<Props> = ({
 
                   {!user?.is2FaEnabled && (
                   <Button onClick={():void => goToSettings()} className="w-fit text-sm border px-2 py-1 border-gray-300 rounded-lg">
-                    <p className="text-gray-700">SET UP 2FA</p>
+                    <p className="text-gray-700">{t("wallet.settings.setup.2fa")}</p>
                   </Button>
                   )}
                 </div>
               </Switch>
             </div>
-            <div className="flex items-center mb-2">
-              <span className="text-base font-semibold">Approvals</span>
-              <Tooltip
-                content={(
-                  <div className="md:w-48 text-sm" data-qa-selector="tx-priority-tooltip">
-                    Users with roles &quot;admin&quot;, &quot;spender&quot;, or &quot;approver&quot; are eligible to approve transactions. You cannot set the number of approvals required higher than the number of eligible users.
-                  </div>
-                          )}
-              >
-                <div className="text-sm cursor-pointer ml-1" data-qa-selector="cursor-pointer-tx-priority-tooltip">
-                  <img src={questionBox} alt="info" />
-                </div>
-              </Tooltip>
-            </div>
             {
               features?.approvals && (
-                <form
-                  className={`md:w-1/3 ${!canUpdateSettings ? "pointer-events-none" : ""}`}
-                  name="form-wallet-settings-limits"
-                  onSubmit={formik.handleSubmit}
-                >
-                  <div className="form-field">
-                    <Select
-                      value={formik.values.requiredApprovals}
-                      onChange={formik.handleChange}
-                      name="requiredApprovals"
+                <>
+                  <div className="flex items-center mb-2">
+                    <span className="text-base font-semibold">Approvals</span>
+                    <Tooltip
+                      content={(
+                        <div className="md:w-48 text-sm" data-qa-selector="wallet-approvals-tooltip">
+                          Users with roles &quot;admin&quot;, &quot;spender&quot;, or &quot;approver&quot; are eligible to approve transactions. You cannot set the number of approvals required higher than the number of eligible users.
+                        </div>
+                              )}
                     >
-                      {approvalsOptions}
-                    </Select>
+                      <div className="text-sm cursor-pointer ml-1" data-qa-selector="cursor-pointer-wallet-approvals-tooltip">
+                        <img src={questionBox} alt="info" />
+                      </div>
+                    </Tooltip>
                   </div>
-                </form>
+                  <form
+                    className={`md:w-1/3 ${!canUpdateSettings ? "pointer-events-none" : ""}`}
+                    name="form-wallet-settings-limits"
+                    onSubmit={formik.handleSubmit}
+                  >
+                    <div className="form-field">
+                      <Select
+                        className={`${!numApprovers ? "!theme-border-error outline-none" : ""}`}
+                        error={`${!numApprovers ? "Wallet requires more approvers" : ""}`}
+                        value={formik.values.requiredApprovals}
+                        onChange={formik.handleChange}
+                        name="requiredApprovals"
+                      >
+                        <option value="">--</option>
+                        {approvalsOptions}
+                      </Select>
+                    </div>
+                  </form>
+                </>
               )
             }
           </div>

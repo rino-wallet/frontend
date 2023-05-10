@@ -1,6 +1,7 @@
 import { useFormik } from "formik";
 import React from "react";
 import * as yup from "yup";
+import { Trans, useTranslation } from "react-i18next";
 import { createModal } from "../../../modules/ModalFactory";
 import {
   Wallet,
@@ -15,8 +16,8 @@ import { enter2FACode } from "../../../modules/2FAModals";
 const validationSchema = yup.object().shape({
   email: yup
     .string()
-    .email("Please enter valid email")
-    .required("This field is required."),
+    .email("errors.invalid.email")
+    .required("errors.required"),
 });
 
 interface Props {
@@ -31,6 +32,7 @@ interface Props {
 const AddWalletShareRequest: React.FC<Props> = ({
   wallet, is2FaEnabled, isEnterprise, requestWalletShare, cancel, submit,
 }) => {
+  const { t } = useTranslation();
   const {
     isValid,
     dirty,
@@ -69,23 +71,21 @@ const AddWalletShareRequest: React.FC<Props> = ({
       }
     },
   });
+  const accountType = isEnterprise ? "enterprise" : "community";
   return (
     <BindHotKeys callback={handleSubmit} rejectCallback={cancel}>
-      <Modal title="Invite wallet user" onClose={cancel} className="!z-10" showCloseIcon>
+      <Modal title={t("wallet.users.share.modal.title")} onClose={cancel} className="!z-10" showCloseIcon>
         <form onSubmit={handleSubmit}>
           <DisableAutofill />
           <Modal.Body>
             <div className="form-field">
-              <p>
-                You can only invite users that already have a RINO
-                {" "}
-                {isEnterprise ? "enterprise" : "community"}
-                {" "}
-                account.
-              </p>
+              <Trans i18nKey="wallet.users.share.modal.message1">
+                {/* eslint-disable-next-line */}
+                You can only invite users that already have a RINO {{accountType}} account.
+              </Trans>
             </div>
             <div className="form-field">
-              <p>You can pick a role for the invited user once they accept.</p>
+              <p>{t("wallet.users.share.modal.message2")}</p>
             </div>
             <div className="form-field">
               <Label label={(
@@ -93,11 +93,11 @@ const AddWalletShareRequest: React.FC<Props> = ({
                   <Tooltip
                     content={(
                       <div className="md:w-76 text-sm text-center normal-case" data-qa-selector="tx-priority-tooltip">
-                        Address of the user you are inviting.
+                        {t("wallet.users.share.modal.tooltip")}
                       </div>
                     )}
                   >
-                    User email address
+                    {t("wallet.users.share.modal.user.email.address")}
                     {" "}
                     <div className="text-sm cursor-pointer inline-block" data-qa-selector="cursor-pointer-tx-priority-tooltip">
                       <Icon name="info" />
@@ -113,8 +113,8 @@ const AddWalletShareRequest: React.FC<Props> = ({
                   value={values.email}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  placeholder="User Email Address"
-                  error={touched.email ? errors.email || "" : ""}
+                  placeholder={t("wallet.users.share.modal.user.email.address") as string}
+                  error={touched.email ? t(errors.email || "") as string : ""}
                 />
               </Label>
             </div>
@@ -127,7 +127,7 @@ const AddWalletShareRequest: React.FC<Props> = ({
               name="cancel-btn"
               onClick={cancel}
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button
               disabled={!isValid || !dirty || isSubmitting}
@@ -136,7 +136,7 @@ const AddWalletShareRequest: React.FC<Props> = ({
               loading={isSubmitting}
               variant={Button.variant.PRIMARY_LIGHT}
             >
-              Invite
+              {t("wallet.users.share.modal.invite")}
             </Button>
           </Modal.Actions>
         </form>

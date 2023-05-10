@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Decimal from "decimal.js-light";
 import { FormikErrors } from "formik";
+import { useTranslation } from "react-i18next";
 import { Label } from "../../../../../components";
 import { ExchangeDetails } from "../ExchangeDetails";
 import {
@@ -58,6 +59,7 @@ const ExchangePayment: React.FC<Props> = ({
   prepareTransaction,
   setCurrentWalletCall,
 }) => {
+  const { t } = useTranslation();
   const [preparingTransaction, setPreparingTransaction] = useState(false);
   const [errors, setErrors] = useState<FormikErrors<{ address: string; amount: string; password: string; message: string; memo: string; priority: string; non_field_errors: string; }>>({});
   async function prepareTransactionForExchange(): Promise<void> {
@@ -124,7 +126,7 @@ const ExchangePayment: React.FC<Props> = ({
       </div>
       <div className="m-auto md:w-3/4">
         <Label label="" inline>
-          <h3 className="text-2xl mb-3 font-bold">Exchange in progress:</h3>
+          <h3 className="text-2xl mb-3 font-bold">{t("wallet.send.exchange.progress")}</h3>
         </Label>
         <ExchangeDetails
           platform={order?.platform || ""}

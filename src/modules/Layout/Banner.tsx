@@ -1,5 +1,9 @@
-import React, { ReactNode, useState } from "react";
+import React, {
+  ReactNode, useEffect, useState,
+} from "react";
+import { t } from "i18next";
 import { Link } from "react-router-dom";
+import { Trans } from "react-i18next";
 import { Button, Icon } from "../../components";
 import { useAccountType } from "../../hooks";
 import ROUTES from "../../router/routes";
@@ -58,12 +62,24 @@ export const BannerContainer: React.FC<{
   const [isCookiesAccepted, setIsCookiesAccepted] = useState(JSON.parse(localStorage.getItem("isCookiesAccepted") || "false"));
   const { isEnterprise, isConsumer, isAuthenticated } = useAccountType();
   const links = isEnterprise ? ROUTES.static.enterprise : ROUTES.static.consumer;
+
   const handleClick = () => {
     if (setToggleBanner) {
       setToggleBanner(!toggleBanner);
       setShowBanner(false);
     }
   };
+
+  useEffect(() => {
+    if (isConsumer && isAuthenticated) {
+      if (setToggleBanner){
+        setToggleBanner(true);
+      }
+      setShowBanner(true);
+    } else if (setToggleBanner){
+      setToggleBanner(false);
+    }
+  }, [isConsumer, isAuthenticated]);
 
   if (!isCookiesAccepted && showBanner) {
     return (
@@ -78,7 +94,7 @@ export const BannerContainer: React.FC<{
         }}
       >
         <div className="text-left">
-          <p>
+          <Trans i18nKey="layout.banner.cookies">
             We use cookies to run our website and offer you the best possible user experience . We share certain information about your use of our website with our social media and analytics partners.  For more information on the data being collected and how it is shared with our partners, please read our
             {" "}
             <a className="theme-link" href={links.privacy_policy}>Privacy policy</a>
@@ -87,7 +103,7 @@ export const BannerContainer: React.FC<{
             {" "}
             <a className="theme-link" href={links.cookie_policy}>Cookie policy</a>
             .
-          </p>
+          </Trans>
         </div>
       </Banner>
     );
@@ -105,14 +121,12 @@ export const BannerContainer: React.FC<{
         <div className="relative flex gap-4 items-center">
           <img className="absolute -bottom-5 hidden md:block" src={enterpriseThumbnail} alt="" />
           <div className="ml-0 md:ml-64">
-            <p className="font-bold text-xl">RINO Enterprise</p>
-            <p>Remove the complexity of Working with Monero</p>
+            <p className="font-bold text-xl">{t("layout.RINO.Enterprise")}</p>
+            <p>{t("layout.banner.free")}</p>
           </div>
-
           <a className="shrink-0" href={ROUTES.static.enterprise.landing}>
-            <Button variant={Button.variant.PRIMARY_LIGHT}>Learn More</Button>
+            <Button variant={Button.variant.PRIMARY_LIGHT}>{t("layout.learn.more")}</Button>
           </a>
-
         </div>
       </Banner>
     );
@@ -120,11 +134,9 @@ export const BannerContainer: React.FC<{
   if (!isAuthenticated && isPublic && showBanner) {
     return (
       <Banner action={{ title: "Sign up", link: ROUTES.register }}>
-        <div className="text-right md:ml-32">
-          <p>
-            The owner of this wallet decided to enable and share a read-only view of all activities in real time, a free feature that comes with all RINO wallets. Sign up and give it a try!
-          </p>
-        </div>
+        <Trans i18nKey="layout.banner.reedonly" className="text-right md:ml-32">
+          The owner of this wallet decided to enable and share a read-only view of all activities in real time, a free feature that comes with all RINO wallets. Sign up and give it a try!
+        </Trans>
       </Banner>
     );
   }

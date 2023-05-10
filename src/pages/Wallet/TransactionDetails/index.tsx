@@ -1,6 +1,7 @@
 import React from "react";
 import { format } from "date-fns";
 import Decimal from "decimal.js-light";
+import { useTranslation } from "react-i18next";
 import { PendingTransfer, Transaction } from "../../../types";
 import { Copy, Label, FormatNumber } from "../../../components";
 import { piconeroToMonero, convertAtomicAmount } from "../../../utils";
@@ -22,6 +23,7 @@ interface Props {
 const TransactionDetailsContent: React.FC<Props> = ({
   transaction, walletId, isPublicWallet, pendingTransfer,
 }) => {
+  const { t } = useTranslation();
   const timestamp = transaction?.timestamp ? transaction?.timestamp : transaction?.createdAt;
   const loading = !transaction && !pendingTransfer;
   const confirmations = typeof transaction?.confirmations === "number" && transaction?.confirmations > 100 ? "100+" : transaction?.confirmations;
@@ -31,7 +33,7 @@ const TransactionDetailsContent: React.FC<Props> = ({
         <Label
           inline
           loading={loading}
-          label="Transaction time"
+          label={t("wallet.transaction.time")}
           labelClassName="md:text-right"
           valueClassName=""
         >
@@ -50,7 +52,7 @@ const TransactionDetailsContent: React.FC<Props> = ({
             <Label
               inline
               loading={loading}
-              label="Network Fee"
+              label={t("wallet.transaction.networkfee")}
               labelClassName="md:text-right"
               valueClassName=""
             >
@@ -67,12 +69,12 @@ const TransactionDetailsContent: React.FC<Props> = ({
         <Label
           inline
           loading={loading}
-          label={transaction?.direction === "out" ? "Destination address" : "Receiving address"}
+          label={transaction?.direction === "out" ? t("wallet.transaction.dest.address") : t("wallet.transaction.receiving.address")}
           labelClassName="md:text-right"
           valueClassName="whitespace-nowrap"
         >
           {transaction?.destinations?.length ? (transaction?.destinations || []).map((destAddress, index) => (
-            <div className="flex">
+            <div key={`${destAddress}`} className="flex">
               <Copy key={destAddress.address} value={destAddress.address}>
                 <div className="whitespace-nowrap flex min-w-0">
                   {
@@ -96,7 +98,7 @@ const TransactionDetailsContent: React.FC<Props> = ({
         <Label
           inline
           loading={loading}
-          label="Number of confirmations"
+          label={t("wallet.transaction.number.confirmations")}
           labelClassName="md:text-right"
           valueClassName=""
         >
@@ -107,7 +109,7 @@ const TransactionDetailsContent: React.FC<Props> = ({
         <Label
           inline
           loading={loading}
-          label="Transaction id"
+          label={t("wallet.transaction.txid")}
           labelClassName="md:text-right"
           valueClassName=""
         >
@@ -129,7 +131,7 @@ const TransactionDetailsContent: React.FC<Props> = ({
           transaction?.order && (
             <div className="mb-8 md:mb-0">
               <Label label="" inline>
-                <h3 className="text-2xl mb-3 font-bold">Exchange information:</h3>
+                <h3 className="text-2xl mb-3 font-bold">{t("wallet.transaction.exchangeinfo")}</h3>
               </Label>
               <ExchangeDetails
                 platform={transaction?.order.platform}
@@ -195,7 +197,7 @@ const TransactionDetailsContent: React.FC<Props> = ({
               labelClassName="md:text-right"
               valueClassName=""
             >
-              No approvals
+              {t("wallet.transaction.noapprovals")}
             </Label>
           )}
         {pendingTransfer.rejectedBy && (
@@ -233,7 +235,7 @@ const TransactionDetailsContent: React.FC<Props> = ({
               labelClassName="md:text-right"
               valueClassName=""
             >
-              No memo
+              {t("wallet.transaction.nomemo")}
             </Label>
           )}
       </div>

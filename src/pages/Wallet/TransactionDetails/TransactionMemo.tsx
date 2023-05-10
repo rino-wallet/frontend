@@ -1,6 +1,7 @@
 import React from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import { useTranslation } from "react-i18next";
 import { Button, Label, Input } from "../../../components";
 import { FormErrors } from "../../../modules/index";
 import { updateTransactionDetails as updateTransactionDetailsThunk } from "../../../store/transactionListSlice";
@@ -20,7 +21,7 @@ interface Props {
 }
 const TransactionMemo: React.FC<Props> = ({ walletId, transactionId, memo }) => {
   const updateTransactionDetails = useThunkActionCreator(updateTransactionDetailsThunk);
-
+  const { t } = useTranslation();
   const formik = useFormik({
     enableReinitialize: true,
     validationSchema: transactionPayloadValidationSchema,
@@ -45,7 +46,7 @@ const TransactionMemo: React.FC<Props> = ({ walletId, transactionId, memo }) => 
     <div className="break-all col-span-2" data-qa-selector="transaction-memo">
       <Label
         inline
-        label="Internal Memo"
+        label={t("wallet.transaction.internal.memo")}
         labelClassName="md:text-right"
         valueClassName=""
         isFormField
@@ -73,7 +74,7 @@ const TransactionMemo: React.FC<Props> = ({ walletId, transactionId, memo }) => 
             name="submit-btn"
             loading={formik.isSubmitting}
           >
-            Save Changes
+            {t("common.savechanges")}
           </Button>
         ) : null}
       </div>

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import routes from "../../router/routes";
 import sessionApi from "../../api/session";
 import { SuccessModal } from "../../modules/index";
 
 const AcceptWalletSharePage: React.FC = () => {
+  const { t } = useTranslation();
   const [isFinished, setIsFinished] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
   const { walletId, shareId } = useParams();
@@ -21,19 +23,18 @@ const AcceptWalletSharePage: React.FC = () => {
   }, [walletId, shareId]);
   return (
     <div>
-      <h1>Accept wallet share</h1>
+      <h1>{t("wallet.users.accept.wallet.share")}</h1>
       {
         isFinished && (
           <SuccessModal
-            title="Wallet sharing accepted"
+            title={t("wallet.users.wallet.sharing.accepted.title")}
             message={(
               <div>
-                You have accepted the invitation to the wallet.
-                The wallet will only become available after the invite sender has defined a role for you.
+                {t("wallet.users.wallet.sharing.accepted.message")}
               </div>
               )}
             goBackCallback={(): void => navigate(routes.wallets)}
-            buttonText="Continue"
+            buttonText={t("common.continue") as string}
           />
         )
       }

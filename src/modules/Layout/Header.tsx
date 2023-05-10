@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { NavLink } from "react-router-dom";
 import classNames from "classnames";
+import { useTranslation } from "react-i18next";
 import routes from "../../router/routes";
 import { Logo, Icon } from "../../components";
 import { useAccountType, useIsMobile } from "../../hooks";
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export const Header: React.FC<Props> = ({ signOut, isAuthenticated }) => {
+  const { t } = useTranslation();
   const isMobile = useIsMobile();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isEnterprise } = useAccountType();
@@ -54,7 +56,7 @@ export const Header: React.FC<Props> = ({ signOut, isAuthenticated }) => {
               className={linkClassNames}
               href={links.faq}
             >
-              <span className="inline">FAQ</span>
+              <span className="inline">{t("layout.faq")}</span>
             </a>
           </li>
           {
@@ -62,7 +64,7 @@ export const Header: React.FC<Props> = ({ signOut, isAuthenticated }) => {
               <>
                 <li>
                   <button className={`${linkClassNames} md:mb-0 uppercase`} type="button" onClick={showSupportModal}>
-                    <span className="inline">Support</span>
+                    <span className="inline">{t("layout.support")}</span>
                   </button>
                 </li>
                 <li>
@@ -71,7 +73,7 @@ export const Header: React.FC<Props> = ({ signOut, isAuthenticated }) => {
                     id="nav-link-wallets"
                     to={routes.wallets}
                   >
-                    <span className="inline">Wallets</span>
+                    <span className="inline">{t("layout.wallets")}</span>
                   </NavLink>
                 </li>
                 <li>
@@ -80,7 +82,7 @@ export const Header: React.FC<Props> = ({ signOut, isAuthenticated }) => {
                     id="nav-link-settings"
                     to={routes.settings}
                   >
-                    <span className="inline">Settings</span>
+                    <span className="inline">{t("layout.settings")}</span>
                   </NavLink>
                 </li>
                 <li>
@@ -90,7 +92,7 @@ export const Header: React.FC<Props> = ({ signOut, isAuthenticated }) => {
                     name="log-out"
                     onClick={signOut}
                   >
-                    <span className="inline">Logout</span>
+                    <span className="inline">{t("layout.logout")}</span>
                   </button>
                 </li>
               </>
@@ -102,7 +104,7 @@ export const Header: React.FC<Props> = ({ signOut, isAuthenticated }) => {
                     className={({ isActive }): string => (isActive ? activeLinkClassNames : linkClassNames)}
                     to={routes.login}
                   >
-                    <span className="inline">Login</span>
+                    <span className="inline">{t("layout.login")}</span>
                   </NavLink>
                 </li>
                 <li>
@@ -111,7 +113,7 @@ export const Header: React.FC<Props> = ({ signOut, isAuthenticated }) => {
                     className={({ isActive }): string => `${linkClassNames} ${isActive ? "font-bold theme-text-primary" : ""}`}
                     to={routes.register}
                   >
-                    <span>Sign up</span>
+                    <span>{t("layout.signup")}</span>
                   </NavLink>
                 </li>
               </>

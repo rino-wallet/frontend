@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { FetchWalletTransactionsResponse, FetchWalletTransactionsThunkPayload, Transaction } from "../../../types";
 import { useQuery } from "../../../hooks";
 import TransactionItem from "./TransactionItem";
@@ -29,6 +30,7 @@ const Transactions: React.FC<Props> = ({
   fetchWalletTransactions,
   isPublicWallet,
 }) => {
+  const { t } = useTranslation();
   const [listLoading, setListLoading] = useState(true);
   const [isFirstLoading, setIsFirstLoading] = useState(true);
   const navigate = useNavigate();
@@ -57,14 +59,14 @@ const Transactions: React.FC<Props> = ({
   }
   return (
     <div>
-      <Panel title="Transaction list">
+      <Panel title={t("wallet.transaction.list")}>
         <div>
           <div className="hidden theme-bg-panel-second md:block">
             <TransactionItemLayout
-              type={(<span className="text-sm uppercase">Type</span>)}
-              amount={(<span className="text-sm uppercase">Amount</span>)}
-              timestamp={(<span className="text-sm uppercase">Date</span>)}
-              status={(<span className="text-sm uppercase">Status</span>)}
+              type={(<span className="text-sm uppercase">{t("wallet.transactions.th.type")}</span>)}
+              amount={(<span className="text-sm uppercase">{t("wallet.transactions.th.amount")}</span>)}
+              timestamp={(<span className="text-sm uppercase">{t("wallet.transactions.th.date")}</span>)}
+              status={(<span className="text-sm uppercase">{t("wallet.transactions.th.status")}</span>)}
               action={(<span className="text-sm uppercase" />)}
             />
           </div>
@@ -83,7 +85,7 @@ const Transactions: React.FC<Props> = ({
               <div>
                 {
                   (!transactions.length && !listLoading) && (
-                    <EmptyList message="No transactions yet." />
+                    <EmptyList message={t("wallet.transaction.empty.list") as string} />
                   )
                 }
                 {

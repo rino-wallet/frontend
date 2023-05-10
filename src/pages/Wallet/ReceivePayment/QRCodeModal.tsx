@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { createModal } from "../../../modules/ModalFactory";
 import { Button } from "../../../components";
 import { createQRCodeImage } from "../../../utils";
@@ -14,6 +15,7 @@ const QRCodeModal: React.FC<Props> = ({
   cancel,
   address,
 }) => {
+  const { t } = useTranslation();
   const [image, setImage] = useState("");
   useEffect(() => {
     if (address) {
@@ -25,7 +27,7 @@ const QRCodeModal: React.FC<Props> = ({
   }, [address]);
   return (
     <Modal
-      title="Scan QR Code"
+      title={t("wallet.receive.scan.qr.code")}
       onClose={cancel}
     >
       <Modal.Body>
@@ -37,7 +39,7 @@ const QRCodeModal: React.FC<Props> = ({
       </Modal.Body>
       <Modal.Actions>
         <div className="flex justify-end space-x-3">
-          <Button onClick={(): void => { submit(); }}>Close</Button>
+          <Button onClick={(): void => { submit(); }}>{t("common.close")}</Button>
         </div>
       </Modal.Actions>
     </Modal>

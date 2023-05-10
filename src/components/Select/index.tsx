@@ -20,6 +20,7 @@ type Props = {
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onBlur?: (e: React.FocusEvent<HTMLSelectElement>) => void;
   children: ReactNode;
+  className?: string;
 };
 
 const SIZE_MAPS: Record<UI_SIZE, string> = {
@@ -39,6 +40,7 @@ export const Select: React.FC<Props> & { size: typeof UI_SIZE; } = (props) => {
     onChange,
     children,
     onBlur = ():void => undefined,
+    className = "",
   } = props;
   return (
     <div className={icon ? "relative" : ""}>
@@ -56,6 +58,7 @@ export const Select: React.FC<Props> & { size: typeof UI_SIZE; } = (props) => {
         onBlur={onBlur}
         className={classNames(
           "select w-full inline-flex text-lg placeholder-gray-400",
+          className,
           SIZE_MAPS[size],
           {
             "bg-transparent": embeded,

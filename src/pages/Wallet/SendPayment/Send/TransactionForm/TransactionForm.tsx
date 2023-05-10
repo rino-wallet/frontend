@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { generatePath, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { Formik } from "formik";
+import { useTranslation } from "react-i18next";
 import {
   AppDispatch, Destination, GetOutputsPayload,
   Wallet,
@@ -18,23 +19,23 @@ import { transactionPriorities } from "../../../../../constants";
 import { FormErrors } from "../../../../../modules/FormErrors";
 import ConfirmTransaction from "../ConfirmTransaction";
 
-const generateValidationSchema = (balance: number): yup.AnyObjectSchema => yup.object().shape({
-  address: yup.string().required("This field is required."),
+const generateValidationSchema = (balance: number, t: (key: string) => string): yup.AnyObjectSchema => yup.object().shape({
+  address: yup.string().required("errors.required"),
   amount: yup.string()
-    .required("This field is required.")
+    .required("errors.required")
     .test(
       "test-balance",
-      balance > 0 ? `You can only transfer less than the full unlocked balance (${balance}). - it's necessary to account for the network fee.` : "You don't have any unlocked funds to transfer.",
+      balance > 0 ? t("wallet.send.error.max").replace("{balance}", `${balance}`) : t("wallet.send.error.nofunds"),
       (value) => parseFloat(value || "0") < balance,
     )
     .test(
       "test-balance",
-      "Transaction amount should be greater than zero.",
+      t("wallet.send.error.morethen0"),
       (value) => parseFloat(value || "0") > 0,
     ),
-  password: yup.string().required("This field is required."),
+  password: yup.string().required("errors.required"),
   priority: yup.string(),
-  memo: yup.string().max(300, "Maximum memo length is 300 characters."),
+  memo: yup.string().max(300, t("wallet.send.memo.length")),
 });
 
 interface Props {
@@ -60,6 +61,7 @@ const TransactionForm: React.FC<Props> = ({
   prepareTransaction,
   resetPendingTransaction,
 }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [currentWalletCall, setCurrentWalletCall] = useState<Promise<AppDispatch> | any>(null);
   const [transactionPrepared, setTransactionPrepared] = useState(false);
@@ -73,7 +75,7 @@ const TransactionForm: React.FC<Props> = ({
         priority: transactionPriorities.Normal,
         non_field_errors: "",
       }}
-      validationSchema={generateValidationSchema(parseFloat(piconeroToMonero(wallet ? wallet.unlockedBalance : "0")))}
+      validationSchema={generateValidationSchema(parseFloat(piconeroToMonero(wallet ? wallet.unlockedBalance : "0")), t)}
       onSubmit={async (values, { setErrors }): Promise<void> => {
         if (wallet) {
           setTransactionPrepared(true);
@@ -122,7 +124,7 @@ const TransactionForm: React.FC<Props> = ({
           <DisableAutofill />
           <div className="m-auto md:w-3/4">
             <div className="form-field">
-              <Label labelClassName="md:text-right" label="To address" isFormField inline>
+              <Label labelClassName="md:text-right" label={t("wallet.send.to.address")} isFormField inline>
                 <Input
                   autoComplete="off"
                   type="text"
@@ -130,25 +132,25 @@ const TransactionForm: React.FC<Props> = ({
                   value={values.address}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  placeholder="Destination Address"
-                  error={touched.address ? errors.address || "" : ""}
+                  placeholder={t("wallet.send.destination.address") as string}
+                  error={touched.address ? t(errors.address as string) || "" : ""}
                 />
               </Label>
             </div>
             <div className="form-field">
-              <Label labelClassName="md:text-right" label="Amount" isFormField inline>
+              <Label labelClassName="md:text-right" label={t("wallet.send.amount")} isFormField inline>
                 <AmountField
                   name="amount"
                   value={values.amount}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  placeholder="Amount"
-                  error={touched.amount ? errors.amount || "" : ""}
+                  placeholder={t("wallet.send.amount") as string}
+                  error={touched.amount ? t(errors.amount as string) || "" : ""}
                 />
               </Label>
             </div>
             <div className="form-field">
-              <Label labelClassName="md:text-right" label="Password" isFormField inline>
+              <Label labelClassName="md:text-right" label={t("wallet.send.password")} isFormField inline>
                 <Input
                   type="password"
                   name="password"
@@ -156,13 +158,13 @@ const TransactionForm: React.FC<Props> = ({
                   value={values.password}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  placeholder="Password"
-                  error={touched.password ? errors.password || "" : ""}
+                  placeholder={t("wallet.send.password") as string}
+                  error={touched.password ? t(errors.password as string) || "" : ""}
                 />
               </Label>
             </div>
             <div className="form-field">
-              <Label labelClassName="md:text-right" label="Internal transaction memo" subtitle="optional" isFormField inline>
+              <Label labelClassName="md:text-right" label={t("wallet.send.transaction.memo")} subtitle="optional" isFormField inline>
                 <Input
                   autoComplete="off"
                   type="text"
@@ -170,24 +172,22 @@ const TransactionForm: React.FC<Props> = ({
                   value={values.memo}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  placeholder="Internal Memo"
-                  error={errors.memo || ""}
+                  placeholder={t("wallet.send.internal.memo") as string}
+                  error={t(errors.memo as string) || ""}
                 />
               </Label>
             </div>
             <div className="form-field md:ml-10">
               <Collapsible
-                title={<div className="mt-0.5 uppercase">Advanced</div>}
+                title={<div className="mt-0.5 uppercase">{t("wallet.send.advanced")}</div>}
               >
                 <div className="pt-5">
                   <div className="w-full flex items-center space-x-3 mb-3">
-                    <p className="whitespace-nowrap text-sm theme-text uppercase font-catamaran leading-none -mb-1">Transaction Priority (Fee)</p>
+                    <p className="whitespace-nowrap text-sm theme-text uppercase font-catamaran leading-none -mb-1">{t("wallet.send.transaction.priority")}</p>
                     <Tooltip
                       content={(
                         <div className="md:w-96 text-sm" data-qa-selector="tx-priority-tooltip">
-                          The priority refers to the level of fees paid to miners by the transaction.
-                          As the network is currently not under heavy load, paying higher fees than normal is useless and will not influence the transaction confirmation time.
-                          We advise to leave it as &quot;Normal&quot;.
+                          {t("wallet.send.priority.tooltip")}
                         </div>
                       )}
                     >
@@ -219,7 +219,7 @@ const TransactionForm: React.FC<Props> = ({
                 disabled={isSubmitting}
                 onClick={(): void => navigate(`${generatePath(routes.wallet, { id: walletId })}/transactions`)}
               >
-                Cancel
+                {t("common.cancel")}
               </Button>
               <Button
                 type="submit"
@@ -229,7 +229,7 @@ const TransactionForm: React.FC<Props> = ({
                 disabled={!isValid || !parseFloat(wallet?.unlockedBalance || "0")}
                 loading={isSubmitting}
               >
-                Review
+                {t("wallet.send.review")}
               </Button>
             </div>
           </div>

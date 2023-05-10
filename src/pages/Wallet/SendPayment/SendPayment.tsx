@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import classNames from "classnames";
 import { useNavigate, generatePath } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Tabs, Check, Icon, Label,
 } from "../../../components";
@@ -22,6 +23,7 @@ const SendPayment: React.FC<Props> = ({
   wallet,
   walletId,
 }) => {
+  const { t } = useTranslation();
   const { features } = useAccountType();
   const navigate = useNavigate();
   const [isExchange, setIsExchange] = useState(false);
@@ -32,7 +34,7 @@ const SendPayment: React.FC<Props> = ({
   return (
     <WalletPageTemplate
       showNameInBox
-      title="Send Payment"
+      title={t("wallet.send.send.payment") as string}
       goBackCallback={(): void => { navigate(`${generatePath(routes.wallet, { id: walletId })}/transactions`); }}
       id={walletId}
       wallet={wallet}
@@ -47,9 +49,9 @@ const SendPayment: React.FC<Props> = ({
                   <div className="text-center flex">
                     <div className="mr-4">{activeTab > 0 ? <Check size={24} /> : null}</div>
                     <div>
-                      <div className="font-lato text-sm text-center md:text-left mb-1">Step 1/3</div>
+                      <div className="font-lato text-sm text-center md:text-left mb-1">{t("wallet.send.step1/3")}</div>
                       <div className="text-2xl font-bold normal-case">
-                        Details
+                        {t("wallet.send.details")}
                       </div>
                     </div>
                   </div>
@@ -61,8 +63,8 @@ const SendPayment: React.FC<Props> = ({
                   <div className="text-center flex">
                     <div className="mr-4">{activeTab > 1 ? <Check size={24} /> : null}</div>
                     <div>
-                      <div className="font-lato text-sm text-center md:text-left mb-1">Step 2/3</div>
-                      <div className="text-2xl font-bold normal-case">Confirmation</div>
+                      <div className="font-lato text-sm text-center md:text-left mb-1">{t("wallet.send.step2/3")}</div>
+                      <div className="text-2xl font-bold normal-case">{t("wallet.send.confirmation")}</div>
                     </div>
                   </div>
                 ),
@@ -72,8 +74,8 @@ const SendPayment: React.FC<Props> = ({
                 text: (
                   <div className="text-center">
                     <div>
-                      <div className="font-lato text-sm text-center md:text-left mb-1">Step 3/3</div>
-                      <div className="text-2xl font-bold normal-case">Payment</div>
+                      <div className="font-lato text-sm text-center md:text-left mb-1">{t("wallet.send.step3/3")}</div>
+                      <div className="text-2xl font-bold normal-case">{t("wallet.send.payment")}</div>
                     </div>
                   </div>
                 ),
@@ -85,8 +87,8 @@ const SendPayment: React.FC<Props> = ({
                   <div className="text-center flex">
                     <div className="mr-4">{activeTab === 1 ? <Check size={24} /> : null}</div>
                     <div>
-                      <div className="font-lato text-sm text-center md:text-left mb-1">Step 1/2</div>
-                      <div className="text-2xl font-bold normal-case">Set the details</div>
+                      <div className="font-lato text-sm text-center md:text-left mb-1">{t("wallet.send.step1/2")}</div>
+                      <div className="text-2xl font-bold normal-case">{t("wallet.send.set.details")}</div>
                     </div>
 
                   </div>
@@ -97,8 +99,8 @@ const SendPayment: React.FC<Props> = ({
                 text: (
                   <div className="text-center">
                     <div>
-                      <div className="font-lato text-sm text-center md:text-left mb-1">Step 2/2</div>
-                      <div className="text-2xl font-bold normal-case">Payment confirmation</div>
+                      <div className="font-lato text-sm text-center md:text-left mb-1">{t("wallet.send.step2/2")}</div>
+                      <div className="text-2xl font-bold normal-case">{t("wallet.send.payment-confirmation")}</div>
                     </div>
                   </div>
                 ),
@@ -121,7 +123,7 @@ const SendPayment: React.FC<Props> = ({
                           >
                             <IconUp className={classNames("inline-block h-3.5 w-3.5 fill-black mr-1", { "fill-white": !isExchange })} />
                             {" "}
-                            SEND
+                            {t("common.send")}
                           </button>
                           <button
                             type="button"
@@ -131,7 +133,7 @@ const SendPayment: React.FC<Props> = ({
                           >
                             <Icon name="refresh" className={classNames("inline-block h-3.5 w-3.5 fill-black mr-1", { "fill-white": isExchange })} />
                             {" "}
-                            EXCHANGE
+                            {t("common.exchange")}
                           </button>
                         </div>
                       </div>
@@ -148,7 +150,7 @@ const SendPayment: React.FC<Props> = ({
                       ) : (
                         <div className="m-auto md:w-3/4">
                           <Label label="" inline>
-                            <div className="mt-10 theme-text-secondary">Feature is enabled on mainnet, only.</div>
+                            <div className="mt-10 theme-text-secondary">{t("wallet.send.available.mainnet.only")}</div>
                           </Label>
                         </div>
                       )

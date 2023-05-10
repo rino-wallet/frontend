@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { User } from "../../../types";
@@ -53,7 +54,7 @@ const ReferralPage: React.FC<Props> = ({
   const claimReward = useThunkActionCreator(claimReferralThunk);
   const getOrdersStats = useThunkActionCreator(getOrdersStatsThunk);
   const getCurrentUser = useThunkActionCreator(getCurrentUserThunk);
-
+  const { t } = useTranslation();
   useEffect(() => {
     Promise.all([
       getReferrals({ page: 1 }),
@@ -78,53 +79,38 @@ const ReferralPage: React.FC<Props> = ({
       <RewardPanel amount={piconeroToMonero(referralStats)} />
       <section className="my-8">
         <h2 className="text-2xl font-bold mb-6 flex items-center">
-          Invite a friend and earn €
-          {REWARD_AMOUNT}
-          {" "}
-          in XMR for each successful referral.
+          {t("rewards.referrals.invite.friend.text", { REWARD_AMOUNT })}
         </h2>
         <div className="mb-10">
           <p className="mb-4">
-            To receive the referral code you need to convert a minimum of €
-            {MIN_TOTAL_AMOUNT_VIEW}
-            {" "}
-            worth of XMR in the Rino Wallet. The process to receive
-            {" "}
-            {REWARD_AMOUNT}
-            € in XMR is:
+            {t("rewards.referrals.rewards.proccess.description", { MIN_TOTAL_AMOUNT_VIEW, REWARD_AMOUNT })}
           </p>
           <div className="grid md:grid-cols-3 gap-10">
             <div className="text-center">
               <div className="w-14 h-14 bg-white rounded-full inline-flex items-center justify-center mb-3">
                 <Step1Icon />
               </div>
-              <div className="text-lg font-bold mb-3">1. Share the referral code</div>
+              <div className="text-lg font-bold mb-3">{t("rewards.referrals.first.step.title")}</div>
               <div>
-                Send the refferal code to your friends and tell them to sign up in Rino.
+                {t("rewards.referrals.first.step.description")}
               </div>
             </div>
             <div className="text-center">
               <div className="w-14 h-14 bg-white rounded-full inline-flex items-center justify-center mb-3">
                 <Step2Icon />
               </div>
-              <div className="text-lg font-bold mb-3">2. Sign up & exchange</div>
+              <div className="text-lg font-bold mb-3">{t("rewards.referrals.second.step.title")}</div>
               <div>
-                Your friend signs up and converts a minimum of €
-                {MIN_TOTAL_AMOUNT_VIEW}
-                {" "}
-                worth of XMR to any crypto.
+                {t("rewards.referrals.second.step.description", { MIN_TOTAL_AMOUNT_VIEW })}
               </div>
             </div>
             <div className="text-center">
               <div className="w-14 h-14 bg-white rounded-full inline-flex items-center justify-center mb-3">
                 <Step3Icon />
               </div>
-              <div className="text-lg font-bold mb-3">3. Get your reward</div>
+              <div className="text-lg font-bold mb-3">{t("rewards.referrals.third.step.title")}</div>
               <div>
-                You and your friend get €
-                {REWARD_AMOUNT}
-                {" "}
-                in XMR as a reward.
+                {t("rewards.referrals.third.step.description", { REWARD_AMOUNT })}
               </div>
             </div>
           </div>
@@ -143,30 +129,20 @@ const ReferralPage: React.FC<Props> = ({
                           <WarningIcon />
                         </div>
                         <div className="flex-1 pl-6 font-bold">
-                          Your haven’t reach the
-                          {" "}
-                          <span className="theme-text-primary">
-                            €
-                            {MIN_TOTAL_AMOUNT_VIEW}
-                          </span>
-                          {" "}
-                          limit. To receive your reward you need to convert a minimum of €
-                          {MIN_TOTAL_AMOUNT_VIEW}
-                          {" "}
-                          XMR to any in crypto in the RINO Wallet.
+                          {t("rewards.referrals.warning.text", { MIN_TOTAL_AMOUNT_VIEW })}
                         </div>
                       </div>
                     </Panel>
                     <div className="flex items-center">
                       <div className="flex-1">
-                        <div className="theme-text-secondary text-base">Your account exchange volume:</div>
+                        <div className="theme-text-secondary text-base">{t("rewards.referrals.your.exchange.volume")}</div>
                         <div className="font-bold text-2xl">
                           €
                           {userTotalAmount / 100}
                         </div>
                       </div>
                       <Link to={routes.wallets}>
-                        <Button variant={Button.variant.PRIMARY_LIGHT}>Start Converting</Button>
+                        <Button variant={Button.variant.PRIMARY_LIGHT}>{t("rewards.referrals.buttons.start.converting")}</Button>
                       </Link>
                     </div>
                   </div>
@@ -175,7 +151,7 @@ const ReferralPage: React.FC<Props> = ({
             </section>
             <section className="py-8">
               <h2 className="text-2xl font-bold flex items-center mb-4">
-                Your referral code
+                {t("rewards.referrals.code")}
               </h2>
               <div className="flex space-x-3">
                 <div className="w-full">
@@ -186,7 +162,7 @@ const ReferralPage: React.FC<Props> = ({
                   variant={Button.variant.PRIMARY_LIGHT}
                   onClick={() => copyToClipboard(user?.referralCode || "")}
                 >
-                  Copy
+                  {t("rewards.referrals.buttons.copy")}
                 </Button>
               </div>
             </section>
@@ -194,7 +170,7 @@ const ReferralPage: React.FC<Props> = ({
               ownReferral && (
                 <section className="py-8">
                   <h2 className="text-2xl font-bold flex items-center mb-4">
-                    Your referral
+                    {t("rewards.referrals.your.referral")}
                   </h2>
                   <div className="flex space-x-3">
                     <ReferralItem claimReward={onClaimRewards} referral={ownReferral} isOwnRefferal />
@@ -204,7 +180,7 @@ const ReferralPage: React.FC<Props> = ({
             }
             <section className="py-8">
               <h2 className="flex space-x-3 items-center">
-                <span className="text-2xl font-bold flex items-center mb-4">Invited Friends</span>
+                <span className="text-2xl font-bold flex items-center mb-4">{t("rewards.referrals.invited.friends")}</span>
                 <span className="theme-text-secondary">
                   {listMetaData.count}
                   /
@@ -226,11 +202,11 @@ const ReferralPage: React.FC<Props> = ({
               }
               <div className="flex justify-between space-x-3 items-center mt-10">
                 <div className="theme-text-secondary min-w-0">
-                  If you want to invite more than 10 friends contact us.
+                  {t("rewards.referrals.contact.us.text")}
                 </div>
                 <div>
                   <Button variant={Button.variant.PRIMARY_LIGHT} onClick={showSupportModal}>
-                    <span className="whitespace-nowrap">Contact us</span>
+                    <span className="whitespace-nowrap">{t("rewards.referrals.buttons.contact.us")}</span>
                   </Button>
                 </div>
               </div>

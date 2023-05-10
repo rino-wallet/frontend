@@ -11,6 +11,9 @@ import {
 } from "../../store/walletMembersListSlice";
 import { fetchWalletSubaddress as fetchWalletSubaddressThunk } from "../../store/subaddressListSlice";
 import { fetchWalletShareRequests as fetchWalletShareRequestsThunk } from "../../store/walletShareRequestListSlice";
+import {
+  fetchEntities as fetchPendingTransfersThunk,
+} from "../../store/pendingTransfersSlice";
 import routes from "../../router/routes";
 import { changeLocation } from "../../store/actions";
 import TransactionDetails from "./TransactionDetails";
@@ -34,6 +37,7 @@ const WalletPageContainer: React.FC<Props> = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const walletId = id as string;
+  const fetchPendingTransfers = useThunkActionCreator(fetchPendingTransfersThunk);
   const fetchWalletDetails = useThunkActionCreator(fetchWalletDetailsThunk);
   const fetchWalletSubaddress = useThunkActionCreator(fetchWalletSubaddressThunk);
   const fetchWalletShareRequests = useThunkActionCreator(fetchWalletShareRequestsThunk);
@@ -46,6 +50,7 @@ const WalletPageContainer: React.FC<Props> = () => {
     fetchWalletSubaddress({ walletId });
     fetchWalletShareRequests({ walletId, page: 1 });
     fetchWalletUsers({ walletId, page: 1 });
+    fetchPendingTransfers({ walletId, page: 1 });
   };
 
   const dispatch = useDispatch();

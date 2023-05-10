@@ -2,6 +2,7 @@ import { useFormik } from "formik";
 import React from "react";
 import * as yup from "yup";
 import { ObjectSchema } from "yup";
+import { useTranslation } from "react-i18next";
 import { createModal } from "../../../modules/ModalFactory";
 import {
   ShareWalletThunkPayload, ShareWalletResponse, Wallet, WalletMember,
@@ -18,7 +19,7 @@ import { useAccountType } from "../../../hooks";
 const getValidationSchema = (member: WalletMember | null = null): ObjectSchema<any> => yup.object().shape({
   password: yup.string().when("access_level", {
     is: (access_level: string) => parseInt(access_level, 10) === accessLevels.admin.code,
-    then: yup.string().required("This field is required."),
+    then: yup.string().required("errors.required"),
   }),
   access_level: yup.string()
     .test(
@@ -28,7 +29,7 @@ const getValidationSchema = (member: WalletMember | null = null): ObjectSchema<a
         const currentAccessLevel = Object.values(accessLevels).find((val: any) => val.code === parseInt(value || "0", 10));
         return member !== null ? member.accessLevel !== currentAccessLevel?.title : true;
       },
-    ).required("This field is required."),
+    ).required("errors.required"),
 });
 
 interface Props {
@@ -53,6 +54,7 @@ const iconsMap: { [key: string]: string } = {
 const WalletMemberModal: React.FC<Props> = ({
   wallet, member, is2FaEnabled, email, shareWallet, cancel, submit, refresh,
 }) => {
+  const { t } = useTranslation();
   const { features } = useAccountType();
   const {
     isValid,
@@ -102,13 +104,13 @@ const WalletMemberModal: React.FC<Props> = ({
   });
   return (
     <BindHotKeys callback={handleSubmit} rejectCallback={cancel}>
-      <Modal className="!z-10" title={member ? "Change wallet access" : "Confirm Sharing"} onClose={cancel} showCloseIcon>
+      <Modal className="!z-10" title={member ? t("wallet.users.change.wallet.access") : t("wallet.users.confirm.sharing")} onClose={cancel} showCloseIcon>
         <form onSubmit={handleSubmit}>
           <DisableAutofill />
           <Modal.Body>
             <div className="form-field">
               <p className="break-words">
-                Please select the desired access level for wallet
+                {t("wallet.users.select.access.lvl")}
                 {" "}
                 {"\""}
                 {wallet.name}
@@ -117,27 +119,27 @@ const WalletMemberModal: React.FC<Props> = ({
               </p>
             </div>
             <div className="form-field">
-              <Label label="User email">
+              <Label label={t("wallet.users.share.modal.user.email.address")}>
                 <Input
                   autoComplete="off"
                   type="email"
                   name="email"
                   value={email}
                   onChange={(): null => null}
-                  placeholder="User Email Address"
+                  placeholder={t("wallet.users.share.modal.user.email.address") as string}
                   disabled
                 />
               </Label>
             </div>
             <div className="form-field">
-              <Label label="Access level">
+              <Label label={t("wallet.users.access.level")}>
                 <Select
                   icon={iconsMap[values.access_level] as IconName}
                   name="access_level"
                   value={values.access_level}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  error={touched.access_level ? errors.access_level || "" : ""}
+                  error={touched.access_level ? t(errors.access_level || "") || "" : ""}
                 >
                   <option
                     value=""
@@ -168,11 +170,11 @@ const WalletMemberModal: React.FC<Props> = ({
                       <Tooltip
                         content={(
                           <div className="md:w-96 text-sm normal-case" data-qa-selector="tx-priority-tooltip">
-                            Password of your account. Required for sharing the wallet.
+                            {t("wallet.users.tooltip.password")}
                           </div>
                         )}
                       >
-                        Account Password
+                        {t("wallet.users.account.password")}
                         {" "}
                         <div className="text-sm cursor-pointer inline-block" data-qa-selector="cursor-pointer-tx-priority-tooltip"><Icon name="info" /></div>
                       </Tooltip>
@@ -187,7 +189,7 @@ const WalletMemberModal: React.FC<Props> = ({
                       onChange={handleChange}
                       onBlur={handleBlur}
                       placeholder="Password"
-                      error={touched.password ? errors.password || "" : ""}
+                      error={touched.password ? t(errors.password || "") || "" : ""}
                     />
                   </Label>
                 </div>
@@ -202,7 +204,7 @@ const WalletMemberModal: React.FC<Props> = ({
               name="cancel-btn"
               onClick={cancel}
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button
               disabled={!isValid || !dirty || isSubmitting}
@@ -211,7 +213,7 @@ const WalletMemberModal: React.FC<Props> = ({
               loading={isSubmitting}
               variant={Button.variant.PRIMARY_LIGHT}
             >
-              {member ? "Change" : "Share"}
+              {member ? t("wallet.users.change.button") : t("wallet.users.share.btn")}
             </Button>
           </Modal.Actions>
         </form>

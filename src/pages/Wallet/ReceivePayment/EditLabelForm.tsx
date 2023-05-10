@@ -3,6 +3,7 @@ import classNames from "classnames";
 import * as yup from "yup";
 import React, { useState } from "react";
 import { format } from "date-fns";
+import { useTranslation } from "react-i18next";
 import { useThunkActionCreator, useIsMobile } from "../../../hooks";
 import {
   updateSubaddress as updateSubaddressThunk,
@@ -22,12 +23,13 @@ interface Props {
 }
 
 const validationSchema = yup.object().shape({
-  label: yup.string().max(100, "Ensure this field has no more than 100 characters."),
+  label: yup.string().max(100, "wallet.receive.error.label"),
 });
 
 export const EditLabelForm: React.FC<Props> = ({
   label, block, id, address, className = "", short,
 }) => {
+  const { t } = useTranslation();
   const isMobile = useIsMobile();
   const updateSubaddress = useThunkActionCreator(updateSubaddressThunk);
   const [isEditing, setIsEditing] = useState(false);
@@ -78,7 +80,7 @@ export const EditLabelForm: React.FC<Props> = ({
                 disabled={!isValid}
                 name="save-label"
               >
-                {short ? "Save" : "Save Label"}
+                {short ? t("wallet.receive.save") : t("wallet.receive.save-label")}
               </Button>
               <input
                 className={classNames("shadow-none outline-none focus:outline-none focus:ring-0 bg-transparent border-t-0 border-l-0 border-r-0 border-b-2", {
@@ -105,9 +107,9 @@ export const EditLabelForm: React.FC<Props> = ({
         onClick={onEdit}
         className="mr-2 whitespace-nowrap shrink-0 relative top-0.25"
         size={Button.size.TINY}
-        name={label ? "Edit Label" : "Add Label"}
+        name={label ? t("wallet.receive.edit-label") as string : t("wallet.receive.add.label") as string}
       >
-        { label ? (short ? "Edit" : "Edit Label") : "Add Label" }
+        { label ? (short ? t("wallet.receive.edit") : t("wallet.receive.edit-label")) : t("wallet.receive.add.label") }
       </Button>
       {" "}
       <div className="font-bold text-ellipsis min-w-0 overflow-hidden">{label}</div>

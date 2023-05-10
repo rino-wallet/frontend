@@ -55,20 +55,20 @@ export const transactionPriorities = {
 };
 
 export const createNewWalletSteps = {
-  wallet1: "Step 1/6: Creating user and backup keys locally in your browser",
-  wallet2: "Step 2/6: Generating multisig info for your keys locally in your browser",
-  wallet3: "Step 3/6: Creating the RINO key on the server",
-  wallet4: "Step 4/6: Generating multisig info for the RINO key on the server",
-  wallet5: "Step 5/6: Exchanging all multisig info between browser and server",
-  wallet6: "Step 6/6: Finalizing your new wallet",
+  wallet1: "new.wallet.form.step1",
+  wallet2: "new.wallet.form.step2",
+  wallet3: "new.wallet.form.step3",
+  wallet4: "new.wallet.form.step4",
+  wallet5: "new.wallet.form.step5",
+  wallet6: "new.wallet.form.step6",
 };
 
 export const createTransactionSteps = {
-  transaction1: "Step 1/5: Client-side decryption of user key",
-  transaction2: "Step 2/5: Requesting unsigned transaction from RINO",
-  transaction3: "Step 3/5: Client-side check of transaction",
-  transaction4: "Step 4/5: Requesting second signature from RINO",
-  transaction5: "Step 5/5: Submitting transaction to the Monero network",
+  transaction1: "wallet.send.step1",
+  transaction2: "wallet.send.step2",
+  transaction3: "wallet.send.step4",
+  transaction4: "wallet.send.step4",
+  transaction5: "wallet.send.step5",
 };
 
 export const browserFeatures: { webassembly: "webassembly" } = {
@@ -84,7 +84,7 @@ export const PUBLIC_APP_URLS_MAP = {
 
 export const PUBLIC_ENTERPRISE_APP_URLS_MAP = {
   production: "https://enterprise.rino.io",
-  test: "https://enterprisedoodle.test.rino.io",
+  test: "https://enterprise.test.rino.io/",
   staging: "https://enterprisedoodle.staging.rino.io",
   develop: "https://enterprisedoodle.dev.rino.io",
 };

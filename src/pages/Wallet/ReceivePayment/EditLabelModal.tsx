@@ -2,13 +2,14 @@ import React from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { format } from "date-fns";
+import { useTranslation } from "react-i18next";
 import { createModal } from "../../../modules/ModalFactory";
 import { Subaddress, UpdateSubaddressThunkPayload } from "../../../types";
 import { FormErrors, Modal } from "../../../modules/index";
 import { Button, Label, Input } from "../../../components";
 
 const validationSchema = yup.object().shape({
-  label: yup.string().max(100, "Ensure this field has no more than 100 characters."),
+  label: yup.string().max(100, "wallet.receive.error.label"),
 });
 
 interface Props {
@@ -22,6 +23,7 @@ interface Props {
 const EditLabelModal: React.FC<Props> = ({
   id, address, label, submit, updateSubaddress,
 }) => {
+  const { t } = useTranslation();
   const {
     isValid,
     handleSubmit,
@@ -49,24 +51,24 @@ const EditLabelModal: React.FC<Props> = ({
     },
   });
   return (
-    <Modal showCloseIcon title="Receiving Address editing" onClose={submit}>
+    <Modal showCloseIcon title={t("wallet.receive.address.editing")} onClose={submit}>
       <form onSubmit={handleSubmit}>
         <Modal.Body>
           <div className="form-field">
-            <Label label="Label">
+            <Label label={t("wallet.receive.label")}>
               <Input
                 type="text"
                 name="label"
                 value={values.label}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                placeholder="Label"
-                error={touched.label ? errors.label || "" : ""}
+                placeholder={t("wallet.receive.label") as string}
+                error={touched.label ? t(errors.label as string) || "" : ""}
               />
             </Label>
           </div>
           <div className="form-field">
-            <Label label="receiving address">
+            <Label label={t("wallet.receive.receiving.address")}>
               <div className="theme-text-secondary break-all">
                 {address}
               </div>
@@ -82,7 +84,7 @@ const EditLabelModal: React.FC<Props> = ({
               name="cancel-btn"
               onClick={submit}
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button
               disabled={!isValid || isSubmitting}
@@ -90,7 +92,7 @@ const EditLabelModal: React.FC<Props> = ({
               name="submit-btn"
               loading={isSubmitting}
             >
-              Save
+              {t("common.save")}
             </Button>
           </div>
         </Modal.Actions>

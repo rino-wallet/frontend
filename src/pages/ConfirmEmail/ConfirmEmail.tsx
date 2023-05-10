@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import routes from "../../router/routes";
 import sessionApi from "../../api/session";
 import { SuccessModal } from "../../modules/index";
 
 const ConfirmEmailPage: React.FC = () => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [isFinished, setIsFinished] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
@@ -24,21 +26,21 @@ const ConfirmEmailPage: React.FC = () => {
   }, [userId, token]);
   return (
     <div>
-      <h1>Email verification</h1>
+      <h1>{t("auth.email.verification")}</h1>
       {
         isFinished && (
           <SuccessModal
-            title="Account activated"
-            message="You have successfully verified your email address."
+            title={t("auth.account.activated.title")}
+            message={t("auth.account.activated.message") as string}
             goBackCallback={(): void => navigate(routes.login)}
-            buttonText="Continue"
+            buttonText={t("common.continue") as string}
           />
         )
       }
       <div>
         <p id="error-message" className="theme-text-error">{Object.values(errors)}</p>
         {
-          loading && <div>Loading...</div>
+          loading && <div>{t("common.loading")}</div>
         }
       </div>
     </div>
