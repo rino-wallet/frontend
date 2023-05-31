@@ -1,7 +1,11 @@
-import React, { useState } from "react";
-import { Link, generatePath } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import {
+  Link, generatePath, useNavigate, useLocation,
+} from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { User, UpdateUserPayload, UserResponse } from "../../types";
+import {
+  User, UpdateUserPayload, UserResponse,
+} from "../../types";
 import {
   Button, Icon, Panel, Switch,
 } from "../../components";
@@ -11,7 +15,13 @@ import ChangeEmail from "./ChangeEmail";
 import ChangePassword from "./ChangePassword";
 import { ReactComponent as RewardsIcon } from "./rewardsIcon.svg";
 import routes from "../../router/routes";
-import { useAccountType } from "../../hooks";
+import {
+  useAccountType, useQuery, useThunkActionCreator,
+} from "../../hooks";
+import {
+  fetchEntities as fetchApiKeysThunk,
+} from "../../store/apiKeysSlice";
+import ApiKeyList from "../../components/ApiKeyList";
 
 interface Props {
   user: User;
@@ -37,6 +47,29 @@ const SettingsPage: React.FC<Props> = ({
   const [showEmail, setShowEmail] = useState(false);
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const fetchApiKeys = useThunkActionCreator(fetchApiKeysThunk);
+  const query = useQuery();
+  const page = parseInt(query.get("api_keys"), 10) || 1;
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  async function fetchApiKeysData() {
+    await fetchApiKeys({ page }).then((response) => {
+      if (response.results.length === 0 && response.previous) {
+        setPage(page - 1);
+      }
+    });
+  }
+
+  useEffect(() => {
+    fetchApiKeysData();
+  }, [page]);
+
+  function setPage(p: number): void {
+    navigate(`${location.pathname}?api_keys=${p}`);
+  }
+
   function onClickEnable2FA(): void {
     enable2FA()
       .then(() => {
@@ -231,6 +264,16 @@ const SettingsPage: React.FC<Props> = ({
           <span className="text-base">{t("settings.email.notifications")}</span>
         </Switch>
       </section>
+      {isEnterprise
+      && (
+      <section className="py-8">
+        <div className="theme-bg-panel rounded-big px-6 py-4">
+          <div>
+            <ApiKeyList fetchApiKeysData={fetchApiKeysData} />
+          </div>
+        </div>
+      </section>
+      )}
     </PageTemplate>
   );
 };

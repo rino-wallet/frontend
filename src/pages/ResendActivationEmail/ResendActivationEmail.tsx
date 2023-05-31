@@ -102,26 +102,28 @@ const ResendActivationEmailPage: React.FC<Props> = ({ onSubmit }) => {
                   <FormErrors errors={errors} />
                 </Panel.Body>
                 <Panel.Actions>
-                  <Button
-                    size={Button.size.BIG}
-                    variant={Button.variant.GRAY}
-                    type="button"
-                    name="cancel-btn"
-                    onClick={(): void => { navigate(routes.login); }}
-                  >
-                    {t("common.cancel")}
-                  </Button>
-                  <Button
-                    size={Button.size.BIG}
-                    variant={Button.variant.PRIMARY_LIGHT}
-                    disabled={dirty && (!isValid || isSubmitting)}
-                    type="submit"
-                    name="submit-btn"
-                    className="whitespace-nowrap"
-                    loading={isSubmitting}
-                  >
-                    {t("auth.resend.confirmation")}
-                  </Button>
+                  <div className="flex flex-col-reverse m-auto gap-4 md:flex-row">
+                    <Button
+                      size={Button.size.BIG}
+                      variant={Button.variant.GRAY}
+                      type="button"
+                      name="cancel-btn"
+                      onClick={(): void => { navigate(routes.login); }}
+                    >
+                      {t("common.cancel")}
+                    </Button>
+                    <Button
+                      size={Button.size.BIG}
+                      variant={Button.variant.PRIMARY_LIGHT}
+                      disabled={dirty && (!isValid || isSubmitting)}
+                      type="submit"
+                      name="submit-btn"
+                      className="whitespace-nowrap"
+                      loading={isSubmitting}
+                    >
+                      {t("auth.resend.confirmation")}
+                    </Button>
+                  </div>
                 </Panel.Actions>
               </Panel>
             )

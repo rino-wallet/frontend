@@ -286,8 +286,8 @@
       "date": "Date",
       "submitedby": "Submited by",
       "status": "Status",
-      "empty.pending.list": "No transactions yet.",
-      "empty.history.list": "No pending transfers yet.",
+      "empty.pending.list": "No pending transfers yet.",
+      "empty.history.list": "No transactions yet.",
       "details": "Details",
       "reject": "Reject",
       "approve": "Approve",
@@ -375,7 +375,7 @@
       "transaction.memo": "Internal transaction memo",
       "advanced": "Advanced",
       "transaction.priority": "Transaction Priority (Fee)",
-      "priority.tooltip": "The priority refers to the level of fees paid to miners by the transaction. As the network is currently not under heavy load, paying higher fees than normal is useless and will not influence the transaction confirmation time. We advise to leave it as &quot;Normal&quot;.",
+      "priority.tooltip": "The priority refers to the level of fees paid to miners by the transaction. As the network is currently not under heavy load, paying higher fees than normal is useless and will not influence the transaction confirmation time. We advise to leave it as \"Normal\".",
       "review": "Review",
       "error.max": "You can only transfer less than the full unlocked balance {balance}. - it's necessary to account for the network fee.",
       "error.nofunds": "You don't have any unlocked funds to transfer.",
@@ -449,8 +449,9 @@
       "your.promotion.code": "Your promotion code",
       "promotions": "Promotions",
       "no.promotions": "You don't have any promotions yet",
-      "redeem": "Redeem",
-      "exchange.threshold": "Exchange more than {{threshold}} EUR",
+      "redeem.button": "Redeem",
+      "exchange.threshold": "Exchange more than {{threshold}} € of XMR to any crypto",
+      "redeem.reward": "Redeem {{reward}} € in XMR as reward",
       "buttons": {
         "apply": "Apply"
       }
@@ -478,6 +479,37 @@
     "modal.2fa.disabled.setup": "Set up 2FA again",
     "disable.2fa": "Disable 2fa",
     "enable.2fa": "Enable 2fa",
+    "api.management": {
+      "title": "API Key Management",
+      "buttons": {
+        "delete": "Delete",
+        "new.api": "+ New Api",
+        "remove.api": "Delete",
+        "create.api": "Create New Api Key"
+      },
+      "no.api.keys": "There are no api keys created yet!",
+      "table.tabs": {
+        "name": "Name",
+        "id": "ID",
+        "created.at": "Created At",
+        "expiry": "Expiry",
+        "action": "Action"
+      },
+      "modals": {
+        "delete": {
+          "title": "Delete Api Key",
+          "text": "Are you sure you want to delete this api key:"
+        },
+        "create": {
+          "title": "Create New Api Key",
+          "text": "Please set a name and expiry date for the API Key.",
+          "name": "Name",
+          "expiry": "Expires In",
+          "warning.text": "Please make sure to copy and save this api key!",
+          "slug": "You won't be able to view this api key again."
+        }
+      }
+    },
     "change-email-modal": {
       "title": "Change email",
       "message": "We will send a validation message to your new email address. Please follow instructions in the message.",

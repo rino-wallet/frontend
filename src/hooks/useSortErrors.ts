@@ -19,6 +19,10 @@ export const useSortErrors = (notFormField: string[]) => {
     };
   }
   return {
+    resetSortedErrors: () => {
+      setNonFieldErrors({});
+      setFieldErrors({});
+    },
     nonFieldErrors,
     fieldErrors,
     sortErrors,

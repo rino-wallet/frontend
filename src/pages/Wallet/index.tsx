@@ -70,7 +70,8 @@ const WalletPageContainer: React.FC<Props> = () => {
     <Routes>
       <Route path="transactions" element={<Transactions walletId={walletId} />} />
       <Route path="transactions/:transactionId" element={<TransactionDetails walletId={walletId} />} />
-      <Route path="send" element={<SendPayment walletId={walletId} />} />
+      <Route path="send" element={<SendPayment isExchange={false} walletId={walletId} />} />
+      <Route path="exchange" element={<SendPayment isExchange walletId={walletId} />} />
       <Route path="settings" element={<Settings walletId={walletId} />} />
       <Route path="receive" element={<ReceivePayment walletId={walletId} />} />
       <Route path="users" element={<Users walletId={walletId} refresh={refresh} />} />

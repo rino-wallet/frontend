@@ -429,8 +429,8 @@ const Settings: React.FC<Props> = ({
                   >
                     <div className="form-field">
                       <Select
-                        className={`${!numApprovers ? "!theme-border-error outline-none" : ""}`}
-                        error={`${!numApprovers ? "Wallet requires more approvers" : ""}`}
+                        className={`${!numApprovers && wallet?.minApprovals ? "!theme-border-error outline-none" : ""}`}
+                        error={`${!numApprovers && wallet?.minApprovals ? "Wallet requires more approvers" : ""}`}
                         value={formik.values.requiredApprovals}
                         onChange={formik.handleChange}
                         name="requiredApprovals"

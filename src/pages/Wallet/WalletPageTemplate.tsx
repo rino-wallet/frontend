@@ -259,7 +259,7 @@ export const WalletPageTemplate: React.FC<Props> = ({
                 </div>
                 {
                   (showActions && !isPublicWallet) && (
-                    <div className="flex space-x-5 mt-8 md:hidden">
+                    <div className={`flex space-x-5 mt-8 md:hidden ${sendButtonDisabled ? "pointer-events-none" : ""}`}>
                       <Link className="block w-1/2" to={`${generatePath(routes.wallet, { id })}/send`}>
                         <Button size={Button.size.BIG} disabled={sendButtonDisabled} name="button-send" block={isMobile}>
                           <div className="flex space-x-3 items-center">

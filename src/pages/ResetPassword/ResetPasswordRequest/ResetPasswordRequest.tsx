@@ -30,14 +30,15 @@ const ResetPasswordRequestPage: React.FC<Props> = ({ onSubmit }) => {
       initialValues={{
         email: "",
         non_field_errors: "",
+        detail: "",
       }}
       validationSchema={forgotPasswordRequestValidationSchema}
       onSubmit={(values, { setErrors }): Promise<void> => onSubmit({ email: values.email }).then(
         () => {
           setHasSubmitCompleted(true);
         },
-        (err) => {
-          setErrors(err.response.data);
+        (err: any) => {
+          setErrors(err?.data);
         },
       )}
     >

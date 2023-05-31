@@ -16,6 +16,7 @@ type Props = {
   className?: string;
   maxLength?: number;
   autoComplete?: "on" | "off" | "current-password" | "new-password";
+  minValue?: number;
 };
 
 export const Input = React.forwardRef<HTMLInputElement, Props>((props, ref) => {
@@ -32,6 +33,7 @@ export const Input = React.forwardRef<HTMLInputElement, Props>((props, ref) => {
     onChange,
     onBlur = (): void => undefined,
     disabled = false,
+    minValue,
   } = props;
   return (
     <div>
@@ -46,6 +48,7 @@ export const Input = React.forwardRef<HTMLInputElement, Props>((props, ref) => {
           onBlur={onBlur}
           placeholder={placeholder}
           maxLength={maxLength}
+          min={minValue}
           className={classNames(
             className,
             "w-full font-lato inline-flex border-solid border theme-placeholder-color theme-text px-6 py-4 rounded-medium appearance-none",

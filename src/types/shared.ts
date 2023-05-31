@@ -93,6 +93,8 @@ export type UseThunkActionCreator<Response> = Promise<Response> & { abort: () =>
 
 export type AsyncActionStatuses = typeof asyncActionStatusesList[number];
 
+export type PromotionStatuses = "pending" | "paid" | "ready";
+
 export type TaskStatus = "COMPLETED" | "FAILED" | "CREATED";
 
 export type Env = "production" | "test" | "staging" | "develop";

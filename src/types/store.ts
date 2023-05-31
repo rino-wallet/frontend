@@ -300,3 +300,11 @@ export interface FetchPendingTransfersThunkPayload {
   walletId: string;
   page: number;
 }
+
+export interface ApiKey {
+  id: string;
+  apiKey: string;
+  name: string;
+  createdAt: string;
+  expiresAt: string;
+}

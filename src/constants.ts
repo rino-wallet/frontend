@@ -96,6 +96,12 @@ export const APP_URLS_MAP = {
   develop: "https://proxy.dev.rino.io",
 };
 
+export const PROMOTION_STATUS = {
+  PENDING: "pending",
+  READY: "ready",
+  PAID: "paid",
+};
+
 export const conversionMapping = {
   btc: "1e8",
   xmr: "1e12",

@@ -57,6 +57,14 @@ interface Transaction {
   memo: string;
 }
 
+interface ApiKey {
+  id: string;
+  apiKey: string;
+  name: string;
+  createdAt: string;
+  expiresAt: string;
+}
+
 export interface SignInPayload {
   username: string;
   password: string;
@@ -137,6 +145,24 @@ export interface CreateWalletPayload {
 export type CreateWalletResponse = {
   taskId: string;
 };
+
+// Create Api keys api interface
+export interface CreateApiKeyPayload {
+  name: string;
+  expires_at: string;
+}
+
+export interface CreateApiKeyResponse {
+  id: string;
+  apiKey: string;
+  name: string;
+  createdAt: string;
+  expiresAt: string;
+}
+
+export interface FetchApiKeysResponse extends ListResponse {
+  results: ApiKey[];
+}
 
 // Finalize wallet api interface
 export interface FinalizeWalletPayload {

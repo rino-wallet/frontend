@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import classNames from "classnames";
-import { useNavigate, generatePath } from "react-router-dom";
+import { useNavigate, generatePath, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   Tabs, Check, Icon, Label,
@@ -17,16 +17,17 @@ import Exchange from "./Exchange";
 interface Props {
   wallet: Wallet | null;
   walletId: string;
+  isExchange: boolean;
 }
 
 const SendPayment: React.FC<Props> = ({
   wallet,
   walletId,
+  isExchange,
 }) => {
   const { t } = useTranslation();
   const { features } = useAccountType();
   const navigate = useNavigate();
-  const [isExchange, setIsExchange] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   useEffect(() => () => {
     walletInstance.closeWallet();
@@ -115,26 +116,28 @@ const SendPayment: React.FC<Props> = ({
                     <Label label="" inline>
                       <div className="text-center md:text-left">
                         <div className="whitespace-nowrap text-sm py-2 border rounded-full bg-white theme-text theme-control-border inline">
-                          <button
-                            type="button"
-                            name="send-btn"
-                            className={classNames("w-1/2 text-sm px-5 md:px-10 py-2 rounded-full theme-text inline-block cursor-pointer", { "theme-control-primary-gradient-light text-white border-transparent": !isExchange })}
-                            onClick={(): void => setIsExchange(false)}
-                          >
-                            <IconUp className={classNames("inline-block h-3.5 w-3.5 fill-black mr-1", { "fill-white": !isExchange })} />
-                            {" "}
-                            {t("common.send")}
-                          </button>
-                          <button
-                            type="button"
-                            name="exchange-btn"
-                            className={classNames("w-1/2 text-sm px-5 md:px-10 py-2 rounded-full theme-text inline-block cursor-pointer", { "theme-control-primary-gradient-light text-white border-transparent": isExchange })}
-                            onClick={(): void => setIsExchange(true)}
-                          >
-                            <Icon name="refresh" className={classNames("inline-block h-3.5 w-3.5 fill-black mr-1", { "fill-white": isExchange })} />
-                            {" "}
-                            {t("common.exchange")}
-                          </button>
+                          <Link to={`${generatePath(routes.wallet, { id: walletId })}/send`}>
+                            <button
+                              type="button"
+                              name="send-btn"
+                              className={classNames("w-1/2 text-sm px-5 md:px-10 py-2 rounded-full theme-text inline-block cursor-pointer", { "theme-control-primary-gradient-light text-white border-transparent": !isExchange })}
+                            >
+                              <IconUp className={classNames("inline-block h-3.5 w-3.5 fill-black mr-1", { "fill-white": !isExchange })} />
+                              {" "}
+                              {t("common.send")}
+                            </button>
+                          </Link>
+                          <Link to={`${generatePath(routes.wallet, { id: walletId })}/exchange`}>
+                            <button
+                              type="button"
+                              name="exchange-btn"
+                              className={classNames("w-1/2 text-sm px-5 md:px-10 py-2 rounded-full theme-text inline-block cursor-pointer", { "theme-control-primary-gradient-light text-white border-transparent": isExchange })}
+                            >
+                              <Icon name="refresh" className={classNames("inline-block h-3.5 w-3.5 fill-black mr-1", { "fill-white": isExchange })} />
+                              {" "}
+                              {t("common.exchange")}
+                            </button>
+                          </Link>
                         </div>
                       </div>
                     </Label>

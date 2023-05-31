@@ -23,6 +23,7 @@ import { changeLocation, fullReset } from "./actions";
 import walletInstance from "../wallet";
 import { pendingTransfersListSlice } from "./pendingTransfersSlice";
 import { historyTransfersListSlice } from "./historyTransfersSlice";
+import { apiKeysSlice } from "./apiKeysSlice";
 
 const combinedReducer = combineReducers({
   session: sessionSlice.reducer,
@@ -44,6 +45,7 @@ const combinedReducer = combineReducers({
   promotionList: promotionListSlice.reducer,
   pendingTransfers: pendingTransfersListSlice.reducer,
   historyTransfers: historyTransfersListSlice.reducer,
+  apiKeys: apiKeysSlice.reducer,
 });
 
 /**

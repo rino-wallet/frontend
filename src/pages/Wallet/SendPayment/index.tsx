@@ -8,9 +8,10 @@ import SendPayment from "./SendPayment";
 
 interface Props {
   walletId: string;
+  isExchange: boolean;
 }
 
-const SendPaymentContainer: React.FC<Props> = ({ walletId }) => {
+const SendPaymentContainer: React.FC<Props> = ({ walletId, isExchange }) => {
   const walletData = useSelector(walletSelectors.getWallet);
   const fetchWallets = useThunkActionCreator(fetchWalletsAction);
   useEffect(() => {
@@ -19,6 +20,7 @@ const SendPaymentContainer: React.FC<Props> = ({ walletId }) => {
   return (
     <div>
       <SendPayment
+        isExchange={isExchange}
         wallet={walletData}
         walletId={walletId}
       />

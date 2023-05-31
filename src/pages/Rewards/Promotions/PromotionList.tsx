@@ -1,12 +1,10 @@
 import { useTranslation } from "react-i18next";
 import React from "react";
-import { RewardStatus } from "../RewardStatus";
 import { ReactComponent as EmptyListIcon } from "./empty-list-icon.svg";
-import { Button, Panel } from "../../../components";
 import { Promotion } from "../../../types";
 import { showChooseWalletModal } from "../ChooseWalletModal";
 import { showSuccessModal } from "../../../modules/index";
-import { piconeroToMonero } from "../../../utils";
+import { PromotionItem } from "./PromotionItem";
 
 interface Props {
   promotions: Promotion[],
@@ -15,6 +13,7 @@ interface Props {
 }
 
 export const PromotionList = ({ promotions, claimReward, loading }: Props) => {
+  const { t } = useTranslation();
   function onRedeem(referral: Promotion) {
     showChooseWalletModal({ asyncCallback: (address: string) => claimReward({ id: referral.id, address }) })
       .then(() => {
@@ -24,8 +23,6 @@ export const PromotionList = ({ promotions, claimReward, loading }: Props) => {
         });
       });
   }
-
-  const { t } = useTranslation();
   return (
     <div>
       <ul className="mb-10">
@@ -40,36 +37,9 @@ export const PromotionList = ({ promotions, claimReward, loading }: Props) => {
           )
         }
         {
-          promotions.map((promotion) => (
+          promotions.map((promotion, index) => (
             <li key={promotion.id} className="mb-5">
-              <Panel>
-                <div className="flex space-x-8 py-6 px-8">
-                  <div>
-                    <p className="mb-4 text-2xl font-bold font-lato">
-                      XMR
-                      {" "}
-                      {piconeroToMonero(promotion.amount)}
-                    </p>
-                    {
-                      promotion.status.toLowerCase() === "ready" && !promotion.claimed ? (
-                        <Button
-                          className="h-10"
-                          size={Button.size.MEDIUM}
-                          variant={Button.variant.PRIMARY_LIGHT}
-                          onClick={() => { onRedeem(promotion); }}
-                        >
-                          {t("rewards.promotions.redeem")}
-                        </Button>
-                      ) : (
-                        <RewardStatus status={promotion.status.toLowerCase() as "pending" | "ready" | "paid"} isPromotion />
-                      )
-                    }
-                  </div>
-                  <div className="py-1">
-                    {t("rewards.promotions.redeem", { threshold: promotion.promotion.threshold / 100 })}
-                  </div>
-                </div>
-              </Panel>
+              <PromotionItem promotion={promotion} isLastAdded={index === 0} onRedeem={onRedeem} />
             </li>
           ))
         }
