@@ -54,7 +54,7 @@ export const SupportModal: React.FC<Props> = ({ cancel, submit }) => {
   } = useFormik({
     validationSchema,
     initialValues: {
-      title: `Customer Service Request From User ${user?.username} on ${format(new Date(), "dd/MM/yyyy")}`,
+      title: `Customer Service Request From User ${user?.email} on ${format(new Date(), "dd/MM/yyyy")}`,
       message: "",
       non_field_errors: "",
     },

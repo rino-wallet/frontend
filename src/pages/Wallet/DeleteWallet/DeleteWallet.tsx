@@ -23,6 +23,7 @@ const DeleteWallet: React.FC<Props> = ({
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const [confirmationString, setConfirmation] = useState("");
+  const walletBalance = piconeroToMonero(Number(balance));
   async function onClickDelete(): Promise<void> {
     try {
       await deleteWallet();
@@ -51,7 +52,7 @@ const DeleteWallet: React.FC<Props> = ({
                 This wallet has
                 {" "}
                 <span className="font-bold">
-                  <span data-qa-selector="wallet-balance">{piconeroToMonero(balance)}</span>
+                  <span data-qa-selector="wallet-balance">{{ walletBalance }}</span>
                   {" "}
                   XMR
                 </span>

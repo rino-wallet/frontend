@@ -87,7 +87,7 @@
     "account.activated.title": "Account activated",
     "account.activated.message": "Account activated",
     "forgot.password.title": "Forgot Password",
-    "sent.reset.instructions": "We sent an email to <2>sad@fdcd.cd</2> with instructions to reset your password.",
+    "sent.reset.instructions": "We sent an email to <2>{{email}}</2> with instructions to reset your password.",
     "password.updated": "Password Updated",
     "password.updated.message": "You have successfully updated your account password.",
     "set.new.password": "Set a new password",
@@ -297,7 +297,7 @@
     "deletemodal": {
       "delete.wallet": "Delete Wallet",
       "sure": "Are you sure?",
-      "balance.message": "",
+      "balance.message": "This wallet has {{walletBalance}} XMR left",
       "warning": "A deleted wallet cannot be restored!",
       "confirm.message": "Please confirm deleting the wallet by typing \"<1>permanently delete</1>\" in the field below."
     },

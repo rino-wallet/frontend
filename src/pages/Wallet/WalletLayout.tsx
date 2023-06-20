@@ -65,7 +65,7 @@ export const WalletLayout: React.FC<Props> = ({
               value: 0,
               text: t("wallet.tab.transactions"),
             },
-            ...(features?.approvals && currentWallet?.minApprovals > 0 ? [{
+            ...(features?.approvals ? [{
               value: 3,
               text: t("wallet.tab.approvals"),
               notification: pendingTransfers.length,

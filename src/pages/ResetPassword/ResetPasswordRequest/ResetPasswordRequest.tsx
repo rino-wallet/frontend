@@ -58,7 +58,7 @@ const ResetPasswordRequestPage: React.FC<Props> = ({ onSubmit }) => {
             hasSubmitCompleted ? (
               <Panel title={t("auth.forgot.password.title")}>
                 <Panel.Body>
-                  <Trans i18nKey="auth.sent.reset.instructions">
+                  <Trans i18nKey="auth.sent.reset.instructions" values={{ email: values.email }}>
                     We sent an email to
                     {" "}
                     <span className="text-primary font-bold break-words">{values.email}</span>

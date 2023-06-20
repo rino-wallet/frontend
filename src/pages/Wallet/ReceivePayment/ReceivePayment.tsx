@@ -14,6 +14,8 @@ import { SubaddressItem } from "./SubaddressItem";
 import { ValidateButton } from "./ValidateButton";
 import { EditLabelForm } from "./EditLabelForm";
 import { WalletPageTemplate } from "../WalletPageTemplate";
+import { useThunkActionCreator } from "../../../hooks";
+import { fetchWalletSubaddress as fetchWalletSubaddressThunk } from "../../../store/subaddressListSlice";
 
 interface Props {
   walletId: string;
@@ -54,6 +56,7 @@ const ReceivePayment: React.FC<Props> = ({
   const [page, setPage] = useState<number>(1);
   const navigate = useNavigate();
   const [image, setImage] = useState("");
+  const fetchWalletSubaddress = useThunkActionCreator(fetchWalletSubaddressThunk);
   async function validateAddress(subaddress: Subaddress, mode: "new" | "first" | "prompt"): Promise<void> {
     const modalContent = {
       new: {
@@ -79,6 +82,11 @@ const ReceivePayment: React.FC<Props> = ({
       });
     }
   }
+
+  useEffect(() => {
+    fetchWalletSubaddress({ walletId });
+  }, []);
+
   useEffect(() => {
     if (walletSubAddress) {
       createQRCodeImage(walletSubAddress?.address, { errorCorrectionLevel: "H", width: 265 })
@@ -95,6 +103,7 @@ const ReceivePayment: React.FC<Props> = ({
   useEffect(() => {
     fetchSubaddresses({ walletId, page });
   }, [page]);
+
   return (
     <WalletPageTemplate
       showNameInBox
