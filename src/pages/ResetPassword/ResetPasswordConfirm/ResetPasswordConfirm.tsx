@@ -79,7 +79,7 @@ const ResetPasswordConfirm: React.FC<Props> = ({
           {
             isFinished && (
               <SuccessModal
-                title={t("auth.password.updated")}
+                title={t("auth.password.updated.title")}
                 message={t("auth.password.updated.message") as string}
                 goBackCallback={(): void => navigate(routes.login)}
               />

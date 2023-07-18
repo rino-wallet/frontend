@@ -1,4 +1,4 @@
-FROM node:16.19.1-bullseye-slim
+FROM node:16.20.1-bullseye-slim
 
 ARG ENVIRON=prod
 
@@ -8,6 +8,7 @@ RUN python3 -m pip install beautifulsoup4==4.10.0
 ENV LC_ALL="en_US.UTF-8"
 ENV LANG="en_US.UTF-8"
 ENV LANGUAGE="en_US.UTF-8"
+
 
 COPY . .
 RUN yarn install && yarn build:${ENVIRON}

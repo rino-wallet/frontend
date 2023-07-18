@@ -88,7 +88,7 @@
     "account.activated.message": "Account activated",
     "forgot.password.title": "Forgot Password",
     "sent.reset.instructions": "We sent an email to <2>{{email}}</2> with instructions to reset your password.",
-    "password.updated": "Password Updated",
+    "password.updated.title": "Password Updated",
     "password.updated.message": "You have successfully updated your account password.",
     "set.new.password": "Set a new password",
     "recovery.secret.label": "Account Recovery Secret",

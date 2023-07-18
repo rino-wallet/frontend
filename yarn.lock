@@ -1452,10 +1452,10 @@
     redux-thunk "^2.4.1"
     reselect "^4.1.5"
 
-"@rino-wallet/monero-javascript@0.0.32":
-  version "0.0.32"
-  resolved "https://registry.yarnpkg.com/@rino-wallet/monero-javascript/-/monero-javascript-0.0.32.tgz#f7a317e1b830035b0b5a438ac53077b7158071f2"
-  integrity sha512-oel38IPNSv1upBI8qxBDdiek6U3B/G7jrqUwSCcMxukRi5V19z+yGatWbSJUqw/64gPJJbkKg8G1kTQygL7BuA==
+"@rino-wallet/monero-javascript@0.0.34":
+  version "0.0.34"
+  resolved "https://registry.yarnpkg.com/@rino-wallet/monero-javascript/-/monero-javascript-0.0.34.tgz#41ee214d7adeca3231bae43bc50114bca836db2e"
+  integrity sha512-JjTHNJSTYCCWmHDFNyup1XxZkINPrKJIsFebtE41yS66gZNgt2XFfiuRzjNqRLjJh7dkVrRDZRYaagdKwM2niw==
   dependencies:
     "@babel/core" "^7.14.6"
     ajv "^6.12.6"
