@@ -14,7 +14,7 @@ import { SubaddressItem } from "./SubaddressItem";
 import { ValidateButton } from "./ValidateButton";
 import { EditLabelForm } from "./EditLabelForm";
 import { WalletPageTemplate } from "../WalletPageTemplate";
-import { useThunkActionCreator } from "../../../hooks";
+import { useAccountType, useThunkActionCreator } from "../../../hooks";
 import { fetchWalletSubaddress as fetchWalletSubaddressThunk } from "../../../store/subaddressListSlice";
 
 interface Props {
@@ -56,7 +56,10 @@ const ReceivePayment: React.FC<Props> = ({
   const [page, setPage] = useState<number>(1);
   const navigate = useNavigate();
   const [image, setImage] = useState("");
+  const { isEnterprise } = useAccountType();
+
   const fetchWalletSubaddress = useThunkActionCreator(fetchWalletSubaddressThunk);
+
   async function validateAddress(subaddress: Subaddress, mode: "new" | "first" | "prompt"): Promise<void> {
     const modalContent = {
       new: {
@@ -69,6 +72,7 @@ const ReceivePayment: React.FC<Props> = ({
       },
       prompt: {},
     };
+
     if (typeof openWallet === "function" && typeof validateSubAddress === "function") {
       await enterPasswordModal({
         callback: async (password: string) => {
@@ -95,11 +99,13 @@ const ReceivePayment: React.FC<Props> = ({
         }, () => { setImage(""); });
     }
   }, [walletSubAddress?.address]);
+
   useEffect(() => {
     if (walletSubAddress && !walletSubAddress.isValid && walletSubAddress.index === 1) {
       validateAddress(walletSubAddress, "first");
     }
   }, [walletSubAddress?.index]);
+
   useEffect(() => {
     fetchSubaddresses({ walletId, page });
   }, [page]);
@@ -187,14 +193,19 @@ const ReceivePayment: React.FC<Props> = ({
             )}
           </div>
         </div>
+
         <div>
-          <h2 className="font-catamaran uppercase text-2xl font-bold mb-8">{t("wallet.receive.previous.addresses")}</h2>
+          <h2 className="font-catamaran uppercase text-2xl font-bold mb-8">
+            {t("wallet.receive.previous.addresses")}
+          </h2>
+
           <ul>
-            {
-              (!subaddresses.length && !listLoading) && (
-                <EmptyList message={t("wallet.receive.no.addresses") as string} />
-              )
-            }
+            {(!subaddresses.length && !listLoading) && (
+              <EmptyList
+                message={t("wallet.receive.no.addresses") as string}
+                isEnterprise={isEnterprise}
+              />
+            )}
             {
               subaddresses.map((subaddress) => (
                 <li key={subaddress.address} className="mb-3">
@@ -207,6 +218,7 @@ const ReceivePayment: React.FC<Props> = ({
               ))
             }
           </ul>
+
           {
             pages > 1 && (
               <Pagination

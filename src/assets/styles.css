@@ -34,6 +34,9 @@
   .theme-link {
     @apply text-primary;
   }
+  .theme-enterprise {
+    @apply text-enterprisePrimary;
+  }
   /* Border colors */
   .theme-border {
     @apply border-default;
@@ -53,6 +56,9 @@
   }
   .theme-control-primary-gradient-light {
     @apply bg-primary-gradient-light-normal hover:bg-primary-gradient-light-hover focus:bg-primary-gradient-light-focused disabled:bg-white;
+  }
+  .theme-control-enterprise-gradient-light {
+    @apply bg-enterprise-primary-gradient-light-normal disabled:bg-white;
   }
   /* Background */
   .theme-bg-panel {
@@ -75,6 +81,9 @@
   }
   .theme-bg-indigo {
     background-color: rgba(94, 94, 245, 1);
+  }
+  .theme-bg-enterprise {
+    background-color: #1271E1;
   }
   .theme-bg-banner-yellow {
     background-color: rgba(252, 243, 228, 1);

@@ -37,10 +37,10 @@ export default function pollTask(id: string, signal: AbortSignal | null = null):
         } else {
           timeoutID = setTimeout(async () => {
             fetchData(timeoutID);
-          }, 10000);
+          }, 1000);
         }
       } catch (error) {
-        setTimeout(fetchData, 10000);
+        setTimeout(fetchData, 1000);
       }
     }
     fetchData();

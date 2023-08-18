@@ -18,6 +18,7 @@ import { moneroToPiconero, piconeroToMonero } from "../../../../../utils";
 import { transactionPriorities } from "../../../../../constants";
 import { FormErrors } from "../../../../../modules/FormErrors";
 import ConfirmTransaction from "../ConfirmTransaction";
+import { useAccountType } from "../../../../../hooks";
 
 const generateValidationSchema = (balance: number, t: (key: string) => string): yup.AnyObjectSchema => yup.object().shape({
   address: yup.string().required("errors.required"),
@@ -65,6 +66,8 @@ const TransactionForm: React.FC<Props> = ({
   const navigate = useNavigate();
   const [currentWalletCall, setCurrentWalletCall] = useState<Promise<AppDispatch> | any>(null);
   const [transactionPrepared, setTransactionPrepared] = useState(false);
+  const { isEnterprise } = useAccountType();
+
   return (
     <Formik
       initialValues={{
@@ -224,7 +227,11 @@ const TransactionForm: React.FC<Props> = ({
               <Button
                 type="submit"
                 name="submit-btn"
-                variant={Button.variant.PRIMARY_LIGHT}
+                variant={
+                  isEnterprise
+                    ? Button.variant.ENTERPRISE_LIGHT
+                    : Button.variant.PRIMARY_LIGHT
+                }
                 size={Button.size.BIG}
                 disabled={!isValid || !parseFloat(wallet?.unlockedBalance || "0")}
                 loading={isSubmitting}

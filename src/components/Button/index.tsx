@@ -11,10 +11,11 @@ enum Variant {
   PRIMARY_LIGHT,
   DISABLED,
   BRIGHT_RED,
-  INDIGO
+  INDIGO,
+  ENTERPRISE_LIGHT,
 }
 
-type Props = {
+export type Props = {
   variant?: Variant;
   size?: UI_SIZE;
   icon?: boolean;
@@ -61,6 +62,7 @@ const VARIANT_MAPS: Record<Variant, string> = {
   [Variant.DISABLED]: "bg-white text-disabled border-disabled",
   [Variant.BRIGHT_RED]: "theme-bg-red text-white theme-border-error",
   [Variant.INDIGO]: "theme-bg-indigo text-white",
+  [Variant.ENTERPRISE_LIGHT]: "theme-control-enterprise-gradient-light text-white border-transparent",
 };
 
 export const Button: React.FC<Props> & { variant: typeof Variant; size: typeof UI_SIZE; } = (props) => {
@@ -79,6 +81,10 @@ export const Button: React.FC<Props> & { variant: typeof Variant; size: typeof U
     onMouseEnter,
     onMouseLeave,
   } = props;
+
+  const isEnterprise = variant === Variant.INDIGO
+    || variant === Variant.ENTERPRISE_LIGHT;
+
   return (
     <button
       onClick={onClick}
@@ -99,7 +105,12 @@ export const Button: React.FC<Props> & { variant: typeof Variant; size: typeof U
       // eslint-disable-next-line
       type={type}
     >
-      { loading && <div className="inset-0 absolute flex items-center justify-center"><Spinner /></div>}
+      {loading && (
+        <div className="inset-0 absolute flex items-center justify-center">
+          <Spinner isEnterprise={isEnterprise} />
+        </div>
+      )}
+
       <div className={classNames({ "opacity-0": loading })}>
         {children}
       </div>

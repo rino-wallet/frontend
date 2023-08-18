@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import {
   FetchPendingTranfersResponse, FetchPendingTransfersThunkPayload, PendingTransfer, ListMetadata,
 } from "../../../types";
-import { useQuery } from "../../../hooks";
+import { useAccountType, useQuery } from "../../../hooks";
 import ApprovalTransactionItem from "./ApprovalTransactionItem";
 import TransactionItemPlaceholder from "./ApprovalTransactionItemPlaceholder";
 import TransactionItemLayout from "./ApprovalTransactionItemLayout";
@@ -36,6 +36,7 @@ const PendingList: React.FC<Props> = ({
   const navigate = useNavigate();
   const location = useLocation();
   const query = useQuery();
+  const { isEnterprise } = useAccountType();
   const page = parseInt(query.get("page_pending"), 10) || 1;
 
   async function refetchPendingTransfers() {
@@ -61,10 +62,12 @@ const PendingList: React.FC<Props> = ({
     }
     return (): void => clearInterval(intervalId);
   }, [page]);
+
   function setPage(p: number): void {
     setIsFirstLoading(true);
     navigate(`${location.pathname}?page_pending=${p}`);
   }
+
   return (
     <Panel title={t("wallet.approvals.pendinglist.title")} className="border-none">
       <div>
@@ -90,17 +93,20 @@ const PendingList: React.FC<Props> = ({
           ) : (
             <div>
               {
-                  (!entities?.length && !listLoading) && (
-                    <EmptyList message={t("wallet.approvals.empty.pending.list") as string} />
-                  )
+                (!entities?.length && !listLoading) && (
+                  <EmptyList
+                    message={t("wallet.approvals.empty.pending.list") as string}
+                    isEnterprise={isEnterprise}
+                  />
+                )
               }
               {
-                  entities?.map((transaction, index) => (
-                    <div key={transaction.id} className={index % 2 !== 0 ? "theme-bg-panel-second bg-opacity-50" : ""}>
-                      <ApprovalTransactionItem updateTransfers={refetchPendingTransfers} walletId={walletId} transaction={transaction} />
-                    </div>
-                  ))
-                }
+                entities?.map((transaction, index) => (
+                  <div key={transaction.id} className={index % 2 !== 0 ? "theme-bg-panel-second bg-opacity-50" : ""}>
+                    <ApprovalTransactionItem updateTransfers={refetchPendingTransfers} walletId={walletId} transaction={transaction} />
+                  </div>
+                ))
+              }
             </div>
           )
         }

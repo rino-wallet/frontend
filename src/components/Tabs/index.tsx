@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react";
 import classNames from "classnames";
 import { Icon, IconName } from "../Icon";
+import { useAccountType } from "../../hooks";
 
 type Tab = {
   value: number;
@@ -20,6 +21,7 @@ export const Tabs: React.FC<Props> = (props) => {
   const {
     tabs, activeTab, children, onChange,
   } = props;
+  const { isEnterprise } = useAccountType();
   return (
     <div className="w-full">
       <div className="flex border-b theme-border">
@@ -37,7 +39,8 @@ export const Tabs: React.FC<Props> = (props) => {
               className={classNames(
                 "flex items-center justify-center flex-1 uppercase text-lg px-3 py-5 border-b-4 border-transparent font-catamaran",
                 {
-                  "border-orange-800": tab.value === activeTab,
+                  "border-orange-800": tab.value === activeTab && !isEnterprise,
+                  "border-blue-800": tab.value === activeTab && isEnterprise,
                   "theme-text-secondary": tab.value !== activeTab,
                   "text-black": tab.value === activeTab,
                   "cursor-default": typeof onChange !== "function",

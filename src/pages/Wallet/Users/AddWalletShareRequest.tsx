@@ -71,7 +71,9 @@ const AddWalletShareRequest: React.FC<Props> = ({
       }
     },
   });
+
   const accountType = isEnterprise ? "enterprise" : "community";
+
   return (
     <BindHotKeys callback={handleSubmit} rejectCallback={cancel}>
       <Modal title={t("wallet.users.share.modal.title")} onClose={cancel} className="!z-10" showCloseIcon>
@@ -134,7 +136,11 @@ const AddWalletShareRequest: React.FC<Props> = ({
               type="submit"
               name="submit-btn"
               loading={isSubmitting}
-              variant={Button.variant.PRIMARY_LIGHT}
+              variant={
+                isEnterprise
+                  ? Button.variant.ENTERPRISE_LIGHT
+                  : Button.variant.PRIMARY_LIGHT
+              }
             >
               {t("wallet.users.share.modal.invite")}
             </Button>

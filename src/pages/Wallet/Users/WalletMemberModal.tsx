@@ -211,7 +211,7 @@ const WalletMemberModal: React.FC<Props> = ({
               type="submit"
               name="submit-btn"
               loading={isSubmitting}
-              variant={Button.variant.PRIMARY_LIGHT}
+              variant={Button.variant.ENTERPRISE_LIGHT}
             >
               {member ? t("wallet.users.change.button") : t("wallet.users.share.btn")}
             </Button>

@@ -30,6 +30,7 @@ import { DisableAutofill } from "./DisableAutofill";
 import { WalletRole } from "./WalletRole";
 import { PlaceholderController } from "./PlaceholderController";
 import { UploadFile } from "./UploadFile";
+import { DownloadButton } from "./DownloadButton";
 
 export {
   Loading,
@@ -64,4 +65,5 @@ export {
   WalletRole,
   PlaceholderController,
   UploadFile,
+  DownloadButton,
 };

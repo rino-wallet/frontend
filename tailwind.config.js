@@ -35,6 +35,18 @@ module.exports = {
         800: "rgba(255, 129, 67, 0.8)",
         900: "rgba(255, 129, 67, 1)",
       },
+      blue: {
+        50: "rgba(239, 246, 255, 0.05);",
+        100: "rgba(219, 234, 254, 0.1)",
+        200: "rgba(191, 219, 254, 0.2)",
+        300: "rgba(147, 197, 253, 0.3)",
+        400: "rgba(96, 165, 250, 0.4)",
+        500: "rgba(59, 130, 246, 0.5)",
+        600: "rgba(37, 99, 235, 0.6)",
+        700: "rgba(29, 78, 216, 0.7)",
+        800: "rgba(91, 159, 242, 1)",
+        900: "rgba(18, 113, 225, 1)",
+      },
     },
     extend: {
       lineHeight: {
@@ -76,6 +88,7 @@ module.exports = {
         error: "#FF5151",
         success: "#88CA7F",
         disabled: "#AEAEC5",
+        enterprisePrimary: "#1271E1",
       },
       borderRadius: {
         large: "2rem",
@@ -90,6 +103,7 @@ module.exports = {
         "primary-gradient-light-normal": "linear-gradient(270deg, rgba(255, 145, 71, 0.97) 0%, rgba(255, 122, 73, 0.97) 100%)",
         "primary-gradient-light-hover": "linear-gradient(270deg, rgba(255, 145, 71, 0.8) 0%, rgba(255, 122, 73, 0.8) 100%)",
         "primary-gradient-light-focused": "linear-gradient(270deg, rgba(255, 145, 71, 0.9) 0%, rgba(255, 122, 73, 0.9) 100%)",
+        "enterprise-primary-gradient-light-normal": "linear-gradient(270deg, #5B9FF2, #1271E1)",
       }
     },
   },

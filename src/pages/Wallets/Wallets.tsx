@@ -7,6 +7,7 @@ import {
   FetchWalletListThunkPayload, FetchWalletsResponse, Wallet, User,
 } from "../../types";
 import routes from "../../router/routes";
+import { useAccountType } from "../../hooks";
 
 interface Props {
   wallets: Wallet[];
@@ -22,6 +23,7 @@ const WalletsPage: React.FC<Props> = ({
   wallets, loading, pages, hasPreviousPage, hasNextPage, fetchWallets, user,
 }) => {
   const { t } = useTranslation();
+  const { isEnterprise } = useAccountType();
   return (
     <PageTemplate
       title={(
@@ -49,7 +51,7 @@ const WalletsPage: React.FC<Props> = ({
               type="button"
             >
               <div className="flex items-center space-x-3">
-                <span className="text-sm text-primary leading-none mr-3"><Icon name="plus" /></span>
+                <span className={`text-sm ${isEnterprise ? "theme-enterprise" : "text-primary"} leading-none mr-3`}><Icon name="plus" /></span>
                 {t("wallets.add.wallet")}
               </div>
             </Button>

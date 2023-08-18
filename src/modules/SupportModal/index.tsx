@@ -4,7 +4,7 @@ import { format } from "date-fns";
 import { useFormik } from "formik";
 import { useTranslation } from "react-i18next";
 import { createModal } from "../ModalFactory";
-import { useSelector, useSortErrors } from "../../hooks";
+import { useAccountType, useSelector, useSortErrors } from "../../hooks";
 import { selectors as sessionSelectors } from "../../store/sessionSlice";
 import { Modal } from "../Modal";
 import { SuccessModal } from "../index";
@@ -32,15 +32,16 @@ interface Props {
 }
 
 export const SupportModal: React.FC<Props> = ({ cancel, submit }) => {
-  // const [files, setFiles] = useState<File[]>([]);
   const { t } = useTranslation();
   const user = useSelector(sessionSelectors.getUser);
   const [isFinished, setIsFinished] = useState(false);
+  const { isEnterprise } = useAccountType();
 
   const {
     nonFieldErrors,
     sortErrors,
   } = useSortErrors(["non_field_errors", "detail"]);
+
   const {
     // isValid,
     // dirty,
@@ -86,10 +87,13 @@ export const SupportModal: React.FC<Props> = ({ cancel, submit }) => {
             <p className="mb-5">
               {t("layout.customer.service.message")}
             </p>
+
             <div className="form-field">
               <Label label={t("layout.customer.service.label") as string}>
                 <TextArea
-                  placeholder={t("layout.customer.service.placeholder") as string}
+                  placeholder={
+                    t("layout.customer.service.placeholder") as string
+                  }
                   onChange={handleChange}
                   name="message"
                   value={values.message}
@@ -97,12 +101,11 @@ export const SupportModal: React.FC<Props> = ({ cancel, submit }) => {
                 />
               </Label>
             </div>
-            {/* <div className="form-field">
-              <UploadFile onChange={(f) => { setFiles(f); }} files={files} fileType="SCREENSHOT" />
-            </div> */}
+
             <FormErrors errors={nonFieldErrors} />
           </div>
         </Modal.Body>
+
         <Modal.Actions>
           <Button
             onClick={() => cancel()}
@@ -110,10 +113,15 @@ export const SupportModal: React.FC<Props> = ({ cancel, submit }) => {
           >
             {t("common.cancel")}
           </Button>
+
           <Button
             name="submit-btn"
             type="submit"
-            variant={Button.variant.PRIMARY_LIGHT}
+            variant={
+              isEnterprise
+                ? Button.variant.ENTERPRISE_LIGHT
+                : Button.variant.PRIMARY_LIGHT
+            }
           >
             {t("layout.customer.service.submit")}
           </Button>

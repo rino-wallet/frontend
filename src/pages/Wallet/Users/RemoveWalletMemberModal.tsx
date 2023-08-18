@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { createModal } from "../../../modules/ModalFactory";
 import { Modal } from "../../../modules/index";
 import { Button } from "../../../components";
+import { useAccountType } from "../../../hooks";
 
 interface Props {
   submit: () => void;
@@ -12,6 +13,8 @@ interface Props {
 
 const RemoveWalletMemberModal: React.FC<Props> = ({ submit, cancel, email }) => {
   const { t } = useTranslation();
+  const { isEnterprise } = useAccountType();
+
   return (
     <Modal
       showCloseIcon
@@ -24,22 +27,34 @@ const RemoveWalletMemberModal: React.FC<Props> = ({ submit, cancel, email }) => 
       onClose={cancel}
     >
       <Modal.Body>
-        <h2 className="text-xl font-bold mb-5">{t("wallet.users.remove.modal.sure")}</h2>
+        <h2 className="text-xl font-bold mb-5">
+          {t("wallet.users.remove.modal.sure")}
+        </h2>
+
         <p className="mb-3">
           {t("wallet.users.remove.modal.message")}
         </p>
+
         <p>
           {t("wallet.users.remove.modal.please.confirm")}
           <br />
           <span className="font-bold">{email}</span>
         </p>
       </Modal.Body>
+
       <Modal.Actions>
         <div className="flex justify-end space-x-3">
-          <Button name="delete-wallet-cancel-btn" onClick={cancel}>{t("common.cancel")}</Button>
+          <Button name="delete-wallet-cancel-btn" onClick={cancel}>
+            {t("common.cancel")}
+          </Button>
+
           <Button
             name="delete-wallet-submit-btn"
-            variant={Button.variant.PRIMARY}
+            variant={
+              isEnterprise
+                ? Button.variant.ENTERPRISE_LIGHT
+                : Button.variant.PRIMARY
+            }
             onClick={submit}
           >
             {t("wallet.users.remove.modal.remove.user")}

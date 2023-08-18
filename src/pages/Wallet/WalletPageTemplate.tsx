@@ -66,7 +66,7 @@ export const WalletPageTemplate: React.FC<Props> = ({
   showNameInBox,
 }) => {
   const { t } = useTranslation();
-  const { features } = useAccountType();
+  const { features, isEnterprise } = useAccountType();
   const fetchWalletDetails = isPublicWallet ? useThunkActionCreator(fetchPublicWalletDetailsThunk) : useThunkActionCreator(fetchWalletDetailsThunk);
   const fetchWalletTransactions = isPublicWallet ? useThunkActionCreator(fetchPublicWalletTransactionsThunk) : useThunkActionCreator(fetchWalletTransactionsThunk);
   const fetchWalletShareRequests = useThunkActionCreator(fetchWalletShareRequestsThunk);
@@ -75,12 +75,13 @@ export const WalletPageTemplate: React.FC<Props> = ({
   const query = useQuery();
   const page = parseInt(query.get("page"), 10) || 1;
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const gradient = getWalletColor();
+  const gradient = getWalletColor(isEnterprise);
   const isMobile = useIsMobile();
   const userCanCreateTransaction = wallet?.requires2Fa ? user?.is2FaEnabled : true;
   const insufficientBalance = !parseFloat(wallet?.unlockedBalance || "0");
   const sendButtonDisabled = !userCanCreateTransaction || viewOnly;
   const role = isPublicWallet ? null : (wallet as Wallet)?.members?.find((member) => member.user === user.email)?.accessLevel as AccessLevel;
+
   return (
     <section>
       <header className="flex items-center mb-8 w-full relative hidden md:flex">

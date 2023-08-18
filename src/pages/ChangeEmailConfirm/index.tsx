@@ -1,7 +1,12 @@
 import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector, useThunkActionCreator } from "../../hooks";
+
+import {
+  useAccountType,
+  useDispatch, useSelector,
+  useThunkActionCreator,
+} from "../../hooks";
 import {
   confirmEmailChanging as confirmEmailChangingThunk,
   selectors,
@@ -23,36 +28,35 @@ const ChangeEmailConfirmPageContainer: React.FC = () => {
   const confirmEmailChanging = useThunkActionCreator(confirmEmailChangingThunk);
   const getCurrentUser = useThunkActionCreator(getCurrentUserAction);
   const dispatch = useDispatch();
+  const { isEnterprise } = useAccountType();
+
   useEffect(() => (): void => {
     dispatch(changeLocation());
   }, []);
+
   useEffect(() => {
     confirmEmailChanging(({ token: token as string }))
       .finally(() => {
         if (authToken) getCurrentUser();
       });
   }, []);
+
   return (
     <div>
-      {
-      loading && <Spinner stub />
-    }
-      {
-      succeeded && (
+      {loading && <Spinner stub isEnterprise={isEnterprise} />}
+      {succeeded && (
         <SuccessModal
           title={t("auth.email.address.updated") as string}
           message="We have successfully updated your email address."
           goBackCallback={(): void => navigate(routes.settings)}
         />
-      )
-    }
-      {
-      error && (
+      )}
+
+      {error && (
         <div className="theme-text-error">
           {Object.values(error)}
         </div>
-      )
-    }
+      )}
     </div>
   );
 };

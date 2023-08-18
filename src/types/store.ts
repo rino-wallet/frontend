@@ -3,6 +3,7 @@ import {
   UserKeyPairInfo, KeyPairJsonWrapper, AccessLevel, ExchangeCurrencies,
 } from "./shared";
 import { SignUpPayload } from "./api";
+import { EXPORT_TYPE } from "../constants";
 
 export type RootState = ReturnType<typeof store.getState>;
 
@@ -82,6 +83,7 @@ export interface ExtraFeatures {
   viewOnlyShare: boolean;
   limits: boolean;
   approvals: boolean;
+  txExports: boolean;
 }
 
 export type AccountType = "consumer" | "enterprise";
@@ -135,6 +137,11 @@ export interface PersistWalletThunkPayload {
 export interface FetchWalletTransactionsThunkPayload {
   walletId: string;
   page: number;
+}
+
+export interface ExportWalletTransactionsThunkPayload {
+  walletId: string;
+  type: EXPORT_TYPE;
 }
 
 export interface FetchSubaddressesThunkPayload {

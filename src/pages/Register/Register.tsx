@@ -265,7 +265,7 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
                           id="link-sign-up-not-enterprise"
                           className="theme-link ml-1"
                           onClick={() => {
-                            sessionStorage.setItem("enterprice", "false");
+                            sessionStorage.setItem("enterprise", "false");
                             navigate(routes.register);
                           }}
                         >

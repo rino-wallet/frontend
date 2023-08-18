@@ -24,6 +24,7 @@ import walletInstance from "../wallet";
 import { pendingTransfersListSlice } from "./pendingTransfersSlice";
 import { historyTransfersListSlice } from "./historyTransfersSlice";
 import { apiKeysSlice } from "./apiKeysSlice";
+import { transactionListExportSlice } from "./transactionExportSlice";
 
 const combinedReducer = combineReducers({
   session: sessionSlice.reducer,
@@ -46,6 +47,7 @@ const combinedReducer = combineReducers({
   pendingTransfers: pendingTransfersListSlice.reducer,
   historyTransfers: historyTransfersListSlice.reducer,
   apiKeys: apiKeysSlice.reducer,
+  transactionListExport: transactionListExportSlice.reducer,
 });
 
 /**

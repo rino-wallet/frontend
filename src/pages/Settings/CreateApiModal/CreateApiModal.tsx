@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { FC, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -9,6 +9,7 @@ import {
 import apiKeysApi from "../../../api/apiManagement";
 import { ApiKey } from "../../../types";
 import "./style.css";
+import { useAccountType } from "../../../hooks";
 
 const validationSchema = yup.object().shape({
   name: yup.string().required("This field is required."),
@@ -20,9 +21,11 @@ interface Props {
   onCreateCallback: () => void;
 }
 
-const CreateNewApi: React.FC<Props> = ({ goBackCallback, onCreateCallback }) => {
+const CreateNewApi: FC<Props> = ({ goBackCallback, onCreateCallback }) => {
   const [apiKey, setApiKey] = useState<ApiKey>();
   const { t } = useTranslation();
+  const { isEnterprise } = useAccountType();
+
   const {
     isValid,
     dirty,
@@ -42,13 +45,18 @@ const CreateNewApi: React.FC<Props> = ({ goBackCallback, onCreateCallback }) => 
     },
     onSubmit: async (formValues, { setErrors }) => {
       const currentDate = new Date();
-      const expirationDate = new Date(currentDate.getTime() + Number(formValues.expires_at) * 24 * 60 * 60 * 1000);
+
+      const expirationDate = new Date(currentDate.getTime()
+        + Number(formValues.expires_at) * 24 * 60 * 60 * 1000);
+
       const formatedExpirationDate = expirationDate.toISOString();
+
       try {
         const response = await apiKeysApi.createApiKey({
           name: formValues.name,
           expires_at: String(formatedExpirationDate),
         });
+
         setApiKey(response);
       } catch (err: any) {
         if (err.data) {
@@ -66,7 +74,10 @@ const CreateNewApi: React.FC<Props> = ({ goBackCallback, onCreateCallback }) => 
     <Modal title={t("settings.api.management.modals.create.title")} onClose={goBackCallback}>
       <form onSubmit={handleSubmit}>
         <Modal.Body>
-          <p className="mb-6">{t("settings.api.management.modals.create.text")}</p>
+          <p className="mb-6">
+            {t("settings.api.management.modals.create.text")}
+          </p>
+
           <div className="mb-1 flex flex-col gap-6">
             <Label label={t("settings.api.management.modals.create.name")}>
               <Input
@@ -80,6 +91,7 @@ const CreateNewApi: React.FC<Props> = ({ goBackCallback, onCreateCallback }) => 
                 maxLength={50}
               />
             </Label>
+
             <div className="relative">
               <Label label={t("settings.api.management.modals.create.expiry")}>
                 <Input
@@ -97,24 +109,31 @@ const CreateNewApi: React.FC<Props> = ({ goBackCallback, onCreateCallback }) => 
               </Label>
             </div>
           </div>
+
           <FormErrors errors={errors} />
 
-          {apiKey
-            && (
+          {apiKey && (
             <div className="mt-5">
               <p>{t("settings.api.management.modals.create.warning.text")}</p>
-              <p className="text-red-500 text-sm">{t("settings.api.management.modals.create.slug")}</p>
+
+              <p className="text-red-500 text-sm">
+                {t("settings.api.management.modals.create.slug")}
+              </p>
 
               <div className="flex items-center mt-3">
                 <Copy value={apiKey.apiKey}>
-                  <span data-qa-selector={`transaction-id = ${apiKey?.apiKey}`} className="text-ellipsis inline-block overflow-hidden w-5/6">
+                  <span
+                    data-qa-selector={`transaction-id = ${apiKey?.apiKey}`}
+                    className="text-ellipsis inline-block overflow-hidden w-5/6"
+                  >
                     {apiKey?.apiKey}
                   </span>
                 </Copy>
               </div>
             </div>
-            )}
+          )}
         </Modal.Body>
+
         <Modal.Actions>
           <div className="flex justify-end space-x-3 whitespace-nowrap">
             {!apiKey
@@ -133,17 +152,24 @@ const CreateNewApi: React.FC<Props> = ({ goBackCallback, onCreateCallback }) => 
                     type="submit"
                     name="submit-btn"
                     loading={isSubmitting}
-                    variant={Button.variant.PRIMARY}
+                    variant={
+                      isEnterprise
+                        ? Button.variant.ENTERPRISE_LIGHT
+                        : Button.variant.PRIMARY
+                    }
                   >
                     {t("settings.api.management.buttons.create.api")}
                   </Button>
                 </>
-              )
-              : (
+              ) : (
                 <Button
                   type="button"
                   name="close-button"
-                  variant={Button.variant.PRIMARY}
+                  variant={
+                    isEnterprise
+                      ? Button.variant.ENTERPRISE_LIGHT
+                      : Button.variant.PRIMARY
+                  }
                   onClick={goBackCallback}
                 >
                   {t("common.close")}

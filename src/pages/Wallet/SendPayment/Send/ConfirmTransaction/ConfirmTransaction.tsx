@@ -22,7 +22,7 @@ import { enter2FACode } from "../../../../../modules/2FAModals";
 import { showConfirmationModal } from "../../../../../modules/ConfirmationModal";
 import { Prompt } from "../../../../../components";
 import CreatingTransactionStage from "./CreatingTransactionStage";
-import { useSelector } from "../../../../../hooks";
+import { useAccountType, useSelector } from "../../../../../hooks";
 
 const transformPriorityText = (priority: (string | undefined)): string => (priority ? priority.charAt(0) + priority.slice(1).toLowerCase() : "");
 
@@ -66,10 +66,13 @@ const ConfirmTransaction: React.FC<Props> = ({
   const { t } = useTranslation();
   const [feeValue, setFeeValue] = useState<null | number>(null);
   const [inProgress, setInProgress] = useState(true);
+  const currentWallet = useSelector(walletSelectors.getWallet);
+  const { isEnterprise } = useAccountType();
+
   useEffect(() => {
     if (!feeValue && pendingTransaction.fee) setFeeValue(pendingTransaction.fee);
   }, [pendingTransaction]);
-  const currentWallet = useSelector(walletSelectors.getWallet);
+
   return (
     <Formik
       initialValues={{}}
@@ -184,7 +187,11 @@ const ConfirmTransaction: React.FC<Props> = ({
                 <Button
                   type="submit"
                   name="submit-btn"
-                  variant={Button.variant.PRIMARY_LIGHT}
+                  variant={
+                    isEnterprise
+                      ? Button.variant.ENTERPRISE_LIGHT
+                      : Button.variant.PRIMARY_LIGHT
+                  }
                   size={Button.size.BIG}
                   disabled={!pendingTransaction?.fee || loading || Object.keys(errors).length > 0}
                   loading={loading}

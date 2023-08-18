@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useTranslation, Trans } from "react-i18next";
 import { SetUpKeyPairThunkPayload, SetUpKeyPairResponse, User } from "../../types";
@@ -7,6 +7,7 @@ import routes from "../../router/routes";
 import { generateUserKeyPairInfo } from "../../utils";
 import { PageTemplate } from "../../modules/index";
 import { createPDF } from "./createPDF";
+import { useAccountType } from "../../hooks";
 
 interface Props {
   setupKeyPair: (payload: SetUpKeyPairThunkPayload) => Promise<SetUpKeyPairResponse>;
@@ -15,11 +16,16 @@ interface Props {
   setPassword: (password: string) => void;
 }
 
-const RenderSuccess: React.FC<{ recoveryKey: string, username: string }> = ({ recoveryKey, username }) => {
+const RenderSuccess: FC<{ recoveryKey: string, username: string }> = ({
+  recoveryKey,
+  username,
+}) => {
   const { t } = useTranslation();
   const [errorMessage, setErrorMessage] = useState("");
   const [infoChecked, setInfoChecked] = useState(false);
   const [pdfDownloaded, setPdfDownloaded] = useState(false);
+  const { isEnterprise } = useAccountType();
+
   function createAndDownloadPdf(): void {
     createPDF({
       totalPages: 1,
@@ -31,6 +37,7 @@ const RenderSuccess: React.FC<{ recoveryKey: string, username: string }> = ({ re
         setErrorMessage(error.message);
       });
   }
+
   useEffect(() => {
     function handlePopState(): void {
       // eslint-disable-next-line
@@ -44,6 +51,7 @@ const RenderSuccess: React.FC<{ recoveryKey: string, username: string }> = ({ re
       window.removeEventListener("popstate", handlePopState);
     };
   }, [pdfDownloaded]);
+
   return (
     <PageTemplate title={t("keypair.page.title")}>
       <div className="w-full">
@@ -76,6 +84,7 @@ const RenderSuccess: React.FC<{ recoveryKey: string, username: string }> = ({ re
                 </p>
               </li>
             </ol>
+
             <div className="form-field font-size-base mb-12">
               <Checkbox
                 name="condition-1"
@@ -85,6 +94,7 @@ const RenderSuccess: React.FC<{ recoveryKey: string, username: string }> = ({ re
                 {t("keypair.checkbox.label")}
               </Checkbox>
             </div>
+
             {
               infoChecked ? (
                 <div className="text-center">
@@ -103,6 +113,7 @@ const RenderSuccess: React.FC<{ recoveryKey: string, username: string }> = ({ re
                 </div>
               ) : null
             }
+
             {
               (pdfDownloaded && infoChecked) ? (
                 <Link to={routes.wallets}>
@@ -110,13 +121,18 @@ const RenderSuccess: React.FC<{ recoveryKey: string, username: string }> = ({ re
                     className="float-right mt-4"
                     name="submit-btn"
                     type="button"
-                    variant={Button.variant.PRIMARY_LIGHT}
+                    variant={
+                      isEnterprise
+                        ? Button.variant.ENTERPRISE_LIGHT
+                        : Button.variant.PRIMARY_LIGHT
+                    }
                   >
                     {t("keypair.done")}
                   </Button>
                 </Link>
               ) : null
             }
+
             {
               errorMessage && (
                 <div className="text-error mb-8">
@@ -131,29 +147,37 @@ const RenderSuccess: React.FC<{ recoveryKey: string, username: string }> = ({ re
   );
 };
 
-const RenderPending: React.FC<{ error: string }> = ({ error }) => (
-  <PageTemplate title="Download and Store Account Recovery Document">
-    <Trans i18nKey="keypair.pending.message" className="mb-10">
-      <p className="mb-4">We are creating your Account Recovery Document. It only takes a few seconds.</p>
-      <p>Please do not close the browser window now, or we would need to start over the next time you log in.</p>
-    </Trans>
-    {
-      error ? <div className="theme-text-error">{error}</div> : (
-        <div className="flex justify-center mb-8">
-          <Spinner size={85} />
-        </div>
-      )
-    }
-  </PageTemplate>
-);
+const RenderPending: FC<{ error: string }> = ({ error }) => {
+  const { isEnterprise } = useAccountType();
 
-const GenerateKeyPairPage: React.FC<Props> = ({
+  return (
+    <PageTemplate title="Download and Store Account Recovery Document">
+      <Trans i18nKey="keypair.pending.message" className="mb-10">
+        <p className="mb-4">
+          We are creating your Account Recovery Document. It only takes a few seconds.
+        </p>
+        <p>
+          Please do not close the browser window now, or we would need to start over the next time you log in.
+        </p>
+      </Trans>
+
+      {error ? <div className="theme-text-error">{error}</div> : (
+        <div className="flex justify-center mb-8">
+          <Spinner size={85} isEnterprise={isEnterprise} />
+        </div>
+      )}
+    </PageTemplate>
+  );
+};
+
+const GenerateKeyPairPage: FC<Props> = ({
   setupKeyPair, user, password, setPassword,
 }) => {
   const navigate = useNavigate();
   const [recoveryKey, setRecoveryKey] = useState("");
   const [errors, setErrors] = useState("");
   const keysSet = user && user.isKeypairSet;
+
   async function generateKeypairAndSubmit(): Promise<void> {
     const keypairData = await generateUserKeyPairInfo(user?.username, password);
     setRecoveryKey(Buffer.from(keypairData.recoveryKey).toString("hex"));
@@ -168,6 +192,7 @@ const GenerateKeyPairPage: React.FC<Props> = ({
       }
     }
   }
+
   useEffect(() => {
     if (!password) {
       navigate(routes.wallets);
@@ -178,9 +203,11 @@ const GenerateKeyPairPage: React.FC<Props> = ({
       }
     }
   }, [password]);
+
   useEffect(() => (): void => {
     setPassword("");
   }, []);
+
   return (
     <div className="mt-14">
       {keysSet

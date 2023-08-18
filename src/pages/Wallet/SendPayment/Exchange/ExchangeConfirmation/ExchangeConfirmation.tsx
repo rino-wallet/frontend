@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FC } from "react";
 import Decimal from "decimal.js-light";
 import { useTranslation } from "react-i18next";
 import { Button, Icon, Label } from "../../../../../components";
@@ -7,6 +7,7 @@ import { TimeOutModal as showTimeOutModal } from "../TimeOutModal";
 import { ExchangeDetails } from "../ExchangeDetails";
 import { ExchangeCurrencies, ExchangeOrder } from "../../../../../types";
 import { piconeroToMonero, convertAtomicAmount } from "../../../../../utils";
+import { useAccountType } from "../../../../../hooks";
 
 interface Props {
   setActiveTab: (value: number) => void;
@@ -14,8 +15,10 @@ interface Props {
   onEdit: () => void;
 }
 
-const ExchangeConfirmation: React.FC<Props> = ({ setActiveTab, onEdit, order }) => {
+const ExchangeConfirmation: FC<Props> = ({ setActiveTab, onEdit, order }) => {
   const { t } = useTranslation();
+  const { isEnterprise } = useAccountType();
+
   async function onRecheck(): Promise<void> {
     await showTimeOutModal({
       recheckRequest: () => new Promise((r) => { setTimeout(r, 1000); }),
@@ -27,6 +30,7 @@ const ExchangeConfirmation: React.FC<Props> = ({ setActiveTab, onEdit, order }) 
         setActiveTab(0);
       });
   }
+
   return (
     <div>
       <div className="m-auto md:w-3/4">
@@ -86,7 +90,11 @@ const ExchangeConfirmation: React.FC<Props> = ({ setActiveTab, onEdit, order }) 
           <Button
             type="submit"
             name="submit-btn"
-            variant={Button.variant.PRIMARY_LIGHT}
+            variant={
+              isEnterprise
+                ? Button.variant.ENTERPRISE_LIGHT
+                : Button.variant.PRIMARY_LIGHT
+            }
             size={Button.size.BIG}
             onClick={(): void => {
               setActiveTab(2);

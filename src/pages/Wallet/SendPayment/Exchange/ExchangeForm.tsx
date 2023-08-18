@@ -1,6 +1,4 @@
-import React, {
-  useEffect, useState,
-} from "react";
+import React, { FC, useEffect, useState } from "react";
 import { generatePath, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -30,7 +28,7 @@ import {
 import { ReactComponent as ChangeNowLogo } from "./change-now.svg";
 import ExchangeConfirmation from "./ExchangeConfirmation";
 import ExchangePayment from "./ExchangePayment";
-import { useSortErrors } from "../../../../hooks";
+import { useAccountType, useSortErrors } from "../../../../hooks";
 
 interface AmountSchema {
   name: string;
@@ -43,6 +41,7 @@ const minAmountSchema = (minValue: number): AmountSchema => ({
   message: minValue ? `The min amount is ${minValue}` : "",
   test: (value: string): boolean => parseFloat(value) >= minValue,
 });
+
 const maxAmountSchema = (maxValue: number): AmountSchema => ({
   name: "maxAmount",
   message: maxValue ? `The max amount is ${maxValue}` : "",
@@ -100,7 +99,7 @@ interface RetreiveEstimation {
   callback?: (data: GetExchangeEstimationResponse) => void;
 }
 
-const ExchangeForm: React.FC<Props> = ({
+const ExchangeForm: FC<Props> = ({
   walletSubAddress,
   wallet,
   walletId,
@@ -119,11 +118,13 @@ const ExchangeForm: React.FC<Props> = ({
     sortErrors,
   } = useSortErrors(["non_field_errors", "detail"]);
   const { t } = useTranslation();
+  const { isEnterprise } = useAccountType();
   const [exchangePlatformState, setExchangePlatformState] = useState<ExchangePlatformState>(ExchangePlatformState.available);
   const [rate, setRate] = useState("");
   const navigate = useNavigate();
   const defaultCurrency = "btc";
   const inputDisabled = exchangePlatformState === ExchangePlatformState.pending || exchangePlatformState === ExchangePlatformState.not_available;
+
   const formik = useFormik({
     initialValues: {
       amount_set_in: "",
@@ -153,6 +154,7 @@ const ExchangeForm: React.FC<Props> = ({
       }
     },
   });
+
   async function fetchRate(data: {
     platform: string,
     to_currency: string,
@@ -173,6 +175,7 @@ const ExchangeForm: React.FC<Props> = ({
       throw err;
     }
   }
+
   useEffect(() => {
     getExchangeRange({ platform: "changenow", to_currency: formik.values.currency });
     fetchRate({
@@ -184,6 +187,7 @@ const ExchangeForm: React.FC<Props> = ({
       setRate(convertAtomicAmount(resp.toAmount, formik.values.currency as ExchangeCurrencies));
     });
   }, [activeTab, formik.values.currency]);
+
   async function retreiveEstimation({
     amount,
     amount_set_in,
@@ -214,30 +218,38 @@ const ExchangeForm: React.FC<Props> = ({
       return (
         <form name="form-exchange" onSubmit={formik.handleSubmit}>
           <DisableAutofill />
+
           <div className="m-auto md:w-3/4">
             <div className="mb-4 md:mb-0" data-qa-selector="platform">
-              <Label labelClassName="md:text-right" label={t("wallet.exchange.platform")} inline isFormField>
+              <Label
+                labelClassName="md:text-right"
+                label={t("wallet.exchange.platform")}
+                inline
+                isFormField
+              >
                 <div className="flex items-center space-x-3 h-8 mt-3">
-                  {
-                          exchangePlatformState === ExchangePlatformState.available && <Icon name="check" className="theme-text-success" />
-                        }
-                  {
-                          exchangePlatformState === ExchangePlatformState.not_available && <Icon name="cross" className="theme-text-error" />
-                        }
-                  {
-                          exchangePlatformState === ExchangePlatformState.pending && <span><Spinner /></span>
-                        }
+                  {exchangePlatformState === ExchangePlatformState.available
+                    && (<Icon name="check" className="theme-text-success" />)}
+
+                  {exchangePlatformState === ExchangePlatformState.not_available
+                    && (<Icon name="cross" className="theme-text-error" />)}
+
+                  {exchangePlatformState === ExchangePlatformState.pending && (
+                    <span><Spinner isEnterprise={isEnterprise} /></span>
+                  )}
+
                   <ChangeNowLogo data-qa-selector="changeNowLogo" style={{ width: "110px" }} />
                 </div>
-                {
-                        (exchangePlatformState === ExchangePlatformState.not_available) && (
-                        <div className="theme-text-error">
-                          {t("wallet.send.exchange.not.available")}
-                        </div>
-                        )
-                      }
+
+                {exchangePlatformState === ExchangePlatformState.not_available
+                  && (
+                    <div className="theme-text-error">
+                      {t("wallet.send.exchange.not.available")}
+                    </div>
+                  )}
               </Label>
             </div>
+
             <div className="mb-4 md:mb-0">
               <Label labelClassName="md:text-right" label={t("wallet.send.you.send")} isFormField inline>
                 <AmountField
@@ -250,7 +262,11 @@ const ExchangeForm: React.FC<Props> = ({
                       amount_set_in: "from",
                       currency: formik.values.currency,
                       callback: (est: GetExchangeEstimationResponse) => {
-                        formik.setFieldValue("amount_to_receive", e.target.value ? convertAtomicAmount(est.toAmount, formik.values.currency as ExchangeCurrencies) : 0);
+                        formik.setFieldValue(
+                          "amount_to_receive",
+                          e.target.value ? convertAtomicAmount(est.toAmount, formik.values.currency as ExchangeCurrencies) : 0,
+                        );
+
                         formik.setFieldValue("amount_set_in", "from");
                       },
                     })
@@ -266,11 +282,13 @@ const ExchangeForm: React.FC<Props> = ({
                 />
               </Label>
             </div>
+
             <div className="hidden md:block">
               <Label labelClassName="md:text-right" valueClassName="text-center" label="" inline>
                 <Icon name="two-way-arrow" className="inline-block" />
               </Label>
             </div>
+
             <div className="mb-4 md:mb-0">
               <Label labelClassName="md:text-right" label={t("wallet.send.you.get")} isFormField inline>
                 <AmountField
@@ -295,9 +313,13 @@ const ExchangeForm: React.FC<Props> = ({
                       }}
                       embeded
                     >
-                      {currencies.map((c) => <option key={c[0]} value={c[0]}>{c[0].toUpperCase()}</option>)}
+                      {currencies.map((c) => (
+                        <option key={c[0]} value={c[0]}>
+                          {c[0].toUpperCase()}
+                        </option>
+                      ))}
                     </Select>
-                        )}
+                  )}
                   name="amount_to_receive"
                   value={formik.values.amount_to_receive}
                   disabled={inputDisabled}
@@ -308,7 +330,11 @@ const ExchangeForm: React.FC<Props> = ({
                       amount_set_in: "to",
                       currency: formik.values.currency,
                       callback: (est: GetExchangeEstimationResponse) => {
-                        formik.setFieldValue("amount_to_send", e.target.value ? piconeroToMonero(est.fromAmount) : 0);
+                        formik.setFieldValue(
+                          "amount_to_send",
+                          e.target.value ? piconeroToMonero(est.fromAmount) : 0,
+                        );
+
                         formik.setFieldValue("amount_set_in", "to");
                       },
                     })
@@ -323,6 +349,7 @@ const ExchangeForm: React.FC<Props> = ({
                 />
               </Label>
             </div>
+
             <div className="mb-4 md:mb-0">
               <Label labelClassName="md:text-right" label={t("wallet.send.destination.address")} isFormField inline>
                 <Input
@@ -338,12 +365,14 @@ const ExchangeForm: React.FC<Props> = ({
                 />
               </Label>
             </div>
+
             <div className="mb-4 mt-10 md:mb-0" data-qa-selector="estmated-rate">
               <Label
                 labelClassName="md:text-right -mb-3"
                 label={(
                   <div className="flex items-center md:justify-end">
                     {t("wallet.send.estimated.rate.title")}
+
                     <div className="inline ml-1">
                       <Tooltip
                         content={(
@@ -360,44 +389,47 @@ const ExchangeForm: React.FC<Props> = ({
                 inline
               >
                 <div className="mt-1">
-                  {
-                          exchangePlatformState === ExchangePlatformState.pending ? <span><Spinner /></span> : (
-                            rate ? (
-                              <span>
-                                1 XMR ≈
-                                {" "}
-                                <span className="text-green-400 inline-flex" data-qa-selector="xmr-to-btc">{rate}</span>
-                                {" "}
-                                {formik.values.currency.toUpperCase()}
-                              </span>
-                            ) : null
-                          )
-                        }
+                  {exchangePlatformState === ExchangePlatformState.pending
+                    ? <span><Spinner isEnterprise={isEnterprise} /></span>
+                    : (
+                      rate ? (
+                        <span>
+                          1 XMR ≈
+                          {" "}
+                          <span className="text-green-400 inline-flex" data-qa-selector="xmr-to-btc">{rate}</span>
+                          {" "}
+                          {formik.values.currency.toUpperCase()}
+                        </span>
+                      ) : null
+                    )}
                 </div>
               </Label>
             </div>
+
             <div className="mb-4 md:mb-0" data-qa-selectort="operation-limit">
               <Label labelClassName="md:text-right" label="Operation Limit" inline>
-                {
-                        exchangePlatformState === ExchangePlatformState.pending ? <span><Spinner /></span> : (
-                          rate ? (
-                            <div>
-                              from
-                              {" "}
-                              {piconeroToMonero(exchangeRange.minAmount)}
-                              {" "}
-                              XMR to
-                              {" "}
-                              {piconeroToMonero(exchangeRange.maxAmount)}
-                              {" "}
-                              XMR
-                            </div>
-                          ) : null
-                        )
-                      }
+                {exchangePlatformState === ExchangePlatformState.pending
+                  ? <span><Spinner isEnterprise={isEnterprise} /></span>
+                  : (
+                    rate ? (
+                      <div>
+                        from
+                        {" "}
+                        {piconeroToMonero(exchangeRange.minAmount)}
+                        {" "}
+                        XMR to
+                        {" "}
+                        {piconeroToMonero(exchangeRange.maxAmount)}
+                        {" "}
+                        XMR
+                      </div>
+                    ) : null
+                  )}
               </Label>
             </div>
+
             <FormErrors errors={{ ...formik.errors, ...nonFieldErrors }} fields={["refund_address", "rate_id"]} />
+
             <div className="mt-10 flex space-x-3 flex justify-end">
               <Button
                 variant={Button.variant.GRAY}
@@ -411,7 +443,11 @@ const ExchangeForm: React.FC<Props> = ({
               <Button
                 type="submit"
                 name="submit-btn"
-                variant={Button.variant.PRIMARY_LIGHT}
+                variant={
+                  isEnterprise
+                    ? Button.variant.ENTERPRISE_LIGHT
+                    : Button.variant.PRIMARY_LIGHT
+                }
                 size={Button.size.BIG}
                 disabled={!formik.isValid || !parseFloat(wallet?.unlockedBalance || "0") || formik.isSubmitting}
                 loading={formik.isSubmitting}
@@ -419,11 +455,11 @@ const ExchangeForm: React.FC<Props> = ({
                 {t("common.proceed")}
               </Button>
             </div>
-
           </div>
         </form>
       );
     }
+
     case 1: {
       return (
         <ExchangeConfirmation
@@ -435,6 +471,7 @@ const ExchangeForm: React.FC<Props> = ({
         />
       );
     }
+
     case 2: {
       return (
         <ExchangePayment
@@ -446,6 +483,7 @@ const ExchangeForm: React.FC<Props> = ({
         />
       );
     }
+
     default: {
       return null;
     }

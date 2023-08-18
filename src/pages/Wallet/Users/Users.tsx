@@ -114,6 +114,7 @@ const Users: React.FC<Props> = ({
         });
       });
   }
+
   useEffect(() => {
     if (finalizeShareId) {
       const shareRequest = walletShareRequests.find((request) => request.id === finalizeShareId);
@@ -122,6 +123,7 @@ const Users: React.FC<Props> = ({
       }
     }
   }, [walletShareRequests]);
+
   return (
     <div>
       <Panel
@@ -133,15 +135,21 @@ const Users: React.FC<Props> = ({
                 <Switch
                   id="show-revoked-users"
                   checked={showRevokedUsers}
-                  onChange={() => { setShowRevokedUsers(!showRevokedUsers); }}
+                  onChange={() => {
+                    setShowRevokedUsers(!showRevokedUsers);
+                  }}
+                  isEnterprise
                 >
-                  <span className="text-base">{t("wallet.users.show.revoked")}</span>
+                  <span className="text-base">
+                    {t("wallet.users.show.revoked")}
+                  </span>
                 </Switch>
               </div>
             </div>
-            {
-              canShare && <Button onClick={onAddUserClick}>{t("wallet.users.add")}</Button>
-            }
+
+            {canShare && (
+              <Button onClick={onAddUserClick}>{t("wallet.users.add")}</Button>
+            )}
           </div>
         )}
       >

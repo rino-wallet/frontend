@@ -1,6 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Spinner, Label } from "../../../../../components";
+import { useAccountType } from "../../../../../hooks";
 
 interface Props {
   address: React.ReactChild;
@@ -16,23 +17,33 @@ const CreatingTransactionStage: React.FC<Props> = ({
   address, memo, priority, fee, stage, loading, total,
 }) => {
   const { t } = useTranslation();
+  const { isEnterprise } = useAccountType();
+
+  const textStyle = isEnterprise ? "theme-enterprise" : "theme-text-primary";
+
   return (
     <div className="m-auto p-5">
       {
         loading && (
           <div className="md:flex md:space-x-6">
             <div className="mb-2 text-sm theme-text uppercase font-catamaran leading-none md:mt-6 md:w-1/4 hidden md:block">
-              <Spinner size={85} />
+              <Spinner size={85} isEnterprise={isEnterprise} />
             </div>
+
             <div className="md:w-3/4">
               <div className="flex items-center text-2xl mb-3 font-bold theme-text-error mb-8">
                 {t("wallet.send.hold.on")}
-                <div className="md:hidden ml-3"><Spinner size={18} /></div>
+
+                <div className="md:hidden ml-3">
+                  <Spinner size={18} isEnterprise={isEnterprise} />
+                </div>
               </div>
+
               <div className="mb-4 text-l font-bold h-12" data-qa-selector="creating-wallet-step">
                 {t(stage as string)}
                 ...
               </div>
+
               <div className="text-base mb-10">
                 {t("wallet.send.transaction.time")}
                 {" "}
@@ -43,11 +54,13 @@ const CreatingTransactionStage: React.FC<Props> = ({
           </div>
         )
       }
+
       <div className="mb-4 md:mb-0">
         <Label labelClassName="md:text-right" label="" inline>
           <div className="text-2xl font-bold mb-4">{t("wallet.send.transaction.details")}</div>
         </Label>
       </div>
+
       <div className="mb-4 md:mb-0">
         <Label labelClassName="md:text-right" label={<span className="text-base">{t("wallet.send.total.amount")}</span>} inline>
           <span
@@ -58,6 +71,7 @@ const CreatingTransactionStage: React.FC<Props> = ({
           </span>
         </Label>
       </div>
+
       <div className="mb-4 md:mb-0">
         <Label labelClassName="md:text-right" label={t("wallet.send.including.fee")} inline>
           <span
@@ -68,22 +82,24 @@ const CreatingTransactionStage: React.FC<Props> = ({
           </span>
         </Label>
       </div>
+
       <div className="mb-4 md:mb-0">
         <Label labelClassName="md:text-right whitespace-nowrap" label={t("wallet.send.destination.address")} inline>
           <span
-            className="theme-text-primary break-all text-base"
+            className={`${textStyle} break-all text-base`}
             data-qa-selector="transaction-dest-address"
           >
             {address}
           </span>
         </Label>
       </div>
+
       {
         memo && (
           <div className="mb-4 md:mb-0">
             <Label labelClassName="md:text-right" label={t("wallet.send.internal.memo")} inline>
               <span
-                className="theme-text-primary break-all"
+                className={`${textStyle} break-all`}
                 data-qa-selector="transaction-memo"
               >
                 {memo}
@@ -92,6 +108,7 @@ const CreatingTransactionStage: React.FC<Props> = ({
           </div>
         )
       }
+
       <div className="mb-4 md:mb-0">
         <Label labelClassName="md:text-right" label={t("wallet.send.priority.label")} inline>
           <span

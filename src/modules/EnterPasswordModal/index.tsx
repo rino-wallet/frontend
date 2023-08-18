@@ -8,6 +8,7 @@ import {
   BindHotKeys, Input, Button, Label,
 } from "../../components";
 import { Modal, FormErrors } from "../index";
+import { useAccountType } from "../../hooks";
 
 const validationSchema = yup.object().shape({
   password: yup.string().required("This field is required."),
@@ -25,6 +26,8 @@ const EnterPasswordModal: React.FC<Props> = ({
   submit, callback, cancel, title, text,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const { isEnterprise } = useAccountType();
+
   const {
     isValid,
     dirty,
@@ -54,11 +57,13 @@ const EnterPasswordModal: React.FC<Props> = ({
       return submit(formValues.password);
     },
   });
+
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
   });
+
   return (
     <BindHotKeys callback={handleSubmit} rejectCallback={cancel}>
       <Modal
@@ -104,7 +109,11 @@ const EnterPasswordModal: React.FC<Props> = ({
                 disabled={!isValid || !dirty || isSubmitting}
                 type="submit"
                 name="submit-btn"
-                variant={Button.variant.PRIMARY_LIGHT}
+                variant={
+                  isEnterprise
+                    ? Button.variant.ENTERPRISE_LIGHT
+                    : Button.variant.PRIMARY_LIGHT
+                }
                 loading={isSubmitting}
                 block
               >

@@ -19,7 +19,7 @@ export const Header: React.FC<Props> = ({ signOut, isAuthenticated }) => {
   const { isEnterprise } = useAccountType();
   const links = isEnterprise ? routes.static.enterprise : routes.static.consumer;
   const linkClassNames = "block px-10 py-4 text-2xl whitespace-nowrap font-bold cursor-pointer md:text-lg md:px-5 md:py-0";
-  const activeLinkClassNames = `${linkClassNames} theme-text-primary`;
+  const activeLinkClassNames = `${linkClassNames} ${isEnterprise ? "theme-enterprise" : "theme-text-primary"}`;
 
   const dropdownRef = useRef<HTMLUListElement>(null);
 

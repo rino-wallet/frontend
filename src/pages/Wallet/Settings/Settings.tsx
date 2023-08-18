@@ -40,12 +40,21 @@ const Settings: React.FC<Props> = ({
   updateWalletDetails, walletId, wallet, canDelete, canUpdateSettings,
 }) => {
   const { t } = useTranslation();
-  const { features } = useAccountType();
-  const data = useAccountType();
+  const { features, isEnterprise } = useAccountType();
   const user = useSelector(sessionSelectors.getUser);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [nonFieldErrors, setNonFieldErrors] = useState<{ non_field_errors?: string, message?: string, detail?: string }>({});
+
+  const [
+    nonFieldErrors,
+    setNonFieldErrors,
+  ] = useState<{
+    non_field_errors?: string,
+    message?: string,
+    detail?: string
+  }>({});
+
   const navigate = useNavigate();
+
   const approvers = useMemo(
     () => wallet?.members?.filter(
       (member) => member.accessLevel === accessLevels.approver.title
@@ -93,7 +102,7 @@ const Settings: React.FC<Props> = ({
             ...(values.is_public ? { public_slug: values.public_slug } : {}),
           } : {}),
           ...(values.name !== wallet.name ? { name: values.name } : {}), // TODO remove this workaround after BE fix
-          ...(data.isEnterprise ? {
+          ...(isEnterprise ? {
             max_daily_amount: moneroToPiconero(values.daily_limit),
             max_amount: moneroToPiconero(values.transaction_limit),
             min_approvals: parseInt(values.requiredApprovals, 10),
@@ -129,8 +138,12 @@ const Settings: React.FC<Props> = ({
     navigate("/settings");
     enable2FA();
   }
-  const status2fa = formik.values.requires_2fa ? t("wallet.settings.disable") : t("wallet.settings.enable");
+  const status2fa = formik.values.requires_2fa
+    ? t("wallet.settings.disable")
+    : t("wallet.settings.enable");
+
   const publicUrl = APP_URLS_MAP[process.env.REACT_APP_ENV as Env];
+
   return (
     <Panel title={(
       <div className="flex w-full justify-between items-center">
@@ -156,7 +169,11 @@ const Settings: React.FC<Props> = ({
             )
           }
           <Button
-            variant={Button.variant.PRIMARY_LIGHT}
+            variant={
+              isEnterprise
+                ? Button.variant.ENTERPRISE_LIGHT
+                : Button.variant.PRIMARY_LIGHT
+            }
             size={Button.size.MEDIUM}
             disabled={!formik.isValid || !formik.dirty || formik.isSubmitting}
             type="submit"
@@ -214,7 +231,15 @@ const Settings: React.FC<Props> = ({
                         <Switch
                           id="is_public"
                           checked={formik.values.is_public}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>): void | null => { formik.setFieldValue("is_public", e.target.checked); }}
+                          onChange={
+                            (e: React.ChangeEvent<HTMLInputElement>): void | null => {
+                              formik.setFieldValue(
+                                "is_public",
+                                e.target.checked,
+                              );
+                            }
+                          }
+                          isEnterprise
                         >
                           <div className="flex items-center">
                             <span>{t("wallet.settings.make.public.label")}</span>
@@ -373,7 +398,12 @@ const Settings: React.FC<Props> = ({
                 id="requires_2fa"
                 checked={formik.values.requires_2fa}
                 disabled={!user?.is2FaEnabled}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>): void | null => { formik.setFieldValue("requires_2fa", e.target.checked); }}
+                onChange={
+                  (e: React.ChangeEvent<HTMLInputElement>): void | null => {
+                    formik.setFieldValue("requires_2fa", e.target.checked);
+                  }
+                }
+                isEnterprise
               >
                 <div className="flex items-center gap-4">
                   <div className="flex items-center">

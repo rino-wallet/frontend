@@ -7,6 +7,7 @@ import {
 } from "../../components";
 import { FormErrors } from "../../modules/index";
 import CreatingWallet from "./CreatingWallet";
+import { useAccountType } from "../../hooks";
 
 const validationSchema = yup.object().shape({
   name: yup
@@ -26,6 +27,8 @@ const WalletNameTab: React.FC<Props> = ({
   onLeavePage, isKeypairSet, createNewWallet, isWalletCreating, stage,
 }) => {
   const { t } = useTranslation();
+  const { isEnterprise } = useAccountType();
+
   return (
     <Formik
       initialValues={{
@@ -63,6 +66,7 @@ const WalletNameTab: React.FC<Props> = ({
             message={t("new.wallet.prompt.message")}
             onLeave={onLeavePage}
           />
+
           <form onSubmit={handleSubmit}>
             <div className="form-field">
               <Label labelClassName="md:text-right" label={t("new.wallet.form.wallet.name")} isFormField inline>
@@ -79,13 +83,19 @@ const WalletNameTab: React.FC<Props> = ({
                 />
               </Label>
             </div>
+
             <FormErrors errors={errors} />
+
             {
               !isSubmitting && (
                 <div className="flex justify-end form-field mt-8">
                   <Button
                     name="submit-btn"
-                    variant={Button.variant.PRIMARY_LIGHT}
+                    variant={
+                      isEnterprise
+                        ? Button.variant.ENTERPRISE_LIGHT
+                        : Button.variant.PRIMARY_LIGHT
+                    }
                     disabled={!isKeypairSet || !isValid}
                     loading={isSubmitting}
                     type="submit"
@@ -95,6 +105,7 @@ const WalletNameTab: React.FC<Props> = ({
                 </div>
               )
             }
+
             {
               isWalletCreating && (
                 <div className="form-field">

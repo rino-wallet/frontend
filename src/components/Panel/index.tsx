@@ -16,13 +16,28 @@ type Props = {
   children?: ReactNode;
   className?: string;
   title?: ReactNode;
+  titleCorner?: ReactNode;
 };
 
 export const Panel: React.FC<Props> & { Body: typeof PanelBody; Actions: typeof PanelActions } = (props) => {
-  const { children, className, title } = props;
+  const {
+    children,
+    className,
+    title,
+    titleCorner,
+  } = props;
+
   return (
     <div className={`theme-bg-panel border-solid border theme-border rounded-medium ${className}`}>
-      { title && <h2 className="mx-10 my-4 text-2xl font-bold flex items-center overflow-ellipsis overflow-hidden whitespace-nowrap">{title}</h2> }
+      {title && (
+        <h2
+          className="mx-10 my-4 text-2xl font-bold flex items-center overflow-ellipsis overflow-hidden whitespace-nowrap justify-between"
+        >
+          {title}
+
+          {titleCorner}
+        </h2>
+      )}
       {children}
     </div>
   );

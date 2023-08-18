@@ -7,6 +7,7 @@ import {
 } from "../../components";
 import { createPDF } from "./createPDF";
 import routes from "../../router/routes";
+import { useAccountType } from "../../hooks";
 // import { isMobile as isMobileClient } from "../../utils";
 
 interface Props {
@@ -23,8 +24,13 @@ const SecurityTab: React.FC<Props> = ({ persistWallet, pdfData, walletId }) => {
   const [infoChecked, setInfoChecked] = useState(false);
   const [pdfDownloaded, setPdfDownloaded] = useState(false);
   const [confirmationCheckInputValue, setConfirmationCheckInputValue] = useState("");
-  const codeIsWrong = !!confirmationCheckInputValue && confirmationCheckInputValue !== pdfData.checkString;
+
+  const codeIsWrong = !!confirmationCheckInputValue
+    && confirmationCheckInputValue !== pdfData.checkString;
+
   const navigate = useNavigate();
+  const { isEnterprise } = useAccountType();
+
   const onWalletFinish = (): void => {
     persistWallet({ id: walletId }).then(
       () => navigate(`${generatePath(routes.wallet, { id: walletId })}/transactions`),
@@ -36,6 +42,7 @@ const SecurityTab: React.FC<Props> = ({ persistWallet, pdfData, walletId }) => {
       }
     });
   };
+
   function createWalletRecoveryDocument(): Promise<void> {
     return createPDF({
       title: t("new.wallet.security.title"),
@@ -50,6 +57,7 @@ const SecurityTab: React.FC<Props> = ({ persistWallet, pdfData, walletId }) => {
         setErrorMessage(error.message);
       });
   }
+
   return (
     <div id="security-tab-content">
       <Prompt
@@ -57,12 +65,15 @@ const SecurityTab: React.FC<Props> = ({ persistWallet, pdfData, walletId }) => {
         title={t("new.wallet.prompt.title")}
         message={t("new.wallet.prompt.message")}
       />
+
       <p className="mb-4 font-normal">
         {t("new.wallet.security.text.row1")}
       </p>
+
       <p className="mb-4 font-normal">
         {t("new.wallet.security.text.row2")}
       </p>
+
       <ul className="list-disc">
         <li className="ml-8 mb-4 ">
           <p className="mb-2 font-normal">
@@ -80,6 +91,7 @@ const SecurityTab: React.FC<Props> = ({ persistWallet, pdfData, walletId }) => {
           </p>
         </li>
       </ul>
+
       <div className="form-field font-size-base mb-12">
         <Checkbox
           name="condition-1"
@@ -89,6 +101,7 @@ const SecurityTab: React.FC<Props> = ({ persistWallet, pdfData, walletId }) => {
           {t("new.wallet.security.checkbox")}
         </Checkbox>
       </div>
+
       {infoChecked && (
         <div>
           <p className="mb-4 md:text-center">
@@ -108,6 +121,7 @@ const SecurityTab: React.FC<Props> = ({ persistWallet, pdfData, walletId }) => {
           </div>
         </div>
       )}
+
       {pdfDownloaded && (
         <div>
           <div className="mt-10">
@@ -123,12 +137,17 @@ const SecurityTab: React.FC<Props> = ({ persistWallet, pdfData, walletId }) => {
                   error={codeIsWrong ? t("new.wallet.security.enter.code.error") as string : ""}
                 />
               </div>
+
               <div>
                 <Button
                   name="string-check-button"
                   type="button"
                   className="mb-4 float-right"
-                  variant={Button.variant.PRIMARY_LIGHT}
+                  variant={
+                    isEnterprise
+                      ? Button.variant.ENTERPRISE_LIGHT
+                      : Button.variant.PRIMARY_LIGHT
+                  }
                   disabled={confirmationCheckInputValue.length !== 6 || codeIsWrong}
                   onClick={onWalletFinish}
                   block
@@ -140,6 +159,7 @@ const SecurityTab: React.FC<Props> = ({ persistWallet, pdfData, walletId }) => {
           </div>
         </div>
       )}
+
       {
         errorMessage && (
           <div className="text-error mb-8">

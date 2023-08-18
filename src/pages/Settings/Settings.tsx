@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import {
   Link, generatePath, useNavigate, useLocation,
 } from "react-router-dom";
@@ -36,7 +36,7 @@ function hideEmail(email: string): string {
   return email.replace(part1, part1.split("").reduce((a) => `${a}*`, ""));
 }
 
-const SettingsPage: React.FC<Props> = ({
+const SettingsPage: FC<Props> = ({
   user,
   updateUser,
   signOutAll,
@@ -77,10 +77,12 @@ const SettingsPage: React.FC<Props> = ({
         // eslint-disable-next-line
       }, (err: any) => { console.log(err); });
   }
+
   return (
     <PageTemplate title={t("settings.title")}>
       {showEmailModal && <ChangeEmail goBackCallback={(): void => { setShowEmailModal(false); }} />}
       {showPasswordModal && <ChangePassword goBackCallback={(): void => { setShowPasswordModal(false); }} />}
+
       <div>
         {
           !isEnterprise && (
@@ -102,6 +104,7 @@ const SettingsPage: React.FC<Props> = ({
           )
         }
       </div>
+
       <section className="py-8">
         <h2 className="text-3xl text-base font-bold mb-6 flex items-center">
           Account
@@ -114,8 +117,10 @@ const SettingsPage: React.FC<Props> = ({
                 <div className="font-bold">{user.username}</div>
               </div>
             </div>
+
             <div className="mb-5 flex items-center break-all">
               <div className="w-24 theme-text-secondary text-sm">{t("settings.useremail")}</div>
+
               <div className="inline-flex items-center break-all font-bold">
                 {
                   showEmail ? (
@@ -139,6 +144,7 @@ const SettingsPage: React.FC<Props> = ({
               </div>
             </div>
           </div>
+
           <div className="md:flex items-start justify-start">
             <div className="sm:flex sm:space-x-3">
               <Button
@@ -150,6 +156,7 @@ const SettingsPage: React.FC<Props> = ({
               >
                 {t("settings.change.email")}
               </Button>
+
               <Button
                 className="block w-full mb-3 sm:w-auto sm:mb-0"
                 name="change-password-btn"
@@ -159,6 +166,7 @@ const SettingsPage: React.FC<Props> = ({
               >
                 {t("settings.change.password")}
               </Button>
+
               <Button
                 className="block w-full mb-3 sm:w-auto sm:mb-0"
                 name="logout-all-btn"
@@ -172,10 +180,12 @@ const SettingsPage: React.FC<Props> = ({
           </div>
         </div>
       </section>
+
       <section className="py-8">
         <h2 className="text-base text-3xl font-bold mb-6 flex items-center">
           {t("settings.two.factor.auth")}
         </h2>
+
         <div className="mb-6">
           {
             user.is2FaEnabled
@@ -214,8 +224,13 @@ const SettingsPage: React.FC<Props> = ({
                             {" "}
                             &#40;
                           </p>
+
                           <button
-                            className="theme-text-primary"
+                            className={
+                              isEnterprise
+                                ? "theme-enterprise"
+                                : "theme-text-primary"
+                            }
                             type="button"
                             name="set-up-2fa-again"
                             onClick={(): void => {
@@ -251,28 +266,33 @@ const SettingsPage: React.FC<Props> = ({
           )
         }
       </section>
+
       <section className="py-8">
         <h2 className="text-3xl font-bold mb-6 flex items-center">
           {t("settings.notifications")}
         </h2>
+
         <Switch
           disabled={pendingUpdateUser}
           checked={user.txNotifications}
           id="tx-notifications"
-          onChange={(e): void => { updateUser({ tx_notifications: e.target.checked }); }}
+          onChange={(e): void => {
+            updateUser({ tx_notifications: e.target.checked });
+          }}
+          isEnterprise
         >
           <span className="text-base">{t("settings.email.notifications")}</span>
         </Switch>
       </section>
-      {isEnterprise
-      && (
-      <section className="py-8">
-        <div className="theme-bg-panel rounded-big px-6 py-4">
-          <div>
-            <ApiKeyList fetchApiKeysData={fetchApiKeysData} />
+
+      {isEnterprise && (
+        <section className="py-8">
+          <div className="theme-bg-panel rounded-big px-6 py-4">
+            <div>
+              <ApiKeyList fetchApiKeysData={fetchApiKeysData} />
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
       )}
     </PageTemplate>
   );

@@ -20,38 +20,60 @@ interface Props {
   className?: string;
 }
 
-export const Banner: React.FC<Props> = ({ children, action, className }) => (
-  <div className={`bg-white theme-border border border-x-0 border-t-0 p-5 ${className}`}>
-    <div className="container m-auto md:max-w-screen-md lg:max-w-screen-lg justify-center flex items-center space-x-5">
-      <div className={`s ${className ? "w-full lg:w-3/4" : ""}`}>
-        {children}
+export const Banner: React.FC<Props> = ({ children, action, className }) => {
+  const { isEnterprise } = useAccountType();
+
+  return (
+    <div className={`bg-white theme-border border border-x-0 border-t-0 p-5 ${className}`}>
+      <div className="container m-auto md:max-w-screen-md lg:max-w-screen-lg justify-center flex items-center space-x-5">
+        <div className={`s ${className ? "w-full lg:w-3/4" : ""}`}>
+          {children}
+        </div>
+        {
+          action?.link && (
+            <Link
+              className="shrink-0"
+              id="nav-link-register"
+              to={action.link}
+            >
+              <Button
+                variant={
+                  isEnterprise
+                    ? Button.variant.ENTERPRISE_LIGHT
+                    : Button.variant.PRIMARY_LIGHT
+                }
+              >
+                {action.title}
+              </Button>
+            </Link>
+          )
+        }
+        {
+          action?.callback && (
+            <Button
+              className="shrink-0"
+              onClick={action?.callback}
+              variant={
+                isEnterprise
+                  ? Button.variant.ENTERPRISE_LIGHT
+                  : Button.variant.PRIMARY_LIGHT
+              }
+            >
+                {action.title}
+            </Button>
+          )
+        }
+        {
+          action?.closeBanner && (
+            <Button onClick={action?.closeBanner} className="border-none" icon>
+              <Icon name="cross" />
+            </Button>
+          )
+        }
       </div>
-      {
-        action?.link && (
-          <Link
-            className="shrink-0"
-            id="nav-link-register"
-            to={action.link}
-          >
-            <Button variant={Button.variant.PRIMARY_LIGHT}>{action.title}</Button>
-          </Link>
-        )
-      }
-      {
-        action?.callback && (
-          <Button className="shrink-0" onClick={action?.callback} variant={Button.variant.PRIMARY_LIGHT}>{action.title}</Button>
-        )
-      }
-      {
-        action?.closeBanner && (
-          <Button onClick={action?.closeBanner} className="border-none" icon>
-            <Icon name="cross" />
-          </Button>
-        )
-      }
     </div>
-  </div>
-);
+  );
+};
 
 export const BannerContainer: React.FC<{
   isPublic?: boolean;

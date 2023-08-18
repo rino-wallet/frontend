@@ -4,6 +4,7 @@ import { useDropzone, FileWithPath } from "react-dropzone";
 import { ReactComponent as ArrowSvg } from "./arrow.svg";
 import FileSvg from "./file";
 import "./styles.css";
+import { useAccountType } from "../../hooks";
 
 interface Props {
   onChange: (files: File[]) => void;
@@ -25,6 +26,7 @@ export const UploadFile: React.FC<Props> = ({
 }) => {
   const [error, setError] = useState("");
   const [readyToDrop, setReadyToDrop] = useState(false);
+
   const onDropAccepted = useCallback(
     (acceptedFiles: any) => {
       setError("");
@@ -33,6 +35,7 @@ export const UploadFile: React.FC<Props> = ({
     },
     [onChange],
   );
+
   const { getRootProps, getInputProps } = useDropzone({
     noClick: false,
     noKeyboard: true,
@@ -54,6 +57,9 @@ export const UploadFile: React.FC<Props> = ({
       setReadyToDrop(false);
     },
   });
+
+  const { isEnterprise } = useAccountType();
+
   const filesPreview = files.map((file: FileWithPath) => (
     <div key={file.path}>{file.path}</div>
   ));
@@ -93,7 +99,13 @@ export const UploadFile: React.FC<Props> = ({
             <div className="text-xs theme-text-secondary">
               Drop file here or
               {" "}
-              <span className="theme-text-primary">click to select</span>
+              <span
+                className={
+                  isEnterprise ? "theme-enterprise" : "theme-text-primary"
+                }
+              >
+                click to select
+              </span>
               {" "}
               it.
               <br />

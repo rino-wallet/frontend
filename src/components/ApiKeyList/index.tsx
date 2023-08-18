@@ -8,7 +8,7 @@ import ApiKeyItem from "./ApiKeyItem";
 import ApiKeysItemPlaceholder from "./ApiKeysItemPlaceholder";
 import { EmptyList } from "../EmptyList";
 import ApiKeyItemLayout from "./ApiKeyItemLayout";
-import { useQuery } from "../../hooks";
+import { useAccountType, useQuery } from "../../hooks";
 import { Pagination } from "../../modules/Pagination";
 import DeleteApiModal from "../DeleteModal/DeleteModal";
 import { Button } from "../Button";
@@ -33,6 +33,7 @@ const ApiKeysList: React.FC<Props> = ({ fetchApiKeysData }) => {
   const [selectedEntity, setSelectedEntity] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showApiModal, setShowApiModal] = useState(false);
+  const { isEnterprise } = useAccountType();
 
   async function refetchApiKeysData() {
     await fetchApiKeysData();
@@ -115,7 +116,12 @@ const ApiKeysList: React.FC<Props> = ({ fetchApiKeysData }) => {
             )}
           </>
         )
-        : <EmptyList message={t("settings.api.management.no.api.keys") as string} />}
+        : (
+          <EmptyList
+            message={t("settings.api.management.no.api.keys") as string}
+            isEnterprise={isEnterprise}
+          />
+        )}
 
       {showDeleteModal && (
         <DeleteApiModal

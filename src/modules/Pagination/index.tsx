@@ -1,6 +1,7 @@
 import React from "react";
 import classNames from "classnames";
 import { Button } from "../../components/Button";
+import { useAccountType } from "../../hooks";
 
 interface Props {
   loading: boolean;
@@ -17,6 +18,8 @@ const paginationSlots = 7;
 export const Pagination: React.FC<Props> = ({
   onChange, page, pageCount, loading, hasPreviousPage, hasNextPage,
 }) => {
+  const { isEnterprise } = useAccountType();
+
   const getLeftPageNumbers = (pageNumber: number, pagesCount: number): MyArray => {
     const placesForLeft = paginationSlots - Math.min(3, pagesCount - pageNumber) - 1;
     if (pageNumber <= 4) {
@@ -68,7 +71,14 @@ export const Pagination: React.FC<Props> = ({
             <button
               type="button"
               key={p}
-              className={classNames("px-2 text-center w-8 inline-block", { "theme-text-primary font-bold": p === page, "hover:font-bold hover:cursor-pointer": p })}
+              className={classNames(
+                "px-2 text-center w-8 inline-block",
+                isEnterprise ? "theme-enterprise" : "theme-text-primary",
+                {
+                  "font-bold": p === page,
+                  "hover:font-bold hover:cursor-pointer": p,
+                },
+              )}
               onClick={(): void => { if (p) onChange(p); }}
             >
               {p || "..."}

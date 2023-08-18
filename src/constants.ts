@@ -122,3 +122,8 @@ export enum TRANSACTION_STATUS_CODE {
   REJECTED = 30,
   COMPLETED = 50,
 }
+
+export enum EXPORT_TYPE {
+  CSV = "csv",
+  XLS = "xls",
+}

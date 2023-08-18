@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Modal } from "../../modules/index";
 import { Button } from "../Button";
 import { deleteEntity } from "../../store/apiKeysSlice";
+import { useAccountType } from "../../hooks";
 
 interface Props {
   selectedEntity: any;
@@ -24,6 +25,7 @@ const DeleteApiModal: React.FC<Props> = ({
 }) => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
+  const { isEnterprise } = useAccountType();
 
   const handleDelete = async () => {
     await dispatch(deleteEntity(selectedEntity.id));
@@ -38,7 +40,13 @@ const DeleteApiModal: React.FC<Props> = ({
           {message}
           {" "}
           {selectedEntity && (
-            <span className="theme-text-primary">{selectedEntity.name}</span>
+            <span
+              className={
+                isEnterprise ? "theme-enterprise" : "theme-text-primary"
+              }
+            >
+              {selectedEntity.name}
+            </span>
           )}
         </p>
       </Modal.Body>
@@ -50,7 +58,11 @@ const DeleteApiModal: React.FC<Props> = ({
           <Button
             type="button"
             name="submit-btn"
-            variant={Button.variant.PRIMARY}
+            variant={
+              isEnterprise
+                ? Button.variant.ENTERPRISE_LIGHT
+                : Button.variant.PRIMARY
+            }
             onClick={handleDelete}
           >
             {t("settings.api.management.buttons.remove.api")}

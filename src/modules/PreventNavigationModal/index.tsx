@@ -1,8 +1,9 @@
-import React, { RefObject, useRef } from "react";
+import React, { useImperativeHandle, RefObject, useRef } from "react";
 import { createModal } from "../ModalFactory";
 import { Modal } from "../Modal";
 import { Button } from "../../components";
 import { Warning } from "../../components/Warning";
+import { useAccountType } from "../../hooks";
 
 interface Props {
   title: string;
@@ -18,11 +19,14 @@ export type CloseHandle = {
 export const PreventNavigationModal = React.forwardRef<CloseHandle, Props>(({
   cancel, submit, title, message,
 }, ref: any) => {
-  React.useImperativeHandle(ref, () => ({
+  const { isEnterprise } = useAccountType();
+
+  useImperativeHandle(ref, () => ({
     closeModal(): void {
       cancel(false);
     },
   }));
+
   return (
     <Modal title={title}>
       <Modal.Body>
@@ -35,6 +39,7 @@ export const PreventNavigationModal = React.forwardRef<CloseHandle, Props>(({
           </div>
         </div>
       </Modal.Body>
+
       <Modal.Actions>
         <Button
           onClick={(): void => { cancel(false); }}
@@ -42,10 +47,15 @@ export const PreventNavigationModal = React.forwardRef<CloseHandle, Props>(({
         >
           Stay Here
         </Button>
+
         <Button
           onClick={(): void => { submit(true); }}
           name="submit-btn"
-          variant={Button.variant.PRIMARY}
+          variant={
+            isEnterprise
+              ? Button.variant.ENTERPRISE_LIGHT
+              : Button.variant.PRIMARY
+          }
         >
           Leave
         </Button>

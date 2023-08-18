@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { createModal } from "../../modules/ModalFactory";
 import { Button, Input, Label } from "../../components";
 import { FormErrors, Modal } from "../../modules/index";
+import { useAccountType } from "../../hooks";
 
 const validationSchema = yup.object().shape({
   address: yup.string().required("errors.required"),
@@ -20,6 +21,8 @@ const ChooseWalletModal = ({
   cancel, submit, asyncCallback,
 }: Props) => {
   const { t } = useTranslation();
+  const { isEnterprise } = useAccountType();
+
   const {
     isValid,
     dirty,
@@ -45,6 +48,7 @@ const ChooseWalletModal = ({
       }
     },
   });
+
   return (
     <Modal size={Modal.size.MEDIUM} title={t("rewards.choose.wallet.title")} showCloseIcon>
       <form onSubmit={handleSubmit}>
@@ -74,7 +78,11 @@ const ChooseWalletModal = ({
             {t("common.cancel")}
           </Button>
           <Button
-            variant={Button.variant.PRIMARY_LIGHT}
+            variant={
+              isEnterprise
+                ? Button.variant.ENTERPRISE_LIGHT
+                : Button.variant.PRIMARY_LIGHT
+            }
             type="submit"
             name="submit-btn"
             loading={isSubmitting}

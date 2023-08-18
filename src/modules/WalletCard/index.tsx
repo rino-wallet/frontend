@@ -1,8 +1,10 @@
 import React from "react";
 import classNames from "classnames";
-import { piconeroToMonero, getWalletColor } from "../../utils";
+
 import { Placeholder, FormatNumber, WalletRole } from "../../components";
+import { useAccountType } from "../../hooks";
 import { AccessLevel } from "../../types";
+import { piconeroToMonero, getWalletColor } from "../../utils";
 
 export enum Variant {
   LIGHT,
@@ -36,7 +38,10 @@ export const WalletCard: React.FC<Props> & { variant: typeof Variant } = ({
   variant = Variant.DEFAULT,
   role,
 }) => {
-  const gradient = getWalletColor();
+  const { isEnterprise } = useAccountType();
+
+  const gradient = getWalletColor(isEnterprise);
+
   return (
     <div className={classNames("theme-bg-panel theme-border border rounded-large rounded-tr-none h-36 flex items-stretch", gradient.light)}>
       <div className={classNames("-my-px -mx-px flex-shrink-0 rounded-large rounded-tr-none w-10 md:w-16", gradient.main, {

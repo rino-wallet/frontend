@@ -12,7 +12,7 @@ export function useAccountType(): {
 } {
   const user = useSelector(selectors.getUser);
   const token = useSelector(selectors.getToken);
-  const enterpriseSession = sessionStorage.getItem("enterprice") === "true";
+  const enterpriseSession = sessionStorage.getItem("enterprise") === "true";
   return {
     isAuthenticated: !!token,
     isConsumer: user?.accountType === accountType.CONSUMER,

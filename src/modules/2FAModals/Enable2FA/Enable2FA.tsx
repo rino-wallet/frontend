@@ -9,6 +9,7 @@ import { Modal, FormErrors } from "../../index";
 import {
   Create2FAResponse, Enable2FAPayload, Enable2FAResponse, UseThunkActionCreator,
 } from "../../../types";
+import { useAccountType } from "../../../hooks";
 
 const validationSchema = yup.object().shape({
   code: yup.string().required("This field is required."),
@@ -29,16 +30,20 @@ const Enable2FA: React.FC<Props> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const [qrcode, setQrcode] = useState("");
   const [loading, setLoading] = useState(true);
+  const { isEnterprise } = useAccountType();
+
   useEffect(() => {
     create2FA().finally(() => {
       setLoading(false);
     });
   }, []);
+
   useEffect(() => {
     QRCode.toDataURL(provisioningUri, (err: any, string: string) => {
       setQrcode(string);
     });
   }, [setQrcode, provisioningUri]);
+
   const {
     isValid,
     dirty,
@@ -66,17 +71,16 @@ const Enable2FA: React.FC<Props> = ({
       },
     ),
   });
+
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
   });
+
   return (
     <BindHotKeys callback={handleSubmit} rejectCallback={cancel}>
-      <Modal
-        title="2FA Setup"
-        onClose={cancel}
-      >
+      <Modal title="2FA Setup" onClose={cancel}>
         <form onSubmit={handleSubmit}>
           <Modal.Body>
             <p className="mb-6">
@@ -85,15 +89,26 @@ const Enable2FA: React.FC<Props> = ({
               You will need a mobile app to set up Two-factor Authentication,
               such as: Google Authenticator, Authy, Duo Mobile.
             </p>
+
             <p className="mb-3">
               <b>Step 2.</b>
               {" "}
               Scan the QR code with your app or enter the secret key manually:
-              <span className="theme-text-primary" data-qa-selector="secret-key">{secretKey}</span>
+              <span
+                className={
+                  isEnterprise
+                    ? "theme-enterprise"
+                    : "theme-text-primary"
+                }
+                data-qa-selector="secret-key"
+              >
+                {secretKey}
+              </span>
             </p>
+
             <div className="mb-3 relative flex justify-center">
               {loading ? (
-                <Spinner stub />
+                <Spinner stub isEnterprise={isEnterprise} />
               ) : (
                 <img className="w-32 h-32" src={qrcode} alt="qrcode" />
               )}

@@ -20,6 +20,7 @@ const App: React.FC = () => {
   const windowSize = useWindowSize();
   const getCurrentUser = useThunkActionCreator(getCurrentUserThunk);
   const signOut = useThunkActionCreator(signOutThunk);
+
   async function onTimeOut(): Promise<void> {
     await signOut();
     showWarningModal({
@@ -27,6 +28,7 @@ const App: React.FC = () => {
       message: "Sorry! Your session has expired due to inactivity. Please log in again.",
     });
   }
+
   useEffect(() => {
     let timer: IdleTimer;
     if (token) {
@@ -40,22 +42,26 @@ const App: React.FC = () => {
       timer?.cleanUp();
     };
   }, [token]);
+
   useEffect(() => {
     if (token && !user) {
       getCurrentUser();
     }
   }, [token]);
+
   useEffect(() => {
     if (user && !user.isKeypairSet && password) {
       navigate(routes.keypair);
     }
   }, [user]);
+
   useEffect(() => {
     if (location.search.includes("business=true")) {
       navigate(location.pathname.replace("business=true", ""), { replace: true });
-      sessionStorage.setItem("enterprice", "true");
+      sessionStorage.setItem("enterprise", "true");
     }
   }, []);
+
   return (
     <div className="app">
       <IsMobileProvider value={windowSize}>

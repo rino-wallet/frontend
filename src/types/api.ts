@@ -2,6 +2,7 @@ import {
   PendingTransfer, Promotion, Referral, Subaddress,
 } from "./store";
 import { AccessLevel } from "./shared";
+import { EXPORT_TYPE } from "../constants";
 
 interface ListResponse {
   count: number;
@@ -189,6 +190,7 @@ export interface UserResponse {
     viewOnlyShare: boolean;
     limits: boolean;
     approvals: boolean;
+    txExports: boolean;
   };
   is2FaEnabled: boolean;
   isKeypairSet: boolean;
@@ -553,4 +555,12 @@ export interface FetchPendingTranfersResponse extends ListResponse {
 export interface PendingTransferApprovalPayload {
   walletId: string;
   transactionId: string;
+}
+
+export interface ExportRequestParams {
+  type: EXPORT_TYPE;
+}
+
+export interface ExportFileResponse {
+  data: Blob;
 }

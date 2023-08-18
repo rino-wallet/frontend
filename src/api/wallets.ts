@@ -42,6 +42,8 @@ import {
   FetchWalletMembersResponse,
   FetchPendingTranfersResponse,
   PendingTransferApprovalPayload,
+  ExportRequestParams,
+  ExportFileResponse,
 } from "../types";
 
 export class WalletsApi extends Api {
@@ -193,6 +195,16 @@ export class WalletsApi extends Api {
   public cancelPendingTransfer(data: PendingTransferApprovalPayload): Promise<FinalizeWalletResponse> {
     return this.post<FinalizeWalletResponse, PendingTransferApprovalPayload>(`/wallets/${data.walletId}/pending_transfers/${data.transactionId}/cancel/`)
       .then(this.success);
+  }
+
+  public exportTransactions(walletId: string, params: ExportRequestParams): Promise<ExportFileResponse> {
+    return this.get<Blob>(`/wallets/${walletId}/transactions/export/`, {
+      responseType: "blob",
+      params,
+    })
+      .then((response) => ({
+        data: new Blob([response.request.response]),
+      }));
   }
 }
 

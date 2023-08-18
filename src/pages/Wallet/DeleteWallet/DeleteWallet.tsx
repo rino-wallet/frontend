@@ -6,6 +6,7 @@ import { Button, Input } from "../../../components";
 import { piconeroToMonero } from "../../../utils";
 import { DeleteWalletResponse } from "../../../types";
 import routes from "../../../router/routes";
+import { useAccountType } from "../../../hooks";
 
 interface Props {
   deleteWallet: () => Promise<DeleteWalletResponse>;
@@ -24,6 +25,8 @@ const DeleteWallet: React.FC<Props> = ({
   const [errors, setErrors] = useState({});
   const [confirmationString, setConfirmation] = useState("");
   const walletBalance = piconeroToMonero(Number(balance));
+  const { isEnterprise } = useAccountType();
+
   async function onClickDelete(): Promise<void> {
     try {
       await deleteWallet();
@@ -34,6 +37,7 @@ const DeleteWallet: React.FC<Props> = ({
       }
     }
   }
+
   return (
     <Modal
       title={(
@@ -45,26 +49,24 @@ const DeleteWallet: React.FC<Props> = ({
     >
       <Modal.Body>
         <h2 className="text-xl mb-5">{t("wallet.deletemodal.sure")}</h2>
-        {
-          (balance && balance !== "0") && (
-            <p>
-              <Trans i18nKey="wallet.deletemodal.balance.message" className="block mb-2">
-                This wallet has
+        {(balance && balance !== "0") && (
+          <p>
+            <Trans i18nKey="wallet.deletemodal.balance.message" className="block mb-2">
+              This wallet has
+              {" "}
+              <span className="font-bold">
+                <span data-qa-selector="wallet-balance">{{ walletBalance }}</span>
                 {" "}
-                <span className="font-bold">
-                  <span data-qa-selector="wallet-balance">{{ walletBalance }}</span>
-                  {" "}
-                  XMR
-                </span>
-                {" "}
-                left.
-              </Trans>
-            </p>
-          )
-        }
-        <div className="mt-4">
-          {t("wallet.deletemodal.warning")}
-        </div>
+                XMR
+              </span>
+              {" "}
+              left.
+            </Trans>
+          </p>
+        )}
+
+        <div className="mt-4">{t("wallet.deletemodal.warning")}</div>
+
         <div className="mt-4">
           <div className="mb-3">
             <Trans i18nKey="wallet.deletemodal.confirm.message">
@@ -73,6 +75,7 @@ const DeleteWallet: React.FC<Props> = ({
               &quot; in the field below.
             </Trans>
           </div>
+
           <Input
             type="text"
             name="confirmation"
@@ -80,16 +83,25 @@ const DeleteWallet: React.FC<Props> = ({
             onChange={(e): void => { setConfirmation(e.target.value); }}
           />
         </div>
+
         <div className="mt-4">
           <FormErrors errors={errors} />
         </div>
       </Modal.Body>
+
       <Modal.Actions>
         <div className="flex justify-end space-x-3">
-          <Button name="delete-wallet-cancel-btn" onClick={goBackCallback}>{t("common.cancel")}</Button>
+          <Button name="delete-wallet-cancel-btn" onClick={goBackCallback}>
+            {t("common.cancel")}
+          </Button>
+
           <Button
             name="delete-wallet-submit-btn"
-            variant={Button.variant.PRIMARY}
+            variant={
+              isEnterprise
+                ? Button.variant.ENTERPRISE_LIGHT
+                : Button.variant.PRIMARY
+            }
             disabled={loading || confirmationString !== controlString}
             onClick={onClickDelete}
             loading={loading}

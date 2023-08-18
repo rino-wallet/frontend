@@ -1,13 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { FetchWalletTransactionsResponse, FetchWalletTransactionsThunkPayload, Transaction } from "../../../types";
-import { useQuery } from "../../../hooks";
+
+import {
+  ExportFileResponse,
+  ExportWalletTransactionsThunkPayload,
+  FetchWalletTransactionsResponse,
+  FetchWalletTransactionsThunkPayload,
+  Transaction,
+} from "../../../types";
+import { useAccountType, useQuery } from "../../../hooks";
 import TransactionItem from "./TransactionItem";
 import TransactionItemPlaceholder from "./TransactionItemPlaceholder";
 import TransactionItemLayout from "./TransactionItemLayout";
-import { EmptyList, Panel } from "../../../components";
+import {
+  EmptyList, Panel, DownloadButton, Button,
+} from "../../../components";
 import { Pagination } from "../../../modules/index";
+import { EXPORT_TYPE } from "../../../constants";
 
 interface Props {
   itemsPerPage: number;
@@ -16,8 +26,9 @@ interface Props {
   pages: number;
   hasPreviousPage: boolean;
   hasNextPage: boolean;
-  fetchWalletTransactions: (data: FetchWalletTransactionsThunkPayload) => Promise<FetchWalletTransactionsResponse>
+  fetchWalletTransactions: (data: FetchWalletTransactionsThunkPayload) => Promise<FetchWalletTransactionsResponse>;
   isPublicWallet?: boolean;
+  downloadWalletTransactions?: (data: ExportWalletTransactionsThunkPayload) => Promise<ExportFileResponse>;
 }
 
 const Transactions: React.FC<Props> = ({
@@ -29,7 +40,9 @@ const Transactions: React.FC<Props> = ({
   hasNextPage,
   fetchWalletTransactions,
   isPublicWallet,
+  downloadWalletTransactions,
 }) => {
+  const { features: { txExports }, isEnterprise } = useAccountType();
   const { t } = useTranslation();
   const [listLoading, setListLoading] = useState(true);
   const [isFirstLoading, setIsFirstLoading] = useState(true);
@@ -37,6 +50,7 @@ const Transactions: React.FC<Props> = ({
   const location = useLocation();
   const query = useQuery();
   const page = parseInt(query.get("page"), 10) || 1;
+
   useEffect(() => {
     async function asyncFetchWalletTransactions() {
       setListLoading(true);
@@ -46,20 +60,56 @@ const Transactions: React.FC<Props> = ({
         setListLoading(false);
       }, 300);
     }
+
     asyncFetchWalletTransactions();
+
     let intervalId: any;
+
     if (!isPublicWallet) {
       intervalId = setInterval(() => fetchWalletTransactions({ walletId, page }), 30000);
     }
+
     return (): void => clearInterval(intervalId);
   }, [page]);
+
   function setPage(p: number): void {
     setIsFirstLoading(true);
     navigate(`${location.pathname}?page=${p}`);
   }
+
   return (
     <div>
-      <Panel title={t("wallet.transaction.list")}>
+      <Panel
+        title={t("wallet.transaction.list")}
+        titleCorner={downloadWalletTransactions && txExports && (
+          <div className="justify-self-stretch flex justify-around">
+            <DownloadButton
+              size={Button.size.SMALL}
+              name="back-button"
+              className="mr-4"
+              filename={`Wallet ${walletId}.csv`}
+              onDownload={() => downloadWalletTransactions({
+                walletId,
+                type: EXPORT_TYPE.CSV,
+              })}
+            >
+              To .csv
+            </DownloadButton>
+
+            <DownloadButton
+              size={Button.size.SMALL}
+              name="back-button"
+              filename={`Wallet ${walletId}.xls`}
+              onDownload={() => downloadWalletTransactions({
+                walletId,
+                type: EXPORT_TYPE.XLS,
+              })}
+            >
+              To .xls
+            </DownloadButton>
+          </div>
+        )}
+      >
         <div>
           <div className="hidden theme-bg-panel-second md:block">
             <TransactionItemLayout
@@ -85,7 +135,10 @@ const Transactions: React.FC<Props> = ({
               <div>
                 {
                   (!transactions.length && !listLoading) && (
-                    <EmptyList message={t("wallet.transaction.empty.list") as string} />
+                    <EmptyList
+                      message={t("wallet.transaction.empty.list") as string}
+                      isEnterprise={isEnterprise}
+                    />
                   )
                 }
                 {

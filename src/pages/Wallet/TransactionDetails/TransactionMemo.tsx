@@ -8,7 +8,7 @@ import { updateTransactionDetails as updateTransactionDetailsThunk } from "../..
 import {
   UpdateTransactionDetailsResponse,
 } from "../../../types";
-import { useThunkActionCreator } from "../../../hooks";
+import { useAccountType, useThunkActionCreator } from "../../../hooks";
 
 const transactionPayloadValidationSchema = yup.object().shape({
   memo: yup.string(),
@@ -22,6 +22,8 @@ interface Props {
 const TransactionMemo: React.FC<Props> = ({ walletId, transactionId, memo }) => {
   const updateTransactionDetails = useThunkActionCreator(updateTransactionDetailsThunk);
   const { t } = useTranslation();
+  const { isEnterprise } = useAccountType();
+
   const formik = useFormik({
     enableReinitialize: true,
     validationSchema: transactionPayloadValidationSchema,
@@ -64,7 +66,11 @@ const TransactionMemo: React.FC<Props> = ({ walletId, transactionId, memo }) => 
       <div className="mt-2 text-right">
         {formik.dirty ? (
           <Button
-            variant={Button.variant.PRIMARY_LIGHT}
+            variant={
+              isEnterprise
+                ? Button.variant.ENTERPRISE_LIGHT
+                : Button.variant.PRIMARY_LIGHT
+            }
             size={Button.size.SMALL}
             disabled={!formik.isValid || !formik.dirty || formik.isSubmitting}
             type="submit"

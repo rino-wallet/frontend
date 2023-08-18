@@ -22,6 +22,7 @@ import showRemoveWalletMemberModal from "./RemoveWalletMemberModal";
 import routes from "../../../router/routes";
 import { accessLevels } from "../../../constants";
 import WalletMemberModal from "./WalletMemberModal";
+import { useAccountType } from "../../../hooks";
 
 interface AccessLevelInt {
   isAdmin: () => boolean;
@@ -79,9 +80,11 @@ const UserList: React.FC<Props> = ({
   fetchWalletMembers,
   showRevokedUsers,
 }) => {
+  const { isEnterprise } = useAccountType();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
+
   const onPage = (pageNumber: number): void => {
     if (showRevokedUsers) {
       fetchRevokedMembers({ walletId: wallet.id, page: pageNumber });
@@ -90,6 +93,7 @@ const UserList: React.FC<Props> = ({
     }
     setPage(pageNumber);
   };
+
   useEffect(() => {
     if (showRevokedUsers) {
       fetchRevokedMembers({ walletId: wallet.id, page: 1 });
@@ -97,6 +101,7 @@ const UserList: React.FC<Props> = ({
       fetchWalletMembers({ walletId: wallet.id, page: 1 });
     }
   }, [showRevokedUsers]);
+
   return (
     <div className="pb-5">
       <div className="hidden theme-bg-panel-second md:block">
@@ -106,6 +111,7 @@ const UserList: React.FC<Props> = ({
           action=""
         />
       </div>
+
       <PlaceholderController
         placeholder={WalletMemberPlaceholder}
         loading={loading}
@@ -170,7 +176,11 @@ const UserList: React.FC<Props> = ({
                                   });
                                 });
                             }}
-                            variant={Button.variant.PRIMARY}
+                            variant={
+                              isEnterprise
+                                ? Button.variant.ENTERPRISE_LIGHT
+                                : Button.variant.PRIMARY_LIGHT
+                            }
                             size={Button.size.SMALL}
                           >
                             {t("wallet.users.change.button")}
@@ -204,9 +214,14 @@ const UserList: React.FC<Props> = ({
               </div>
             ))
           }
-          {
-            (members.length === 0 && !loading) && <EmptyList message={t("wallet.users.list.no.users") as string} />
-          }
+
+          {members.length === 0 && !loading && (
+            <EmptyList
+              message={t("wallet.users.list.no.users") as string}
+              isEnterprise={isEnterprise}
+            />
+          )}
+
           {
             membersListMetaData.pages > 1 && (
               <Pagination

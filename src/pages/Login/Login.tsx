@@ -1,12 +1,13 @@
-import React from "react";
+import React, { FC } from "react";
 import { Formik } from "formik";
 import * as yup from "yup";
 import { useTranslation, Trans } from "react-i18next";
 import { Link, useNavigate, generatePath } from "react-router-dom";
+
 import ROUTES from "../../router/routes";
 import { SignInPayload, SignInResponse, UserResponse } from "../../types";
 import { deriveUserKeys, getSigningKeys } from "../../utils";
-import { useSortErrors } from "../../hooks";
+import { useAccountType, useSortErrors } from "../../hooks";
 import { FormErrors } from "../../modules/index";
 import { enter2FACode } from "../../modules/2FAModals";
 import {
@@ -26,19 +27,35 @@ interface Props {
   setPassword: (password: string) => void;
   setSigningPublicKey: (key: string) => void;
 }
-const LoginPage: React.FC<Props> = ({
+
+const LoginPage: FC<Props> = ({
   login, setPassword, getCurrentUser, setSigningPublicKey,
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { isEnterprise } = useAccountType();
+
   const {
     nonFieldErrors,
     sortErrors,
   } = useSortErrors(["non_field_errors", "detail", "2fa"]);
+
   return (
     <Panel>
       <Panel.Body>
-        <h1 className="text-center mb-12 text-4xl flex items-center justify-center space-x-3 font-catamaran">
+        {isEnterprise && (
+          <div className="flex shrink justify-center">
+            <h3
+              className="theme-bg-enterprise text-white px-1 pb-1 text-2xl rounded-lg font-bold"
+            >
+              enterprise
+            </h3>
+          </div>
+        )}
+
+        <h1
+          className="text-center mb-12 text-4xl flex items-center justify-center space-x-3 font-catamaran"
+        >
           <Logo small />
           {" "}
           <span>
@@ -48,6 +65,7 @@ const LoginPage: React.FC<Props> = ({
           </span>
           !
         </h1>
+
         <Formik
           initialValues={{
             username: "",
@@ -64,6 +82,7 @@ const LoginPage: React.FC<Props> = ({
             localStorage.removeItem("_expiredTime");
             const { authKey, encryptionKey, clean } = await deriveUserKeys(values.password, values.username);
             const password = Buffer.from(authKey).toString("hex");
+
             try {
               let loginResponse;
               try {
@@ -86,7 +105,9 @@ const LoginPage: React.FC<Props> = ({
                   throw err;
                 }
               }
+
               const user = await getCurrentUser();
+
               if (!user?.isKeypairSet) {
                 setPassword(values.password);
                 navigate(ROUTES.keypair);
@@ -96,6 +117,7 @@ const LoginPage: React.FC<Props> = ({
                 clean();
                 navigate(ROUTES.wallets);
               }
+
               return loginResponse;
             } catch (err: any) {
               if (err) setErrors(sortErrors(err).fieldErrors);
@@ -122,10 +144,15 @@ const LoginPage: React.FC<Props> = ({
                     onChange={handleChange}
                     onBlur={handleBlur}
                     placeholder={t("auth.username.label") as string}
-                    error={touched.username ? t(errors.username as string) as string : ""}
+                    error={
+                      touched.username
+                        ? t(errors.username as string) as string
+                        : ""
+                    }
                   />
                 </Label>
               </div>
+
               <div className="form-field">
                 <Label label={t("auth.password.label") as string}>
                   <Input
@@ -135,23 +162,29 @@ const LoginPage: React.FC<Props> = ({
                     onChange={handleChange}
                     onBlur={handleBlur}
                     placeholder={t("auth.password.label") as string}
-                    error={touched.password ? t(errors.password as string) as string : ""}
+                    error={
+                      touched.password
+                        ? t(errors.password as string) as string
+                        : ""
+                    }
                   />
                 </Label>
               </div>
+
               <div className="form-field">
                 <p className="mb-1">
                   <Link
-                    className="theme-link"
+                    className={isEnterprise ? "theme-enterprise" : "theme-link"}
                     id="forgot-password"
                     to={generatePath(ROUTES.resetPassword, { "*": "reset" })}
                   >
                     {t("auth.forgot.password.link")}
                   </Link>
                 </p>
+
                 <p>
                   <Link
-                    className="theme-link"
+                    className={isEnterprise ? "theme-enterprise" : "theme-link"}
                     id="forgot-password"
                     to={ROUTES.resendActivationEmail}
                   >
@@ -159,26 +192,89 @@ const LoginPage: React.FC<Props> = ({
                   </Link>
                 </p>
               </div>
+
               <FormErrors errors={{ ...errors, ...nonFieldErrors }} />
+
               <div className="mt-10 mb-3">
                 <Button
                   disabled={(!isValid && !Object.keys(errors).includes("detail")) || isSubmitting}
                   type="submit"
                   name="submit-btn"
                   loading={isSubmitting}
-                  variant={Button.variant.PRIMARY_LIGHT}
+                  variant={
+                    isEnterprise
+                      ? Button.variant.ENTERPRISE_LIGHT
+                      : Button.variant.PRIMARY_LIGHT
+                  }
                   size={Button.size.BIG}
                   block
                 >
                   {t("auth.login")}
                 </Button>
               </div>
-              <Trans i18nKey="auth.dont.have.account" className="theme-text flex justify-center mb-3">
-                Don&apos;t have an account?
-                <Link id="link-login" className="theme-link ml-1" to={ROUTES.register}>
-                  Create account
-                </Link>
-              </Trans>
+
+              <div className="flex flex-col gap-3 pt-6">
+                <div className="flex justify-center">
+                  <Trans
+                    i18nKey={
+                      isEnterprise
+                        ? "auth.dont.have.enterprise.account"
+                        : "auth.dont.have.account"
+                    }
+                    className="theme-text flex justify-center mb-3"
+                  >
+                    Don&apos;t have an account?
+
+                    <Link
+                      id="link-login"
+                      className={
+                        `ml-1 ${isEnterprise ? "theme-enterprise" : "theme-link"}`
+                      }
+                      to={ROUTES.register}
+                    >
+                      Create account
+                    </Link>
+                  </Trans>
+                </div>
+
+                <div className="flex justify-center">
+                  {isEnterprise ? (
+                    process.env.REACT_APP_ENV !== "test" && (
+                      <Trans
+                        i18nKey="auth.not.enterprise.go.community"
+                        className="theme-text flex justify-center mb-1"
+                      >
+                        Not an enterprise user?
+                        <button
+                          type="button"
+                          id="link-login-not-enterprise"
+                          className="theme-enterprise ml-1"
+                          onClick={() => {
+                            sessionStorage.setItem("enterprise", "false");
+                            navigate(ROUTES.login);
+                          }}
+                        >
+                          Go to our community version
+                        </button>
+                      </Trans>
+                    )
+                  ) : (
+                    <Trans
+                      i18nKey="auth.community.user.go.enterprise"
+                      className="theme-text flex justify-center mb-1"
+                    >
+                      Enterprise user?
+                      <a
+                        id="link-login-enterprise"
+                        className="theme-link ml-1"
+                        href={`${ROUTES.login}?business=true`}
+                      >
+                        Login here
+                      </a>
+                    </Trans>
+                  )}
+                </div>
+              </div>
             </form>
           )}
         </Formik>

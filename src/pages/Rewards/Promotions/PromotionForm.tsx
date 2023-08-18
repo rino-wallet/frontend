@@ -4,6 +4,7 @@ import * as yup from "yup";
 import { useFormik } from "formik";
 import { Button, Input } from "../../../components";
 import { FormErrors } from "../../../modules/index";
+import { useAccountType } from "../../../hooks";
 
 const validationSchema = yup.object().shape({
   code: yup.string().required("errors.required"),
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export const PromotionForm = ({ onSubmit, disabled }: Props) => {
+  const { isEnterprise } = useAccountType();
   const {
     isValid,
     handleSubmit,
@@ -58,7 +60,11 @@ export const PromotionForm = ({ onSubmit, disabled }: Props) => {
             type="submit"
             disabled={isSubmitting || !isValid || disabled}
             loading={isSubmitting}
-            variant={Button.variant.PRIMARY_LIGHT}
+            variant={
+              isEnterprise
+                ? Button.variant.ENTERPRISE_LIGHT
+                : Button.variant.PRIMARY_LIGHT
+            }
           >
             {t("rewards.promotions.buttons.apply")}
           </Button>

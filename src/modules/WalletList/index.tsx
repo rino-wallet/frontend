@@ -55,6 +55,7 @@ export const WalletList: React.FC<Props> = ({
                 for instructions.
               </Trans>
             )}
+            isEnterprise={isEnterprise}
           />
         )
       }
