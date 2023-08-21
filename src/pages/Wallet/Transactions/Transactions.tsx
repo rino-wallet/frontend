@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
@@ -31,7 +31,7 @@ interface Props {
   downloadWalletTransactions?: (data: ExportWalletTransactionsThunkPayload) => Promise<ExportFileResponse>;
 }
 
-const Transactions: React.FC<Props> = ({
+const Transactions: FC<Props> = ({
   itemsPerPage,
   transactions,
   walletId,
@@ -42,7 +42,7 @@ const Transactions: React.FC<Props> = ({
   isPublicWallet,
   downloadWalletTransactions,
 }) => {
-  const { features: { txExports }, isEnterprise } = useAccountType();
+  const { features, isEnterprise } = useAccountType();
   const { t } = useTranslation();
   const [listLoading, setListLoading] = useState(true);
   const [isFirstLoading, setIsFirstLoading] = useState(true);
@@ -50,6 +50,7 @@ const Transactions: React.FC<Props> = ({
   const location = useLocation();
   const query = useQuery();
   const page = parseInt(query.get("page"), 10) || 1;
+  const txExports = features && features.txExports;
 
   useEffect(() => {
     async function asyncFetchWalletTransactions() {
