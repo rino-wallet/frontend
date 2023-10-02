@@ -114,58 +114,87 @@ const Transactions: FC<Props> = ({
         <div>
           <div className="hidden theme-bg-panel-second md:block">
             <TransactionItemLayout
-              type={(<span className="text-sm uppercase">{t("wallet.transactions.th.type")}</span>)}
-              amount={(<span className="text-sm uppercase">{t("wallet.transactions.th.amount")}</span>)}
-              timestamp={(<span className="text-sm uppercase">{t("wallet.transactions.th.date")}</span>)}
-              status={(<span className="text-sm uppercase">{t("wallet.transactions.th.status")}</span>)}
+              type={(
+                <span className="text-sm uppercase">
+                  {t("wallet.transactions.th.type")}
+                </span>
+              )}
+              amount={(
+                <span className="text-sm uppercase">
+                  {t("wallet.transactions.th.amount")}
+                </span>
+              )}
+              timestamp={(
+                <span className="text-sm uppercase">
+                  {t("wallet.transactions.th.date")}
+                </span>
+              )}
+              status={(
+                <span className="text-sm uppercase">
+                  {t("wallet.transactions.th.status")}
+                </span>
+              )}
               action={(<span className="text-sm uppercase" />)}
             />
           </div>
-          {
-            (listLoading && isFirstLoading) ? (
-              <div>
-                {
-                  Array.from({ length: itemsPerPage }, (v, i) => i).map((key, index) => (
-                    <div className={index % 2 !== 0 ? "theme-bg-panel-second bg-opacity-50 py-1.5" : "py-1.5"} key={key}>
-                      <TransactionItemPlaceholder key={key} />
-                    </div>
-                  ))
-                }
-              </div>
-            ) : (
-              <div>
-                {
-                  (!transactions.length && !listLoading) && (
-                    <EmptyList
-                      message={t("wallet.transaction.empty.list") as string}
-                      isEnterprise={isEnterprise}
-                    />
-                  )
-                }
-                {
-                    transactions.map((transaction, index) => (
-                      <div key={transaction.id} className={index % 2 !== 0 ? "theme-bg-panel-second bg-opacity-50" : ""}>
-                        <TransactionItem isPublicWallet={isPublicWallet} walletId={walletId} transaction={transaction} />
-                      </div>
-                    ))
+
+          {(listLoading && isFirstLoading) ? (
+            <div>
+              {Array
+                .from({ length: itemsPerPage }, (v, i) => i)
+                .map((key, index) => (
+                  <div
+                    className={
+                      index % 2 !== 0
+                        ? "theme-bg-panel-second bg-opacity-50 py-1.5"
+                        : "py-1.5"
+                    }
+                    key={key}
+                  >
+                    <TransactionItemPlaceholder key={key} />
+                  </div>
+                ))}
+            </div>
+          ) : (
+            <div>
+              {(!transactions.length && !listLoading) && (
+                <EmptyList
+                  message={t("wallet.transaction.empty.list") as string}
+                  isEnterprise={isEnterprise}
+                />
+              )}
+
+              {transactions.map((transaction, index) => (
+                <div
+                  key={transaction.id}
+                  className={
+                    index % 2 !== 0
+                      ? "theme-bg-panel-second bg-opacity-50"
+                      : ""
                   }
-              </div>
-            )
-          }
+                >
+                  <TransactionItem
+                    isPublicWallet={isPublicWallet}
+                    walletId={walletId}
+                    transaction={transaction}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </Panel>
-      {
-        pages > 1 && (
-          <Pagination
-            loading={listLoading}
-            page={page}
-            pageCount={pages}
-            hasNextPage={hasNextPage}
-            hasPreviousPage={hasPreviousPage}
-            onChange={setPage}
-          />
-        )
-      }
+
+      {pages > 1 && (
+        <Pagination
+          loading={listLoading}
+          page={page}
+          pageCount={pages}
+          hasNextPage={hasNextPage}
+          hasPreviousPage={hasPreviousPage}
+          onChange={setPage}
+        />
+      )}
     </div>
   );
 };

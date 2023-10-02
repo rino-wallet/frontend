@@ -7,7 +7,14 @@ import {
   Button, EmptyList, Label, Tooltip,
 } from "../../../components";
 import {
-  CreateSubaddressThunkPayload, Subaddress, Wallet, FetchSubaddressesThunkPayload, FetchSubaddressResponse, UseThunkActionCreator, LocalWalletData, PublicWallet,
+  CreateSubaddressThunkPayload,
+  Subaddress,
+  Wallet,
+  FetchSubaddressesThunkPayload,
+  FetchSubaddressResponse,
+  UseThunkActionCreator,
+  LocalWalletData,
+  PublicWallet,
 } from "../../../types";
 import routes from "../../../router/routes";
 import { SubaddressItem } from "./SubaddressItem";
@@ -16,6 +23,7 @@ import { EditLabelForm } from "./EditLabelForm";
 import { WalletPageTemplate } from "../WalletPageTemplate";
 import { useAccountType, useThunkActionCreator } from "../../../hooks";
 import { fetchWalletSubaddress as fetchWalletSubaddressThunk } from "../../../store/subaddressListSlice";
+import { fetchWalletSubaddress as fetchPublicWalletSubaddressThunk } from "../../../store/publicWalletSubaddressListSlice";
 
 interface Props {
   walletId: string;
@@ -58,7 +66,11 @@ const ReceivePayment: React.FC<Props> = ({
   const [image, setImage] = useState("");
   const { isEnterprise } = useAccountType();
 
-  const fetchWalletSubaddress = useThunkActionCreator(fetchWalletSubaddressThunk);
+  const fetchSubaddressThunk = isPublicWallet
+    ? fetchPublicWalletSubaddressThunk
+    : fetchWalletSubaddressThunk;
+
+  const fetchWalletSubaddress = useThunkActionCreator(fetchSubaddressThunk);
 
   async function validateAddress(subaddress: Subaddress, mode: "new" | "first" | "prompt"): Promise<void> {
     const modalContent = {
@@ -113,7 +125,13 @@ const ReceivePayment: React.FC<Props> = ({
   return (
     <WalletPageTemplate
       showNameInBox
-      title={t("wallet.receive.receive") as string}
+      title={
+        t(
+          isPublicWallet
+            ? "wallet.receive.addresses"
+            : "wallet.receive.title",
+        ) as string
+      }
       goBackCallback={(): void => { navigate(`${generatePath(isPublicWallet ? routes.publicWallet : routes.wallet, { id: walletId })}/transactions`); }}
       id={walletId}
       wallet={wallet}
@@ -121,75 +139,96 @@ const ReceivePayment: React.FC<Props> = ({
     >
       <div>
         <div className="mb-8 items-start md:flex">
-          <div className="flex justify-center mb-6 order-2" data-qa-selector="address-qr-code">
-            {
-              image && <img src={image} alt={walletSubAddress?.address} />
-            }
+          <div
+            className="flex justify-center mb-6 order-2"
+            data-qa-selector="address-qr-code"
+          >
+            {image && (<img src={image} alt={walletSubAddress?.address} />)}
           </div>
+
           <div className="min-w-0 order-1 w-full md:mr-6">
-            <Label label={(
-              <div className="flex items-center" data-qa-selector="validate-current-address">
-                <span className="mr-3">{t("wallet.receive.current.address")}</span>
-                {
-                  walletSubAddress && (
+            <Label
+              label={(
+                <div
+                  className="flex items-center"
+                  data-qa-selector="validate-current-address"
+                >
+                  <span className="mr-3">
+                    {t("wallet.receive.current.address")}
+                  </span>
+
+                  {walletSubAddress && !isPublicWallet && (
                     <ValidateButton
                       subaddress={walletSubAddress}
                       validateAddress={validateAddress}
                     />
-                  )
-                }
-              </div>
-            )}
+                  )}
+                </div>
+              )}
             >
-              <CopyArea value={walletSubAddress?.address || ""} qaSelector="receive-address">
-                <EditLabelForm id={walletId} address={walletSubAddress?.address || ""} label={walletSubAddress?.label || ""} block />
+              <CopyArea
+                value={walletSubAddress?.address || ""}
+                qaSelector="receive-address"
+              >
+                {!isPublicWallet && (
+                  <EditLabelForm
+                    id={walletId}
+                    address={walletSubAddress?.address || ""}
+                    label={walletSubAddress?.label || ""}
+                    block
+                  />
+                )}
+
                 {walletSubAddress?.address}
-                {" "}
+                &nbsp;
                 {walletSubAddress?.isUsed ? (
                   <span className="theme-text-secondary font-bold">
-                    {" "}
-                    (
+                    &nbsp;
                     {t("wallet.receive.used")}
-                    )
                   </span>
                 ) : ""}
               </CopyArea>
             </Label>
-            {viewOnly || isPublicWallet ? (
-              <Tooltip
-                className="w-full"
-                content={(
-                  <div className="md:w-48">{t("wallet.receive.readonly.tooltip")}</div>
-              )}
-              >
+
+            {!isPublicWallet && (
+              viewOnly ? (
+                <Tooltip
+                  className="w-full"
+                  content={(
+                    <div className="md:w-48">
+                      {t("wallet.receive.readonly.tooltip")}
+                    </div>
+                  )}
+                >
+                  <Button
+                    className="mt-6"
+                    name="create-new-address-btn"
+                    disabled
+                    block
+                  >
+                    {t("wallet.receive.generate.address")}
+                  </Button>
+                </Tooltip>
+              ) : (
                 <Button
                   className="mt-6"
                   name="create-new-address-btn"
-                  disabled
+                  onClick={(): void => {
+                    if (typeof createSubaddress === "function") {
+                      createSubaddress({ walletId })
+                        .then((subaddress) => {
+                          validateAddress(subaddress, "new");
+                          fetchSubaddresses({ walletId, page });
+                        });
+                    }
+                  }}
+                  disabled={subaddressCreating}
+                  loading={subaddressCreating}
                   block
                 >
                   {t("wallet.receive.generate.address")}
                 </Button>
-              </Tooltip>
-            ) : (
-              <Button
-                className="mt-6"
-                name="create-new-address-btn"
-                onClick={(): void => {
-                  if (typeof createSubaddress === "function") {
-                    createSubaddress({ walletId })
-                      .then((subaddress) => {
-                        validateAddress(subaddress, "new");
-                        fetchSubaddresses({ walletId, page });
-                      });
-                  }
-                }}
-                disabled={subaddressCreating}
-                loading={subaddressCreating}
-                block
-              >
-                {t("wallet.receive.generate.address")}
-              </Button>
+              )
             )}
           </div>
         </div>
@@ -206,31 +245,29 @@ const ReceivePayment: React.FC<Props> = ({
                 isEnterprise={isEnterprise}
               />
             )}
-            {
-              subaddresses.map((subaddress) => (
-                <li key={subaddress.address} className="mb-3">
-                  <SubaddressItem
-                    walletId={walletId}
-                    subaddress={subaddress}
-                    validateAddress={validateAddress}
-                  />
-                </li>
-              ))
-            }
+
+            {subaddresses.map((subaddress) => (
+              <li key={subaddress.address} className="mb-3">
+                <SubaddressItem
+                  walletId={walletId}
+                  subaddress={subaddress}
+                  validateAddress={validateAddress}
+                  isPublicWallet={isPublicWallet}
+                />
+              </li>
+            ))}
           </ul>
 
-          {
-            pages > 1 && (
-              <Pagination
-                loading={listLoading}
-                page={page}
-                pageCount={pages}
-                hasNextPage={hasNextPage}
-                hasPreviousPage={hasPreviousPage}
-                onChange={setPage}
-              />
-            )
-          }
+          {pages > 1 && (
+            <Pagination
+              loading={listLoading}
+              page={page}
+              pageCount={pages}
+              hasNextPage={hasNextPage}
+              hasPreviousPage={hasPreviousPage}
+              onChange={setPage}
+            />
+          )}
         </div>
       </div>
     </WalletPageTemplate>

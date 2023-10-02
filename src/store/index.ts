@@ -1,9 +1,11 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { sessionSlice, setSigningPublicKey, setToken } from "./sessionSlice";
 import { walletSlice } from "./walletSlice";
+import { walletActivitySlice } from "./walletActivityListSlice";
 import { walletListSlice } from "./walletListSlice";
 import { otpSlice } from "./otpSlice";
 import { transactionListSlice } from "./transactionListSlice";
+import { accountActivitySlice } from "./accountActivityListSlice";
 import { changeEmailSlice } from "./changeEmailSlice";
 import { transactionDetailsSlice } from "./transactionDetailsSlice";
 import { subaddressListSlice } from "./subaddressListSlice";
@@ -29,9 +31,11 @@ import { transactionListExportSlice } from "./transactionExportSlice";
 const combinedReducer = combineReducers({
   session: sessionSlice.reducer,
   wallet: walletSlice.reducer,
+  walletActivityList: walletActivitySlice.reducer,
   walletList: walletListSlice.reducer,
   otp: otpSlice.reducer,
   transactionList: transactionListSlice.reducer,
+  accountActivityList: accountActivitySlice.reducer,
   changeEmail: changeEmailSlice.reducer,
   transactionDetails: transactionDetailsSlice.reducer,
   subaddressList: subaddressListSlice.reducer,

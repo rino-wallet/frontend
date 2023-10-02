@@ -63,6 +63,7 @@ const TransactionMemo: React.FC<Props> = ({ walletId, transactionId, memo }) => 
           error={formik.touched.memo ? formik.errors.memo || "" : ""}
         />
       </Label>
+
       <div className="mt-2 text-right">
         {formik.dirty ? (
           <Button
@@ -84,6 +85,7 @@ const TransactionMemo: React.FC<Props> = ({ walletId, transactionId, memo }) => 
           </Button>
         ) : null}
       </div>
+
       <FormErrors errors={formik.errors} />
     </div>
   );

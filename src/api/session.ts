@@ -19,7 +19,11 @@ import {
   ChangingEmailInfoPayload,
   ChangingEmailInfoResponse,
   ChangeEmailConfirmPayload,
-  UpdateUserPayload, AcceptWalletSharePayload, ResendActivationEmailPayload,
+  UpdateUserPayload,
+  AcceptWalletSharePayload,
+  ResendActivationEmailPayload,
+  ListRequestParams,
+  FetchAccountActivityResponse,
 } from "../types";
 
 export class SessionApi extends Api {
@@ -153,6 +157,13 @@ export class SessionApi extends Api {
   public acceptWalletShare({ walletId, shareId }: AcceptWalletSharePayload): Promise<void> {
     return this.post<void, ConfirmEmailPayload>(
       `/wallets/${walletId}/share/${shareId}/accept_share/`,
+    ).then(this.success);
+  }
+
+  public getAccountActivity(params: ListRequestParams): Promise<FetchAccountActivityResponse> {
+    return this.get<FetchAccountActivityResponse>(
+      "/accounts/me/activity",
+      { params },
     ).then(this.success);
   }
 }

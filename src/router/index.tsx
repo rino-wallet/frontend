@@ -13,46 +13,62 @@ const AcceptWalletShare = Loadable({
   loader: () => import("../pages/AcceptWalletShare" /* webpackChunkName: "NotFound" */),
   loading: Loading,
 });
+
 const Login = Loadable({
   loader: () => import("../pages/Login" /* webpackChunkName: "Login" */),
   loading: Loading,
 });
+
 const Register = Loadable({
   loader: () => import("../pages/Register" /* webpackChunkName: "Register" */),
   loading: Loading,
 });
+
 const ResetPassword = Loadable({
   loader: () => import("../pages/ResetPassword" /* webpackChunkName: "ResetPassword" */),
   loading: Loading,
 });
+
+const AccountActivity = Loadable({
+  loader: () => import("../pages/Settings/AccountActivity" /* webpackChunkName: "AccountActivity" */),
+  loading: Loading,
+});
+
 const Settings = Loadable({
   loader: () => import("../pages/Settings" /* webpackChunkName: "Settings" */),
   loading: Loading,
 });
+
 const Wallets = Loadable({
   loader: () => import("../pages/Wallets" /* webpackChunkName: "Wallets" */),
   loading: Loading,
 });
+
 const NewWallet = Loadable({
   loader: () => import("../pages/NewWallet" /* webpackChunkName: "NewWallet" */),
   loading: Loading,
 });
+
 const Wallet = Loadable({
   loader: () => import("../pages/Wallet" /* webpackChunkName: "Wallet" */),
   loading: Loading,
 });
+
 const PublicWallet = Loadable({
   loader: () => import("../pages/Wallet/PublicWallet" /* webpackChunkName: "PublicWallet" */),
   loading: Loading,
 });
+
 const ChangeEmailConfirm = Loadable({
   loader: () => import("../pages/ChangeEmailConfirm" /* webpackChunkName: "ChangeEmailConfirm" */),
   loading: Loading,
 });
+
 const Components = Loadable({
   loader: () => import("../pages/Components" /* webpackChunkName: "Components" */),
   loading: Loading,
 });
+
 const GenerateKeyPair = Loadable({
   loader: () => import("../pages/GenerateKeyPair" /* webpackChunkName: "GenerateKeyPair" */),
   loading: Loading,
@@ -173,6 +189,16 @@ const ROUTER_CONFIG: RouteType[] = [
     component: (props: any): ReactElement => <Settings {...props} />,
     isPrivate: true,
     key: "settings",
+  },
+  {
+    path: ROUTES.accountActivity,
+    metaTitle: defaultTitle,
+    metaDescription: defaultDescription,
+    metaKeywords: defaultMetaKeywords,
+    metaOgImage: defaultMetaOgImage,
+    component: (props: any): ReactElement => <AccountActivity {...props} />,
+    isPrivate: true,
+    key: "account_activity",
   },
   {
     path: ROUTES.wallets,

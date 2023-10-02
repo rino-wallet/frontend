@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { FC, useEffect } from "react";
 import {
   Route, Routes, useParams, useNavigate,
 } from "react-router-dom";
@@ -21,16 +21,20 @@ interface Props {
   };
 }
 
-const PublicWalletPageContainer: React.FC<Props> = () => {
+const PublicWalletPageContainer: FC<Props> = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const walletId = id as string;
   const fetchWalletDetails = useThunkActionCreator(fetchWalletDetailsThunk);
   const fetchWalletSubaddress = useThunkActionCreator(fetchWalletSubaddressThunk);
   const dispatch = useDispatch();
+
+  sessionStorage.setItem("enterprise", "false");
+
   useEffect(() => (): void => {
     dispatch(changeLocation());
   }, []);
+
   useEffect(() => {
     fetchWalletDetails({ id: walletId })
       .catch(() => {
@@ -38,6 +42,7 @@ const PublicWalletPageContainer: React.FC<Props> = () => {
       });
     fetchWalletSubaddress({ walletId });
   }, []);
+
   return (
     <Routes>
       <Route index element={<TransactionsContainer walletId={walletId} />} />

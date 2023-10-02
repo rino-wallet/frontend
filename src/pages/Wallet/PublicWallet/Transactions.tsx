@@ -14,6 +14,7 @@ export const TransactionsContainer: React.FC<Props> = ({ walletId }) => {
   const transactions = useSelector(transactionListSelectors.getTransactions);
   const { pages, hasPreviousPage, hasNextPage } = useSelector(transactionListSelectors.getListMetaData);
   const fetchWalletTransactions = useThunkActionCreator(fetchWalletTransactionsThunk);
+
   return (
     <WalletPageTemplate
       wallet={wallet}

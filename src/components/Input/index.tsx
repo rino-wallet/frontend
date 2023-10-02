@@ -55,7 +55,7 @@ export const Input = React.forwardRef<HTMLInputElement, Props>((props, ref) => {
             {
               "theme-control-border": !error,
               "theme-border-error": !!error,
-              "pr-1": !!postfix,
+              "pr-12": !!postfix,
             },
           )}
           disabled={disabled}

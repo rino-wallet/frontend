@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { FC, useState } from "react";
 import { format } from "date-fns";
 import classNames from "classnames";
 import { useTranslation } from "react-i18next";
@@ -17,17 +17,27 @@ interface Props {
   isPublicWallet?: boolean;
 }
 
-const TransactionItem: React.FC<Props> = ({ transaction, walletId, isPublicWallet }) => {
+const TransactionItem: FC<Props> = ({
+  transaction,
+  walletId,
+  isPublicWallet,
+}) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const timestamp = transaction.timestamp ? transaction.timestamp : transaction.createdAt;
   return (
     <div>
       <TransactionItemLayout
-        type={transaction.order
-          ? <div className="text-purple-500"><Icon name="refresh" /></div>
-          // eslint-disable-next-line
-          : (transaction.direction === "in" ? <div className="text-green-400"><Icon name="get" /></div> : <div className="text-blue-400"><Icon name="send" /></div>)}
+        type={
+          transaction.order
+            ? <div className="text-purple-500"><Icon name="refresh" /></div>
+            // eslint-disable-next-line
+            : (
+              transaction.direction === "in"
+                ? <div className="text-green-400"><Icon name="get" /></div>
+                : <div className="text-blue-400"><Icon name="send" /></div>
+            )
+        }
         amount={(
           <span
             className={classNames({
@@ -37,27 +47,31 @@ const TransactionItem: React.FC<Props> = ({ transaction, walletId, isPublicWalle
             })}
             data-qa-selector="tx-amount"
           >
-            {
-              transaction.txToSelf ? (
-                <div>
-                  <Tooltip content={<div className="p-1">{t("wallet.transaction.sent.back")}</div>}>
-                    <div>
-                      <span className="text-xl">&#8635;</span>
-                      {" "}
-                      0
+            {transaction.txToSelf ? (
+              <div>
+                <Tooltip
+                  content={(
+                    <div className="p-1">
+                      {t("wallet.transaction.sent.back")}
                     </div>
-                  </Tooltip>
-                </div>
-              ) : (
-                <div>
-                  {transaction.direction === "out" ? "-" : "+"}
-                  {" "}
-                  <FormatNumber value={piconeroToMonero(transaction.amount)} />
-                  {" "}
-                  XMR
-                </div>
-              )
-            }
+                  )}
+                >
+                  <div>
+                    <span className="text-xl">&#8635;</span>
+                    {" "}
+                    0
+                  </div>
+                </Tooltip>
+              </div>
+            ) : (
+              <div>
+                {transaction.direction === "out" ? "-" : "+"}
+                {" "}
+                <FormatNumber value={piconeroToMonero(transaction.amount)} />
+                {" "}
+                XMR
+              </div>
+            )}
           </span>
         )}
         action={(
@@ -81,9 +95,14 @@ const TransactionItem: React.FC<Props> = ({ transaction, walletId, isPublicWalle
           />
         )}
       />
-      {
-        open && <TransactionDetails isPublicWallet={isPublicWallet} transaction={transaction} walletId={walletId} />
-      }
+
+      {open && (
+        <TransactionDetails
+          isPublicWallet={isPublicWallet}
+          transaction={transaction}
+          walletId={walletId}
+        />
+      )}
     </div>
   );
 };

@@ -12,7 +12,16 @@ import {
 } from "../../../../../types";
 import routes from "../../../../../router/routes";
 import {
-  Label, Button, Input, AmountField, Collapsible, Radio, Tooltip, DisableAutofill, Icon,
+  AddressField,
+  AmountField,
+  Button,
+  Collapsible,
+  DisableAutofill,
+  Icon,
+  Input,
+  Label,
+  Radio,
+  Tooltip,
 } from "../../../../../components";
 import { moneroToPiconero, piconeroToMonero } from "../../../../../utils";
 import { transactionPriorities } from "../../../../../constants";
@@ -127,16 +136,24 @@ const TransactionForm: React.FC<Props> = ({
           <DisableAutofill />
           <div className="m-auto md:w-3/4">
             <div className="form-field">
-              <Label labelClassName="md:text-right" label={t("wallet.send.to.address")} isFormField inline>
-                <Input
-                  autoComplete="off"
-                  type="text"
+              <Label
+                labelClassName="md:text-right"
+                label={t("wallet.send.to.address")}
+                isFormField
+                inline
+              >
+                <AddressField
                   name="address"
                   value={values.address}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   placeholder={t("wallet.send.destination.address") as string}
-                  error={touched.address ? t(errors.address as string) || "" : ""}
+                  error={
+                    touched.address
+                      ? t(errors.address as string) || ""
+                      : ""
+                  }
+                  onScanAddress={(address) => setFieldValue("address", address)}
                 />
               </Label>
             </div>

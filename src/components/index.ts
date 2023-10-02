@@ -1,8 +1,9 @@
+import { AddressField } from "./AddressField";
 import Loading from "./Loading";
 import BindHotKeys from "./BindHotKeys";
 import Modal from "./Modal";
 import Copy from "./Copy";
-import { Button } from "./Button";
+import { Button, UI_SIZE } from "./Button";
 import { Input } from "./Input";
 import { TextArea } from "./TextArea";
 import { Checkbox } from "./Checkbox";
@@ -33,11 +34,13 @@ import { UploadFile } from "./UploadFile";
 import { DownloadButton } from "./DownloadButton";
 
 export {
+  AddressField,
   Loading,
   BindHotKeys,
   Modal,
   Copy,
   Button,
+  UI_SIZE,
   Input,
   TextArea,
   Checkbox,

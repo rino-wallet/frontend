@@ -86,91 +86,96 @@ export const WalletPageTemplate: React.FC<Props> = ({
     <section>
       <header className="flex items-center mb-8 w-full relative hidden md:flex">
         <div className="mr-6">
-          {
-            typeof goBackCallback === "function" && (
-              <Button
-                size={Button.size.BIG}
-                onClick={goBackCallback}
-                name="back-button"
-                icon
-              >
-                <div className="w-5 h-5 leading-5 text-2xl theme-text-secondary">&#x3c;</div>
-              </Button>
-            )
-          }
+          {typeof goBackCallback === "function" && (
+            <Button
+              size={Button.size.BIG}
+              onClick={goBackCallback}
+              name="back-button"
+              icon
+            >
+              <div className="w-5 h-5 leading-5 text-2xl theme-text-secondary">&#x3c;</div>
+            </Button>
+          )}
         </div>
+
         <h1 className="text-4xl font-bold flex-1 font-catamaran min-w-0 overflow-ellipsis overflow-hidden whitespace-nowrap" data-qa-selector="wallet-name">
           {title || wallet?.name}
           <span>
             {isPublicWallet ? <p className="text-lg font-normal theme-text-secondary">Public read-only view of this wallet.</p> : null}
           </span>
         </h1>
-        {
-          (showActions && !isPublicWallet) && (
-            <div>
-              <div className="flex justify-center space-x-5 md:justify-end">
-                {
-                  sendButtonDisabled ? (
-                    <div>
-                      <Tooltip
-                        content={`
-                            ${!userCanCreateTransaction ? "This wallet requires 2FA for spending. " : ""}
-                            ${insufficientBalance && !viewOnly ? "Insufficient balance." : ""}
-                            ${viewOnly ? "This functionality is not available in read-only wallets." : ""}
-                          `}
-                      >
-                        <Button size={Button.size.BIG} disabled={sendButtonDisabled} name="button-send">
-                          <div className="flex space-x-3 items-center">
-                            <div>
-                              {t("common.send")}
-                              {
-                                features?.exchange && (
-                                  <span className="hidden md:inline">
-                                    {" "}
-                                    /
-                                    {" "}
-                                    {t("common.exchange")}
-                                  </span>
-                                )
-                              }
-                            </div>
-                          </div>
-                        </Button>
-                      </Tooltip>
-                    </div>
-                  ) : (
-                    <Link to={`${generatePath(routes.wallet, { id })}/send`}>
-                      <Button size={Button.size.BIG} name="button-send">
+
+        {(showActions) && (
+          <div>
+            <div className="flex justify-center space-x-5 md:justify-end">
+              {isPublicWallet
+                ? undefined
+                : sendButtonDisabled ? (
+                  <div>
+                    <Tooltip
+                      content={`
+                        ${!userCanCreateTransaction ? "This wallet requires 2FA for spending. " : ""}
+                        ${insufficientBalance && !viewOnly ? "Insufficient balance." : ""}
+                        ${viewOnly ? "This functionality is not available in read-only wallets." : ""}
+                      `}
+                    >
+                      <Button size={Button.size.BIG} disabled={sendButtonDisabled} name="button-send">
                         <div className="flex space-x-3 items-center">
                           <div>
                             {t("common.send")}
                             {
-                                features?.exchange && (
-                                  <span className="hidden md:inline">
-                                    {" "}
-                                    /
-                                    {" "}
-                                    {t("common.exchange")}
-                                  </span>
-                                )
-                              }
+                              features?.exchange && (
+                                <span className="hidden md:inline">
+                                  {" "}
+                                  /
+                                  {" "}
+                                  {t("common.exchange")}
+                                </span>
+                              )
+                            }
                           </div>
                         </div>
                       </Button>
-                    </Link>
-                  )
+                    </Tooltip>
+                  </div>
+                ) : (
+                  <Link to={`${generatePath(routes.wallet, { id })}/send`}>
+                    <Button size={Button.size.BIG} name="button-send">
+                      <div className="flex space-x-3 items-center">
+                        <div>
+                          {t("common.send")}
+                          {
+                              features?.exchange && (
+                                <span className="hidden md:inline">
+                                  {" "}
+                                  /
+                                  {" "}
+                                  {t("common.exchange")}
+                                </span>
+                              )
+                            }
+                        </div>
+                      </div>
+                    </Button>
+                  </Link>
+                )}
+
+              <Link
+                to={
+                  `${generatePath(isPublicWallet ? routes.publicWallet : routes.wallet, { id })}/receive`
                 }
-                <Link to={`${generatePath(isPublicWallet ? routes.publicWallet : routes.wallet, { id })}/receive`}>
-                  <Button size={Button.size.BIG} name="button-receive">
-                    <div className="flex space-x-3 items-center">
-                      <span>{t("common.receive")}</span>
-                    </div>
-                  </Button>
-                </Link>
-              </div>
+              >
+                <Button size={Button.size.BIG} name="button-receive">
+                  <div className="flex space-x-3 items-center">
+                    <span>
+                      {t(isPublicWallet ? "common.addresses" : "common.receive")}
+                    </span>
+                  </div>
+                </Button>
+              </Link>
             </div>
-          )
-        }
+          </div>
+        )}
       </header>
       <div className={classNames("theme-bg-panel theme-border border rounded-large mb-8 md:flex md:items-stretch", gradient.light)}>
         <div className={classNames("-my-px -mx-px flex-shrink-0 w-full h-5 md:w-16 md:h-auto md:rounded-large md:rounded-tr-none", gradient.main)} />

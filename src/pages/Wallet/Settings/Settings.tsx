@@ -1,10 +1,17 @@
-import React, { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, {
+  FC,
+  useMemo,
+  useState,
+  ChangeEvent,
+} from "react";
+import { generatePath, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { Trans, useTranslation } from "react-i18next";
+
+import classNames from "classnames";
 import {
-  Button, Label, Input, Panel, Tooltip, Copy, Icon, Switch, Select,
+  Button, Label, Input, Panel, Tooltip, Copy, Icon, Switch, Select, UI_SIZE,
 } from "../../../components";
 import { FormErrors, CopyArea } from "../../../modules/index";
 import {
@@ -17,6 +24,7 @@ import { selectors as sessionSelectors } from "../../../store/sessionSlice";
 import { accessLevels, APP_URLS_MAP } from "../../../constants";
 import questionBox from "./message-question.svg";
 import { moneroToPiconero, piconeroToMonero } from "../../../utils";
+import routes from "../../../router/routes";
 
 const settingsValidationSchema = yup.object().shape({
   name: yup
@@ -36,7 +44,7 @@ interface Props {
   updateWalletDetails: (data: UpdateWalletDetailsPayload) => Promise<UpdateWalletDetailsResponse>;
 }
 
-const Settings: React.FC<Props> = ({
+const Settings: FC<Props> = ({
   updateWalletDetails, walletId, wallet, canDelete, canUpdateSettings,
 }) => {
   const { t } = useTranslation();
@@ -68,6 +76,7 @@ const Settings: React.FC<Props> = ({
 
   const approvalsOptions = useMemo(() => {
     const options = [];
+
     for (let i = 0; i <= numApprovers; i += 1) {
       options.push(
         <option value={i} key={i}>
@@ -75,6 +84,7 @@ const Settings: React.FC<Props> = ({
         </option>,
       );
     }
+
     return options;
   }, [numApprovers]);
 
@@ -84,23 +94,52 @@ const Settings: React.FC<Props> = ({
     initialValues: {
       is_public: wallet ? wallet.isPublic : false,
       public_slug: wallet ? wallet.publicSlug || "" : "",
+      public_memos: wallet ? wallet.publicMemos : false,
       name: wallet ? wallet.name : "",
       requires_2fa: wallet ? wallet.requires2Fa : false,
-      daily_limit: wallet?.maxDailyAmount ? piconeroToMonero(String(wallet.maxDailyAmount)) : "0",
-      transaction_limit: wallet?.maxAmount ? piconeroToMonero(String(wallet.maxAmount)) : "0",
-      requiredApprovals: wallet?.minApprovals ? String(wallet.minApprovals) : "0",
+      daily_limit: wallet?.maxDailyAmount
+        ? piconeroToMonero(String(wallet.maxDailyAmount))
+        : "0",
+      transaction_limit: wallet?.maxAmount
+        ? piconeroToMonero(String(wallet.maxAmount))
+        : "0",
+      requiredApprovals: wallet?.minApprovals
+        ? String(wallet.minApprovals)
+        : "0",
     },
-    onSubmit: async (values, { setErrors, resetForm }): Promise<UpdateWalletDetailsResponse | void> => {
+    onSubmit: async (
+      values,
+      { setErrors, resetForm },
+    ): Promise<UpdateWalletDetailsResponse | void> => {
       try {
         const payload = {
           id: walletId,
           requires_2fa: values.requires_2fa,
           // it checks if is_public or public_slug changed,
           // and adds public_slug value to payload only if is_public equal to true
-          ...(((values.is_public !== wallet.isPublic || values.public_slug !== wallet.publicSlug) && features?.publicWallet) ? {
-            is_public: values.is_public,
-            ...(values.is_public ? { public_slug: values.public_slug } : {}),
-          } : {}),
+          ...(((
+            values.is_public !== wallet.isPublic
+              || values.public_slug !== wallet.publicSlug
+          ) && features?.publicWallet)
+            ? {
+              is_public: values.is_public,
+              public_memos: values.public_memos,
+              ...(values.is_public
+                ? { public_slug: values.public_slug }
+                : {}
+              ),
+            }
+            : {}
+          ),
+          ...(((
+            values.is_public !== wallet.isPublic
+              || values.public_memos !== wallet.publicMemos
+          ) && features?.publicWallet)
+            ? {
+              public_memos: values.public_memos,
+            }
+            : {}
+          ),
           ...(values.name !== wallet.name ? { name: values.name } : {}), // TODO remove this workaround after BE fix
           ...(isEnterprise ? {
             max_daily_amount: moneroToPiconero(values.daily_limit),
@@ -108,6 +147,7 @@ const Settings: React.FC<Props> = ({
             min_approvals: parseInt(values.requiredApprovals, 10),
           } : {}),
         };
+
         if (wallet.requires2Fa && !values.requires_2fa) {
           await enter2FACode({
             asyncCallback: async (code: string) => {
@@ -128,16 +168,18 @@ const Settings: React.FC<Props> = ({
         const {
           non_field_errors, message, detail, ...formErrors
         } = err || {};
+
         setNonFieldErrors({ non_field_errors, message, detail });
         setErrors(formErrors || {});
       }
     },
   });
 
-  function goToSettings(): void{
+  const goToSettings = (): void => {
     navigate("/settings");
     enable2FA();
-  }
+  };
+
   const status2fa = formik.values.requires_2fa
     ? t("wallet.settings.disable")
     : t("wallet.settings.enable");
@@ -152,22 +194,22 @@ const Settings: React.FC<Props> = ({
           {" "}
           {wallet?.name}
         </div>
+
         <div className="flex space-x-3 hidden md:block">
-          {
-            formik.dirty && (
-              <Button
-                variant={Button.variant.GRAY}
-                size={Button.size.MEDIUM}
-                type="button"
-                onClick={(): void => {
-                  formik.resetForm();
-                }}
-                name="cancel-btn"
-              >
-                {t("common.cancel")}
-              </Button>
-            )
-          }
+          {formik.dirty && (
+            <Button
+              variant={Button.variant.GRAY}
+              size={Button.size.MEDIUM}
+              type="button"
+              onClick={(): void => {
+                formik.resetForm();
+              }}
+              name="cancel-btn"
+            >
+              {t("common.cancel")}
+            </Button>
+          )}
+
           <Button
             variant={
               isEnterprise
@@ -189,19 +231,25 @@ const Settings: React.FC<Props> = ({
       </div>
     )}
     >
-      {
-        deleteModalOpen && (
-          <DeleteWallet
-            walletId={walletId}
-            goBackCallback={(): void => setDeleteModalOpen(false)}
-          />
-        )
-      }
+      {deleteModalOpen && (
+        <DeleteWallet
+          walletId={walletId}
+          goBackCallback={(): void => setDeleteModalOpen(false)}
+        />
+      )}
+
       <section className="border-t theme-border">
         <Panel.Body>
           <div>
-            <h3 className="uppercase font-bold mb-8">{t("wallet.settings.general")}</h3>
-            <form className="md:w-1/2" name="form-wallet-settings" onSubmit={formik.handleSubmit}>
+            <h3 className="uppercase font-bold mb-8">
+              {t("wallet.settings.general")}
+            </h3>
+
+            <form
+              className="md:w-1/2"
+              name="form-wallet-settings"
+              onSubmit={formik.handleSubmit}
+            >
               <div className="form-field">
                 <Label label={t("wallet.settings.wallet.name")}>
                   <Input
@@ -215,6 +263,7 @@ const Settings: React.FC<Props> = ({
                   />
                 </Label>
               </div>
+
               <div className="form-field">
                 <Label label={t("wallet.settings.wallet.address")}>
                   <CopyArea value={wallet?.address || ""} qaSelector="wallet-address">
@@ -222,80 +271,146 @@ const Settings: React.FC<Props> = ({
                   </CopyArea>
                 </Label>
               </div>
-              {
-                features?.publicWallet && (
-                  <>
-                    <h3 className="uppercase font-bold mb-8">Public wallet</h3>
-                    <div className="mb-3">
-                      <div className="form-field">
-                        <Switch
-                          id="is_public"
-                          checked={formik.values.is_public}
-                          onChange={
-                            (e: React.ChangeEvent<HTMLInputElement>): void | null => {
+
+              {features?.publicWallet && (
+                <>
+                  <h3 className="uppercase font-bold mb-8">Public wallet</h3>
+
+                  <div className="mb-3">
+                    <div className="form-field">
+                      <Switch
+                        id="is_public"
+                        checked={formik.values.is_public}
+                        onChange={
+                          (e: ChangeEvent<HTMLInputElement>): void | null => {
+                            formik.setFieldValue(
+                              "is_public",
+                              e.target.checked,
+                            );
+
+                            if (!e.target.checked) {
                               formik.setFieldValue(
-                                "is_public",
-                                e.target.checked,
+                                "public_memos",
+                                false,
                               );
                             }
                           }
-                          isEnterprise
-                        >
-                          <div className="flex items-center">
-                            <span>{t("wallet.settings.make.public.label")}</span>
-                            <Tooltip
-                              content={(
-                                <p className="text-sm">{t("wallet.settings.make.public.message")}</p>
-                              )}
+                        }
+                        isEnterprise
+                      >
+                        <div className="flex items-center">
+                          <span>{t("wallet.settings.make.public.label")}</span>
+
+                          <Tooltip
+                            content={(
+                              <p className="text-sm">
+                                {t("wallet.settings.make.public.message")}
+                              </p>
+                            )}
+                          >
+                            <div
+                              className="text-sm cursor-pointer ml-1"
+                              data-qa-selector="cursor-pointer-tx-priority-tooltip"
                             >
-                              <div className="text-sm cursor-pointer ml-1" data-qa-selector="cursor-pointer-tx-priority-tooltip">
-                                <Icon name="info" />
-                              </div>
-                            </Tooltip>
-                          </div>
-                        </Switch>
-                      </div>
-                      <div className="form-field">
-                        <Label label={
-                            (
-                              <div>
-                                {t("wallet.settings.wallet.identifier")}
-                                <span className="ml-1 theme-text-secondary font-semibold text-sm">
-                                  (
-                                  {t("wallet.settings.required")}
-                                  )
-                                </span>
-                              </div>
-                            )
-                          }
-                        >
-                          <Input
-                            type="text"
-                            name="public_slug"
-                            value={formik.values.public_slug}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            disabled={!formik.values.is_public}
-                            error={t(formik.errors.public_slug as string) || ""}
-                          />
-                        </Label>
-                      </div>
-                      {wallet?.isPublic && (
-                        <Label label="Wallet URL:">
-                          <div className="break-all text-sm">
-                            <Copy value={`${publicUrl}/public/wallets/${wallet?.publicSlug}`}>
-                              {publicUrl}
-                              /public/wallets/
-                              {wallet?.publicSlug}
-                            </Copy>
-                          </div>
-                        </Label>
-                      )}
+                              <Icon name="info" />
+                            </div>
+                          </Tooltip>
+                        </div>
+                      </Switch>
                     </div>
-                  </>
-                )
-              }
-              <FormErrors fields={["requires_2fa"]} errors={{ ...formik.errors, ...nonFieldErrors }} />
+
+                    <div className="form-field">
+                      <Switch
+                        disabled={!formik.values.is_public}
+                        id="public_memos"
+                        checked={formik.values.public_memos}
+                        onChange={
+                          (e: ChangeEvent<HTMLInputElement>): void | null => {
+                            formik.setFieldValue(
+                              "public_memos",
+                              e.target.checked,
+                            );
+                          }
+                        }
+                        isEnterprise
+                      >
+                        <div className="flex items-center">
+                          <span
+                            className={
+                              classNames(
+                                {
+                                  "theme-text-secondary": !formik.values.is_public,
+                                },
+                              )
+                            }
+                          >
+                            {t("wallet.settings.showInternalMemo.label")}
+                          </span>
+
+                          <Tooltip
+                            content={(
+                              <p className="text-sm">
+                                {t("wallet.settings.showInternalMemo.message")}
+                              </p>
+                            )}
+                          >
+                            <div
+                              className="text-sm cursor-pointer ml-1"
+                              data-qa-selector="cursor-pointer-tx-priority-tooltip"
+                            >
+                              <Icon name="info" />
+                            </div>
+                          </Tooltip>
+                        </div>
+                      </Switch>
+                    </div>
+
+                    <div className="form-field">
+                      <Label label={(
+                        <div>
+                          {t("wallet.settings.wallet.identifier")}
+                          <span className="ml-1 theme-text-secondary font-semibold text-sm">
+                            (
+                            {t("wallet.settings.required")}
+                            )
+                          </span>
+                        </div>
+                      )}
+                      >
+                        <Input
+                          type="text"
+                          name="public_slug"
+                          value={formik.values.public_slug}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                          disabled={!formik.values.is_public}
+                          error={t(formik.errors.public_slug as string) || ""}
+                        />
+                      </Label>
+                    </div>
+
+                    {wallet?.isPublic && (
+                      <Label label="Wallet URL:">
+                        <div className="break-all text-sm">
+                          <Copy
+                            value={`${publicUrl}/public/wallets/${wallet?.publicSlug}`}
+                          >
+                            {publicUrl}
+                            /public/wallets/
+                            {wallet?.publicSlug}
+                          </Copy>
+                        </div>
+                      </Label>
+                    )}
+                  </div>
+                </>
+              )}
+
+              <FormErrors
+                fields={["requires_2fa"]}
+                errors={{ ...formik.errors, ...nonFieldErrors }}
+              />
+
               {canDelete && (
                 <Button
                   className="mt-8 md:hidden"
@@ -306,23 +421,24 @@ const Settings: React.FC<Props> = ({
                   {t("wallet.settings.delete.wallet")}
                 </Button>
               )}
+
               <hr className="border-t theme-border my-10 -mx-10 md:hidden" />
+
               <div className="flex space-x-3 md:hidden">
-                {
-                  formik.dirty && (
-                    <Button
-                      variant={Button.variant.GRAY}
-                      size={Button.size.MEDIUM}
-                      type="button"
-                      onClick={(): void => {
-                        formik.resetForm();
-                      }}
-                      name="cancel-btn"
-                    >
-                      {t("common.cancel")}
-                    </Button>
-                  )
-                }
+                {formik.dirty && (
+                  <Button
+                    variant={Button.variant.GRAY}
+                    size={Button.size.MEDIUM}
+                    type="button"
+                    onClick={(): void => {
+                      formik.resetForm();
+                    }}
+                    name="cancel-btn"
+                  >
+                    {t("common.cancel")}
+                  </Button>
+                )}
+
                 <Button
                   variant={Button.variant.PRIMARY_LIGHT}
                   size={Button.size.MEDIUM}
@@ -338,6 +454,7 @@ const Settings: React.FC<Props> = ({
                 </Button>
               </div>
             </form>
+
             {canDelete && (
               <div className="hidden md:block">
                 <Button
@@ -351,48 +468,64 @@ const Settings: React.FC<Props> = ({
               </div>
             )}
           </div>
+
           <hr className="border-t theme-border my-10 -mx-10 md:hidden" />
+
           <div>
             <h3 className="uppercase font-bold mb-8">Security</h3>
-            {
-              features?.limits && (
-                <form className="md:w-full" name="form-wallet-settings-limits" onSubmit={formik.handleSubmit}>
-                  <div className="form-field flex gap-8">
+            {features?.limits && (
+              <form
+                className="md:w-full"
+                name="form-wallet-settings-limits"
+                onSubmit={formik.handleSubmit}
+              >
+                <div className="form-field flex gap-8">
 
-                    {/* TOOLTIPS LEFT TO IMPLEMENT */}
+                  {/* TOOLTIPS LEFT TO IMPLEMENT */}
 
-                    <div className="relative">
-                      <Label label="DAILY LIMIT">
-                        <Input
-                          disabled={!canUpdateSettings}
-                          type="number"
-                          name="daily_limit"
-                          value={formik.values.daily_limit}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          error={formik.touched.name ? formik.errors.name || "" : ""}
-                        />
-                        <span className="absolute right-12 top-1/2 text-lg theme-text-secondary">XMR</span>
-                      </Label>
-                    </div>
-                    <div className="relative">
-                      <Label label="Transaction limit">
-                        <Input
-                          disabled={!canUpdateSettings}
-                          type="number"
-                          name="transaction_limit"
-                          value={formik.values.transaction_limit}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          error={formik.touched.name ? formik.errors.name || "" : ""}
-                        />
-                        <span className="absolute right-12 top-1/2 text-lg theme-text-secondary">XMR</span>
-                      </Label>
-                    </div>
+                  <div className="relative">
+                    <Label label="DAILY LIMIT">
+                      <Input
+                        disabled={!canUpdateSettings}
+                        type="number"
+                        name="daily_limit"
+                        value={formik.values.daily_limit}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={formik.touched.name ? formik.errors.name || "" : ""}
+                      />
+
+                      <span
+                        className="absolute right-12 top-1/2 text-lg theme-text-secondary"
+                      >
+                        XMR
+                      </span>
+                    </Label>
                   </div>
-                </form>
-              )
-            }
+
+                  <div className="relative">
+                    <Label label="Transaction limit">
+                      <Input
+                        disabled={!canUpdateSettings}
+                        type="number"
+                        name="transaction_limit"
+                        value={formik.values.transaction_limit}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={formik.touched.name ? formik.errors.name || "" : ""}
+                      />
+
+                      <span
+                        className="absolute right-12 top-1/2 text-lg theme-text-secondary"
+                      >
+                        XMR
+                      </span>
+                    </Label>
+                  </div>
+                </div>
+              </form>
+            )}
+
             <div className="form-field">
               <Switch
                 id="requires_2fa"
@@ -435,44 +568,78 @@ const Settings: React.FC<Props> = ({
                 </div>
               </Switch>
             </div>
-            {
-              features?.approvals && (
-                <>
-                  <div className="flex items-center mb-2">
-                    <span className="text-base font-semibold">Approvals</span>
-                    <Tooltip
-                      content={(
-                        <div className="md:w-48 text-sm" data-qa-selector="wallet-approvals-tooltip">
-                          Users with roles &quot;admin&quot;, &quot;spender&quot;, or &quot;approver&quot; are eligible to approve transactions. You cannot set the number of approvals required higher than the number of eligible users.
-                        </div>
-                              )}
-                    >
-                      <div className="text-sm cursor-pointer ml-1" data-qa-selector="cursor-pointer-wallet-approvals-tooltip">
-                        <img src={questionBox} alt="info" />
+
+            {features?.approvals && (
+              <>
+                <div className="flex items-center mb-2">
+                  <span className="text-base font-semibold">Approvals</span>
+                  <Tooltip
+                    content={(
+                      <div className="md:w-48 text-sm" data-qa-selector="wallet-approvals-tooltip">
+                        Users with roles &quot;admin&quot;, &quot;spender&quot;, or &quot;approver&quot; are eligible to approve transactions. You cannot set the number of approvals required higher than the number of eligible users.
                       </div>
-                    </Tooltip>
-                  </div>
-                  <form
-                    className={`md:w-1/3 ${!canUpdateSettings ? "pointer-events-none" : ""}`}
-                    name="form-wallet-settings-limits"
-                    onSubmit={formik.handleSubmit}
+                            )}
                   >
-                    <div className="form-field">
-                      <Select
-                        className={`${!numApprovers && wallet?.minApprovals ? "!theme-border-error outline-none" : ""}`}
-                        error={`${!numApprovers && wallet?.minApprovals ? "Wallet requires more approvers" : ""}`}
-                        value={formik.values.requiredApprovals}
-                        onChange={formik.handleChange}
-                        name="requiredApprovals"
-                      >
-                        <option value="">--</option>
-                        {approvalsOptions}
-                      </Select>
+                    <div className="text-sm cursor-pointer ml-1" data-qa-selector="cursor-pointer-wallet-approvals-tooltip">
+                      <img src={questionBox} alt="info" />
                     </div>
-                  </form>
-                </>
-              )
-            }
+                  </Tooltip>
+                </div>
+                <form
+                  className={`md:w-1/3 ${!canUpdateSettings ? "pointer-events-none" : ""}`}
+                  name="form-wallet-settings-limits"
+                  onSubmit={formik.handleSubmit}
+                >
+                  <div className="form-field">
+                    <Select
+                      className={`${!numApprovers && wallet?.minApprovals ? "!theme-border-error outline-none" : ""}`}
+                      error={`${!numApprovers && wallet?.minApprovals ? "Wallet requires more approvers" : ""}`}
+                      value={formik.values.requiredApprovals}
+                      onChange={formik.handleChange}
+                      name="requiredApprovals"
+                    >
+                      <option value="">--</option>
+                      {approvalsOptions}
+                    </Select>
+                  </div>
+                </form>
+              </>
+            )}
+
+            {features?.activityLogs && (
+              <>
+                <hr className="border-t theme-border my-10 -mx-10 md:hidden" />
+
+                <div className="py-8">
+                  <h2 className="text-3xl font-bold mb-6 flex items-center">
+                    {t("wallet.settings.activity.title")}
+                  </h2>
+
+                  <div className="mb-6">
+                    {t("wallet.settings.activity.description")}
+                  </div>
+
+                  <Button
+                    name="viewWalletActivity"
+                    type="button"
+                    size={UI_SIZE.SMALL}
+                    variant={
+                      isEnterprise
+                        ? Button.variant.ENTERPRISE_LIGHT
+                        : Button.variant.PRIMARY
+                    }
+                    onClick={
+                      (): void => navigate(generatePath(
+                        routes.walletActivity,
+                        { id: walletId },
+                      ))
+                    }
+                  >
+                    {t("wallet.settings.activity.cta")}
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
         </Panel.Body>
       </section>

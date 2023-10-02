@@ -59,66 +59,80 @@ export const Header: React.FC<Props> = ({ signOut, isAuthenticated }) => {
               <span className="inline">{t("layout.faq")}</span>
             </a>
           </li>
-          {
-            isAuthenticated ? (
-              <>
-                <li>
-                  <button className={`${linkClassNames} md:mb-0 uppercase`} type="button" onClick={showSupportModal}>
-                    <span className="inline">{t("layout.support")}</span>
-                  </button>
-                </li>
-                <li>
-                  <NavLink
-                    className={({ isActive }): string => (isActive ? activeLinkClassNames : linkClassNames)}
-                    id="nav-link-wallets"
-                    to={routes.wallets}
-                  >
-                    <span className="inline">{t("layout.wallets")}</span>
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    className={({ isActive }): string => (isActive ? activeLinkClassNames : linkClassNames)}
-                    id="nav-link-settings"
-                    to={routes.settings}
-                  >
-                    <span className="inline">{t("layout.settings")}</span>
-                  </NavLink>
-                </li>
-                <li>
-                  <button
-                    type="button"
-                    className={`${linkClassNames} md:mb-0 uppercase`}
-                    name="log-out"
-                    onClick={signOut}
-                  >
-                    <span className="inline">{t("layout.logout")}</span>
-                  </button>
-                </li>
-              </>
-            ) : (
-              <>
-                <li>
-                  <NavLink
-                    id="nav-link-login"
-                    className={({ isActive }): string => (isActive ? activeLinkClassNames : linkClassNames)}
-                    to={routes.login}
-                  >
-                    <span className="inline">{t("layout.login")}</span>
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    id="nav-link-register"
-                    className={({ isActive }): string => `${linkClassNames} ${isActive ? "font-bold theme-text-primary" : ""}`}
-                    to={routes.register}
-                  >
-                    <span>{t("layout.signup")}</span>
-                  </NavLink>
-                </li>
-              </>
-            )
-          }
+          {isAuthenticated ? (
+            <>
+              <li>
+                <button
+                  className={`${linkClassNames} md:mb-0 uppercase`}
+                  type="button"
+                  onClick={showSupportModal}
+                >
+                  <span className="inline">{t("layout.support")}</span>
+                </button>
+              </li>
+
+              <li>
+                <NavLink
+                  className={({ isActive }): string => (
+                    isActive ? activeLinkClassNames : linkClassNames
+                  )}
+                  id="nav-link-wallets"
+                  to={routes.wallets}
+                >
+                  <span className="inline">{t("layout.wallets")}</span>
+                </NavLink>
+              </li>
+
+              <li>
+                <NavLink
+                  className={({ isActive }): string => (
+                    isActive ? activeLinkClassNames : linkClassNames
+                  )}
+                  id="nav-link-settings"
+                  to={routes.settings}
+                >
+                  <span className="inline">{t("layout.settings")}</span>
+                </NavLink>
+              </li>
+
+              <li>
+                <button
+                  type="button"
+                  className={`${linkClassNames} md:mb-0 uppercase`}
+                  name="log-out"
+                  onClick={signOut}
+                >
+                  <span className="inline">{t("layout.logout")}</span>
+                </button>
+              </li>
+            </>
+          ) : (
+            <>
+              <li>
+                <NavLink
+                  id="nav-link-login"
+                  className={({ isActive }): string => (
+                    isActive ? activeLinkClassNames : linkClassNames
+                  )}
+                  to={routes.login}
+                >
+                  <span className="inline">{t("layout.login")}</span>
+                </NavLink>
+              </li>
+
+              <li>
+                <NavLink
+                  id="nav-link-register"
+                  className={({ isActive }): string => (
+                    `${linkClassNames} ${isActive ? "font-bold theme-text-primary" : ""}`
+                  )}
+                  to={routes.register}
+                >
+                  <span>{t("layout.signup")}</span>
+                </NavLink>
+              </li>
+            </>
+          )}
         </ul>
       </nav>
     </header>

@@ -58,12 +58,30 @@ interface Transaction {
   memo: string;
 }
 
+interface WalletActivity {
+  timestamp: string;
+  author: string;
+  action: string;
+  ipAddress: string;
+  countryCode: string;
+  userAgent: string;
+}
+
 interface ApiKey {
   id: string;
   apiKey: string;
   name: string;
   createdAt: string;
   expiresAt: string;
+}
+
+interface AccountActivity {
+  timestamp: string;
+  author: string;
+  action: string;
+  ipAddress: string;
+  country: string;
+  userAgent: string;
 }
 
 export interface SignInPayload {
@@ -185,12 +203,14 @@ export interface UserResponse {
   companyName: string;
   companyWebsite: string;
   extraFeatures: {
+    activityLogs: boolean;
     exchange: boolean;
     publicWallet: boolean;
     viewOnlyShare: boolean;
     limits: boolean;
     approvals: boolean;
     txExports: boolean;
+    apiKeys: boolean;
   };
   is2FaEnabled: boolean;
   isKeypairSet: boolean;
@@ -234,6 +254,14 @@ export interface FetchWalletDetailsPayload {
 }
 
 export type FetchWalletDetailsResponse = Wallet;
+
+export interface FetchWalletActivityResponse extends ListResponse {
+  results: WalletActivity[];
+}
+
+export interface FetchAccountActivityResponse extends ListResponse {
+  results: AccountActivity[];
+}
 
 // update wallet details api interface
 export interface UpdateWalletDetailsPayload {

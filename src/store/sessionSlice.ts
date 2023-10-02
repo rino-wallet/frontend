@@ -311,5 +311,9 @@ function updateResponse(data: UserResponse): User {
 }
 
 export const {
-  setToken, setSigningPublicKey, switch2fa, setPassword, reset,
+  setToken,
+  setSigningPublicKey,
+  switch2fa,
+  setPassword,
+  reset,
 } = sessionSlice.actions;

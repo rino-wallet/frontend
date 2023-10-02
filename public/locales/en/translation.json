@@ -8,12 +8,47 @@
     "continue": "Continue",
     "proceed": "Proceed",
     "loading": "Loading...",
+    "addresses": "Addresses",
     "send": "Send",
     "exchange": "Exchange",
     "receive": "Receive",
     "balance": "Balance",
     "email": "Email",
-    "edit": "Edit"
+    "edit": "Edit",
+    "not_available_short": "N/A",
+    "activity": {
+      "action": {
+        "account.created": "Account Created",
+        "account.email.verified": "Account Email Verified",
+        "account.session.created": "Account Session Created",
+        "account.session.deleted": "Account Session Deleted",
+        "account.email.change.requested": "Account Email Change Requested",
+        "account.email.change.completed": "Account Email Change Completed",
+        "account.password.changed": "Account Password Changed",
+        "account.password.reset.requested": "Account Password Reset Requested",
+        "account.password.reset.completed": "Account Password Reset Completed",
+        "account.2fa.enabled": "Account 2FA Enabled",
+        "account.2fa.disabled": "Account 2FA Disabled",
+        "account.api_key.created": "Account API Key Created",
+        "account.api_key.deleted": "Account API Key Deleted",
+        "wallet.created": "Wallet Created",
+        "wallet.deleted": "Wallet Deleted",
+        "wallet.updated": "Wallet Updated",
+        "wallet.membership.created": "Wallet Membership Created",
+        "wallet.membership.deleted": "Wallet Membership Deleted",
+        "wallet.membership.updated": "Wallet Membership Updated",
+        "wallet.transaction.created": "Wallet Transaction Created",
+        "wallet.transaction.submitted": "Wallet Transaction Submitted",
+        "wallet.pending_transfer.created": "Wallet Pending Transfer Created",
+        "wallet.pending_transfer.approved": "Wallet Pending Transfer Approved",
+        "wallet.pending_transfer.canceled": "Wallet Pending Transfer Canceled",
+        "wallet.pending_transfer.rejected": "Wallet Pending Transfer Rejected",
+        "wallet.sharerequest.sent": "Wallet Share Request Sent",
+        "wallet.sharerequest.accepted": "Wallet Share Request Accepted",
+        "wallet.sharerequest.deleted": "Wallet Share Request Deleted",
+        "wallet.exchangeorder.created": "Wallet Exchange Order Created"
+      }
+    }
   },
   "errors": {
     "required": "This field is required.",
@@ -23,6 +58,7 @@
     "recovery.key.incorrect": "Incorrect recovery key."
   },
   "layout": {
+    "activity": "Activity",
     "customer.service.title": "RINO Customer Service",
     "customer.service.message": "RINO team is happy to help with any issue you might encounter. Just type your inquiry below and we'll do our best to get back to you in 24 hours.",
     "customer.service.label": "message",
@@ -318,7 +354,8 @@
       "subaddress.validation.title": "Subaddress validation",
       "newsubaddress.validation.message": "Enter your account password to validate newly created subaddress, or click cancel to skip this step.",
       "firstsubaddress.validation.message": "If you want to receive money to this wallet, let’s validate that the address really belongs the wallet. We’re going to need your password for this.",
-      "receive": "Receive",
+      "title": "Receive",
+      "addresses": "Addresses",
       "current.address": "Current address",
       "used": "Used",
       "readonly.tooltip": "This functionality is not available in read-only wallets.",
@@ -343,7 +380,22 @@
       "required": "REQUIRED",
       "delete.wallet": "Delete Wallet",
       "disable": "disable",
-      "enable": "enable"
+      "enable": "enable",
+      "activity.title": "Wallet Activity",
+      "activity.description": "The wallet activity log records all activity on this wallet.",
+      "activity.cta": "Show Activity Log",
+      "activity.page": {
+        "title": "Wallet Activity",
+        "th.timestamp": "Timestamp",
+        "th.author": "Author",
+        "th.action": "Action",
+        "th.ipAddress": "IP Address",
+        "th.country": "Country",
+        "th.userAgent": "User Agent",
+        "empty.list": "No account activity yet."
+      },
+      "showInternalMemo.label": "Show Internal Memo",
+      "showInternalMemo.message": "Make the memos of this this wallet publicly visible"
     },
     "send": {
       "amount.you.send": "amount you send",
@@ -369,7 +421,7 @@
       "transaction.details": "Transaction Details:",
       "total.amount": "Total Amount",
       "including.fee": "Including Fee",
-      "destination.address": "destination address",
+      "destination.address": "Destination Address",
       "internal.memo": "Internal Memo",
       "priority.label": "priority",
       "to.address": "To address",
@@ -534,6 +586,18 @@
       "update-password": "Update password",
       "password-updated-title": "Password Updated",
       "password-updated-message": "You have successfully updated your account password."
+    },
+    "activity.title": "Account Activity",
+    "activity.description": "The account activity log records all activity on this account.",
+    "activity.cta": "Show Activity Log",
+    "activity.page": {
+      "title": "Account Activity",
+      "th.timestamp": "Timestamp",
+      "th.action": "Action",
+      "th.ipAddress": "IP Address",
+      "th.country": "Country",
+      "th.userAgent": "User Agent",
+      "empty.list": "No account activity yet."
     }
   }
 }

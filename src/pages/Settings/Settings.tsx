@@ -3,11 +3,12 @@ import {
   Link, generatePath, useNavigate, useLocation,
 } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+
 import {
   User, UpdateUserPayload, UserResponse,
 } from "../../types";
 import {
-  Button, Icon, Panel, Switch,
+  Button, Icon, Panel, Switch, UI_SIZE,
 } from "../../components";
 import { enable2FA, disable2FA, info2FA } from "../../modules/2FAModals";
 import { PageTemplate, showSuccessModal } from "../../modules/index";
@@ -43,16 +44,19 @@ const SettingsPage: FC<Props> = ({
   pendingUpdateUser,
 }) => {
   const { t } = useTranslation();
-  const { isEnterprise } = useAccountType();
   const [showEmail, setShowEmail] = useState(false);
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const fetchApiKeys = useThunkActionCreator(fetchApiKeysThunk);
   const query = useQuery();
   const page = parseInt(query.get("api_keys"), 10) || 1;
-
   const navigate = useNavigate();
   const location = useLocation();
+
+  const {
+    isEnterprise,
+    features: { apiKeys, activityLogs },
+  } = useAccountType();
 
   async function fetchApiKeysData() {
     await fetchApiKeys({ page }).then((response) => {
@@ -80,8 +84,17 @@ const SettingsPage: FC<Props> = ({
 
   return (
     <PageTemplate title={t("settings.title")}>
-      {showEmailModal && <ChangeEmail goBackCallback={(): void => { setShowEmailModal(false); }} />}
-      {showPasswordModal && <ChangePassword goBackCallback={(): void => { setShowPasswordModal(false); }} />}
+      {showEmailModal && (
+        <ChangeEmail
+          goBackCallback={(): void => { setShowEmailModal(false); }}
+        />
+      )}
+
+      {showPasswordModal && (
+        <ChangePassword
+          goBackCallback={(): void => { setShowPasswordModal(false); }}
+        />
+      )}
 
       <div>
         {
@@ -187,26 +200,34 @@ const SettingsPage: FC<Props> = ({
         </h2>
 
         <div className="mb-6">
-          {
-            user.is2FaEnabled
-              ? (
-                <div className="text-green-500">
-                  <Icon name="security-on" />
-                  {" "}
-                  <span className="uppercase text-lg font-bold" data-qa-selector="two-fa-status">{t("settings.enabled")}</span>
-                </div>
-              )
-              : (
-                <div className="text-red-500">
-                  <Icon name="security-off" />
-                  {" "}
-                  <span className="uppercase text-lg font-bold" data-qa-selector="two-fa-status">{t("settings.disabled")}</span>
-                </div>
-              )
-          }
+          {user.is2FaEnabled
+            ? (
+              <div className="text-green-500">
+                <Icon name="security-on" />
+                &nbsp;
+                <span
+                  className="uppercase text-lg font-bold"
+                  data-qa-selector="two-fa-status"
+                >
+                  {t("settings.enabled")}
+                </span>
+              </div>
+            ) : (
+              <div className="text-red-500">
+                <Icon name="security-off" />
+                &nbsp;
+                <span
+                  className="uppercase text-lg font-bold"
+                  data-qa-selector="two-fa-status"
+                >
+                  {t("settings.disabled")}
+                </span>
+              </div>
+            )}
         </div>
-        {
-          user.is2FaEnabled ? (
+
+        {user.is2FaEnabled
+          ? (
             <Button
               type="button"
               variant={Button.variant.RED}
@@ -263,8 +284,7 @@ const SettingsPage: FC<Props> = ({
             >
               {t("settings.enable.2fa")}
             </Button>
-          )
-        }
+          )}
       </section>
 
       <section className="py-8">
@@ -285,13 +305,39 @@ const SettingsPage: FC<Props> = ({
         </Switch>
       </section>
 
-      {isEnterprise && (
+      {apiKeys && (
         <section className="py-8">
           <div className="theme-bg-panel rounded-big px-6 py-4">
             <div>
               <ApiKeyList fetchApiKeysData={fetchApiKeysData} />
             </div>
           </div>
+        </section>
+      )}
+
+      {activityLogs && (
+        <section className="py-8">
+          <h2 className="text-3xl font-bold mb-6 flex items-center">
+            {t("settings.activity.title")}
+          </h2>
+
+          <div className="mb-6">
+            {t("settings.activity.description")}
+          </div>
+
+          <Button
+            name="viewAccountActivity"
+            type="button"
+            size={UI_SIZE.SMALL}
+            variant={
+              isEnterprise
+                ? Button.variant.ENTERPRISE_LIGHT
+                : Button.variant.PRIMARY
+            }
+            onClick={(): void => navigate(routes.accountActivity)}
+          >
+            {t("settings.activity.cta")}
+          </Button>
         </section>
       )}
     </PageTemplate>

@@ -41,6 +41,7 @@ export interface Wallet {
   requires2Fa: boolean;
   isPublic: boolean;
   publicSlug: string;
+  publicMemos?: boolean;
 }
 
 export interface PublicWallet {
@@ -77,13 +78,25 @@ export interface LocalWalletData {
   multisigSeed: string,
 }
 
+export interface WalletActivity {
+  id: string;
+  timestamp: string;
+  author: string;
+  action: string;
+  ipAddress: string;
+  countryCode: string;
+  userAgent: string;
+}
+
 export interface ExtraFeatures {
+  activityLogs: boolean;
   exchange: boolean;
   publicWallet: boolean;
   viewOnlyShare: boolean;
   limits: boolean;
   approvals: boolean;
   txExports: boolean;
+  apiKeys: boolean;
 }
 
 export type AccountType = "consumer" | "enterprise";
@@ -130,6 +143,16 @@ export interface Transaction {
   order?: ExchangeOrder;
 }
 
+export interface AccountActivity {
+  id: string;
+  timestamp: string;
+  author: string;
+  action: string;
+  ipAddress: string;
+  country: string;
+  userAgent: string;
+}
+
 export interface PersistWalletThunkPayload {
   id: string;
 }
@@ -142,6 +165,15 @@ export interface FetchWalletTransactionsThunkPayload {
 export interface ExportWalletTransactionsThunkPayload {
   walletId: string;
   type: EXPORT_TYPE;
+}
+
+export interface FetchWalletActivityThunkPayload {
+  walletId: string;
+  page: number;
+}
+
+export interface FetchAccountActivityThunkPayload {
+  page: number;
 }
 
 export interface FetchSubaddressesThunkPayload {

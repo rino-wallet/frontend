@@ -44,6 +44,7 @@ import {
   PendingTransferApprovalPayload,
   ExportRequestParams,
   ExportFileResponse,
+  FetchWalletActivityResponse,
 } from "../types";
 
 export class WalletsApi extends Api {
@@ -205,6 +206,13 @@ export class WalletsApi extends Api {
       .then((response) => ({
         data: new Blob([response.request.response]),
       }));
+  }
+
+  public getWalletActivity(walletId: string, params: ListRequestParams): Promise<FetchWalletActivityResponse> {
+    return this.get<FetchWalletActivityResponse>(
+      `/wallets/${walletId}/activity/`,
+      { params },
+    ).then(this.success);
   }
 }
 

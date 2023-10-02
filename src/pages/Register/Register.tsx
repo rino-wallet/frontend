@@ -170,7 +170,7 @@ const RegistrationPage: React.FC<Props> = ({ signUp }) => {
                               value={values.company_website}
                               onChange={handleChange}
                               onBlur={handleBlur}
-                              placeholder={t("auth.company.placeholder") as string}
+                              placeholder={t("auth.company.website.placeholder") as string}
                               error={touched.company_website ? errors.company_website : ""}
                             />
                           </Label>
