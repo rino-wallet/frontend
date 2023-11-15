@@ -2,14 +2,15 @@ import React, { FC, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 import * as yup from "yup";
+
 import { FormErrors, Modal } from "../../../modules/index";
 import {
   Button, Label, Input, Copy,
 } from "../../../components";
-import apiKeysApi from "../../../api/apiManagement";
 import { ApiKey } from "../../../types";
 import "./style.css";
-import { useAccountType } from "../../../hooks";
+import { useAccountType, useThunkActionCreator } from "../../../hooks";
+import { createEntity } from "../../../store/apiKeysSlice";
 
 const validationSchema = yup.object().shape({
   name: yup.string().required("This field is required."),
@@ -25,6 +26,7 @@ const CreateNewApi: FC<Props> = ({ goBackCallback, onCreateCallback }) => {
   const [apiKey, setApiKey] = useState<ApiKey>();
   const { t } = useTranslation();
   const { isEnterprise } = useAccountType();
+  const createApiKeyThunk = useThunkActionCreator(createEntity);
 
   const {
     isValid,
@@ -52,7 +54,7 @@ const CreateNewApi: FC<Props> = ({ goBackCallback, onCreateCallback }) => {
       const formatedExpirationDate = expirationDate.toISOString();
 
       try {
-        const response = await apiKeysApi.createApiKey({
+        const response = await createApiKeyThunk({
           name: formValues.name,
           expires_at: String(formatedExpirationDate),
         });

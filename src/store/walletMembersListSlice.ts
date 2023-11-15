@@ -38,7 +38,18 @@ export const fetchRevokedMembers = createAsyncThunk<FetchWalletMembersResponse, 
 
 function transformResponse(data: FetchWalletMembersResponse) {
   return {
-    entities: data.results.map((member) => ({ ...member, user: typeof member.user === "string" ? member.user : member.user.email })),
+    entities: data.results.map((member) => {
+      const { user } = member;
+      const { email, ...rest } = typeof user !== "string"
+        ? user
+        : { email: user };
+
+      return {
+        ...member,
+        user: typeof user === "string" ? user : user.email,
+        ...rest,
+      };
+    }),
     count: data.count,
     pages: Math.ceil(data.count / ITEMS_PER_PAGE),
     hasPreviousPage: !!data.previous,

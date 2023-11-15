@@ -21,6 +21,8 @@ export interface WalletMember {
   createdAt: string;
   updatedAt: string;
   deletedAt?: string;
+  is2FaEnabled: boolean;
+  activeApiKeys: boolean;
 }
 
 export interface Wallet {
@@ -39,6 +41,7 @@ export interface Wallet {
   lockedAmounts: LockedAmount[];
   status: string;
   requires2Fa: boolean;
+  sdkAccess: boolean;
   isPublic: boolean;
   publicSlug: string;
   publicMemos?: boolean;
@@ -149,7 +152,7 @@ export interface AccountActivity {
   author: string;
   action: string;
   ipAddress: string;
-  country: string;
+  countryCode: string;
   userAgent: string;
 }
 

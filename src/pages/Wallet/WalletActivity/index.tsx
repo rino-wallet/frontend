@@ -26,7 +26,7 @@ const WalletActivityPage: FC<Props> = ({ walletId }) => {
   const { pages, hasPreviousPage, hasNextPage } = useSelector(walletActivitySelectors.getListMetaData);
   const navigate = useNavigate();
 
-  if (!features?.activityLogs) {
+  if (features && !features.activityLogs) {
     navigate(routes.not_found);
   }
 

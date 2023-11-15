@@ -33,6 +33,8 @@ interface WalletMember {
   id: string;
   user: {
     email: string;
+    is2FaEnabled: boolean;
+    activeApiKeys: boolean;
   } | string;
   accessLevel: AccessLevel;
   encryptedKeys: string;
@@ -376,6 +378,8 @@ export interface ShareWalletResponse {
     id: 0,
     email: string;
     name: string;
+    is2FaEnabled: boolean;
+    activeApiKeys: boolean;
   },
   wallet: {
     id: string;

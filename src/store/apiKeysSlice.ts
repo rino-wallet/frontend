@@ -1,9 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+
 import {
+  CreateApiKeyPayload,
+  CreateApiKeyResponse,
   FetchApiKeysResponse, RootState,
 } from "../types";
 import apiKeysApi from "../api/apiManagement";
 import { generateExtraReducer, generateListReqParams } from "../utils";
+import modals from "../modules/2FAModals";
 
 export const ITEMS_PER_PAGE = 5;
 const SLICE_NAME = "apiKeys";
@@ -20,11 +24,42 @@ export const fetchEntities = createAsyncThunk<FetchApiKeysResponse, { page: numb
   },
 );
 
+export const createEntity = createAsyncThunk<CreateApiKeyResponse, CreateApiKeyPayload>(
+  `${SLICE_NAME}/createApiKey`,
+  async (data: CreateApiKeyPayload, { rejectWithValue, getState }) => {
+    try {
+      let code = "";
+      const { is2FaEnabled } = (getState() as any).session.user;
+
+      if (is2FaEnabled) {
+        code = await modals.enter2FACode();
+      }
+
+      return await apiKeysApi.createApiKey(
+        data,
+        code ? { headers: { "X-RINO-2FA": code } } : undefined,
+      );
+    } catch (err: any) {
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
 export const deleteEntity = createAsyncThunk<void, string>(
   `${SLICE_NAME}/deleteApiKey`,
-  async (id, { rejectWithValue }) => {
+  async (id, { rejectWithValue, getState }) => {
     try {
-      await apiKeysApi.deleteApiKey(id);
+      let code = "";
+      const user = (getState() as any).session.user;
+
+      if (user && user.is2FaEnabled) {
+        code = await modals.enter2FACode();
+      }
+
+      await apiKeysApi.deleteApiKey(
+        id,
+        code ? { headers: { "X-RINO-2FA": code } } : undefined,
+      );
     } catch (err: any) {
       return rejectWithValue(err.response.data);
     }

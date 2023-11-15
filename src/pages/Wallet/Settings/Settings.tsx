@@ -97,6 +97,7 @@ const Settings: FC<Props> = ({
       public_memos: wallet ? wallet.publicMemos : false,
       name: wallet ? wallet.name : "",
       requires_2fa: wallet ? wallet.requires2Fa : false,
+      sdk_access: wallet ? wallet.sdkAccess : false,
       daily_limit: wallet?.maxDailyAmount
         ? piconeroToMonero(String(wallet.maxDailyAmount))
         : "0",
@@ -115,6 +116,7 @@ const Settings: FC<Props> = ({
         const payload = {
           id: walletId,
           requires_2fa: values.requires_2fa,
+          sdk_access: values.sdk_access,
           // it checks if is_public or public_slug changed,
           // and adds public_slug value to payload only if is_public equal to true
           ...(((
@@ -271,6 +273,19 @@ const Settings: FC<Props> = ({
                   </CopyArea>
                 </Label>
               </div>
+
+              {features?.apiKeys && (
+                <div className="form-field">
+                  <Label
+                    label={t("wallet.settings.wallet.id.label")}
+                    subtitle={t("wallet.settings.wallet.id.subtitle") || ""}
+                  >
+                    <CopyArea value={wallet?.id || ""} qaSelector="wallet-address">
+                      {wallet?.id}
+                    </CopyArea>
+                  </Label>
+                </div>
+              )}
 
               {features?.publicWallet && (
                 <>
@@ -472,7 +487,9 @@ const Settings: FC<Props> = ({
           <hr className="border-t theme-border my-10 -mx-10 md:hidden" />
 
           <div>
-            <h3 className="uppercase font-bold mb-8">Security</h3>
+            <h3 className="uppercase font-bold mb-8">
+              {t("wallet.settings.security")}
+            </h3>
             {features?.limits && (
               <form
                 className="md:w-full"
@@ -604,6 +621,38 @@ const Settings: FC<Props> = ({
                   </div>
                 </form>
               </>
+            )}
+
+            {features?.apiKeys && (
+              <div className="form-field">
+                <Switch
+                  id="sdk_access"
+                  checked={formik.values.sdk_access}
+                  onChange={
+                    (e: React.ChangeEvent<HTMLInputElement>): void | null => {
+                      formik.setFieldValue("sdk_access", e.target.checked);
+                    }
+                  }
+                  isEnterprise
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center">
+                      {t("wallet.settings.allow.sdk.access.label")}
+
+                      <Tooltip
+                        content={t("wallet.settings.allow.sdk.access.tooltip")}
+                      >
+                        <div
+                          className="text-sm cursor-pointer ml-1"
+                          data-qa-selector="cursor-pointer-tx-priority-tooltip"
+                        >
+                          <Icon name="info" />
+                        </div>
+                      </Tooltip>
+                    </div>
+                  </div>
+                </Switch>
+              </div>
             )}
 
             {features?.activityLogs && (

@@ -45,7 +45,7 @@ const AccountActivityItem: FC<Props> = ({ data }) => {
               :
               &nbsp;
             </span>
-            {data.country || t("common.not_available_short")}
+            {data.countryCode || t("common.not_available_short")}
           </span>
         )}
         userAgent={(

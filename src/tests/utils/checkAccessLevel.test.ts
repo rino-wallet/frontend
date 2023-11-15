@@ -34,6 +34,8 @@ const wallet = {
       encryptedKeys: "",
       createdAt: "",
       updatedAt: "",
+      is2FaEnabled: false,
+      activeApiKeys: false,
     }
   ],
   createdAt: "",
@@ -45,6 +47,7 @@ const wallet = {
   lockedAmounts: [],
   status: "",
   requires2Fa: false,
+  sdkAccess: false,
   isPublic: false,
   publicSlug: "wallet"
 }

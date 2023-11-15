@@ -40,8 +40,11 @@ function updateShareWalletResponse(response: ShareWalletResponse): WalletMember 
     encryptedKeys: "",
     createdAt: response.createdAt,
     updatedAt: response.createdAt,
+    is2FaEnabled: response.user.is2FaEnabled,
+    activeApiKeys: response.user.activeApiKeys,
   };
 }
+
 export const createNewWallet = createAsyncThunk<any, { name: string, signal: any }>(
   `${SLICE_NAME}/createNewWallet`,
   async ({ name, signal }, { rejectWithValue, dispatch }) => {

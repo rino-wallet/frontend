@@ -163,6 +163,8 @@ describe("WalletSlice", () => {
       createdAt: "2022-10-05T07:47:02.915Z",
       updatedAt: "2022-10-05T07:47:02.915Z",
       deletedAt: "2022-10-05T07:47:23.346Z",
+      is2FaEnabled: false,
+      activeApiKeys: false,
     };
     store.dispatch(setRevokedUsers([user]));
     expect(store.getState().wallet.revokedUsers).toEqual([user]);
@@ -470,6 +472,8 @@ describe("WalletSlice", () => {
       encryptedKeys: "",
       createdAt: "",
       updatedAt: "",
+      is2FaEnabled: false,
+      activeApiKeys: false,
     }));
 
     const wallet = store.getState().wallet.data;
@@ -509,6 +513,8 @@ describe("WalletSlice", () => {
       encryptedKeys: "",
       createdAt: "",
       updatedAt: "",
+      is2FaEnabled: false,
+      activeApiKeys: false,
     }));
     expect(store.getState().wallet.data.members.filter((member: any) => member.id === "user id").length).toEqual(1);
   });

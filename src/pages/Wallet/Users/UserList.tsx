@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation, Trans } from "react-i18next";
 import {
@@ -66,7 +66,7 @@ interface Props {
   showRevokedUsers: boolean;
 }
 
-const UserList: React.FC<Props> = ({
+const UserList: FC<Props> = ({
   members,
   wallet,
   user,
@@ -106,8 +106,16 @@ const UserList: React.FC<Props> = ({
     <div className="pb-5">
       <div className="hidden theme-bg-panel-second md:block">
         <WalletMemberLayout
-          role={<span className="text-sm uppercase">{t("wallet.users.list.th.role")}</span>}
-          email={<span className="text-sm uppercase">{t("wallet.users.list.th.email")}</span>}
+          role={(
+            <span className="text-sm uppercase">
+              {t("wallet.users.list.th.role")}
+            </span>
+          )}
+          email={(
+            <span className="text-sm uppercase">
+              {t("wallet.users.list.th.email")}
+            </span>
+          )}
           action=""
         />
       </div>
@@ -118,102 +126,126 @@ const UserList: React.FC<Props> = ({
         numberOfRows={5}
       >
         <div>
-          {
-            members.map((member, index) => (
-              <div key={member.user} className={index % 2 !== 0 ? "theme-bg-panel-second bg-opacity-50 mb-3 last:mb-0" : "mb-3 last:mb-0"}>
-                <WalletMemberLayout
-                  role={(
-                    <div className="flex items-center">
-                      <WalletRole role={member.accessLevel} />
-                      {" "}
-                      {member.user === user.email && (
-                      <span className="theme-text ml-1">
-                        (
-                        {t("wallet.users.list.you")}
-                        )
-                      </span>
-                      )}
-                      {!!member.deletedAt && (
-                      <span className="theme-text ml-1">
-                        (
-                        {t("wallet.users.list.revoked")}
-                        )
-                      </span>
-                      )}
-                    </div>
-                  )}
-                  revoked={!!member.deletedAt}
-                  email={member.user}
-                  action={(
-                    <div>
-                      {
-                        ![accessLevels.admin.title, accessLevels.owner.title].includes(member.accessLevel) && !accessLevel.isViewOnly() && !accessLevel.isApprover() && !accessLevel.isSpender() ? (
-                          <Button
-                            name="share-wallet"
-                            loading={false}
-                            onClick={(): void => {
-                              WalletMemberModal({
-                                wallet, member, is2FaEnabled: user.is2FaEnabled, email: member.user, shareWallet, refresh,
-                              })
-                                .then(async ({ email }: { email: string; password: string; accessLevel: number }) => {
-                                  const name = wallet.name;
-                                  showSuccessModal({
-                                    goBackCallback: () => {
-                                      // eslint-disable-next-line
-                                      console.log("User added.");
-                                      refresh();
-                                    },
-                                    title: t("wallet.users.access.changed"),
-                                    message: (
-                                      <div>
-                                        <Trans i18nKey="wallet.users.access.changed.message" className="mb-3">
-                                          {/* eslint-disable-next-line */}
-                                          Access level to {{ name }} was changed for {{ email }}
-                                        </Trans>
-                                      </div>
-                                    ),
-                                    buttonText: t("common.ok"),
+          {members.map((member, index) => (
+            <div
+              key={member.user}
+              className={
+                index % 2 !== 0
+                  ? "theme-bg-panel-second bg-opacity-50 mb-3 last:mb-0"
+                  : "mb-3 last:mb-0"
+              }
+            >
+              <WalletMemberLayout
+                role={(
+                  <div className="flex items-center">
+                    <WalletRole role={member.accessLevel} />
+                    {" "}
+                    {member.user === user.email && (
+                    <span className="theme-text ml-1">
+                      (
+                      {t("wallet.users.list.you")}
+                      )
+                    </span>
+                    )}
+                    {!!member.deletedAt && (
+                    <span className="theme-text ml-1">
+                      (
+                      {t("wallet.users.list.revoked")}
+                      )
+                    </span>
+                    )}
+                  </div>
+                )}
+                revoked={!!member.deletedAt}
+                email={member.user}
+                is2FAEnabled={member.is2FaEnabled}
+                activeApiKeys={member.activeApiKeys}
+                action={(
+                  <div>
+                    {![
+                      accessLevels.admin.title,
+                      accessLevels.owner.title,
+                    ].includes(member.accessLevel)
+                      && !accessLevel.isViewOnly()
+                      && !accessLevel.isApprover()
+                      && !accessLevel.isSpender() && (
+                      <Button
+                        name="share-wallet"
+                        loading={false}
+                        onClick={(): void => {
+                          WalletMemberModal({
+                            wallet,
+                            member,
+                            is2FaEnabled: user.is2FaEnabled,
+                            email: member.user,
+                            shareWallet,
+                            refresh,
+                          })
+                            .then(async (
+                              { email }: {
+                                email: string;
+                                password: string;
+                                accessLevel: number;
+                              },
+                            ) => {
+                              const name = wallet.name;
+
+                              showSuccessModal({
+                                goBackCallback: () => {
+                                  // eslint-disable-next-line
+                                  console.log("User added.");
+                                  refresh();
+                                },
+                                title: t("wallet.users.access.changed"),
+                                message: (
+                                  <div>
+                                    <Trans i18nKey="wallet.users.access.changed.message" className="mb-3">
+                                      {/* eslint-disable-next-line */}
+                                      Access level to {{ name }} was changed for {{ email }}
+                                    </Trans>
+                                  </div>
+                                ),
+                                buttonText: t("common.ok"),
+                              });
+                            });
+                        }}
+                        variant={
+                          isEnterprise
+                            ? Button.variant.ENTERPRISE_LIGHT
+                            : Button.variant.PRIMARY_LIGHT
+                        }
+                        size={Button.size.SMALL}
+                      >
+                        {t("wallet.users.change.button")}
+                      </Button>
+                    )}
+
+                    {
+                      (showDeleteButton(accessLevel, member)) && (
+                        <button
+                          type="button"
+                          onClick={(): void => {
+                            showRemoveWalletMemberModal({ email: member.user })
+                              .then(() => {
+                                removeWalletAccess({ walletId: wallet.id, userId: member.id })
+                                  .then(() => {
+                                    refresh();
+                                    if (member.user === user.email) {
+                                      navigate(routes.wallets);
+                                    }
                                   });
-                                });
-                            }}
-                            variant={
-                              isEnterprise
-                                ? Button.variant.ENTERPRISE_LIGHT
-                                : Button.variant.PRIMARY_LIGHT
-                            }
-                            size={Button.size.SMALL}
-                          >
-                            {t("wallet.users.change.button")}
-                          </Button>
-                        ) : null
-                      }
-                      {
-                        (showDeleteButton(accessLevel, member)) && (
-                          <button
-                            type="button"
-                            onClick={(): void => {
-                              showRemoveWalletMemberModal({ email: member.user })
-                                .then(() => {
-                                  removeWalletAccess({ walletId: wallet.id, userId: member.id })
-                                    .then(() => {
-                                      refresh();
-                                      if (member.user === user.email) {
-                                        navigate(routes.wallets);
-                                      }
-                                    });
-                                });
-                            }}
-                          >
-                            <span className="text-xs ml-4"><Icon name="cross" /></span>
-                          </button>
-                        )
-                      }
-                    </div>
-                  )}
-                />
-              </div>
-            ))
-          }
+                              });
+                          }}
+                        >
+                          <span className="text-xs ml-4"><Icon name="cross" /></span>
+                        </button>
+                      )
+                    }
+                  </div>
+                )}
+              />
+            </div>
+          ))}
 
           {members.length === 0 && !loading && (
             <EmptyList
@@ -222,18 +254,16 @@ const UserList: React.FC<Props> = ({
             />
           )}
 
-          {
-            membersListMetaData.pages > 1 && (
-              <Pagination
-                loading={loading}
-                page={page}
-                pageCount={membersListMetaData.pages}
-                hasNextPage={membersListMetaData.hasNextPage}
-                hasPreviousPage={membersListMetaData.hasPreviousPage}
-                onChange={onPage}
-              />
-            )
-          }
+          {membersListMetaData.pages > 1 && (
+            <Pagination
+              loading={loading}
+              page={page}
+              pageCount={membersListMetaData.pages}
+              hasNextPage={membersListMetaData.hasNextPage}
+              hasPreviousPage={membersListMetaData.hasPreviousPage}
+              onChange={onPage}
+            />
+          )}
         </div>
       </PlaceholderController>
     </div>

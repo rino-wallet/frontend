@@ -20,7 +20,7 @@ const AccountActivityPage: FC = () => {
   const { pages, hasPreviousPage, hasNextPage } = useSelector(accountActivitySelectors.getListMetaData);
   const navigate = useNavigate();
 
-  if (!features?.activityLogs) {
+  if (features && !features.activityLogs) {
     navigate(routes.not_found);
   }
 
